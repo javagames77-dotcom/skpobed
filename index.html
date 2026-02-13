@@ -5,169 +5,126 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BJJ Club - Управление спортсменами</title>
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* {margin:0; padding:0; box-sizing:border-box;}
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    padding: 10px;
+    background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    min-height:100vh;
+    padding:10px;
 }
 .container {
-    width: 95%;
-    max-width: 1200px;
-    margin: 0 auto;
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+    width:95%;
+    max-width:1200px;
+    margin:0 auto;
+    background:white;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 15px 50px rgba(0,0,0,0.3);
 }
 h1 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 2rem;
-    color: #333;
+    text-align:center;
+    margin-bottom:20px;
+    font-size:2rem;
+    color:#333;
 }
 .stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+    gap:15px;
+    margin-bottom:20px;
 }
 .stat-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
+    background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    color:white;
+    padding:15px;
+    border-radius:10px;
+    text-align:center;
 }
-.stat-number {
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-.stat-label {
-    font-size: 0.85rem;
-    opacity: 0.9;
-}
+.stat-number { font-size:1.5rem; font-weight:bold; }
+.stat-label { font-size:0.85rem; opacity:0.9; }
+
 .search-box {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1.5px solid #ccc;
-    margin-bottom: 15px;
-    font-size: 1rem;
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:1.5px solid #ccc;
+    margin-bottom:15px;
+    font-size:1rem;
 }
-.search-box:focus {
-    border-color: #667eea;
-    outline: none;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-    overflow-x: auto;
-}
-thead {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-th, td {
-    padding: 10px;
-    text-align: left;
-    word-break: break-word;
-}
-tbody tr:hover {
-    background: #f0f4ff;
-}
-.photo-thumb {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #667eea;
-}
+.search-box:focus { border-color:#667eea; outline:none; }
+
+table { width:100%; border-collapse:collapse; font-size:0.9rem; overflow-x:auto; }
+thead { background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; }
+th,td { padding:10px; text-align:left; word-break:break-word; }
+tbody tr:hover { background:#f0f4ff; }
+
+.photo-thumb { width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid #667eea; }
+
 .btn {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    margin: 0 2px;
+    padding:10px; font-size:0.9rem;
+    border:none; border-radius:6px;
+    cursor:pointer; margin:2px;
+    min-height:42px;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-weight:600;
+    transition:0.2s;
 }
-.btn-edit { background: #4CAF50; color: white; }
-.btn-edit:hover { background: #45a049; }
-.btn-delete { background: #f44336; color: white; }
-.btn-delete:hover { background: #da190b; }
-.modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
+
+/* Цветовая гамма кнопок */
+.btn-edit { background:#4CAF50; color:white; }
+.btn-edit:hover { background:#43a047; }
+.btn-delete { background:#f44336; color:white; }
+.btn-delete:hover { background:#e53935; }
+.btn-save { background:#667eea; color:white; }
+.btn-save:hover { background:#5568d3; }
+.btn-cancel { background:#999; color:white; }
+.btn-cancel:hover { background:#777; }
+
+.modal, .notification {
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center; padding:10px;
 }
-.modal.active { display: flex; }
-.modal-content {
-    background: white;
-    width: 100%;
-    max-width: 450px;
-    border-radius: 15px;
-    padding: 20px;
-    max-height: 90vh;
-    overflow-y: auto;
+.modal.active, .notification.active { display:flex; }
+
+.modal-content, .notification-content {
+    background:white; border-radius:15px; padding:20px; max-width:450px; width:90%; max-height:90vh; overflow-y:auto;
 }
-.form-group { margin-bottom: 15px; }
-.form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
-.form-group input {
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-    border-radius: 6px;
-    border: 1.5px solid #ccc;
-}
-.form-group input:focus { border-color: #667eea; outline: none; }
-.modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
-.btn-save { flex: 1; background: #667eea; color: white; padding: 10px; }
-.btn-save:hover { background: #5568d3; }
-.btn-cancel { flex: 1; background: #999; color: white; padding: 10px; }
-.btn-cancel:hover { background: #777; }
-.error {
-    background: #ffebee;
-    color: #c62828;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    text-align: center;
-}
-.loading { text-align: center; padding: 20px; color: #555; }
-@media (max-width: 600px) {
-    h1 { font-size: 1.5rem; }
-    .stat-number { font-size: 1.2rem; }
-    .stat-label { font-size: 0.7rem; }
-    .btn { font-size: 0.7rem; padding: 4px 6px; }
-    .photo-thumb { width: 30px; height: 30px; }
+
+.form-group { margin-bottom:15px; }
+.form-group label { display:block; margin-bottom:5px; font-weight:600; }
+.form-group input { width:100%; padding:12px; font-size:1rem; border-radius:6px; border:1.5px solid #ccc; }
+.form-group input:focus { border-color:#667eea; outline:none; }
+
+.modal-buttons, .notification-buttons { display:flex; gap:10px; margin-top:15px; }
+
+.notification-content p { margin-bottom:15px; font-size:1rem; text-align:center; }
+
+.error { background:#ffebee; color:#c62828; padding:10px; border-radius:8px; margin-bottom:10px; text-align:center; }
+.loading { text-align:center; padding:20px; color:#555; }
+
+@media(max-width:600px){
+    h1{font-size:1.5rem;}
+    .stat-number{font-size:1.2rem;}
+    .stat-label{font-size:0.7rem;}
+    .btn{font-size:0.8rem; padding:8px; min-height:38px;}
+    .photo-thumb{width:30px; height:30px;}
 }
 </style>
 </head>
 <body>
 <div class="container">
-    <h1>🥋 Управление спортсменами - BJJ Club</h1>
-    <div class="stats">
-        <div class="stat-card">
-            <div class="stat-number" id="totalChildren">0</div>
-            <div class="stat-label">Всего детей</div>
-        </div>
+<h1>🥋 Управление спортсменами - BJJ Club</h1>
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number" id="totalChildren">0</div>
+        <div class="stat-label">Всего детей</div>
     </div>
-    <input type="text" class="search-box" id="searchInput" placeholder="🔍 Поиск по имени...">
-    <div id="errorMessage" class="error" style="display:none;"></div>
-    <div id="tableContainer"></div>
 </div>
+<input type="text" class="search-box" id="searchInput" placeholder="🔍 Поиск по имени...">
+<div id="errorMessage" class="error" style="display:none;"></div>
+<div id="tableContainer"></div>
+</div>
+
 <!-- Edit Modal -->
 <div id="editModal" class="modal">
     <div class="modal-content">
@@ -188,14 +145,24 @@ tbody tr:hover {
         </form>
     </div>
 </div>
+
+<!-- Notification Modal -->
+<div id="notification" class="notification">
+    <div class="notification-content">
+        <p id="notificationText">Сохранено</p>
+        <div class="notification-buttons">
+            <button class="btn btn-save" onclick="closeNotification()">Готово</button>
+        </div>
+    </div>
+</div>
+
 <script>
 const API_BASE = 'https://primary-production-4b93e.up.railway.app/webhook';
 const API_GET = `${API_BASE}/api/children`;
 const API_UPDATE = `${API_BASE}/ea619676-d586-4606-8eef-be9ba9c3193c`;
 const API_DELETE = `${API_BASE}/api/children/delete`;
 
-let children = [];
-let currentEditChild = null;
+let children=[], currentEditChild=null;
 
 async function loadChildren(){
     document.getElementById('tableContainer').innerHTML='<div class="loading">⏳ Загрузка...</div>';
@@ -217,9 +184,10 @@ function renderTable(filter=''){
 <td>${child.photo_url?`<img src="${child.photo_url}" class="photo-thumb">`:'<div class="photo-thumb" style="background:#ddd;"></div>'}</td>
 <td><strong>${child.name}</strong></td>
 <td>${child.created_at?new Date(child.created_at).toLocaleDateString('ru-RU'):'-'}</td>
-<td><button class="btn btn-edit" onclick="editChild('${child.name}')">✏️</button>
-<button class="btn btn-delete" onclick="deleteChild('${child.name}')">🗑️</button></td>
-</tr>`});
+<td>
+<button class="btn btn-edit" onclick="editChild('${child.name}')">✏️ Редактировать</button>
+<button class="btn btn-delete" onclick="deleteChild('${child.name}')">🗑️ Удалить</button>
+</td></tr>`});
     html+='</tbody></table>';
     document.getElementById('tableContainer').innerHTML=html;
 }
@@ -234,7 +202,6 @@ function editChild(name){
     if(!currentEditChild.face_token) currentEditChild.face_token=crypto.randomUUID();
     document.getElementById('editModal').classList.add('active');
 }
-
 function closeEditModal(){ document.getElementById('editModal').classList.remove('active'); currentEditChild=null; }
 
 document.getElementById('editForm').addEventListener('submit',async e=>{
@@ -248,9 +215,9 @@ document.getElementById('editForm').addEventListener('submit',async e=>{
         formData.append('face_token',currentEditChild.face_token);
         const res=await fetch(API_UPDATE,{method:'POST',body:formData});
         const data=await res.json();
-        if(data.success){ closeEditModal(); loadChildren(); alert('✅ Сохранено!'); }
-        else alert('❌ Ошибка сохранения');
-    }catch(e){ alert('❌ Ошибка подключения'); console.error(e);}
+        if(data.success){ closeEditModal(); loadChildren(); showNotification('✅ Сохранено'); }
+        else showNotification('❌ Ошибка сохранения');
+    }catch(e){ showNotification('❌ Ошибка подключения'); console.error(e);}
 });
 
 async function deleteChild(name){
@@ -258,14 +225,15 @@ async function deleteChild(name){
     try{
         const res=await fetch(API_DELETE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})});
         const data=await res.json();
-        if(data.success){ loadChildren(); alert('✅ Удалено!'); }
-        else alert('❌ Ошибка удаления');
-    }catch(e){ alert('❌ Ошибка подключения'); console.error(e);}
+        if(data.success){ loadChildren(); showNotification('✅ Удалено'); }
+        else showNotification('❌ Ошибка удаления');
+    }catch(e){ showNotification('❌ Ошибка подключения'); console.error(e);}
 }
 
 function showError(msg){ const el=document.getElementById('errorMessage'); el.textContent=msg; el.style.display='block'; setTimeout(()=>el.style.display='none',5000); }
-
 document.getElementById('editModal').addEventListener('click',e=>{ if(e.target.id==='editModal') closeEditModal(); });
+function showNotification(msg){ document.getElementById('notificationText').textContent=msg; document.getElementById('notification').classList.add('active'); }
+function closeNotification(){ document.getElementById('notification').classList.remove('active'); }
 
 loadChildren();
 </script>
