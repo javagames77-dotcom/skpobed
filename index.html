@@ -5,44 +5,40 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Управление спортсменами - BJJ Club!</title>
 <style>
-html, body {
-    height:100%;
-    overflow:hidden; 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-    margin:0; padding:0;
-}
-
+/* Общие стили */
 body {
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding:10px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 10px;
+    overflow-x: hidden; /* убираем горизонтальный скролл */
 }
-
 .container {
-    width:100%;
-    max-width:1200px;
-    background:#fff;
-    border-radius:20px;
-    padding:20px;
-    box-shadow:0 20px 60px rgba(0,0,0,0.3);
-    overflow-y:auto;
-    max-height:95vh;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
-
-h1 { text-align:center; margin-bottom:20px; font-size:2rem; color:#333; }
-
+h1 { color:#333; text-align:center; margin-bottom:20px; font-size:2rem; }
 .stats {
-    display:grid;
+    display: grid;
     grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
-    gap:15px;
+    gap: 15px;
     margin-bottom:20px;
 }
-.stat-card { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; padding:15px; border-radius:15px; text-align:center; }
+.stat-card {
+    background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    color:#fff;
+    padding:15px;
+    border-radius:15px;
+    text-align:center;
+}
 .stat-number { font-size:2rem; font-weight:bold; margin-bottom:5px; }
 .stat-label { font-size:0.9rem; opacity:0.9; }
 
@@ -53,90 +49,65 @@ h1 { text-align:center; margin-bottom:20px; font-size:2rem; color:#333; }
     border-radius:10px;
     font-size:1rem;
     margin-bottom:15px;
-    box-sizing:border-box;
 }
 .search-box:focus { outline:none; border-color:#667eea; }
 
 .table-wrapper { width:100%; overflow-x:auto; }
-table { width:100%; border-collapse:collapse; min-width:400px; }
+table {
+    width:100%;
+    border-collapse:collapse;
+    min-width:400px;
+}
 thead { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; }
 th, td { padding:10px; text-align:left; font-size:0.9rem; }
 tbody tr { border-bottom:1px solid #eee; transition: background 0.2s; }
 tbody tr:hover { background:#f8f9ff; }
-.photo-thumb { width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid #667eea; }
 
-.btn { padding:5px 10px; border:none; border-radius:6px; cursor:pointer; font-size:0.8rem; font-weight:600; margin:0 2px; transition:0.3s; }
+.photo-thumb {
+    width:40px; height:40px; border-radius:50%; object-fit:cover;
+    border:2px solid #667eea;
+}
+.btn {
+    padding:5px 10px; border:none; border-radius:6px;
+    cursor:pointer; font-size:0.8rem; font-weight:600; margin:0 2px;
+    transition:0.3s;
+}
 .btn-edit { background:#4caf50; color:#fff; }
 .btn-edit:hover { background:#45a049; transform:translateY(-1px); }
 
 .modal {
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.7);
-    z-index:1000;
-    justify-content:center;
-    align-items:center;
-    padding:10px;
-    box-sizing:border-box;
+    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;
 }
 .modal.active { display:flex; }
 .modal-content {
-    background:#fff;
-    border-radius:15px;
-    width:100%;
-    max-width:400px;
-    max-height:90vh;
-    overflow-y:auto;
-    display:flex;
-    flex-direction:column;
-    padding:20px;
-    box-sizing:border-box;
+    background:#fff; border-radius:15px; width:100%; max-width:400px;
+    max-height:90vh; overflow-y:auto; display:flex; flex-direction:column;
+    padding:20px; box-sizing:border-box;
 }
-.modal-header { font-size:1.2rem; font-weight:bold; margin-bottom:15px; color:#333; text-align:center; }
+.modal-header { font-size:1.2rem; font-weight:bold; margin-bottom:15px; color:#333; }
+.form-group { margin-bottom:15px; width:100%; display:flex; flex-direction:column; }
+.form-group input, .form-group button { width:100%; box-sizing:border-box; }
 
-.form-group { margin-bottom:15px; width:100%; }
-.form-group label { display:block; margin-bottom:5px; color:#555; font-weight:600; }
-.form-group input {
-    width:100%;
-    padding:10px;
-    border:2px solid #e0e0e0;
-    border-radius:6px;
-    font-size:16px;
-    box-sizing:border-box;
-}
-.form-group input:focus { outline:none; border-color:#667eea; }
-
-.modal-buttons { display:flex; flex-direction:column; gap:10px; margin-top:10px; width:100%; }
-.btn-save, .btn-cancel { width:100%; padding:12px; font-size:1rem; border:none; border-radius:6px; cursor:pointer; }
-.btn-save { background:#667eea; color:#fff; }
+.btn-save { background:#667eea; color:#fff; padding:10px; font-size:1rem; margin-bottom:10px; }
 .btn-save:hover { background:#5568d3; }
-.btn-cancel { background:#999; color:#fff; }
+.btn-cancel { background:#999; color:#fff; padding:10px; font-size:1rem; }
 .btn-cancel:hover { background:#777; }
 
 .success-message {
-    display:none;
-    text-align:center;
-    padding:20px;
-    font-weight:bold;
-    color:#4caf50;
-    flex-direction:column;
+    display:none; flex-direction:column; align-items:center; text-align:center;
+    margin-top:10px; font-size:1rem; color:#4caf50;
 }
 .success-message button {
-    margin-top:15px;
-    padding:10px 20px;
-    background:#667eea;
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    font-size:1rem;
-    cursor:pointer;
+    margin-top:10px; padding:8px 16px; font-size:1rem; border:none; border-radius:6px;
+    background:#667eea; color:#fff; cursor:pointer;
 }
+.success-message button:hover { background:#5568d3; }
 
-@media(max-width:500px){
+.loading { text-align:center; padding:30px; color:#999; font-size:1rem; }
+.error { background:#ffebee; color:#c62828; padding:10px; border-radius:8px; margin-bottom:15px; text-align:center; }
+
+@media (max-width:500px) {
     th, td { font-size:0.75rem; padding:5px; }
     .photo-thumb { width:30px; height:30px; }
     .btn { font-size:0.7rem; padding:3px 6px; }
@@ -171,8 +142,10 @@ tbody tr:hover { background:#f8f9ff; }
                 <label>URL фото</label>
                 <input type="text" id="editPhoto">
             </div>
-            <div class="modal-buttons">
+            <div class="form-group">
                 <button type="submit" class="btn-save">💾 Сохранить</button>
+            </div>
+            <div class="form-group">
                 <button type="button" class="btn-cancel" onclick="closeEditModal()">❌ Отмена</button>
             </div>
         </form>
@@ -187,19 +160,23 @@ tbody tr:hover { background:#f8f9ff; }
 const API_BASE = 'https://primary-production-4b93e.up.railway.app/webhook';
 const API_GET = `${API_BASE}/api/children`;
 const API_UPDATE = `${API_BASE}/ea619676-d586-4606-8eef-be9ba9c3193c`;
+const API_DELETE = `${API_BASE}/api/children/delete`;
+
 let children = [];
 let currentEditChild = null;
 
-async function loadChildren() {
-    try {
+async function loadChildren(){
+    try{
         document.getElementById('tableContainer').innerHTML = '<div class="loading">⏳ Загрузка...</div>';
         const res = await fetch(API_GET);
         const data = await res.json();
-        if(data.success){ children = data.data; updateStats(); renderTable(); } 
+        if(data.success){ children = data.data; updateStats(); renderTable(); }
         else showError('Ошибка загрузки данных');
     } catch(e){ showError('Ошибка подключения'); console.error(e); }
 }
+
 function updateStats(){ document.getElementById('totalChildren').textContent = children.length; }
+
 function renderTable(filter=''){
     const filtered = children.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()));
     const html = `
@@ -211,7 +188,9 @@ function renderTable(filter=''){
             <td>${c.photo_url?`<img src="${c.photo_url}" class="photo-thumb" alt="${c.name}">`:'<div class="photo-thumb" style="background:#ddd;"></div>'}</td>
             <td><strong>${c.name}</strong></td>
             <td>${c.created_at?new Date(c.created_at).toLocaleDateString('ru-RU'):'-'}</td>
-            <td><button class="btn btn-edit" onclick="editChild('${c.name}')">✏️</button></td>
+            <td>
+                <button class="btn btn-edit" onclick="editChild('${c.name}')">✏️</button>
+            </td>
         </tr>`).join('')}
         </tbody></table>`;
     document.getElementById('tableContainer').innerHTML = html;
@@ -226,11 +205,19 @@ function editChild(name){
     document.getElementById('editPhoto').value = currentEditChild.photo_url||'';
     if(!currentEditChild.face_token) currentEditChild.face_token = crypto.randomUUID();
     document.getElementById('editModal').classList.add('active');
-    document.getElementById('editForm').style.display = 'flex';
     document.getElementById('successMessage').style.display = 'none';
 }
-function closeEditModal(){ document.getElementById('editModal').classList.remove('active'); currentEditChild=null; }
-function closeSuccessMessage(){ document.getElementById('editModal').classList.remove('active'); }
+
+function closeEditModal(){ 
+    document.getElementById('editModal').classList.remove('active'); 
+    currentEditChild=null; 
+}
+
+function closeSuccessMessage(){
+    document.getElementById('successMessage').style.display='none';
+    closeEditModal();
+    loadChildren();
+}
 
 document.getElementById('editForm').addEventListener('submit', async e=>{
     e.preventDefault();
@@ -244,24 +231,32 @@ document.getElementById('editForm').addEventListener('submit', async e=>{
         const res = await fetch(API_UPDATE, { method:'POST', body:formData });
         const data = await res.json();
         if(data.success){
-            document.getElementById('editForm').style.display = 'none';
-            document.getElementById('successMessage').style.display = 'flex';
-            loadChildren();
+            document.getElementById('successMessage').style.display='flex';
         } else showError('Ошибка сохранения');
     } catch(err){ showError('Ошибка подключения'); console.error(err); }
 });
 
-document.getElementById('editModal').addEventListener('click', e=>{
-    if(e.target.id==='editModal') closeEditModal();
-});
-
-loadChildren();
+async function deleteChild(name){
+    if(!confirm(`Удалить ${name}?`)) return;
+    try{
+        const res = await fetch(API_DELETE,{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})});
+        const data = await res.json();
+        if(data.success){ loadChildren(); }
+        else showError('Ошибка удаления');
+    } catch(err){ showError('Ошибка подключения'); console.error(err); }
+}
 
 function showError(msg){
     const el = document.getElementById('errorMessage');
     el.textContent = msg; el.style.display='block';
     setTimeout(()=>{ el.style.display='none'; },5000);
 }
+
+document.getElementById('editModal').addEventListener('click', e=>{
+    if(e.target.id==='editModal') closeEditModal();
+});
+
+loadChildren();
 </script>
 </body>
 </html>
