@@ -131,6 +131,7 @@ tbody tr:hover { background:#f8f9ff; }
 </div>
 
 <!-- Edit Modal -->
+   
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">✏️ Редактировать ребенка</div>
@@ -139,21 +140,46 @@ tbody tr:hover { background:#f8f9ff; }
             <button onclick="closeSaveMessage()">Готово</button>
         </div>
         <form id="editForm">
+           <table border = "0">
+    <tr>
+        <td>
             <div class="form-group">
                 <label>Имя</label>
-                <input type="text" id="editName" required>
             </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" id="editName" required style="width:100%; padding:10px; border-radius:6px; border:2px solid #e0e0e0;">
+        </td>
+    </tr>
+    <tr>
+        <td>
             <div class="form-group">
                 <label>URL фото</label>
-                <input type="text" id="editPhoto">
             </div>
-            <div class="modal-buttons">
-                <button type="submit" class="btn-save">💾 Сохранить</button>
-                <button type="button" class="btn-cancel" onclick="closeEditModal()">❌ Отмена</button>
-            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="text" id="editPhoto" style="width:100%; padding:10px; border-radius:6px; border:2px solid #e0e0e0;">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <button type="submit" class="btn-save" style="width:100%; padding:10px; margin-top:10px;">💾 Сохранить</button>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <button type="button" class="btn-cancel" onclick="closeEditModal()" style="width:100%; padding:10px; margin-top:10px;">❌ Отмена</button>
+        </td>
+    </tr>
+</table>
         </form>
     </div>
 </div>
+    </table>
 
 <script>
 const API_BASE = 'https://primary-production-4b93e.up.railway.app/webhook';
