@@ -132,7 +132,6 @@ tbody tr:hover { background:#f8f9ff; }
     <div class="table-wrapper"><div id="tableContainer"></div></div>
 </div>
 
-<!-- Edit Modal -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">✏️ Редактировать ребенка</div>
@@ -140,30 +139,18 @@ tbody tr:hover { background:#f8f9ff; }
             ✅ Сохранено!
             <button onclick="closeSaveMessage()">Готово</button>
         </div>
-        <form id="editForm">
-           <table border="0">
-               <tr>
-                   <td><label>Имя</label></td>
-               </tr>
-               <tr>
-                   <td><input type="text" id="editName" required></td>
-               </tr>
-               <tr>
-                   <td><label>URL фото</label></td>
-               </tr>
-               <tr>
-                   <td><input type="text" id="editPhoto"></td>
-               </tr>
-               <tr>
-                   <td><button type="submit" class="btn-save">💾 Сохранить</button></td>
-               </tr>
-               <tr>
-                   <td><button type="button" class="btn-cancel" onclick="closeEditModal()">❌ Отмена</button></td>
-               </tr>
-               <tr>
-                   <td><button type="button" class="btn-delete-modal" onclick="deleteChild(currentEditChild.name)">🗑️ Удалить</button></td>
-               </tr>
-           </table>
+        <form id="editForm" style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+            <div class="form-group" style="width:90%;">
+                <label>Имя</label>
+                <input type="text" id="editName" required style="width:100%; max-width:100%;">
+            </div>
+            <div class="form-group" style="width:90%;">
+                <label>URL фото</label>
+                <input type="text" id="editPhoto" style="width:100%; max-width:100%;">
+            </div>
+            <button type="submit" class="btn-save">💾 Сохранить</button>
+            <button type="button" class="btn-cancel" onclick="closeEditModal()">❌ Отмена</button>
+            <button type="button" class="btn-delete-modal" onclick="deleteChild(currentEditChild.name)">🗑️ Удалить</button>
         </form>
     </div>
 </div>
