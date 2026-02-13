@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Управление спортсменами - BJJ Club!</title>
 <style>
 body {
@@ -23,41 +23,25 @@ body {
     padding: 20px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
-h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-    font-size: 2rem;
-}
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-}
-.stat-card {
-    background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-    color: #fff;
-    padding: 15px;
-    border-radius: 15px;
-    text-align: center;
-}
-.stat-number { font-size: 2rem; font-weight: bold; margin-bottom: 5px; }
-.stat-label { font-size: 0.9rem; opacity: 0.9; }
+h1 { text-align:center; color:#333; margin-bottom:20px; font-size:2rem; }
+.stats { display:grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap:15px; margin-bottom:20px; }
+.stat-card { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; padding:15px; border-radius:15px; text-align:center; }
+.stat-number { font-size:2rem; font-weight:bold; margin-bottom:5px; }
+.stat-label { font-size:0.9rem; opacity:0.9; }
 
 .search-box {
-    max-width: 100%;
-    box-sizing: border-box;
-    width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 1rem;
-    margin-bottom: 15px;
+    max-width:100%;
+    box-sizing:border-box;
+    width:100%;
+    padding:12px 15px;
+    border:2px solid #e0e0e0;
+    border-radius:10px;
+    font-size:1rem;
+    margin-bottom:15px;
 }
 .search-box:focus { outline:none; border-color:#667eea; }
 
-.table-wrapper { width: 100%; overflow-x: auto; }
+.table-wrapper { width:100%; overflow-x:auto; }
 table { width:100%; border-collapse: collapse; min-width:400px; border:0; }
 thead { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; }
 th, td { padding:10px; font-size:0.9rem; text-align:left; }
@@ -96,7 +80,7 @@ tbody tr:hover { background:#f8f9ff; }
 .modal-header { font-size:1.2rem; font-weight:bold; margin-bottom:15px; color:#333; text-align:center; }
 .form-group { margin-bottom:15px; display:flex; flex-direction: column; }
 .form-group label { margin-bottom:5px; font-weight:600; color:#555; }
-.form-group input { padding:10px; border:2px solid #e0e0e0; border-radius:6px; font-size:16px; width:100%; box-sizing:border-box; -webkit-text-size-adjust:100%; }
+.form-group input { padding:10px; border:2px solid #e0e0e0; border-radius:6px; font-size:1rem; width:100%; box-sizing:border-box; }
 .form-group input:focus { outline:none; border-color:#667eea; }
 .modal-buttons { display:flex; flex-direction: column; gap:10px; margin-top:10px; }
 .btn-save { width:100%; padding:12px; background:#667eea; color:#fff; font-size:1rem; border-radius:6px; }
@@ -113,7 +97,6 @@ tbody tr:hover { background:#f8f9ff; }
     .photo-thumb { width:30px; height:30px; }
     .btn { font-size:0.7rem; padding:3px 6px; }
     h1 { font-size:1.5rem; }
-    .form-group input { font-size:16px; } /* Обязательно, чтобы не зумилось */
 }
 </style>
 </head>
@@ -140,11 +123,11 @@ tbody tr:hover { background:#f8f9ff; }
             <button onclick="closeSaveMessage()">Готово</button>
         </div>
         <form id="editForm">
-           <table border="0">
+           <table border="0" style="width:100%;">
                <tr><td><div class="form-group"><label>Имя</label></div></td></tr>
-               <tr><td><input type="text" id="editName" required></td></tr>
+               <tr><td><input type="text" id="editName" width="90%" required ></td></tr>
                <tr><td><div class="form-group"><label>URL фото</label></div></td></tr>
-               <tr><td><input type="text" id="editPhoto"></td></tr>
+               <tr><td><input type="text" id="editPhoto" width="90%"></td></tr>
                <tr><td><button type="submit" class="btn-save">💾 Сохранить</button></td></tr>
                <tr><td><button type="button" class="btn-cancel" onclick="closeEditModal()">❌ Отмена</button></td></tr>
            </table>
@@ -183,7 +166,10 @@ function renderTable(filter=''){
             <td>${c.photo_url?`<img src="${c.photo_url}" class="photo-thumb" alt="${c.name}">`:'<div class="photo-thumb" style="background:#ddd;"></div>'}</td>
             <td><strong>${c.name}</strong></td>
             <td>${c.created_at?new Date(c.created_at).toLocaleDateString('ru-RU'):'-'}</td>
-            <td><button class="btn btn-edit" onclick="editChild('${c.name}')">✏️</button></td>
+            <td>
+              <button class="btn btn-edit" onclick="editChild('${c.name}')">✏️</button>
+              <button class="btn btn-delete" onclick="deleteChild('${c.name}')">🗑️ Удалить</button>
+            </td>
         </tr>`).join('')}
         </tbody></table>`;
     document.getElementById('tableContainer').innerHTML = html;
@@ -198,7 +184,7 @@ function editChild(name){
     document.getElementById('editPhoto').value = currentEditChild.photo_url||'';
     if(!currentEditChild.face_token) currentEditChild.face_token = crypto.randomUUID();
     document.getElementById('saveMessage').style.display='none';
-    document.getElementById('editForm').style.display='flex';
+    document.getElementById('editForm').style.display='block';
     document.getElementById('editModal').classList.add('active');
 }
 
