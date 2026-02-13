@@ -23,6 +23,7 @@ body {
     border-radius: 20px;
     padding: 20px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    box-sizing: border-box;
 }
 
 h1 {
@@ -51,12 +52,14 @@ h1 {
 .stat-label { font-size:0.9rem; opacity:0.9; }
 
 .search-box {
-    width:100%;
+    width: 100%;
+    max-width: 100%;
     padding:12px 15px;
     border:2px solid #e0e0e0;
     border-radius:10px;
     font-size:1rem;
     margin-bottom:15px;
+    box-sizing: border-box;
 }
 .search-box:focus { outline:none; border-color:#667eea; }
 
@@ -85,12 +88,13 @@ tbody tr:hover { background:#f8f9ff; }
 .modal {
     display:none; position:fixed; top:0; left:0; width:100%; height:100%;
     background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;
+    padding:10px; /* добавляем отступы для маленьких экранов */
 }
 .modal.active { display:flex; }
 
 .modal-content {
     background:#fff; padding:20px; border-radius:15px;
-    max-width:400px; width:90%; max-height:90vh; overflow-y:auto;
+    max-width:400px; width:100%; max-height:90vh; overflow-y:auto;
     box-sizing:border-box;
 }
 
@@ -100,6 +104,7 @@ tbody tr:hover { background:#f8f9ff; }
 .form-group label { display:block; margin-bottom:5px; color:#555; font-weight:600; }
 .form-group input {
     width:100%; padding:10px; border:2px solid #e0e0e0; border-radius:6px;
+    box-sizing: border-box;
 }
 .form-group input:focus { outline:none; border-color:#667eea; }
 
@@ -249,11 +254,11 @@ document.getElementById('editForm').addEventListener('submit', async e=>{
         const res = await fetch(API_UPDATE, { method:'POST', body:formData });
         const data = await res.json();
         if(data.success){
-            renderTable();
+            loadChildren(); // обновляем таблицу
             document.getElementById('editForm').style.display='none';
             document.getElementById('modalMessage').style.display='block';
-        } else alert('❌ Ошибка сохранения');
-    } catch(err){ alert('❌ Ошибка подключения'); console.error(err); }
+        } else showError('Ошибка сохранения');
+    } catch(err){ showError('Ошибка подключения'); console.error(err); }
 });
 
 async function deleteChild(name){
@@ -262,8 +267,8 @@ async function deleteChild(name){
         const res = await fetch(API_DELETE,{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})});
         const data = await res.json();
         if(data.success){ loadChildren(); }
-        else alert('❌ Ошибка удаления');
-    } catch(err){ alert('❌ Ошибка подключения'); console.error(err); }
+        else showError('Ошибка удаления');
+    } catch(err){ showError('Ошибка подключения'); console.error(err); }
 }
 
 function showError(msg){
