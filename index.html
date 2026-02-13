@@ -396,7 +396,7 @@ const API_DELETE = `${API_BASE}/api/children/delete`;
             currentEditChild = null;
         }
         
-        // Save edit
+// Save edit
 document.getElementById('editForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -405,12 +405,13 @@ document.getElementById('editForm').addEventListener('submit', async (e) => {
 
     try {
         const formData = new FormData();
+        formData.append('id', currentEditChild.id); // ✅ добавляем id
         formData.append('name', newName);
         formData.append('photo_url', newPhoto);
 
         const response = await fetch(API_UPDATE, {
             method: 'POST',
-            body: formData // тут нет headers, это важно!
+            body: formData
         });
 
         const data = await response.json();
