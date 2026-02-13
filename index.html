@@ -297,181 +297,166 @@
         </div>
     </div>
 
-    <script>
-        // ⚠️ ЗАМЕНИТЕ НА ВАШИ URL ИЗ N8N!
-        
-       API_BASE = 'https://primary-production-4b93e.up.railway.app/workflow/eI5ny5FCjfHpRtgXcsjMv/webhook';
-       //const API_BASE = 'https://primary-production-4b93e.up.railway.app/webhook-test';
-const API_GET = `${API_BASE}/api/children`;
-const API_UPDATE = `${API_BASE}/api/children/update`;
-const API_DELETE = `${API_BASE}/api/children/delete`;
-        
-        let children = [];
-        let currentEditChild = null;
-        
-        // Load children
-        async function loadChildren() {
-            try {
-                document.getElementById('tableContainer').innerHTML = '<div class="loading">⏳ Загрузка...</div>';
-                
-                const response = await fetch(API_GET);
-                const data = await response.json();
-                
-                if (data.success) {
-                    children = data.data;
-                    updateStats();
-                    renderTable();
-                } else {
-                    showError('Ошибка загрузки данных');
-                }
-            } catch (error) {
-                showError('Ошибка подключения к серверу');
-                console.error(error);
-            }
-        }
-        
-        // Update stats
-        function updateStats() {
-            document.getElementById('totalChildren').textContent = children.length;
-        }
-        
-        // Render table
-        function renderTable(filter = '') {
-            const filtered = children.filter(child => 
-                child.name.toLowerCase().includes(filter.toLowerCase())
-            );
+<script>
+    // ⚡ ПУБЛИКОВАННЫЙ WORKFLOW URL (замени на свой из n8n после Publish)
+    const API_BASE = 'https://primary-production-4b93e.up.railway.app/workflow/eI5ny5FCjfHpRtgXcsjMv/webhook';
+    const API_GET = `${API_BASE}/api/children`;
+    const API_UPDATE = `${API_BASE}/api/children/update`;
+    const API_DELETE = `${API_BASE}/api/children/delete`;
+
+    let children = [];
+    let currentEditChild = null;
+
+    // Загрузка детей
+    async function loadChildren() {
+        try {
+            document.getElementById('tableContainer').innerHTML = '<div class="loading">⏳ Загрузка...</div>';
             
-            const html = `
-                <table>
-                    <thead>
+            const response = await fetch(API_GET, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors' // разрешаем CORS
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                children = data.data;
+                updateStats();
+                renderTable();
+            } else {
+                showError('Ошибка загрузки данных');
+            }
+        } catch (error) {
+            showError('Ошибка подключения к серверу');
+            console.error(error);
+        }
+    }
+
+    // Статистика
+    function updateStats() {
+        document.getElementById('totalChildren').textContent = children.length;
+    }
+
+    // Таблица
+    function renderTable(filter = '') {
+        const filtered = children.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()));
+        const html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Фото</th>
+                        <th>Имя</th>
+                        <th>Дата добавления</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filtered.map(c => `
                         <tr>
-                            <th>Фото</th>
-                            <th>Имя</th>
-                            <th>Дата добавления</th>
-                            <th>Действия</th>
+                            <td>${c.photo_url ? `<img src="${c.photo_url}" class="photo-thumb" alt="${c.name}">` : '<div class="photo-thumb" style="background:#ddd;"></div>'}</td>
+                            <td><strong>${c.name}</strong></td>
+                            <td>${c.created_at ? new Date(c.created_at).toLocaleDateString('ru-RU') : '-'}</td>
+                            <td>
+                                <button class="btn btn-edit" onclick="editChild('${c.name}')">✏️ Редактировать</button>
+                                <button class="btn btn-delete" onclick="deleteChild('${c.name}')">🗑️ Удалить</button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        ${filtered.map(child => `
-                            <tr>
-                                <td>
-                                    ${child.photo_url ? 
-                                        `<img src="${child.photo_url}" class="photo-thumb" alt="${child.name}">` :
-                                        '<div class="photo-thumb" style="background:#ddd;"></div>'
-                                    }
-                                </td>
-                                <td><strong>${child.name}</strong></td>
-                                <td>${child.created_at ? new Date(child.created_at).toLocaleDateString('ru-RU') : '-'}</td>
-                                <td>
-                                    <button class="btn btn-edit" onclick="editChild('${child.name}')">✏️ Редактировать</button>
-                                    <button class="btn btn-delete" onclick="deleteChild('${child.name}')">🗑️ Удалить</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            
-            document.getElementById('tableContainer').innerHTML = html;
-        }
-        
-        // Search
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            renderTable(e.target.value);
-        });
-        
-        // Edit child
-        function editChild(name) {
-            currentEditChild = children.find(c => c.name === name);
-            if (!currentEditChild) return;
-            
-            document.getElementById('editName').value = currentEditChild.name;
-            document.getElementById('editPhoto').value = currentEditChild.photo_url || '';
-            document.getElementById('editModal').classList.add('active');
-        }
-        
-        // Close modal
-        function closeEditModal() {
-            document.getElementById('editModal').classList.remove('active');
-            currentEditChild = null;
-        }
-        
-        // Save edit
-        document.getElementById('editForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const newName = document.getElementById('editName').value;
-            const newPhoto = document.getElementById('editPhoto').value;
-            
-            try {
-                const response = await fetch(API_UPDATE, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: newName,
-                        photo_url: newPhoto
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    closeEditModal();
-                    loadChildren();
-                    alert('✅ Сохранено!');
-                } else {
-                    alert('❌ Ошибка сохранения');
-                }
-            } catch (error) {
-                alert('❌ Ошибка подключения');
-                console.error(error);
-            }
-        });
-        
-        // Delete child
-        async function deleteChild(name) {
-            if (!confirm(`Удалить ${name}?`)) return;
-            
-            try {
-                const response = await fetch(API_DELETE, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    loadChildren();
-                    alert('✅ Удалено!');
-                } else {
-                    alert('❌ Ошибка удаления');
-                }
-            } catch (error) {
-                alert('❌ Ошибка подключения');
-                console.error(error);
-            }
-        }
-        
-        // Show error
-        function showError(message) {
-            const errorEl = document.getElementById('errorMessage');
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-            setTimeout(() => {
-                errorEl.style.display = 'none';
-            }, 5000);
-        }
-        
-        // Close modal on outside click
-        document.getElementById('editModal').addEventListener('click', (e) => {
-            if (e.target.id === 'editModal') {
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        document.getElementById('tableContainer').innerHTML = html;
+    }
+
+    // Поиск
+    document.getElementById('searchInput').addEventListener('input', e => renderTable(e.target.value));
+
+    // Редактировать
+    function editChild(name) {
+        currentEditChild = children.find(c => c.name === name);
+        if (!currentEditChild) return;
+        document.getElementById('editName').value = currentEditChild.name;
+        document.getElementById('editPhoto').value = currentEditChild.photo_url || '';
+        document.getElementById('editModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('active');
+        currentEditChild = null;
+    }
+
+    // Сохранить изменения
+    document.getElementById('editForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const newName = document.getElementById('editName').value;
+        const newPhoto = document.getElementById('editPhoto').value;
+
+        try {
+            const response = await fetch(API_UPDATE, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName, photo_url: newPhoto }),
+                mode: 'cors'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
                 closeEditModal();
+                loadChildren();
+                alert('✅ Сохранено!');
+            } else {
+                alert('❌ Ошибка сохранения');
             }
-        });
-        
-        // Load on start
-        loadChildren();
-    </script>
+        } catch (error) {
+            alert('❌ Ошибка подключения');
+            console.error(error);
+        }
+    });
+
+    // Удалить
+    async function deleteChild(name) {
+        if (!confirm(`Удалить ${name}?`)) return;
+
+        try {
+            const response = await fetch(API_DELETE, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name }),
+                mode: 'cors'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                loadChildren();
+                alert('✅ Удалено!');
+            } else {
+                alert('❌ Ошибка удаления');
+            }
+        } catch (error) {
+            alert('❌ Ошибка подключения');
+            console.error(error);
+        }
+    }
+
+    function showError(msg) {
+        const errorEl = document.getElementById('errorMessage');
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+        setTimeout(() => { errorEl.style.display = 'none'; }, 5000);
+    }
+
+    // Закрыть модал при клике вне него
+    document.getElementById('editModal').addEventListener('click', e => {
+        if (e.target.id === 'editModal') closeEditModal();
+    });
+
+    // Загрузка при старте
+    loadChildren();
+</script>
 </body>
 </html>
