@@ -57,14 +57,19 @@ h1 {
 
 .search-box:focus { border-color:#667eea; outline:none; }
 
+.table-wrapper {
+    overflow-x:auto;
+}
+
 table {
     width:100%;
     border-collapse:collapse;
     background:#fff;
+    table-layout: fixed;
 }
 
 thead { background: linear-gradient(135deg,#667eea,#764ba2); color:white; }
-th, td { padding:12px; text-align:left; font-size:14px; }
+th, td { padding:12px; text-align:left; font-size:14px; word-wrap: break-word; }
 tbody tr { border-bottom:1px solid #f0f0f0; transition:background 0.2s; }
 tbody tr:hover { background:#f8f9ff; }
 
@@ -178,8 +183,8 @@ tbody tr:hover { background:#f8f9ff; }
 #alertModal button:hover { background:#5568d3; }
 
 @media(max-width:500px){
-    th, td { font-size:13px; }
-    .photo-thumb { width:40px; height:40px; }
+    th:nth-child(4), td:nth-child(4) { width:40px; text-align:center; }
+    .btn-edit::after { content:""; }
 }
 </style>
 </head>
@@ -196,10 +201,11 @@ tbody tr:hover { background:#f8f9ff; }
 
     <input type="text" class="search-box" id="searchInput" placeholder="🔍 Поиск по имени...">
     <div id="errorMessage" class="error" style="display:none;"></div>
-    <div id="tableContainer"></div>
+    <div class="table-wrapper">
+        <div id="tableContainer"></div>
+    </div>
 </div>
 
-<!-- Edit Modal -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">✏️ Редактировать ребенка</div>
@@ -221,7 +227,6 @@ tbody tr:hover { background:#f8f9ff; }
     </div>
 </div>
 
-<!-- Alert Modal -->
 <div id="alertModal">
     <div class="modal-content">
         <div id="alertText"></div>
@@ -230,52 +235,44 @@ tbody tr:hover { background:#f8f9ff; }
 </div>
 
 <script>
-const API_BASE = 'https://primary-production-4b93e.up.railway.app/webhook';
-const API_GET = `${API_BASE}/api/children`;
-const API_UPDATE = `https://primary-production-4b93e.up.railway.app/webhook/ea619676-d586-4606-8eef-be9ba9c3193c`;
-const API_DELETE = `${API_BASE}/api/children/delete`;
+const API_BASE='https://primary-production-4b93e.up.railway.app/webhook';
+const API_GET=`${API_BASE}/api/children`;
+const API_UPDATE=`${API_BASE}/webhook/ea619676-d586-4606-8eef-be9ba9c3193c`;
+const API_DELETE=`${API_BASE}/api/children/delete`;
 
-let children = [];
-let currentEditChild = null;
+let children=[], currentEditChild=null;
 
-// Load children
-async function loadChildren() {
-    try {
+async function loadChildren(){
+    try{
         document.getElementById('tableContainer').innerHTML='<div class="loading">⏳ Загрузка...</div>';
-        const res = await fetch(API_GET);
-        const data = await res.json();
-        if(data.success){
-            children=data.data;
-            updateStats();
-            renderTable();
-        } else showError('Ошибка загрузки данных');
-    } catch(e){ showError('Ошибка подключения'); console.error(e); }
+        const res=await fetch(API_GET);
+        const data=await res.json();
+        if(data.success){ children=data.data; updateStats(); renderTable(); }
+        else showError('Ошибка загрузки данных');
+    }catch(e){ showError('Ошибка подключения'); console.error(e);}
 }
 
 function updateStats(){ document.getElementById('totalChildren').textContent=children.length; }
 
 function renderTable(filter=''){
     const filtered=children.filter(c=>c.name.toLowerCase().includes(filter.toLowerCase()));
-    const html = `<table>
+    const html=`<table>
         <thead><tr><th>Фото</th><th>Имя</th><th>Дата добавления</th><th>Действия</th></tr></thead>
-        <tbody>
-        ${filtered.map(c=>`
+        <tbody>${filtered.map(c=>`
             <tr>
                 <td>${c.photo_url?`<img src="${c.photo_url}" class="photo-thumb" alt="${c.name}">`:'<div class="photo-thumb" style="background:#ddd"></div>'}</td>
                 <td><strong>${c.name}</strong></td>
                 <td>${c.created_at?new Date(c.created_at).toLocaleDateString('ru-RU'):'-'}</td>
-                <td><button class="btn btn-edit" onclick="editChild('${c.name}')">✏️ Редактировать</button></td>
+                <td><button class="btn btn-edit" onclick="editChild('${c.name}')">✏️</button></td>
             </tr>`).join('')}
-        </tbody>
-    </table>`;
+        </tbody></table>`;
     document.getElementById('tableContainer').innerHTML=html;
 }
 
-// Search
 document.getElementById('searchInput').addEventListener('input',e=>renderTable(e.target.value));
 
 function editChild(name){
-    currentEditChild = children.find(c=>c.name===name);
+    currentEditChild=children.find(c=>c.name===name);
     if(!currentEditChild) return;
     document.getElementById('editName').value=currentEditChild.name;
     document.getElementById('editPhoto').value=currentEditChild.photo_url||'';
@@ -297,10 +294,9 @@ document.getElementById('editForm').addEventListener('submit',async e=>{
 
         const res=await fetch(API_UPDATE,{method:'POST',body:formData});
         const data=await res.json();
-        if(data.success){
-            closeEditModal(); loadChildren(); showAlert('✅ Сохранено!');
-        } else showAlert('❌ Ошибка сохранения');
-    } catch(e){ showAlert('❌ Ошибка подключения'); console.error(e);}
+        if(data.success){ closeEditModal(); loadChildren(); showAlert('✅ Сохранено!'); }
+        else showAlert('❌ Ошибка сохранения');
+    }catch(e){ showAlert('❌ Ошибка подключения'); console.error(e);}
 });
 
 async function deleteChild(name){
@@ -314,16 +310,11 @@ async function deleteChild(name){
         const data=await res.json();
         if(data.success){ loadChildren(); showAlert('✅ Удалено!'); }
         else showAlert('❌ Ошибка удаления');
-    } catch(e){ showAlert('❌ Ошибка подключения'); console.error(e);}
+    }catch(e){ showAlert('❌ Ошибка подключения'); console.error(e);}
 }
 
 function showError(msg){ const el=document.getElementById('errorMessage'); el.textContent=msg; el.style.display='block'; setTimeout(()=>{el.style.display='none'},5000); }
-
-function showAlert(msg){ 
-    const modal=document.getElementById('alertModal');
-    document.getElementById('alertText').textContent=msg;
-    modal.classList.add('active');
-}
+function showAlert(msg){ const modal=document.getElementById('alertModal'); document.getElementById('alertText').textContent=msg; modal.classList.add('active'); }
 function closeAlert(){ document.getElementById('alertModal').classList.remove('active'); }
 
 document.getElementById('editModal').addEventListener('click',e=>{ if(e.target.id==='editModal') closeEditModal(); });
