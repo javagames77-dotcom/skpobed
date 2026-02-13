@@ -297,182 +297,186 @@
         </div>
     </div>
 
-    <script>
-        // ⚠️ ЗАМЕНИТЕ НА ВАШИ URL ИЗ N8N!
-        
-       
-       const API_BASE = 'https://primary-production-4b93e.up.railway.app/webhook';
-const API_GET = `${API_BASE}/api/children`;
-const API_UPDATE = `https://primary-production-4b93e.up.railway.app/webhook/ea619676-d586-4606-8eef-be9ba9c3193c`;
-const API_DELETE = `${API_BASE}/api/children/delete`;
-        
-        let children = [];
-        let currentEditChild = null;
-        
-        // Load children
-        async function loadChildren() {
-            try {
-                document.getElementById('tableContainer').innerHTML = '<div class="loading">⏳ Загрузка...</div>';
-                
-                const response = await fetch(API_GET);
-                const data = await response.json();
-                
-                if (data.success) {
-                    children = data.data;
-                    updateStats();
-                    renderTable();
-                } else {
-                    showError('Ошибка загрузки данных');
-                }
-            } catch (error) {
-                showError('Ошибка подключения к серверу');
-                console.error(error);
+<script>
+    // ⚠️ ЗАМЕНИТЕ НА ВАШИ URL ИЗ N8N!
+    const API_BASE = 'https://primary-production-4b93e.up.railway.app/webhook';
+    const API_GET = `${API_BASE}/api/children`;
+    const API_UPDATE = `https://primary-production-4b93e.up.railway.app/webhook/ea619676-d586-4606-8eef-be9ba9c3193c`;
+    const API_DELETE = `${API_BASE}/api/children/delete`;
+
+    let children = [];
+    let currentEditChild = null;
+
+    // Load children
+    async function loadChildren() {
+        try {
+            document.getElementById('tableContainer').innerHTML = '<div class="loading">⏳ Загрузка...</div>';
+
+            const response = await fetch(API_GET);
+            const data = await response.json();
+
+            if (data.success) {
+                children = data.data;
+                updateStats();
+                renderTable();
+            } else {
+                showError('Ошибка загрузки данных');
             }
+        } catch (error) {
+            showError('Ошибка подключения к серверу');
+            console.error(error);
         }
-        
-        // Update stats
-        function updateStats() {
-            document.getElementById('totalChildren').textContent = children.length;
-        }
-        
-        // Render table
-        function renderTable(filter = '') {
-            const filtered = children.filter(child => 
-                child.name.toLowerCase().includes(filter.toLowerCase())
-            );
-            
-            const html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Фото</th>
-                            <th>Имя</th>
-                            <th>Дата добавления</th>
-                            <th>Действия</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${filtered.map(child => `
-                            <tr>
-                                <td>
-                                    ${child.photo_url ? 
-                                        `<img src="${child.photo_url}" class="photo-thumb" alt="${child.name}">` :
-                                        '<div class="photo-thumb" style="background:#ddd;"></div>'
-                                    }
-                                </td>
-                                <td><strong>${child.name}</strong></td>
-                                <td>${child.created_at ? new Date(child.created_at).toLocaleDateString('ru-RU') : '-'}</td>
-                                <td>
-                                    <button class="btn btn-edit" onclick="editChild('${child.name}')">✏️ Редактировать</button>
-                                    <button class="btn btn-delete" onclick="deleteChild('${child.name}')">🗑️ Удалить</button>
-                                </td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            
-            document.getElementById('tableContainer').innerHTML = html;
-        }
-        
-        // Search
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            renderTable(e.target.value);
-        });
-        
-        // Edit child
-        function editChild(name) {
-            currentEditChild = children.find(c => c.name === name);
-            if (!currentEditChild) return;
-            
-            document.getElementById('editName').value = currentEditChild.name;
-            document.getElementById('editPhoto').value = currentEditChild.photo_url || '';
-            document.getElementById('editModal').classList.add('active');
-        }
-        
-        // Close modal
-        function closeEditModal() {
-            document.getElementById('editModal').classList.remove('active');
-            currentEditChild = null;
-        }
-        
-// Save edit
-document.getElementById('editForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const newName = document.getElementById('editName').value;
-    const newPhoto = document.getElementById('editPhoto').value;
-
-    try {
-        const formData = new FormData();
-        formData.append('id', currentEditChild.id); // ✅ добавляем id
-        formData.append('name', newName);
-        formData.append('photo_url', newPhoto);
-
-        const response = await fetch(API_UPDATE, {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            closeEditModal();
-            loadChildren();
-            alert('✅ Сохранено!');
-        } else {
-            alert('❌ Ошибка сохранения');
-        }
-    } catch (error) {
-        alert('❌ Ошибка подключения');
-        console.error(error);
     }
-});
-        
-        // Delete child
-        async function deleteChild(name) {
-            if (!confirm(`Удалить ${name}?`)) return;
-            
-            try {
-                const response = await fetch(API_DELETE, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    loadChildren();
-                    alert('✅ Удалено!');
-                } else {
-                    alert('❌ Ошибка удаления');
-                }
-            } catch (error) {
-                alert('❌ Ошибка подключения');
-                console.error(error);
-            }
+
+    // Update stats
+    function updateStats() {
+        document.getElementById('totalChildren').textContent = children.length;
+    }
+
+    // Render table
+    function renderTable(filter = '') {
+        const filtered = children.filter(child => 
+            child.name.toLowerCase().includes(filter.toLowerCase())
+        );
+
+        const html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Фото</th>
+                        <th>Имя</th>
+                        <th>Дата добавления</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filtered.map(child => `
+                        <tr>
+                            <td>
+                                ${child.photo_url ? 
+                                    `<img src="${child.photo_url}" class="photo-thumb" alt="${child.name}">` :
+                                    '<div class="photo-thumb" style="background:#ddd;"></div>'
+                                }
+                            </td>
+                            <td><strong>${child.name}</strong></td>
+                            <td>${child.created_at ? new Date(child.created_at).toLocaleDateString('ru-RU') : '-'}</td>
+                            <td>
+                                <button class="btn btn-edit" onclick="editChild('${child.name}')">✏️ Редактировать</button>
+                                <button class="btn btn-delete" onclick="deleteChild('${child.name}')">🗑️ Удалить</button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+
+        document.getElementById('tableContainer').innerHTML = html;
+    }
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        renderTable(e.target.value);
+    });
+
+    // Edit child
+    function editChild(name) {
+        currentEditChild = children.find(c => c.name === name);
+        if (!currentEditChild) return;
+
+        document.getElementById('editName').value = currentEditChild.name;
+        document.getElementById('editPhoto').value = currentEditChild.photo_url || '';
+
+        // Генерируем face_token, если его нет (новый ребенок)
+        if (!currentEditChild.face_token) {
+            currentEditChild.face_token = crypto.randomUUID();
         }
-        
-        // Show error
-        function showError(message) {
-            const errorEl = document.getElementById('errorMessage');
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
-            setTimeout(() => {
-                errorEl.style.display = 'none';
-            }, 5000);
-        }
-        
-        // Close modal on outside click
-        document.getElementById('editModal').addEventListener('click', (e) => {
-            if (e.target.id === 'editModal') {
+
+        document.getElementById('editModal').classList.add('active');
+    }
+
+    // Close modal
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('active');
+        currentEditChild = null;
+    }
+
+    // Save edit
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const newName = document.getElementById('editName').value;
+        const newPhoto = document.getElementById('editPhoto').value;
+
+        try {
+            const formData = new FormData();
+            formData.append('name', newName);
+            formData.append('photo_url', newPhoto);
+            formData.append('face_token', currentEditChild.face_token); // ключевой параметр для обновления
+
+            const response = await fetch(API_UPDATE, {
+                method: 'POST',
+                body: formData // НЕ ставим headers, чтобы FormData работала корректно
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
                 closeEditModal();
+                loadChildren();
+                alert('✅ Сохранено!');
+            } else {
+                alert('❌ Ошибка сохранения');
             }
-        });
-        
-        // Load on start
-        loadChildren();
-    </script>
+        } catch (error) {
+            alert('❌ Ошибка подключения');
+            console.error(error);
+        }
+    });
+
+    // Delete child
+    async function deleteChild(name) {
+        if (!confirm(`Удалить ${name}?`)) return;
+
+        try {
+            const response = await fetch(API_DELETE, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                loadChildren();
+                alert('✅ Удалено!');
+            } else {
+                alert('❌ Ошибка удаления');
+            }
+        } catch (error) {
+            alert('❌ Ошибка подключения');
+            console.error(error);
+        }
+    }
+
+    // Show error
+    function showError(message) {
+        const errorEl = document.getElementById('errorMessage');
+        errorEl.textContent = message;
+        errorEl.style.display = 'block';
+        setTimeout(() => {
+            errorEl.style.display = 'none';
+        }, 5000);
+    }
+
+    // Close modal on outside click
+    document.getElementById('editModal').addEventListener('click', (e) => {
+        if (e.target.id === 'editModal') {
+            closeEditModal();
+        }
+    });
+
+    // Load on start
+    loadChildren();
+</script>
 </body>
 </html>
