@@ -397,36 +397,36 @@ const API_DELETE = `${API_BASE}/api/children/delete`;
         }
         
         // Save edit
-        document.getElementById('editForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const newName = document.getElementById('editName').value;
-            const newPhoto = document.getElementById('editPhoto').value;
-            
-            try {
-                const response = await fetch(API_UPDATE, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: newName,
-                        photo_url: newPhoto
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    closeEditModal();
-                    loadChildren();
-                    alert('✅ Сохранено!');
-                } else {
-                    alert('❌ Ошибка сохранения');
-                }
-            } catch (error) {
-                alert('❌ Ошибка подключения');
-                console.error(error);
-            }
+document.getElementById('editForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const newName = document.getElementById('editName').value;
+    const newPhoto = document.getElementById('editPhoto').value;
+
+    try {
+        const formData = new FormData();
+        formData.append('name', newName);
+        formData.append('photo_url', newPhoto);
+
+        const response = await fetch(API_UPDATE, {
+            method: 'POST',
+            body: formData // тут нет headers, это важно!
         });
+
+        const data = await response.json();
+
+        if (data.success) {
+            closeEditModal();
+            loadChildren();
+            alert('✅ Сохранено!');
+        } else {
+            alert('❌ Ошибка сохранения');
+        }
+    } catch (error) {
+        alert('❌ Ошибка подключения');
+        console.error(error);
+    }
+});
         
         // Delete child
         async function deleteChild(name) {
