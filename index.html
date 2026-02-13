@@ -5,124 +5,198 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BJJ Club - Управление спортсменами</title>
 <style>
-* {margin:0; padding:0; box-sizing:border-box;}
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-    min-height:100vh;
-    padding:10px;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    padding: 15px;
+    margin: 0;
 }
+
 .container {
-    width:95%;
-    max-width:1200px;
-    margin:0 auto;
-    background:white;
-    border-radius:15px;
-    padding:20px;
-    box-shadow:0 15px 50px rgba(0,0,0,0.3);
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
 }
+
 h1 {
-    text-align:center;
-    margin-bottom:20px;
-    font-size:2rem;
-    color:#333;
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
 }
+
 .stats {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-    gap:15px;
-    margin-bottom:20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+    gap: 15px;
+    margin-bottom: 20px;
 }
+
 .stat-card {
-    background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    background: linear-gradient(135deg,#667eea,#764ba2);
     color:white;
     padding:15px;
-    border-radius:10px;
+    border-radius:12px;
     text-align:center;
 }
-.stat-number { font-size:1.5rem; font-weight:bold; }
-.stat-label { font-size:0.85rem; opacity:0.9; }
+
+.stat-number { font-size:28px; font-weight:bold; }
+.stat-label { font-size:14px; opacity:0.9; }
 
 .search-box {
     width:100%;
-    padding:12px;
-    border-radius:8px;
-    border:1.5px solid #ccc;
+    padding:12px 15px;
+    font-size:16px;
+    border-radius:10px;
+    border:2px solid #e0e0e0;
     margin-bottom:15px;
-    font-size:1rem;
 }
+
 .search-box:focus { border-color:#667eea; outline:none; }
 
-table { width:100%; border-collapse:collapse; font-size:0.9rem; overflow-x:auto; }
-thead { background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; }
-th,td { padding:10px; text-align:left; word-break:break-word; }
-tbody tr:hover { background:#f0f4ff; }
+table {
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+}
 
-.photo-thumb { width:40px; height:40px; border-radius:50%; object-fit:cover; border:2px solid #667eea; }
+thead { background: linear-gradient(135deg,#667eea,#764ba2); color:white; }
+th, td { padding:12px; text-align:left; font-size:14px; }
+tbody tr { border-bottom:1px solid #f0f0f0; transition:background 0.2s; }
+tbody tr:hover { background:#f8f9ff; }
 
+.photo-thumb {
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    object-fit:cover;
+    border:2px solid #667eea;
+}
+
+/* Кнопки */
 .btn {
-    padding:10px; font-size:0.9rem;
-    border:none; border-radius:6px;
-    cursor:pointer; margin:2px;
-    min-height:42px;
-    display:inline-flex; align-items:center; justify-content:center;
+    cursor:pointer;
     font-weight:600;
-    transition:0.2s;
+    border:none;
+    border-radius:8px;
+    padding:0 12px;
+    min-height:36px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0.95rem;
+    transition:all 0.2s;
 }
 
-/* Цветовая гамма кнопок */
 .btn-edit { background:#4CAF50; color:white; }
-.btn-edit:hover { background:#43a047; }
-.btn-delete { background:#f44336; color:white; }
-.btn-delete:hover { background:#e53935; }
-.btn-save { background:#667eea; color:white; }
-.btn-save:hover { background:#5568d3; }
-.btn-cancel { background:#999; color:white; }
-.btn-cancel:hover { background:#777; }
+.btn-edit:hover { background:#45a049; }
 
-.modal, .notification {
-    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-    background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center; padding:10px;
+.modal {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:1000;
+    align-items:center;
+    justify-content:center;
+    padding:10px;
 }
-.modal.active, .notification.active { display:flex; }
 
-.modal-content, .notification-content {
-    background:white; border-radius:15px; padding:20px; max-width:450px; width:90%; max-height:90vh; overflow-y:auto;
+.modal.active { display:flex; }
+
+.modal-content {
+    background:#fff;
+    border-radius:15px;
+    max-width:500px;
+    width:100%;
+    padding:20px;
+    max-height:90vh;
+    overflow-y:auto;
 }
+
+.modal-header { font-size:22px; font-weight:bold; margin-bottom:15px; color:#333; }
 
 .form-group { margin-bottom:15px; }
-.form-group label { display:block; margin-bottom:5px; font-weight:600; }
-.form-group input { width:100%; padding:12px; font-size:1rem; border-radius:6px; border:1.5px solid #ccc; }
+.form-group label { display:block; margin-bottom:6px; font-weight:600; color:#555; }
+.form-group input {
+    width:100%;
+    padding:10px;
+    font-size:16px;
+    border:2px solid #e0e0e0;
+    border-radius:8px;
+}
 .form-group input:focus { border-color:#667eea; outline:none; }
 
-.modal-buttons, .notification-buttons { display:flex; gap:10px; margin-top:15px; }
+.modal-buttons { display:flex; gap:10px; margin-top:15px; flex-wrap:wrap; }
 
-.notification-content p { margin-bottom:15px; font-size:1rem; text-align:center; }
+.btn-save { background:#667eea; color:white; flex:1; min-height:42px; }
+.btn-save:hover { background:#5568d3; }
 
-.error { background:#ffebee; color:#c62828; padding:10px; border-radius:8px; margin-bottom:10px; text-align:center; }
-.loading { text-align:center; padding:20px; color:#555; }
+.btn-cancel { background:#999; color:white; flex:1; min-height:42px; }
+.btn-cancel:hover { background:#777; }
 
-@media(max-width:600px){
-    h1{font-size:1.5rem;}
-    .stat-number{font-size:1.2rem;}
-    .stat-label{font-size:0.7rem;}
-    .btn{font-size:0.8rem; padding:8px; min-height:38px;}
-    .photo-thumb{width:30px; height:30px;}
+.btn-delete { background:#f44336; color:white; flex:1; min-height:42px; }
+.btn-delete:hover { background:#e53935; }
+
+.loading { text-align:center; padding:30px; color:#999; font-size:16px; }
+.error { background:#ffebee; color:#c62828; padding:12px; border-radius:8px; margin-bottom:15px; text-align:center; }
+
+#alertModal {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.6);
+    align-items:center;
+    justify-content:center;
+    z-index:1500;
+    padding:10px;
+}
+
+#alertModal.active { display:flex; }
+
+#alertModal .modal-content {
+    max-width:400px;
+    text-align:center;
+}
+
+#alertModal button {
+    margin-top:15px;
+    padding:10px 15px;
+    border:none;
+    border-radius:8px;
+    background:#667eea;
+    color:white;
+    cursor:pointer;
+    font-weight:600;
+    font-size:16px;
+}
+#alertModal button:hover { background:#5568d3; }
+
+@media(max-width:500px){
+    th, td { font-size:13px; }
+    .photo-thumb { width:40px; height:40px; }
 }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>🥋 Управление спортсменами - BJJ Club</h1>
-<div class="stats">
-    <div class="stat-card">
-        <div class="stat-number" id="totalChildren">0</div>
-        <div class="stat-label">Всего детей</div>
+    <h1>🥋 Управление спортсменами - BJJ Club</h1>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number" id="totalChildren">0</div>
+            <div class="stat-label">Всего детей</div>
+        </div>
     </div>
-</div>
-<input type="text" class="search-box" id="searchInput" placeholder="🔍 Поиск по имени...">
-<div id="errorMessage" class="error" style="display:none;"></div>
-<div id="tableContainer"></div>
+
+    <input type="text" class="search-box" id="searchInput" placeholder="🔍 Поиск по имени...">
+    <div id="errorMessage" class="error" style="display:none;"></div>
+    <div id="tableContainer"></div>
 </div>
 
 <!-- Edit Modal -->
@@ -139,69 +213,76 @@ tbody tr:hover { background:#f0f4ff; }
                 <input type="text" id="editPhoto">
             </div>
             <div class="modal-buttons">
-                <button type="submit" class="btn btn-save">💾 Сохранить</button>
-                <button type="button" class="btn btn-cancel" onclick="closeEditModal()">❌ Отмена</button>
+                <button type="submit" class="btn-save">💾 Сохранить</button>
+                <button type="button" class="btn-cancel" onclick="closeEditModal()">❌ Отмена</button>
+                <button type="button" class="btn-delete" onclick="deleteChild(currentEditChild.name)">🗑️ Удалить</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Notification Modal -->
-<div id="notification" class="notification">
-    <div class="notification-content">
-        <p id="notificationText">Сохранено</p>
-        <div class="notification-buttons">
-            <button class="btn btn-save" onclick="closeNotification()">Готово</button>
-        </div>
+<!-- Alert Modal -->
+<div id="alertModal">
+    <div class="modal-content">
+        <div id="alertText"></div>
+        <button onclick="closeAlert()">Готово</button>
     </div>
 </div>
 
 <script>
 const API_BASE = 'https://primary-production-4b93e.up.railway.app/webhook';
 const API_GET = `${API_BASE}/api/children`;
-const API_UPDATE = `${API_BASE}/ea619676-d586-4606-8eef-be9ba9c3193c`;
+const API_UPDATE = `https://primary-production-4b93e.up.railway.app/webhook/ea619676-d586-4606-8eef-be9ba9c3193c`;
 const API_DELETE = `${API_BASE}/api/children/delete`;
 
-let children=[], currentEditChild=null;
+let children = [];
+let currentEditChild = null;
 
-async function loadChildren(){
-    document.getElementById('tableContainer').innerHTML='<div class="loading">⏳ Загрузка...</div>';
-    try{
-        const res=await fetch(API_GET);
-        const data=await res.json();
-        if(data.success){ children=data.data; updateStats(); renderTable(); }
-        else showError('Ошибка загрузки данных');
-    }catch(e){ showError('Ошибка подключения'); console.error(e);}
+// Load children
+async function loadChildren() {
+    try {
+        document.getElementById('tableContainer').innerHTML='<div class="loading">⏳ Загрузка...</div>';
+        const res = await fetch(API_GET);
+        const data = await res.json();
+        if(data.success){
+            children=data.data;
+            updateStats();
+            renderTable();
+        } else showError('Ошибка загрузки данных');
+    } catch(e){ showError('Ошибка подключения'); console.error(e); }
 }
 
 function updateStats(){ document.getElementById('totalChildren').textContent=children.length; }
 
 function renderTable(filter=''){
     const filtered=children.filter(c=>c.name.toLowerCase().includes(filter.toLowerCase()));
-    let html='<table><thead><tr><th>Фото</th><th>Имя</th><th>Дата добавления</th><th>Действия</th></tr></thead><tbody>';
-    filtered.forEach(child=>{
-        html+=`<tr>
-<td>${child.photo_url?`<img src="${child.photo_url}" class="photo-thumb">`:'<div class="photo-thumb" style="background:#ddd;"></div>'}</td>
-<td><strong>${child.name}</strong></td>
-<td>${child.created_at?new Date(child.created_at).toLocaleDateString('ru-RU'):'-'}</td>
-<td>
-<button class="btn btn-edit" onclick="editChild('${child.name}')">✏️ Редактировать</button>
-<button class="btn btn-delete" onclick="deleteChild('${child.name}')">🗑️ Удалить</button>
-</td></tr>`});
-    html+='</tbody></table>';
+    const html = `<table>
+        <thead><tr><th>Фото</th><th>Имя</th><th>Дата добавления</th><th>Действия</th></tr></thead>
+        <tbody>
+        ${filtered.map(c=>`
+            <tr>
+                <td>${c.photo_url?`<img src="${c.photo_url}" class="photo-thumb" alt="${c.name}">`:'<div class="photo-thumb" style="background:#ddd"></div>'}</td>
+                <td><strong>${c.name}</strong></td>
+                <td>${c.created_at?new Date(c.created_at).toLocaleDateString('ru-RU'):'-'}</td>
+                <td><button class="btn btn-edit" onclick="editChild('${c.name}')">✏️ Редактировать</button></td>
+            </tr>`).join('')}
+        </tbody>
+    </table>`;
     document.getElementById('tableContainer').innerHTML=html;
 }
 
+// Search
 document.getElementById('searchInput').addEventListener('input',e=>renderTable(e.target.value));
 
 function editChild(name){
-    currentEditChild=children.find(c=>c.name===name);
+    currentEditChild = children.find(c=>c.name===name);
     if(!currentEditChild) return;
     document.getElementById('editName').value=currentEditChild.name;
     document.getElementById('editPhoto').value=currentEditChild.photo_url||'';
     if(!currentEditChild.face_token) currentEditChild.face_token=crypto.randomUUID();
     document.getElementById('editModal').classList.add('active');
 }
+
 function closeEditModal(){ document.getElementById('editModal').classList.remove('active'); currentEditChild=null; }
 
 document.getElementById('editForm').addEventListener('submit',async e=>{
@@ -213,27 +294,39 @@ document.getElementById('editForm').addEventListener('submit',async e=>{
         formData.append('name',newName);
         formData.append('photo_url',newPhoto);
         formData.append('face_token',currentEditChild.face_token);
+
         const res=await fetch(API_UPDATE,{method:'POST',body:formData});
         const data=await res.json();
-        if(data.success){ closeEditModal(); loadChildren(); showNotification('✅ Сохранено'); }
-        else showNotification('❌ Ошибка сохранения');
-    }catch(e){ showNotification('❌ Ошибка подключения'); console.error(e);}
+        if(data.success){
+            closeEditModal(); loadChildren(); showAlert('✅ Сохранено!');
+        } else showAlert('❌ Ошибка сохранения');
+    } catch(e){ showAlert('❌ Ошибка подключения'); console.error(e);}
 });
 
 async function deleteChild(name){
     if(!confirm(`Удалить ${name}?`)) return;
     try{
-        const res=await fetch(API_DELETE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})});
+        const res=await fetch(API_DELETE,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({name})
+        });
         const data=await res.json();
-        if(data.success){ loadChildren(); showNotification('✅ Удалено'); }
-        else showNotification('❌ Ошибка удаления');
-    }catch(e){ showNotification('❌ Ошибка подключения'); console.error(e);}
+        if(data.success){ loadChildren(); showAlert('✅ Удалено!'); }
+        else showAlert('❌ Ошибка удаления');
+    } catch(e){ showAlert('❌ Ошибка подключения'); console.error(e);}
 }
 
-function showError(msg){ const el=document.getElementById('errorMessage'); el.textContent=msg; el.style.display='block'; setTimeout(()=>el.style.display='none',5000); }
+function showError(msg){ const el=document.getElementById('errorMessage'); el.textContent=msg; el.style.display='block'; setTimeout(()=>{el.style.display='none'},5000); }
+
+function showAlert(msg){ 
+    const modal=document.getElementById('alertModal');
+    document.getElementById('alertText').textContent=msg;
+    modal.classList.add('active');
+}
+function closeAlert(){ document.getElementById('alertModal').classList.remove('active'); }
+
 document.getElementById('editModal').addEventListener('click',e=>{ if(e.target.id==='editModal') closeEditModal(); });
-function showNotification(msg){ document.getElementById('notificationText').textContent=msg; document.getElementById('notification').classList.add('active'); }
-function closeNotification(){ document.getElementById('notification').classList.remove('active'); }
 
 loadChildren();
 </script>
