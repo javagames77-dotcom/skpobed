@@ -2,56 +2,74 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Webhook Groups List</title>
+<title>Webhook Groups Debug</title>
 <style>
 body{font-family:sans-serif;padding:2rem;background:#f8f9fa;color:#333}
 h1{color:#0066CC}
+pre{background:white;padding:1rem;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,0.1);overflow-x:auto}
 ul{list-style:none;padding:0}
 li{background:white;margin:0.5rem 0;padding:0.75rem 1rem;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
 </style>
 </head>
 <body>
-<h1>Список групп</h1>
-<ul id="groupsList"><li>Загрузка...</li></ul>
+
+<h1>Сырой ответ</h1>
+<pre id="raw">Загрузка...</pre>
+
+<h1>Список имён</h1>
+<ul id="names"><li>Загрузка...</li></ul>
 
 <script>
 const API = 'https://primary-production-4b93e.up.railway.app/webhook-test/api';
 let token = localStorage.getItem('token');
 
-async function loadGroups() {
-  const ul = document.getElementById('groupsList');
+async function loadWebhook() {
+  const pre = document.getElementById('raw');
+  const ul = document.getElementById('names');
+
   if(!token){
+    pre.textContent = 'Нет токена!';
     ul.innerHTML = '<li>Нет токена!</li>';
     return;
   }
 
   try {
-    const response = await fetch(API, {
+    const res = await fetch(API, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'groups', action:'list'})
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
-    if(!Array.isArray(data) || data.length === 0){
-      ul.innerHTML = '<li>Список пуст</li>';
-      return;
+    // показать сырой ответ
+    pre.textContent = JSON.stringify(data, null, 2);
+
+    // вывести список имён
+    ul.innerHTML = '';
+    if(Array.isArray(data)){
+      data.forEach(g => ul.appendChild(createLi(g.name)));
+    } else if(data && typeof data === 'object'){
+      // если объект — проверим ключи и массив внутри
+      if(Array.isArray(data.data)) data.data.forEach(g => ul.appendChild(createLi(g.name)));
+      else ul.appendChild(createLi(JSON.stringify(data)));
+    } else {
+      ul.appendChild(createLi('Пустой ответ'));
     }
 
-    ul.innerHTML = ''; // очистить "Загрузка..."
-    data.forEach(g => {
-      const li = document.createElement('li');
-      li.textContent = `${g.id} — ${g.name} (Создано: ${new Date(g.created_at).toLocaleString('ru-RU')})`;
-      ul.appendChild(li);
-    });
-
-  } catch(e) {
-    ul.innerHTML = '<li>Ошибка загрузки: ' + e + '</li>';
+  } catch(e){
+    pre.textContent = 'Ошибка: ' + e;
+    ul.innerHTML = '<li>Ошибка</li>';
   }
 }
 
-loadGroups();
+function createLi(text){
+  const li = document.createElement('li');
+  li.textContent = text;
+  return li;
+}
+
+loadWebhook();
 </script>
 </body>
 </html>
