@@ -2,10 +2,11 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Webhook Debug</title>
+<title>Webhook Debug — Сырой ответ</title>
 </head>
 <body>
-<h1>Сырой ответ с webhook</h1>
+
+<h1>Сырой ответ с сервера</h1>
 <pre id="output">Загрузка...</pre>
 
 <script>
@@ -16,7 +17,7 @@ if (!token) {
   document.getElementById('output').textContent = 'Нет токена!';
 }
 
-async function loadRawData() {
+async function loadRaw() {
   try {
     const res = await fetch(API, {
       method: 'POST',
@@ -24,10 +25,8 @@ async function loadRawData() {
       body: JSON.stringify({ token, resource: 'groups', action: 'list' })
     });
 
-    // Берём **весь текст**, без JSON.parse
+    // Берём весь ответ как текст и выводим напрямую
     const text = await res.text();
-
-    // Показываем ровно то, что прислал сервер
     document.getElementById('output').textContent = text;
 
   } catch (e) {
@@ -36,7 +35,8 @@ async function loadRawData() {
   }
 }
 
-loadRawData();
+loadRaw();
 </script>
+
 </body>
 </html>
