@@ -2,33 +2,56 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Webhook Debug</title>
+<title>Webhook Groups List</title>
+<style>
+body{font-family:sans-serif;padding:2rem;background:#f8f9fa;color:#333}
+h1{color:#0066CC}
+ul{list-style:none;padding:0}
+li{background:white;margin:0.5rem 0;padding:0.75rem 1rem;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+</style>
 </head>
 <body>
-<h1>Данные с webhook</h1>
-<pre id="output">Загрузка...</pre>
+<h1>Список групп</h1>
+<ul id="groupsList"><li>Загрузка...</li></ul>
 
 <script>
-const API='https://primary-production-4b93e.up.railway.app/webhook-test/api';
+const API = 'https://primary-production-4b93e.up.railway.app/webhook-test/api';
 let token = localStorage.getItem('token');
 
-if(!token) document.getElementById('output').textContent = 'Нет токена!';
+async function loadGroups() {
+  const ul = document.getElementById('groupsList');
+  if(!token){
+    ul.innerHTML = '<li>Нет токена!</li>';
+    return;
+  }
 
-async function loadData(){
-  try{
-    const r = await fetch(API, {
+  try {
+    const response = await fetch(API, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'groups', action:'list'})
     });
-    const data = await r.json();
-    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-  }catch(e){
-    document.getElementById('output').textContent = 'Ошибка: '+e;
+
+    const data = await response.json();
+
+    if(!Array.isArray(data) || data.length === 0){
+      ul.innerHTML = '<li>Список пуст</li>';
+      return;
+    }
+
+    ul.innerHTML = ''; // очистить "Загрузка..."
+    data.forEach(g => {
+      const li = document.createElement('li');
+      li.textContent = `${g.id} — ${g.name} (Создано: ${new Date(g.created_at).toLocaleString('ru-RU')})`;
+      ul.appendChild(li);
+    });
+
+  } catch(e) {
+    ul.innerHTML = '<li>Ошибка загрузки: ' + e + '</li>';
   }
 }
 
-loadData();
+loadGroups();
 </script>
 </body>
 </html>
