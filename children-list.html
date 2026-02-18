@@ -2,33 +2,105 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Webhook Debug</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>InSkill Online</title>
+<style>
+body{font-family:-apple-system,sans-serif;background:#f8f9fa;color:#1a1a1a;padding:2rem}
+h1{color:#0066CC}
+table{width:100%;border-collapse:collapse;margin-bottom:2rem}
+th,td{padding:0.75rem;text-align:left;border:1px solid #e0e0e0}
+th{background:#0066CC;color:#fff}
+</style>
 </head>
 <body>
-<h1>Данные с webhook</h1>
-<pre id="output">Загрузка...</pre>
+
+<h1>Дети</h1>
+<table id="childrenTable" style="display:none">
+<thead><tr><th>ID</th><th>Имя</th><th>Группа</th></tr></thead>
+<tbody id="childrenTableBody"></tbody>
+</table>
+<div id="childrenEmpty" style="color:#999">Загрузка...</div>
+
+<h1>Группы</h1>
+<table id="groupsTable" style="display:none">
+<thead><tr><th>ID</th><th>Название</th></tr></thead>
+<tbody id="groupsTableBody"></tbody>
+</table>
+<div id="groupsEmpty" style="color:#999">Загрузка...</div>
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook-test/api';
 let token = localStorage.getItem('token');
+let children = [];
+let groups = [];
 
-if(!token) document.getElementById('output').textContent = 'Нет токена!';
+if(!token) document.body.innerHTML = '<p>Нет токена!</p>';
 
 async function loadData(){
   try{
     const r = await fetch(API, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'groups', action:'list'})
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'children', action:'list'})
     });
-    const data = await r.json();
-    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    let data = await r.json();
+
+    // Если пришёл объект, оборачиваем в массив
+    if(!Array.isArray(data)) data = [data];
+
+    children = data.map(c=>({
+      id: c.id,
+      name: c.name,
+      group: c.club_name || 'Без группы'
+    }));
+
+    renderChildren();
+    renderGroups();
+
   }catch(e){
-    document.getElementById('output').textContent = 'Ошибка: '+e;
+    document.getElementById('childrenEmpty').textContent='Ошибка загрузки';
+    document.getElementById('groupsEmpty').textContent='Ошибка загрузки';
+    console.error(e);
   }
+}
+
+function renderChildren(){
+  const t = document.getElementById('childrenTableBody');
+  t.innerHTML='';
+  if(children.length===0){
+    document.getElementById('childrenTable').style.display='none';
+    document.getElementById('childrenEmpty').textContent='Нет детей';
+    return;
+  }
+  children.forEach(c=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${c.id}</td><td>${c.name}</td><td>${c.group}</td>`;
+    t.appendChild(tr);
+  });
+  document.getElementById('childrenTable').style.display='table';
+  document.getElementById('childrenEmpty').style.display='none';
+}
+
+function renderGroups(){
+  const uniqueGroups = [...new Set(children.map(c=>c.group))];
+  const t = document.getElementById('groupsTableBody');
+  t.innerHTML='';
+  if(uniqueGroups.length===0){
+    document.getElementById('groupsTable').style.display='none';
+    document.getElementById('groupsEmpty').textContent='Нет групп';
+    return;
+  }
+  uniqueGroups.forEach((name,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i+1}</td><td>${name}</td>`;
+    t.appendChild(tr);
+  });
+  document.getElementById('groupsTable').style.display='table';
+  document.getElementById('groupsEmpty').style.display='none';
 }
 
 loadData();
 </script>
+
 </body>
 </html>
