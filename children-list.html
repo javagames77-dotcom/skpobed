@@ -5,12 +5,12 @@
 <title>Webhook Debug</title>
 </head>
 <body>
-<h1>Данные с webhook</h1>
+<h1>Список групп</h1>
 <pre id="output">Загрузка...</pre>
 
 <script>
 const API = 'https://primary-production-4b93e.up.railway.app/webhook-test/api';
-let token = localStorage.getItem('token');
+const token = localStorage.getItem('token');
 
 if (!token) {
   document.getElementById('output').textContent = 'Нет токена!';
@@ -18,23 +18,24 @@ if (!token) {
 
 async function loadData() {
   try {
-    const r = await fetch(API, {
+    const res = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, resource: 'groups', action: 'list' })
     });
 
-    let data = await r.json();
+    let data = await res.json();
 
-    // Проверяем, что это массив
+    // Проверка: если сервер прислал объект вместо массива, обернём его в массив
     if (!Array.isArray(data)) data = [data];
 
-    // Собираем все объекты в строку, разделяя запятой и переводом строки
-    let outputText = '';
-    data.forEach((item, idx) => {
-      outputText += JSON.stringify(item, null, 2);
-      if (idx < data.length - 1) outputText += ',\n';
-    });
+    if (data.length === 0) {
+      document.getElementById('output').textContent = 'Список пуст';
+      return;
+    }
+
+    // Формируем строку со всеми объектами
+    const outputText = data.map(obj => JSON.stringify(obj, null, 2)).join(',\n');
 
     document.getElementById('output').textContent = outputText;
 
