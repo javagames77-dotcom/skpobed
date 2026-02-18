@@ -2,33 +2,76 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Webhook Debug</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Webhook Output</title>
+<style>
+body{font-family:-apple-system,sans-serif;background:#f8f9fa;color:#1a1a1a;padding:2rem}
+h1{color:#0066CC;margin-bottom:1rem}
+table{width:100%;border-collapse:collapse;margin-bottom:2rem}
+th,td{padding:0.75rem;border:1px solid #e0e0e0;text-align:left}
+th{background:#0066CC;color:#fff}
+.empty-message{color:#999;font-style:italic}
+</style>
 </head>
 <body>
+
 <h1>Данные с webhook</h1>
-<pre id="output">Загрузка...</pre>
+<div id="outputContainer">
+  <div class="empty-message" id="loading">Загрузка...</div>
+  <table id="outputTable" style="display:none">
+    <thead id="tableHead"></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
 
 <script>
-const API='https://primary-production-4b93e.up.railway.app/webhook-test/api';
+const API = 'https://primary-production-4b93e.up.railway.app/webhook-test/api';
 let token = localStorage.getItem('token');
 
-if(!token) document.getElementById('output').textContent = 'Нет токена!';
-
-async function loadData(){
-  try{
-    const r = await fetch(API, {
+async function loadWebhook() {
+  const loadingEl = document.getElementById('loading');
+  try {
+    const res = await fetch(API, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'groups', action:'list'})
     });
-    const data = await r.json();
-    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
-  }catch(e){
-    document.getElementById('output').textContent = 'Ошибка: '+e;
+
+    let data = await res.json();
+
+    // Если пришёл объект — оборачиваем в массив
+    if (!Array.isArray(data)) data = [data];
+
+    if (data.length === 0) {
+      loadingEl.textContent = 'Нет данных';
+      return;
+    }
+
+    // Формируем шапку таблицы по ключам первого объекта
+    const keys = Object.keys(data[0]);
+    const thead = document.getElementById('tableHead');
+    thead.innerHTML = '<tr>' + keys.map(k => `<th>${k}</th>`).join('') + '</tr>';
+
+    // Заполняем строки
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    data.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = keys.map(k => `<td>${item[k] !== null ? item[k] : '-'}</td>`).join('');
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('outputTable').style.display = 'table';
+    loadingEl.style.display = 'none';
+
+  } catch (e) {
+    loadingEl.textContent = 'Ошибка загрузки: ' + e;
+    console.error(e);
   }
 }
 
-loadData();
+loadWebhook();
 </script>
+
 </body>
 </html>
