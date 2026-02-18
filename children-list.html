@@ -24,10 +24,10 @@ async function loadRawData() {
       body: JSON.stringify({ token, resource: 'groups', action: 'list' })
     });
 
-    // Получаем ответ как текст
+    // Берём именно текст, не JSON
     const text = await res.text();
 
-    // Выводим ровно то, что пришло
+    // Показываем ровно то, что прислал сервер
     document.getElementById('output').textContent = text;
 
   } catch (e) {
