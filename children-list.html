@@ -5,42 +5,26 @@
 <title>Webhook Debug</title>
 </head>
 <body>
-<h1>Список групп</h1>
-<div id="names">Загрузка...</div>
-<h2>Сырой ответ:</h2>
-<pre id="raw"></pre>
+<h1>Данные с webhook</h1>
+<pre id="output">Загрузка...</pre>
 
 <script>
-const API = 'https://primary-production-4b93e.up.railway.app/webhook-test/api';
+const API='https://primary-production-4b93e.up.railway.app/webhook-test/api';
 let token = localStorage.getItem('token');
 
-if(!token){
-  document.getElementById('names').textContent = 'Нет токена!';
-  document.getElementById('raw').textContent = '';
-}
+if(!token) document.getElementById('output').textContent = 'Нет токена!';
 
-// Загружаем данные с вебхука
-async function loadData() {
-  try {
-    const response = await fetch(API, {
+async function loadData(){
+  try{
+    const r = await fetch(API, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'groups', action:'list'})
     });
-
-    const data = await response.json();
-
-    // Если пришёл объект — превращаем в массив
-    const arr = Array.isArray(data) ? data : [data];
-
-    // Выводим список имён
-    document.getElementById('names').innerHTML = arr.map(g => g.name).join('<br>');
-
-    // Сырой JSON
-    document.getElementById('raw').textContent = JSON.stringify(data, null, 2);
-  } catch (err) {
-    document.getElementById('names').textContent = 'Ошибка: ' + err;
-    document.getElementById('raw').textContent = '';
+    const data = await r.json();
+    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+  }catch(e){
+    document.getElementById('output').textContent = 'Ошибка: '+e;
   }
 }
 
