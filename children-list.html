@@ -24,23 +24,26 @@ async function loadData() {
       body: JSON.stringify({ token, resource: 'groups', action: 'list' })
     });
 
-    let data = await res.json();
+    // Получаем ответ как текст
+    const text = await res.text();
 
-    // Проверка: если сервер прислал объект вместо массива, обернём его в массив
-    if (!Array.isArray(data)) data = [data];
+    // Разделяем объекты по "}{", чтобы разобрать каждый объект отдельно
+    // Это работает если сервер возвращает несколько JSON подряд без массива
+    const objects = text
+      .split('}\n{')   // или split('},{') если в одну строку
+      .map((str, i, arr) => {
+        if (i !== 0) str = '{' + str;
+        if (i !== arr.length - 1) str = str + '}';
+        return JSON.parse(str);
+      });
 
-    if (data.length === 0) {
-      document.getElementById('output').textContent = 'Список пуст';
-      return;
-    }
-
-    // Формируем строку со всеми объектами
-    const outputText = data.map(obj => JSON.stringify(obj, null, 2)).join(',\n');
-
+    // Выводим на экран
+    const outputText = objects.map(obj => JSON.stringify(obj, null, 2)).join(',\n');
     document.getElementById('output').textContent = outputText;
 
   } catch (e) {
     document.getElementById('output').textContent = 'Ошибка: ' + e;
+    console.error(e);
   }
 }
 
