@@ -14,25 +14,32 @@
 const API = 'https://primary-production-4b93e.up.railway.app/webhook-test/api';
 let token = localStorage.getItem('token');
 
+if(!token){
+  document.getElementById('names').textContent = 'Нет токена!';
+  document.getElementById('raw').textContent = '';
+}
+
+// Загружаем данные с вебхука
 async function loadData() {
   try {
-    const r = await fetch(API, {
+    const response = await fetch(API, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'groups', action:'list'})
     });
-    const data = await r.json();
 
-    // Если пришёл объект, превращаем в массив
+    const data = await response.json();
+
+    // Если пришёл объект — превращаем в массив
     const arr = Array.isArray(data) ? data : [data];
 
-    // Вывод имён
+    // Выводим список имён
     document.getElementById('names').innerHTML = arr.map(g => g.name).join('<br>');
 
     // Сырой JSON
     document.getElementById('raw').textContent = JSON.stringify(data, null, 2);
-  } catch(e) {
-    document.getElementById('names').textContent = 'Ошибка: ' + e;
+  } catch (err) {
+    document.getElementById('names').textContent = 'Ошибка: ' + err;
     document.getElementById('raw').textContent = '';
   }
 }
