@@ -5,7 +5,7 @@
 <title>Webhook Debug</title>
 </head>
 <body>
-<h1>Список групп</h1>
+<h1>Сырой ответ с webhook</h1>
 <pre id="output">Загрузка...</pre>
 
 <script>
@@ -16,7 +16,7 @@ if (!token) {
   document.getElementById('output').textContent = 'Нет токена!';
 }
 
-async function loadData() {
+async function loadRawData() {
   try {
     const res = await fetch(API, {
       method: 'POST',
@@ -27,19 +27,8 @@ async function loadData() {
     // Получаем ответ как текст
     const text = await res.text();
 
-    // Разделяем объекты по "}{", чтобы разобрать каждый объект отдельно
-    // Это работает если сервер возвращает несколько JSON подряд без массива
-    const objects = text
-      .split('}\n{')   // или split('},{') если в одну строку
-      .map((str, i, arr) => {
-        if (i !== 0) str = '{' + str;
-        if (i !== arr.length - 1) str = str + '}';
-        return JSON.parse(str);
-      });
-
-    // Выводим на экран
-    const outputText = objects.map(obj => JSON.stringify(obj, null, 2)).join(',\n');
-    document.getElementById('output').textContent = outputText;
+    // Выводим ровно то, что пришло
+    document.getElementById('output').textContent = text;
 
   } catch (e) {
     document.getElementById('output').textContent = 'Ошибка: ' + e;
@@ -47,7 +36,7 @@ async function loadData() {
   }
 }
 
-loadData();
+loadRawData();
 </script>
 </body>
 </html>
