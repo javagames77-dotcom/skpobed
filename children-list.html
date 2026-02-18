@@ -26,17 +26,11 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .tab-content.active{display:block}
 .page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
 .page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
-.filters{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end}
-.filter-group{flex:1;min-width:200px}
-.filter-label{display:block;margin-bottom:.5rem;font-size:.85rem;font-weight:600;color:#555;text-transform:uppercase}
-.filter-input,.filter-select{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
-.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:.5rem;white-space:nowrap}
 .table-container{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
 .table{width:100%;border-collapse:collapse}
 .table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
 .table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem}
 .table td{padding:1rem;border-bottom:1px solid var(--b)}
-.child-photo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--b)}
 .group-badge{display:inline-block;padding:.35rem .75rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:500}
 .table-actions{display:flex;gap:.5rem}
 .btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
@@ -44,29 +38,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .btn-delete{background:#ffebee;color:#dc3545}
 .loading{text-align:center;padding:3rem;color:var(--p)}
 .empty-state{text-align:center;padding:4rem 2rem;color:#999}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem}
-.modal.active{display:flex}
-.modal-content{background:#fff;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.modal-header{padding:1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:1.5rem;font-weight:700;color:var(--p)}
-.modal-close{width:32px;height:32px;border:none;background:var(--l);border-radius:50%;cursor:pointer;font-size:1.2rem}
-.modal-body{padding:1.5rem}
-.form-group{margin-bottom:1.25rem}
-.form-label{display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem}
-.form-input,.form-select{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
-.date-inputs{display:flex;gap:.75rem}
-.date-inputs .form-group{flex:1;margin-bottom:0}
-.modal-footer{padding:1.5rem;border-top:2px solid var(--b);display:flex;gap:1rem;justify-content:flex-end}
-.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
-.btn-cancel{background:var(--l);color:var(--d)}
-.btn-save{background:var(--s);color:#fff}
 @media (max-width:768px){
-.container{padding:0 1rem}
-.tabs{overflow-x:auto}
-.page-header{flex-direction:column;gap:1rem;align-items:flex-start}
-.filters{flex-direction:column}
-.filter-group{width:100%}
-.btn-add{width:100%;justify-content:center}
 .table thead{display:none}
 .table,.table tbody,.table tr,.table td{display:block}
 .table tr{background:#fff;margin-bottom:1rem;border-radius:12px;padding:1rem}
@@ -74,7 +46,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .table td:before{content:attr(data-label);font-weight:600;color:#666;font-size:.85rem}
 .table td:first-child{justify-content:center;padding-bottom:1rem;border-bottom:1px solid var(--b)}
 .table td:first-child:before{display:none}
-.date-inputs{flex-direction:column}
 }
 </style>
 </head>
@@ -102,92 +73,30 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="tab-content active" id="tab-children">
 <div class="page-header">
 <h1 class="page-title">Дети</h1>
-<button class="btn-add" onclick="addChild()"><span>➕</span><span>Добавить</span></button>
-</div>
-<div class="filters">
-<div class="filter-group">
-<label class="filter-label">Поиск</label>
-<input type="text" class="filter-input" id="searchInput" placeholder="Имя...">
-</div>
-<div class="filter-group">
-<label class="filter-label">Группа</label>
-<select class="filter-select" id="groupFilter"><option value="">Все</option></select>
-</div>
 </div>
 <div class="table-container">
 <div id="loadingChildren" class="loading">Загрузка...</div>
-<div id="emptyChildren" class="empty-state" style="display:none"><h3>Нет детей</h3></div>
-<table class="table" id="childrenTable" style="display:none">
-<thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Действия</th></tr></thead>
+<div id="childrenTableWrapper" style="display:none">
+<table class="table" id="childrenTable">
+<thead><tr><th>ФИО</th><th>Группа</th></tr></thead>
 <tbody id="childrenTableBody"></tbody>
 </table>
+</div>
 </div>
 </div>
 
 <div class="tab-content" id="tab-groups">
 <div class="page-header">
 <h1 class="page-title">Группы</h1>
-<button class="btn-add" onclick="addGroup()"><span>➕</span><span>Добавить</span></button>
 </div>
 <div class="table-container">
 <div id="loadingGroups" class="loading">Загрузка...</div>
-<div id="emptyGroups" class="empty-state" style="display:none"><h3>Нет групп</h3></div>
-<table class="table" id="groupsTable" style="display:none">
-<thead><tr><th>Название</th><th>Действия</th></tr></thead>
+<div id="groupsTableWrapper" style="display:none">
+<table class="table" id="groupsTable">
+<thead><tr><th>Название</th></tr></thead>
 <tbody id="groupsTableBody"></tbody>
 </table>
 </div>
-</div>
-</div>
-
-<div class="modal" id="childModal">
-<div class="modal-content">
-<div class="modal-header">
-<h2 class="modal-title" id="childModalTitle">Добавить ребенка</h2>
-<button class="modal-close" onclick="closeChildModal()">✕</button>
-</div>
-<div class="modal-body">
-<form id="childForm" onsubmit="saveChild(event)">
-<input type="hidden" id="childId">
-<div class="form-group">
-<label class="form-label">Имя *</label>
-<input type="text" class="form-input" id="childFirstName" required>
-</div>
-<div class="form-group">
-<label class="form-label">Фамилия *</label>
-<input type="text" class="form-input" id="childLastName" required>
-</div>
-<div class="form-group">
-<label class="form-label">Группа *</label>
-<select class="form-select" id="childGroupId"><option value="">Выберите</option></select>
-</div>
-</form>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeChildModal()">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('childForm').requestSubmit()">Сохранить</button>
-</div>
-</div>
-</div>
-
-<div class="modal" id="groupModal">
-<div class="modal-content">
-<div class="modal-header">
-<h2 class="modal-title" id="groupModalTitle">Добавить группу</h2>
-<button class="modal-close" onclick="closeGroupModal()">✕</button>
-</div>
-<div class="modal-body">
-<form id="groupForm" onsubmit="saveGroup(event)">
-<input type="hidden" id="groupId">
-<div class="form-group">
-<label class="form-label">Название *</label>
-<input type="text" class="form-input" id="groupName" required>
-</div>
-</form>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeGroupModal()">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()">Сохранить</button>
 </div>
 </div>
 </div>
@@ -195,119 +104,88 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook-test/api';
 let token=localStorage.getItem('token');
-let children=[],groups=[],filtered=[];
+let children=[],groups=[];
+
 if(!token)window.location.href='/';
 
 function loadUserInfo(){
-    const u=JSON.parse(localStorage.getItem('user')||'{}');
-    document.getElementById('userName').textContent=u.first_name?`${u.first_name} ${u.last_name||''}`.trim():u.email||'Пользователь';
+const u=JSON.parse(localStorage.getItem('user')||'{}');
+document.getElementById('userName').textContent=u.first_name?`${u.first_name} ${u.last_name||''}`.trim():u.email||'Пользователь';
 }
 
 function switchTab(t){
-    document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
-    event.target.classList.add('active');
-    document.getElementById(`tab-${t}`).classList.add('active');
-    if(t==='groups' && groups.length===0) loadGroups();
-}
-
-function updateGroupFilter(){
-    const s=document.getElementById('groupFilter'), c=document.getElementById('childGroupId');
-    s.innerHTML='<option value="">Все</option>';
-    c.innerHTML='<option value="">Выберите</option>';
-    groups.forEach(g=>{
-        const o1=document.createElement('option'); o1.value=g.id; o1.textContent=g.name; s.appendChild(o1);
-        const o2=document.createElement('option'); o2.value=g.id; o2.textContent=g.name; c.appendChild(o2);
-    });
-}
-
-// --- Загрузка и адаптация данных под текущий webhook ---
-async function loadGroups(){
-    try{
-        document.getElementById('loadingGroups').style.display='block';
-        document.getElementById('emptyGroups').style.display='none';
-        document.getElementById('groupsTable').style.display='none';
-
-        const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});
-        let d=await r.json();
-        groups = Array.isArray(d)?d.map(g=>({id:g.id,name:g.name})):[];
-
-        document.getElementById('loadingGroups').style.display='none';
-        if(groups.length===0) document.getElementById('emptyGroups').style.display='block';
-        else {document.getElementById('groupsTable').style.display='table'; renderGroupsTable();}
-        updateGroupFilter();
-    }catch(e){console.error(e); document.getElementById('loadingGroups').textContent='Ошибка';}
+document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+event.target.classList.add('active');
+document.getElementById(`tab-${t}`).classList.add('active');
+if(t==='groups') renderGroups();
 }
 
 async function loadChildren(){
-    try{
-        document.getElementById('loadingChildren').style.display='block';
-        document.getElementById('emptyChildren').style.display='none';
-        document.getElementById('childrenTable').style.display='none';
+try{
+document.getElementById('loadingChildren').style.display='block';
+document.getElementById('childrenTableWrapper').style.display='none';
 
-        const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-        let d=await r.json();
-        children = Array.isArray(d)?d.map(c=>({
-            id:c.id,
-            first_name:c.name,
-            last_name:'',
-            group_id:null,
-            group_name:c.club_name || 'Без группы',
-            birth_date:null,
-            photo_url:''
-        })):[];
+const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({token,resource:'children',action:'list'})});
+let d = await r.json();
 
-        filtered = children;
-        document.getElementById('loadingChildren').style.display='none';
-        if(children.length===0) document.getElementById('emptyChildren').style.display='block';
-        else {document.getElementById('childrenTable').style.display='table'; renderChildrenTable();}
-    }catch(e){console.error(e); document.getElementById('loadingChildren').textContent='Ошибка';}
+// Адаптируем под твой webhook
+children = Array.isArray(d)?d.map((c,i)=>({
+    id: c.id || i,
+    first_name: c.name,
+    last_name: '',
+    group_name: c.club_name || 'Без группы'
+})):[];
+
+document.getElementById('loadingChildren').style.display='none';
+renderChildren();
+}catch(e){
+console.error(e);
+document.getElementById('loadingChildren').textContent='Ошибка';
+}
 }
 
-function renderGroupsTable(){
-    const t=document.getElementById('groupsTableBody'); t.innerHTML='';
-    groups.forEach(g=>{
-        const r=document.createElement('tr');
-        r.innerHTML=`<td data-label="Название">${g.name}</td><td data-label="Действия"><div class="table-actions"><button class="btn-icon btn-edit" onclick="editGroup(${g.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;
-        t.appendChild(r);
-    });
+function renderChildren(){
+const t = document.getElementById('childrenTableBody');
+t.innerHTML='';
+if(children.length===0){
+document.getElementById('childrenTableWrapper').innerHTML='<div class="empty-state"><h3>Нет детей</h3></div>';
+return;
+}
+children.forEach(c=>{
+const tr = document.createElement('tr');
+tr.innerHTML = `<td data-label="ФИО">${c.first_name} ${c.last_name}</td><td data-label="Группа">${c.group_name}</td>`;
+t.appendChild(tr);
+});
+document.getElementById('childrenTableWrapper').style.display='block';
 }
 
-function renderChildrenTable(){
-    const t=document.getElementById('childrenTableBody'); t.innerHTML='';
-    filtered.forEach(c=>{
-        const r=document.createElement('tr');
-        r.innerHTML=`<td data-label="Фото"><img src="${c.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td data-label="ФИО">${c.first_name} ${c.last_name}</td><td data-label="Группа"><span class="group-badge">${c.group_name}</span></td><td data-label="Действия"><div class="table-actions"><button class="btn-icon btn-edit" onclick="editChild(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteChild(${c.id})">🗑️</button></div></td>`;
-        t.appendChild(r);
-    });
+// Формируем список уникальных групп
+function renderGroups(){
+const uniqueGroups = [...new Set(children.map(c=>c.group_name))];
+groups = uniqueGroups.map((name,i)=>({id:i,name}));
+const t = document.getElementById('groupsTableBody');
+t.innerHTML='';
+if(groups.length===0){
+document.getElementById('groupsTableWrapper').innerHTML='<div class="empty-state"><h3>Нет групп</h3></div>';
+return;
 }
-
-// --- Фильтр детей ---
-document.getElementById('searchInput').addEventListener('input', filterChildren);
-document.getElementById('groupFilter').addEventListener('change', filterChildren);
-function filterChildren(){
-    const s=document.getElementById('searchInput').value.toLowerCase();
-    const g=document.getElementById('groupFilter').value;
-    filtered = children.filter(c=>{
-        const n=c.first_name.toLowerCase().includes(s);
-        const gr=!g || c.group_id==g;
-        return n && gr;
-    });
-    renderChildrenTable();
+groups.forEach(g=>{
+const tr = document.createElement('tr');
+tr.innerHTML = `<td data-label="Название">${g.name}</td>`;
+t.appendChild(tr);
+});
+document.getElementById('groupsTableWrapper').style.display='block';
 }
-
-// --- Остальной функционал (добавление, редактирование, удаление, модальные) ---
-// Используем твой текущий JS, не трогаем его здесь
 
 function logout(){
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href='/';
+localStorage.removeItem('token');
+localStorage.removeItem('user');
+window.location.href='/';
 }
 
 loadUserInfo();
 loadChildren();
-loadGroups();
 </script>
 </body>
 </html>
