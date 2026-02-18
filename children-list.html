@@ -2,87 +2,269 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Webhook Output</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InSkill Online — Управление</title>
 <style>
-body{font-family:-apple-system,sans-serif;background:#f8f9fa;color:#1a1a1a;padding:2rem}
-h1{color:#0066CC;margin-bottom:1rem}
-table{width:100%;border-collapse:collapse;margin-bottom:2rem}
-th,td{padding:0.75rem;border:1px solid #e0e0e0;text-align:left}
-th{background:#0066CC;color:#fff}
-input{padding:0.5rem;margin-bottom:1rem;border:1px solid #ccc;border-radius:4px;width:100%;max-width:300px}
-.empty-message{color:#999;font-style:italic;margin-bottom:1rem}
+:root{--primary:#0066CC;--secondary:#FF9933;--dark:#1a1a1a;--light:#f8f9fa;--border:#e0e0e0;--success:#28a745;--danger:#dc3545}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;background:var(--light);color:var(--dark)}
+.header{background:white;border-bottom:3px solid var(--primary);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--primary);text-decoration:none}
+.logo-icon{width:40px;height:40px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-bars{display:flex;gap:3px;align-items:flex-end}
+.logo-bar{width:6px;background:white;border-radius:2px}
+.logo-bar:nth-child(1){height:12px}
+.logo-bar:nth-child(2){height:18px;background:var(--secondary)}
+.logo-bar:nth-child(3){height:24px;background:var(--secondary)}
+.user-menu{display:flex;align-items:center;gap:1rem}
+.user-name{font-weight:500;color:var(--dark)}
+.btn-logout{padding:.5rem 1rem;background:white;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:.9rem;transition:all .2s}
+.btn-logout:hover{background:var(--light);border-color:var(--primary)}
+.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
+.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--border)}
+.tab{padding:1rem 2rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666;transition:all .2s}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab:hover{color:var(--primary)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.page-header{background:white;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
+.page-title{font-size:1.75rem;font-weight:700;color:var(--primary)}
+.filters{background:white;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end}
+.filter-group{flex:1;min-width:200px}
+.filter-label{display:block;margin-bottom:.5rem;font-size:.85rem;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.5px}
+.filter-input,.filter-select{width:100%;padding:.75rem;border:2px solid var(--border);border-radius:8px;font-size:1rem;transition:all .2s}
+.filter-input:focus,.filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,102,204,.1)}
+.btn-add{padding:.75rem 1.5rem;background:var(--secondary);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all .2s;font-size:1rem;display:flex;align-items:center;gap:.5rem;white-space:nowrap}
+.btn-add:hover{background:#ff8800;transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,153,51,.3)}
+.table-container{background:white;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
+.table{width:100%;border-collapse:collapse}
+.table thead{background:linear-gradient(135deg,var(--primary),#0052a3);color:white}
+.table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem;letter-spacing:.5px}
+.table td{padding:1rem;border-bottom:1px solid var(--border)}
+.table tbody tr{transition:background .2s}
+.table tbody tr:hover{background:#f8f9ff}
+.child-photo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+.child-name{font-weight:600;color:var(--dark)}
+.group-badge{display:inline-block;padding:.35rem .75rem;background:#e3f2fd;color:var(--primary);border-radius:20px;font-size:.85rem;font-weight:500}
+.table-actions{display:flex;gap:.5rem}
+.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:1.1rem}
+.btn-edit{background:#e3f2fd;color:var(--primary)}
+.btn-edit:hover{background:var(--primary);color:white}
+.btn-delete{background:#ffebee;color:var(--danger)}
+.btn-delete:hover{background:var(--danger);color:white}
+.empty-state{text-align:center;padding:4rem 2rem;color:#999}
+.empty-icon{font-size:4rem;margin-bottom:1rem}
+.loading{text-align:center;padding:3rem;color:var(--primary);font-size:1.1rem}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.modal.active{display:flex}
+.modal-content{background:white;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-header{padding:1.5rem;border-bottom:2px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:1.5rem;font-weight:700;color:var(--primary)}
+.modal-close{width:32px;height:32px;border:none;background:var(--light);border-radius:50%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:var(--border);transform:rotate(90deg)}
+.modal-body{padding:1.5rem}
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem}
+.form-input,.form-select{width:100%;padding:.75rem;border:2px solid var(--border);border-radius:8px;font-size:1rem;transition:all .2s}
+.form-input:focus,.form-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,102,204,.1)}
+.date-inputs{display:flex;gap:.75rem}
+.date-inputs .form-group{flex:1;margin-bottom:0}
+.modal-footer{padding:1.5rem;border-top:2px solid var(--border);display:flex;gap:1rem;justify-content:flex-end}
+.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all .2s;font-size:1rem}
+.btn-cancel{background:var(--light);color:var(--dark)}
+.btn-cancel:hover{background:var(--border)}
+.btn-save{background:var(--secondary);color:white}
+.btn-save:hover{background:#ff8800;transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,153,51,.3)}
+.btn-save:disabled{background:#ccc;cursor:not-allowed;transform:none}
+@media (max-width:768px){
+.header{padding:1rem}
+.container{padding:0 1rem;margin:1rem auto}
+.logo{font-size:1.25rem}
+.logo-icon{width:35px;height:35px}
+.user-name{display:none}
+.tabs{overflow-x:auto;flex-wrap:nowrap}
+.tab{padding:.75rem 1rem;font-size:.9rem;white-space:nowrap}
+.page-header{flex-direction:column;gap:1rem;align-items:flex-start}
+.page-title{font-size:1.5rem}
+.filters{flex-direction:column}
+.filter-group{width:100%;min-width:100%}
+.btn-add{width:100%;justify-content:center}
+.table-container{box-shadow:none;background:transparent}
+.table thead{display:none}
+.table,.table tbody,.table tr,.table td{display:block}
+.table tr{background:white;margin-bottom:1rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);padding:1rem}
+.table td{border:none;padding:.5rem 0;display:flex;justify-content:space-between;align-items:center}
+.table td:before{content:attr(data-label);font-weight:600;color:#666;font-size:.85rem;text-transform:uppercase}
+.table td:first-child{justify-content:center;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.table td:first-child:before{display:none}
+.child-photo{width:80px;height:80px}
+.table-actions{width:100%;justify-content:center}
+.date-inputs{flex-direction:column}
+}
 </style>
 </head>
 <body>
 
-<h1>Данные с webhook</h1>
-<input type="text" id="searchInput" placeholder="Поиск по имени...">
-<div id="outputContainer">
-<div class="empty-message" id="loading">Загрузка...</div>
-<table id="outputTable" style="display:none">
-<thead id="tableHead"></thead>
-<tbody id="tableBody"></tbody>
+<header class="header">
+<div class="header-content">
+<a href="/" class="logo">
+<div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
+<span>InSkill<span style="color:var(--secondary)">.online</span></span>
+</a>
+<div class="user-menu">
+<span class="user-name" id="userName">Загрузка...</span>
+<button class="btn-logout" onclick="logout()">Выход</button>
+</div>
+</div>
+</header>
+
+<div class="container">
+<div class="tabs">
+<button class="tab active" onclick="switchTab('children')">👶 Дети</button>
+<button class="tab" onclick="switchTab('groups')">👥 Группы</button>
+</div>
+
+<div class="tab-content active" id="tab-children">
+<div class="page-header">
+<h1 class="page-title">Список детей</h1>
+<button class="btn-add" onclick="addChild()"><span>➕</span><span>Добавить</span></button>
+</div>
+
+<div class="filters">
+<div class="filter-group">
+<label class="filter-label">Поиск</label>
+<input type="text" class="filter-input" id="searchInput" placeholder="Имя...">
+</div>
+<div class="filter-group">
+<label class="filter-label">Группа</label>
+<select class="filter-select" id="groupFilter"><option value="">Все</option></select>
+</div>
+</div>
+
+<div class="table-container">
+<div id="loadingChildren" class="loading">Загрузка...</div>
+<div id="emptyChildren" class="empty-state" style="display:none">
+<div class="empty-icon">👶</div><h3>Нет детей</h3>
+</div>
+<table class="table" id="childrenTable" style="display:none">
+<thead><tr><th>Фото</th><th>ФИО</th><th>Рождения</th><th>Группа</th><th>Действия</th></tr></thead>
+<tbody id="childrenTableBody"></tbody>
 </table>
+</div>
+</div>
+
+<div class="tab-content" id="tab-groups">
+<div class="page-header">
+<h1 class="page-title">Группы</h1>
+<button class="btn-add" onclick="addGroup()"><span>➕</span><span>Добавить</span></button>
+</div>
+<div class="table-container">
+<div id="loadingGroups" class="loading">Загрузка...</div>
+<div id="emptyGroups" class="empty-state" style="display:none">
+<div class="empty-icon">👥</div><h3>Нет групп</h3>
+</div>
+<table class="table" id="groupsTable" style="display:none">
+<thead><tr><th>Название</th><th>Создана</th><th>Действия</th></tr></thead>
+<tbody id="groupsTableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="modal" id="childModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="childModalTitle">Добавить ребенка</h2>
+<button class="modal-close" onclick="closeChildModal()">✕</button>
+</div>
+<div class="modal-body">
+<form id="childForm" onsubmit="saveChild(event)">
+<input type="hidden" id="childId">
+<div class="form-group">
+<label class="form-label">Имя *</label>
+<input type="text" class="form-input" id="childFirstName" required placeholder="Максим">
+</div>
+<div class="form-group">
+<label class="form-label">Фамилия *</label>
+<input type="text" class="form-input" id="childLastName" required placeholder="Иванов">
+</div>
+<div class="form-group">
+<label class="form-label">Дата рождения</label>
+<div class="date-inputs">
+<div class="form-group"><select class="form-select" id="childBirthDay"><option value="">День</option></select></div>
+<div class="form-group"><select class="form-select" id="childBirthMonth"><option value="">Месяц</option></select></div>
+<div class="form-group"><select class="form-select" id="childBirthYear"><option value="">Год</option></select></div>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Группа *</label>
+<select class="form-select" id="childGroupId" required><option value="">Выберите</option></select>
+</div>
+<div class="form-group">
+<label class="form-label">URL фото</label>
+<input type="url" class="form-input" id="childPhotoUrl" placeholder="https://...">
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeChildModal()">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('childForm').requestSubmit()">Сохранить</button>
+</div>
+</div>
+</div>
+
+<div class="modal" id="groupModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="groupModalTitle">Добавить группу</h2>
+<button class="modal-close" onclick="closeGroupModal()">✕</button>
+</div>
+<div class="modal-body">
+<form id="groupForm" onsubmit="saveGroup(event)">
+<input type="hidden" id="groupId">
+<div class="form-group">
+<label class="form-label">Название *</label>
+<input type="text" class="form-input" id="groupName" required placeholder="Детская BJJ">
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeGroupModal()">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()">Сохранить</button>
+</div>
+</div>
 </div>
 
 <script>
-const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-let dataItems = [];
-
-async function loadWebhook(){
-  try{
-    const res = await fetch(API,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({})  // если нужно, можно поставить {resource:'groups', action:'list'}
-    });
-    let data = await res.json();
-
-    // Если пришёл объект, оборачиваем в массив
-    if(!Array.isArray(data)) data = [data];
-    dataItems = data;
-
-    if(dataItems.length===0){
-      document.getElementById('loading').textContent='Нет данных';
-      return;
-    }
-
-    renderTable(dataItems);
-  }catch(e){
-    document.getElementById('loading').textContent='Ошибка загрузки';
-    console.error(e);
-  }
-}
-
-function renderTable(items){
-  const keys = Object.keys(items[0]);
-  const thead = document.getElementById('tableHead');
-  thead.innerHTML = '<tr>'+keys.map(k=>`<th>${k}</th>`).join('')+'</tr>';
-
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = '';
-  items.forEach(item=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = keys.map(k=>`<td>${item[k]!==null?item[k]:'-'}</td>`).join('');
-    tbody.appendChild(tr);
-  });
-
-  document.getElementById('outputTable').style.display='table';
-  document.getElementById('loading').style.display='none';
-}
-
-// Поиск по имени
-document.getElementById('searchInput').addEventListener('input', function(){
-  const search = this.value.toLowerCase();
-  const filtered = dataItems.filter(item=>{
-    return item.name && item.name.toLowerCase().includes(search);
-  });
-  renderTable(filtered.length?filtered:[{id:'-', name:'Нет данных'}]);
-});
-
-loadWebhook();
+const API_URL='https://primary-production-4b93e.up.railway.app/webhook/api';
+let token=localStorage.getItem('token');
+let children=[],groups=[],filteredChildren=[];
+if(!token)window.location.href='/';
+function loadUserInfo(){const u=JSON.parse(localStorage.getItem('user')||'{}');document.getElementById('userName').textContent=u.first_name?`${u.first_name} ${u.last_name||''}`.trim():u.email||'Пользователь'}
+function switchTab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));event.target.classList.add('active');document.getElementById(`tab-${t}`).classList.add('active');if(t==='groups'&&groups.length===0)loadGroups()}
+function initDateDropdowns(){const d=document.getElementById('childBirthDay'),m=document.getElementById('childBirthMonth'),y=document.getElementById('childBirthYear');for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i;d.appendChild(o)}['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'].forEach((n,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=n;m.appendChild(o)});const cy=new Date().getFullYear();for(let i=cy;i>=cy-20;i--){const o=document.createElement('option');o.value=i;o.textContent=i;y.appendChild(o)}}
+async function loadGroups(){try{document.getElementById('loadingGroups').style.display='block';document.getElementById('emptyGroups').style.display='none';document.getElementById('groupsTable').style.display='none';const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});const d=await r.json();groups=Array.isArray(d)?d:[];document.getElementById('loadingGroups').style.display='none';if(groups.length===0)document.getElementById('emptyGroups').style.display='block';else{document.getElementById('groupsTable').style.display='table';renderGroupsTable()}updateGroupFilter()}catch(e){console.error(e);document.getElementById('loadingGroups').textContent='Ошибка'}}
+function renderGroupsTable(){const t=document.getElementById('groupsTableBody');t.innerHTML='';groups.forEach(g=>{const r=document.createElement('tr');r.innerHTML=`<td data-label="Название">${g.name}</td><td data-label="Создана">${new Date(g.created_at).toLocaleDateString('ru-RU')}</td><td data-label="Действия"><div class="table-actions"><button class="btn-icon btn-edit" onclick="editGroup(${g.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;t.appendChild(r)})}
+function updateGroupFilter(){const s=document.getElementById('groupFilter'),c=document.getElementById('childGroupId');s.innerHTML='<option value="">Все</option>';c.innerHTML='<option value="">Выберите</option>';groups.forEach(g=>{const o1=document.createElement('option');o1.value=g.id;o1.textContent=g.name;s.appendChild(o1);const o2=document.createElement('option');o2.value=g.id;o2.textContent=g.name;c.appendChild(o2)})}
+async function loadChildren(){try{document.getElementById('loadingChildren').style.display='block';document.getElementById('emptyChildren').style.display='none';document.getElementById('childrenTable').style.display='none';const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});const d=await r.json();children=Array.isArray(d)?d:[];filteredChildren=children;document.getElementById('loadingChildren').style.display='none';if(children.length===0)document.getElementById('emptyChildren').style.display='block';else{document.getElementById('childrenTable').style.display='table';renderChildrenTable()}}catch(e){console.error(e);document.getElementById('loadingChildren').textContent='Ошибка'}}
+function renderChildrenTable(){const t=document.getElementById('childrenTableBody');t.innerHTML='';filteredChildren.forEach(c=>{const r=document.createElement('tr');r.innerHTML=`<td data-label="Фото"><img src="${c.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td data-label="ФИО" class="child-name">${c.first_name} ${c.last_name}</td><td data-label="Рождения">${c.birth_date?new Date(c.birth_date).toLocaleDateString('ru-RU'):'—'}</td><td data-label="Группа"><span class="group-badge">${c.group_name||'Без группы'}</span></td><td data-label="Действия"><div class="table-actions"><button class="btn-icon btn-edit" onclick="editChild(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteChild(${c.id})">🗑️</button></div></td>`;t.appendChild(r)})}
+document.getElementById('searchInput').addEventListener('input',filterChildren);document.getElementById('groupFilter').addEventListener('change',filterChildren);
+function filterChildren(){const s=document.getElementById('searchInput').value.toLowerCase(),g=document.getElementById('groupFilter').value;filteredChildren=children.filter(c=>{const n=(c.first_name+' '+c.last_name).toLowerCase().includes(s);const gr=!g||c.group_id==g;return n&&gr});renderChildrenTable()}
+function addChild(){document.getElementById('childModalTitle').textContent='Добавить ребенка';document.getElementById('childId').value='';document.getElementById('childFirstName').value='';document.getElementById('childLastName').value='';document.getElementById('childBirthDay').value='';document.getElementById('childBirthMonth').value='';document.getElementById('childBirthYear').value='';document.getElementById('childGroupId').value='';document.getElementById('childPhotoUrl').value='';openChildModal()}
+function editChild(id){const c=children.find(x=>x.id===id);if(!c)return;document.getElementById('childModalTitle').textContent='Редактировать';document.getElementById('childId').value=c.id;document.getElementById('childFirstName').value=c.first_name;document.getElementById('childLastName').value=c.last_name;if(c.birth_date){const d=new Date(c.birth_date);document.getElementById('childBirthDay').value=d.getDate();document.getElementById('childBirthMonth').value=d.getMonth()+1;document.getElementById('childBirthYear').value=d.getFullYear()}document.getElementById('childGroupId').value=c.group_id||'';document.getElementById('childPhotoUrl').value=c.photo_url||'';openChildModal()}
+async function saveChild(e){e.preventDefault();const id=document.getElementById('childId').value,fn=document.getElementById('childFirstName').value.trim(),ln=document.getElementById('childLastName').value.trim(),d=document.getElementById('childBirthDay').value,m=document.getElementById('childBirthMonth').value,y=document.getElementById('childBirthYear').value,g=document.getElementById('childGroupId').value,p=document.getElementById('childPhotoUrl').value.trim();if(!fn||!ln){alert('Заполните обязательные поля');return}if(!g){alert('Выберите группу');return}const data={first_name:fn,last_name:ln,group_id:parseInt(g)};if(d&&m&&y)data.birth_date=`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;if(p)data.photo_url=p;try{const a=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:a,data})});const res=await r.json();if(res.id){closeChildModal();alert(id?'Обновлено!':'Добавлено!');loadChildren()}else alert('Ошибка: '+(res.error||''))}catch(err){console.error(err);alert('Ошибка')}}
+async function deleteChild(id){if(!confirm('Удалить?'))return;try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'delete',data:{id}})});const d=await r.json();if(d.success){alert('Удалено');loadChildren()}}catch(e){console.error(e);alert('Ошибка')}}
+function openChildModal(){document.getElementById('childModal').classList.add('active');document.body.style.overflow='hidden'}
+function closeChildModal(){document.getElementById('childModal').classList.remove('active');document.body.style.overflow=''}
+function addGroup(){document.getElementById('groupModalTitle').textContent='Добавить группу';document.getElementById('groupId').value='';document.getElementById('groupName').value='';openGroupModal()}
+function editGroup(id){const g=groups.find(x=>x.id===id);if(!g)return;document.getElementById('groupModalTitle').textContent='Редактировать';document.getElementById('groupId').value=g.id;document.getElementById('groupName').value=g.name;openGroupModal()}
+async function saveGroup(e){e.preventDefault();const id=document.getElementById('groupId').value,n=document.getElementById('groupName').value.trim();if(!n){alert('Введите название');return}const data={name:n};try{const a=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:a,data})});const res=await r.json();if(res.id){closeGroupModal();alert(id?'Обновлено!':'Создано!');loadGroups();loadChildren()}else alert('Ошибка: '+(res.error||''))}catch(err){console.error(err);alert('Ошибка')}}
+async function deleteGroup(id){if(!confirm('Удалить?'))return;try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'delete',data:{id}})});const d=await r.json();if(d.success){alert('Удалено');loadGroups();loadChildren()}}catch(e){console.error(e);alert('Ошибка')}}
+function openGroupModal(){document.getElementById('groupModal').classList.add('active');document.body.style.overflow='hidden'}
+function closeGroupModal(){document.getElementById('groupModal').classList.remove('active');document.body.style.overflow=''}
+function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/'}
+loadUserInfo();initDateDropdowns();loadGroups().then(()=>loadChildren());
 </script>
-
 </body>
 </html>
