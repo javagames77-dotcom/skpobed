@@ -3,144 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>InSkill Online</title>
+<title>Webhook Output</title>
 <style>
 body{font-family:-apple-system,sans-serif;background:#f8f9fa;color:#1a1a1a;padding:2rem}
 h1{color:#0066CC;margin-bottom:1rem}
-table{width:100%;border-collapse:collapse;margin-bottom:1.5rem}
-th,td{padding:0.75rem;text-align:left;border:1px solid #e0e0e0}
+table{width:100%;border-collapse:collapse;margin-bottom:2rem}
+th,td{padding:0.75rem;border:1px solid #e0e0e0;text-align:left}
 th{background:#0066CC;color:#fff}
-input,select{padding:0.5rem;margin-right:1rem;border:1px solid #ccc;border-radius:4px}
-.filter-container{margin-bottom:1rem}
-.empty-message{color:#999;font-style:italic;margin-bottom:1rem}
+.empty-message{color:#999;font-style:italic}
 </style>
 </head>
 <body>
 
-<h1>Дети</h1>
-<div class="filter-container">
-<input type="text" id="searchInput" placeholder="Поиск по имени...">
-<select id="groupFilter"><option value="">Все группы</option></select>
+<h1>Данные с webhook</h1>
+<div id="outputContainer">
+<div class="empty-message" id="loading">Загрузка...</div>
+<table id="outputTable" style="display:none">
+<thead id="tableHead"></thead>
+<tbody id="tableBody"></tbody>
+</table>
 </div>
-<table id="childrenTable" style="display:none">
-<thead><tr><th>ID</th><th>Имя</th><th>Группа</th></tr></thead>
-<tbody id="childrenTableBody"></tbody>
-</table>
-<div id="childrenEmpty" class="empty-message">Загрузка...</div>
-
-<h1>Группы</h1>
-<table id="groupsTable" style="display:none">
-<thead><tr><th>ID</th><th>Название</th></tr></thead>
-<tbody id="groupsTableBody"></tbody>
-</table>
-<div id="groupsEmpty" class="empty-message">Загрузка...</div>
 
 <script>
-const API='https://primary-production-4b93e.up.railway.app/webhook-test/api';
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 let token = localStorage.getItem('token');
-let children = [];
-let filtered = [];
 
-if(!token){
-  document.body.innerHTML = '<p>Нет токена!</p>';
-}
-
-// Загрузка данных с webhook
-async function loadData(){
+async function loadWebhook(){
   try{
-    const r = await fetch(API,{
+    const res = await fetch(API,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'children', action:'list'})
+      body: JSON.stringify({token, resource:'groups', action:'list'})
     });
-    let data = await r.json();
-    if(!Array.isArray(data)) data = [data]; // один объект → массив
+    let data = await res.json();
 
-    children = data.map(c=>({
-      id: c.id,
-      name: c.name,
-      group: c.club_name || 'Без группы'
-    }));
-    filtered = [...children];
+    // Если пришёл объект — оборачиваем в массив
+    if(!Array.isArray(data)) data = [data];
 
-    renderChildren();
-    renderGroups();
-    populateGroupFilter();
+    if(data.length===0){
+      document.getElementById('loading').textContent='Нет данных';
+      return;
+    }
+
+    // Формируем шапку таблицы по ключам первого объекта
+    const keys = Object.keys(data[0]);
+    const thead = document.getElementById('tableHead');
+    thead.innerHTML = '<tr>'+keys.map(k=>`<th>${k}</th>`).join('')+'</tr>';
+
+    // Заполняем строки
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    data.forEach(item=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = keys.map(k=>`<td>${item[k]!==null?item[k]:'-'}</td>`).join('');
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('outputTable').style.display='table';
+    document.getElementById('loading').style.display='none';
+
   }catch(e){
-    document.getElementById('childrenEmpty').textContent='Ошибка загрузки';
-    document.getElementById('groupsEmpty').textContent='Ошибка загрузки';
+    document.getElementById('loading').textContent='Ошибка загрузки';
     console.error(e);
   }
 }
 
-// Рендер таблицы детей
-function renderChildren(){
-  const t = document.getElementById('childrenTableBody');
-  t.innerHTML='';
-  if(filtered.length===0){
-    document.getElementById('childrenTable').style.display='none';
-    document.getElementById('childrenEmpty').textContent='Нет детей';
-    return;
-  }
-  filtered.forEach(c=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${c.id}</td><td>${c.name}</td><td>${c.group}</td>`;
-    t.appendChild(tr);
-  });
-  document.getElementById('childrenTable').style.display='table';
-  document.getElementById('childrenEmpty').style.display='none';
-}
-
-// Рендер таблицы групп
-function renderGroups(){
-  const uniqueGroups = [...new Set(children.map(c=>c.group))];
-  const t = document.getElementById('groupsTableBody');
-  t.innerHTML='';
-  if(uniqueGroups.length===0){
-    document.getElementById('groupsTable').style.display='none';
-    document.getElementById('groupsEmpty').textContent='Нет групп';
-    return;
-  }
-  uniqueGroups.forEach((name,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${i+1}</td><td>${name}</td>`;
-    t.appendChild(tr);
-  });
-  document.getElementById('groupsTable').style.display='table';
-  document.getElementById('groupsEmpty').style.display='none';
-}
-
-// Фильтр по группе и поиску
-function applyFilters(){
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const group = document.getElementById('groupFilter').value;
-  filtered = children.filter(c=>{
-    const matchesName = c.name.toLowerCase().includes(search);
-    const matchesGroup = !group || c.group === group;
-    return matchesName && matchesGroup;
-  });
-  renderChildren();
-}
-
-// Заполнение селекта групп
-function populateGroupFilter(){
-  const select = document.getElementById('groupFilter');
-  select.innerHTML='<option value="">Все группы</option>';
-  const uniqueGroups = [...new Set(children.map(c=>c.group))];
-  uniqueGroups.forEach(g=>{
-    const opt = document.createElement('option');
-    opt.value = g;
-    opt.textContent = g;
-    select.appendChild(opt);
-  });
-}
-
-// События поиска и фильтра
-document.getElementById('searchInput').addEventListener('input', applyFilters);
-document.getElementById('groupFilter').addEventListener('change', applyFilters);
-
-// Старт загрузки
-loadData();
+loadWebhook();
 </script>
 
 </body>
