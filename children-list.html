@@ -10,12 +10,14 @@ h1{color:#0066CC;margin-bottom:1rem}
 table{width:100%;border-collapse:collapse;margin-bottom:2rem}
 th,td{padding:0.75rem;border:1px solid #e0e0e0;text-align:left}
 th{background:#0066CC;color:#fff}
-.empty-message{color:#999;font-style:italic}
+input{padding:0.5rem;margin-bottom:1rem;border:1px solid #ccc;border-radius:4px;width:100%;max-width:300px}
+.empty-message{color:#999;font-style:italic;margin-bottom:1rem}
 </style>
 </head>
 <body>
 
 <h1>Данные с webhook</h1>
+<input type="text" id="searchInput" placeholder="Поиск по имени...">
 <div id="outputContainer">
 <div class="empty-message" id="loading">Загрузка...</div>
 <table id="outputTable" style="display:none">
@@ -26,47 +28,55 @@ th{background:#0066CC;color:#fff}
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-let token = localStorage.getItem('token');
+let dataItems = [];
 
 async function loadWebhook(){
   try{
-    const res = await fetch(API,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'groups', action:'list'})
-    });
+    const res = await fetch(API, { method:'GET' });
     let data = await res.json();
 
-    // Если пришёл объект — оборачиваем в массив
+    // Убедимся, что это массив
     if(!Array.isArray(data)) data = [data];
+    dataItems = data;
 
-    if(data.length===0){
+    if(dataItems.length===0){
       document.getElementById('loading').textContent='Нет данных';
       return;
     }
 
-    // Формируем шапку таблицы по ключам первого объекта
-    const keys = Object.keys(data[0]);
-    const thead = document.getElementById('tableHead');
-    thead.innerHTML = '<tr>'+keys.map(k=>`<th>${k}</th>`).join('')+'</tr>';
-
-    // Заполняем строки
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '';
-    data.forEach(item=>{
-      const tr = document.createElement('tr');
-      tr.innerHTML = keys.map(k=>`<td>${item[k]!==null?item[k]:'-'}</td>`).join('');
-      tbody.appendChild(tr);
-    });
-
-    document.getElementById('outputTable').style.display='table';
-    document.getElementById('loading').style.display='none';
-
+    renderTable(dataItems);
   }catch(e){
     document.getElementById('loading').textContent='Ошибка загрузки';
     console.error(e);
   }
 }
+
+// Рендер таблицы по массиву объектов
+function renderTable(items){
+  const keys = Object.keys(items[0]);
+  const thead = document.getElementById('tableHead');
+  thead.innerHTML = '<tr>'+keys.map(k=>`<th>${k}</th>`).join('')+'</tr>';
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  items.forEach(item=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = keys.map(k=>`<td>${item[k]!==null?item[k]:'-'}</td>`).join('');
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('outputTable').style.display='table';
+  document.getElementById('loading').style.display='none';
+}
+
+// Поиск по имени
+document.getElementById('searchInput').addEventListener('input', function(){
+  const search = this.value.toLowerCase();
+  const filtered = dataItems.filter(item=>{
+    return item.name && item.name.toLowerCase().includes(search);
+  });
+  renderTable(filtered.length?filtered:[{id:'-', name:'Нет данных'}]);
+});
 
 loadWebhook();
 </script>
