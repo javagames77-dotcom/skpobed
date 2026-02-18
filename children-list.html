@@ -2,41 +2,19 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Webhook Debug — Сырой ответ</title>
+<title>Webhook Output</title>
 </head>
 <body>
-
-<h1>Сырой ответ с сервера</h1>
 <pre id="output">Загрузка...</pre>
-
 <script>
-const API = 'https://primary-production-4b93e.up.railway.app/webhook-test/api';
-const token = localStorage.getItem('token');
-
-if (!token) {
-  document.getElementById('output').textContent = 'Нет токена!';
-}
-
-async function loadRaw() {
-  try {
-    const res = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'groups', action: 'list' })
-    });
-
-    // Берём весь ответ как текст и выводим напрямую
-    const text = await res.text();
-    document.getElementById('output').textContent = text;
-
-  } catch (e) {
-    document.getElementById('output').textContent = 'Ошибка: ' + e;
-    console.error(e);
-  }
-}
-
-loadRaw();
+fetch('https://primary-production-4b93e.up.railway.app/webhook-test/api', {
+  method: 'POST',
+  headers: {'Content-Type':'application/json'},
+  body: JSON.stringify({token: localStorage.getItem('token'), resource:'groups', action:'list'})
+})
+.then(r => r.text())
+.then(t => output.textContent = t)
+.catch(e => output.textContent = 'Ошибка: ' + e);
 </script>
-
 </body>
 </html>
