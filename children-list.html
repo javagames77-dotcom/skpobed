@@ -1,26 +1,17 @@
 <!DOCTYPE html>
 <html lang="ru">
 <body>
-<h1>Webhook Output</h1>
 <pre id="output">Загрузка...</pre>
 
 <script>
-(function(){
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://primary-production-4b93e.up.railway.app/webhook-test/api", true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function(){
-        if(xhr.readyState === 4){
-            if(xhr.status === 200){
-                document.getElementById("output").textContent = xhr.responseText;
-            } else {
-                document.getElementById("output").textContent = "Ошибка: " + xhr.status;
-            }
-        }
-    };
-    var token = localStorage.getItem('token') || '';
-    xhr.send(JSON.stringify({token: token, resource: "groups", action: "list"}));
-})();
+fetch('https://primary-production-4b93e.up.railway.app/webhook-test/api', {
+  method: 'POST',
+  headers: {'Content-Type':'application/json'},
+  body: JSON.stringify({token: localStorage.getItem('token'), resource:'groups', action:'list'})
+})
+.then(r => r.text())
+.then(text => document.getElementById('output').textContent = text)
+.catch(e => document.getElementById('output').textContent = 'Ошибка: ' + e);
 </script>
 </body>
 </html>
