@@ -26,11 +26,17 @@ async function loadData() {
 
     let data = await r.json();
 
-    // Если сервер вернул объект — оборачиваем в массив
+    // Проверяем, что это массив
     if (!Array.isArray(data)) data = [data];
 
-    // Выводим весь массив красиво
-    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    // Собираем все объекты в строку, разделяя запятой и переводом строки
+    let outputText = '';
+    data.forEach((item, idx) => {
+      outputText += JSON.stringify(item, null, 2);
+      if (idx < data.length - 1) outputText += ',\n';
+    });
+
+    document.getElementById('output').textContent = outputText;
 
   } catch (e) {
     document.getElementById('output').textContent = 'Ошибка: ' + e;
