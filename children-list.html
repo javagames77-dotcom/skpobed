@@ -2,190 +2,33 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>InSkill Online</title>
-<style>
-:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
-.logo-icon{width:40px;height:40px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
-.logo-bars{display:flex;gap:3px;align-items:flex-end}
-.logo-bar{width:6px;background:#fff;border-radius:2px}
-.logo-bar:nth-child(1){height:12px}
-.logo-bar:nth-child(2){height:18px;background:var(--s)}
-.logo-bar:nth-child(3){height:24px;background:var(--s)}
-.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer;font-size:.9rem}
-.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
-.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)}
-.tab{padding:1rem 2rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
-.tab.active{color:var(--p);border-bottom-color:var(--p)}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
-.page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
-.table-container{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
-.table{width:100%;border-collapse:collapse}
-.table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
-.table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem}
-.table td{padding:1rem;border-bottom:1px solid var(--b)}
-.group-badge{display:inline-block;padding:.35rem .75rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:500}
-.table-actions{display:flex;gap:.5rem}
-.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
-.btn-edit{background:#e3f2fd;color:var(--p)}
-.btn-delete{background:#ffebee;color:#dc3545}
-.loading{text-align:center;padding:3rem;color:var(--p)}
-.empty-state{text-align:center;padding:4rem 2rem;color:#999}
-@media (max-width:768px){
-.table thead{display:none}
-.table,.table tbody,.table tr,.table td{display:block}
-.table tr{background:#fff;margin-bottom:1rem;border-radius:12px;padding:1rem}
-.table td{border:none;padding:.5rem 0;display:flex;justify-content:space-between}
-.table td:before{content:attr(data-label);font-weight:600;color:#666;font-size:.85rem}
-.table td:first-child{justify-content:center;padding-bottom:1rem;border-bottom:1px solid var(--b)}
-.table td:first-child:before{display:none}
-}
-</style>
+<title>Webhook Debug</title>
 </head>
 <body>
-
-<header class="header">
-<div class="header-content">
-<a href="/" class="logo">
-<div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
-<span>InSkill<span style="color:var(--s)">.online</span></span>
-</a>
-<div style="display:flex;align-items:center;gap:1rem">
-<span id="userName">—</span>
-<button class="btn-logout" onclick="logout()">Выход</button>
-</div>
-</div>
-</header>
-
-<div class="container">
-<div class="tabs">
-<button class="tab active" onclick="switchTab('children')">👶 Дети</button>
-<button class="tab" onclick="switchTab('groups')">👥 Группы</button>
-</div>
-
-<div class="tab-content active" id="tab-children">
-<div class="page-header">
-<h1 class="page-title">Дети</h1>
-</div>
-<div class="table-container">
-<div id="loadingChildren" class="loading">Загрузка...</div>
-<div id="childrenTableWrapper" style="display:none">
-<table class="table" id="childrenTable">
-<thead><tr><th>ФИО</th><th>Группа</th></tr></thead>
-<tbody id="childrenTableBody"></tbody>
-</table>
-</div>
-</div>
-</div>
-
-<div class="tab-content" id="tab-groups">
-<div class="page-header">
-<h1 class="page-title">Группы</h1>
-</div>
-<div class="table-container">
-<div id="loadingGroups" class="loading">Загрузка...</div>
-<div id="groupsTableWrapper" style="display:none">
-<table class="table" id="groupsTable">
-<thead><tr><th>Название</th></tr></thead>
-<tbody id="groupsTableBody"></tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
+<h1>Данные с webhook</h1>
+<pre id="output">Загрузка...</pre>
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook-test/api';
-let token=localStorage.getItem('token');
-let children=[],groups=[];
+let token = localStorage.getItem('token');
 
-if(!token)window.location.href='/';
+if(!token) document.getElementById('output').textContent = 'Нет токена!';
 
-function loadUserInfo(){
-const u=JSON.parse(localStorage.getItem('user')||'{}');
-document.getElementById('userName').textContent=u.first_name?`${u.first_name} ${u.last_name||''}`.trim():u.email||'Пользователь';
+async function loadData(){
+  try{
+    const r = await fetch(API, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'groups', action:'list'})
+    });
+    const data = await r.json();
+    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+  }catch(e){
+    document.getElementById('output').textContent = 'Ошибка: '+e;
+  }
 }
 
-function switchTab(t){
-document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
-event.target.classList.add('active');
-document.getElementById(`tab-${t}`).classList.add('active');
-if(t==='groups') renderGroups();
-}
-
-async function loadChildren(){
-try{
-document.getElementById('loadingChildren').style.display='block';
-document.getElementById('childrenTableWrapper').style.display='none';
-
-const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({token,resource:'children',action:'list'})});
-let d = await r.json();
-
-// Адаптируем под твой webhook
-children = Array.isArray(d)?d.map((c,i)=>({
-    id: c.id || i,
-    first_name: c.name,
-    last_name: '',
-    group_name: c.club_name || 'Без группы'
-})):[];
-
-document.getElementById('loadingChildren').style.display='none';
-renderChildren();
-}catch(e){
-console.error(e);
-document.getElementById('loadingChildren').textContent='Ошибка';
-}
-}
-
-function renderChildren(){
-const t = document.getElementById('childrenTableBody');
-t.innerHTML='';
-if(children.length===0){
-document.getElementById('childrenTableWrapper').innerHTML='<div class="empty-state"><h3>Нет детей</h3></div>';
-return;
-}
-children.forEach(c=>{
-const tr = document.createElement('tr');
-tr.innerHTML = `<td data-label="ФИО">${c.first_name} ${c.last_name}</td><td data-label="Группа">${c.group_name}</td>`;
-t.appendChild(tr);
-});
-document.getElementById('childrenTableWrapper').style.display='block';
-}
-
-// Формируем список уникальных групп
-function renderGroups(){
-const uniqueGroups = [...new Set(children.map(c=>c.group_name))];
-groups = uniqueGroups.map((name,i)=>({id:i,name}));
-const t = document.getElementById('groupsTableBody');
-t.innerHTML='';
-if(groups.length===0){
-document.getElementById('groupsTableWrapper').innerHTML='<div class="empty-state"><h3>Нет групп</h3></div>';
-return;
-}
-groups.forEach(g=>{
-const tr = document.createElement('tr');
-tr.innerHTML = `<td data-label="Название">${g.name}</td>`;
-t.appendChild(tr);
-});
-document.getElementById('groupsTableWrapper').style.display='block';
-}
-
-function logout(){
-localStorage.removeItem('token');
-localStorage.removeItem('user');
-window.location.href='/';
-}
-
-loadUserInfo();
-loadChildren();
+loadData();
 </script>
 </body>
 </html>
