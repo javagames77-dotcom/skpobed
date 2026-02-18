@@ -404,7 +404,7 @@ body {
 </div>
 
 <script>
-const AUTH_URL = 'https://primary-production-4b93e.up.railway.app/webhook/auth/register';
+const AUTH_URL = 'https://primary-production-4b93e.up.railway.app/webhook/auth';
 
 // Check if already logged in
 const token = localStorage.getItem('token');
@@ -419,7 +419,7 @@ if (token) {
   .then(data => {
     if (data.success !== false) {
       // Token valid, redirect to children list
-      window.location.href = '/children-list.html';
+      window.location.href = 'children-list.html';
     }
   })
   .catch(err => console.error('Token verification error:', err));
