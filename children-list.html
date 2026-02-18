@@ -24,7 +24,7 @@ async function loadRawData() {
       body: JSON.stringify({ token, resource: 'groups', action: 'list' })
     });
 
-    // Берём именно текст, не JSON
+    // Берём **весь текст**, без JSON.parse
     const text = await res.text();
 
     // Показываем ровно то, что прислал сервер
