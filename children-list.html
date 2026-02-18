@@ -711,7 +711,7 @@ body {
 <script>
 // Config
 const API_URL = 'https://primary-production-4b93e.up.railway.app/webhook/api';
-const AUTH_URL = 'https://primary-production-4b93e.up.railway.app/webhook/auth/register';
+const AUTH_URL = 'https://primary-production-4b93e.up.railway.app/webhook/auth';
 
 // State
 let token = localStorage.getItem('token');
@@ -721,7 +721,7 @@ let filteredChildren = [];
 
 // Check auth
 if (!token) {
-  window.location.href = '/login.html';
+  window.location.href = '/';
 }
 
 // Load user info
@@ -1037,7 +1037,7 @@ function closeModal() {
 
 function logout() {
   localStorage.removeItem('token');
-  window.location.href = '/login.html';
+  window.location.href = '/';
 }
 
 // Initialize
