@@ -726,25 +726,15 @@ if (!token) {
 
 // Load user info
 async function loadUserInfo() {
-  try {
-    const res = await fetch(AUTH_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'me', token })
-    });
-    const data = await res.json();
-    
-    // Check if user data exists (API returns user object directly)
-    if (data && data.email) {
-      const name = data.first_name ? `${data.first_name} ${data.last_name || ''}`.trim() : data.email;
-      document.getElementById('userName').textContent = name;
-    } else {
-      // Invalid token
-      logout();
-    }
-  } catch (err) {
-    console.error('Error loading user:', err);
-    logout();
+  // Just show email from localStorage for now
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user.first_name) {
+    const name = `${user.first_name} ${user.last_name || ''}`.trim();
+    document.getElementById('userName').textContent = name;
+  } else if (user.email) {
+    document.getElementById('userName').textContent = user.email;
+  } else {
+    document.getElementById('userName').textContent = 'Пользователь';
   }
 }
 
