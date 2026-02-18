@@ -344,6 +344,145 @@ body {
   font-size: 1.1rem;
 }
 
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--light);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: var(--border);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 2px solid var(--border);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.btn-cancel {
+  background: var(--light);
+  color: var(--dark);
+}
+
+.btn-cancel:hover {
+  background: var(--border);
+}
+
+.btn-save {
+  background: var(--secondary);
+  color: white;
+}
+
+.btn-save:hover {
+  background: #ff8800;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255,153,51,0.3);
+}
+
+.btn-save:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Mobile Styles */
 @media (max-width: 768px) {
   .header {
@@ -523,6 +662,52 @@ body {
 
 </div>
 
+<!-- Modal Add/Edit Child -->
+<div class="modal" id="childModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modalTitle">Добавить ребенка</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="childForm" onsubmit="saveChild(event)">
+        <input type="hidden" id="childId">
+        
+        <div class="form-group">
+          <label class="form-label" for="firstName">Имя *</label>
+          <input type="text" class="form-input" id="firstName" required placeholder="Максим">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="lastName">Фамилия *</label>
+          <input type="text" class="form-input" id="lastName" required placeholder="Иванов">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="birthDate">Дата рождения</label>
+          <input type="date" class="form-input" id="birthDate">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="groupId">Группа</label>
+          <select class="form-select" id="groupId">
+            <option value="">Без группы</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="photoUrl">URL фотографии</label>
+          <input type="url" class="form-input" id="photoUrl" placeholder="https://example.com/photo.jpg">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeModal()">Отмена</button>
+      <button class="btn btn-save" onclick="document.getElementById('childForm').requestSubmit()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // Config
 const API_URL = 'https://primary-production-4b93e.up.railway.app/webhook/api';
@@ -548,13 +733,18 @@ async function loadUserInfo() {
       body: JSON.stringify({ action: 'me', token })
     });
     const data = await res.json();
-    if (data.success !== false) {
-      document.getElementById('userName').textContent = data.first_name || data.email;
+    
+    // Check if user data exists (API returns user object directly)
+    if (data && data.email) {
+      const name = data.first_name ? `${data.first_name} ${data.last_name || ''}`.trim() : data.email;
+      document.getElementById('userName').textContent = name;
     } else {
+      // Invalid token
       logout();
     }
   } catch (err) {
     console.error('Error loading user:', err);
+    logout();
   }
 }
 
@@ -710,11 +900,104 @@ document.getElementById('groupFilter').addEventListener('change', (e) => {
 
 // CRUD functions
 function addChild() {
-  alert('Функция добавления ребенка будет реализована в следующей версии');
+  document.getElementById('modalTitle').textContent = 'Добавить ребенка';
+  document.getElementById('childId').value = '';
+  document.getElementById('firstName').value = '';
+  document.getElementById('lastName').value = '';
+  document.getElementById('birthDate').value = '';
+  document.getElementById('groupId').value = '';
+  document.getElementById('photoUrl').value = '';
+  
+  // Populate groups in modal
+  const select = document.getElementById('groupId');
+  select.innerHTML = '<option value="">Без группы</option>';
+  groups.forEach(g => {
+    const option = document.createElement('option');
+    option.value = g.id;
+    option.textContent = g.name;
+    select.appendChild(option);
+  });
+  
+  openModal();
 }
 
 function editChild(id) {
-  alert(`Редактирование ребенка ID: ${id}`);
+  const child = children.find(c => c.id === id);
+  if (!child) return;
+  
+  document.getElementById('modalTitle').textContent = 'Редактировать ребенка';
+  document.getElementById('childId').value = child.id;
+  document.getElementById('firstName').value = child.first_name;
+  document.getElementById('lastName').value = child.last_name;
+  document.getElementById('birthDate').value = child.birth_date ? child.birth_date.split('T')[0] : '';
+  document.getElementById('photoUrl').value = child.photo_url || '';
+  
+  // Populate groups in modal
+  const select = document.getElementById('groupId');
+  select.innerHTML = '<option value="">Без группы</option>';
+  groups.forEach(g => {
+    const option = document.createElement('option');
+    option.value = g.id;
+    option.textContent = g.name;
+    if (child.group_id == g.id) option.selected = true;
+    select.appendChild(option);
+  });
+  
+  openModal();
+}
+
+async function saveChild(event) {
+  event.preventDefault();
+  
+  const childId = document.getElementById('childId').value;
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const birthDate = document.getElementById('birthDate').value;
+  const groupId = document.getElementById('groupId').value;
+  const photoUrl = document.getElementById('photoUrl').value.trim();
+  
+  if (!firstName || !lastName) {
+    alert('Заполните обязательные поля');
+    return;
+  }
+  
+  const data = {
+    first_name: firstName,
+    last_name: lastName
+  };
+  
+  if (birthDate) data.birth_date = birthDate;
+  if (groupId) data.group_id = parseInt(groupId);
+  if (photoUrl) data.photo_url = photoUrl;
+  
+  try {
+    const action = childId ? 'update' : 'create';
+    if (childId) data.id = parseInt(childId);
+    
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token,
+        resource: 'children',
+        action: action,
+        data: data
+      })
+    });
+    
+    const result = await res.json();
+    
+    if (result.id) {
+      closeModal();
+      alert(childId ? 'Ребенок обновлен!' : 'Ребенок добавлен!');
+      loadChildren();
+    } else {
+      alert('Ошибка при сохранении: ' + (result.error || 'Неизвестная ошибка'));
+    }
+  } catch (err) {
+    console.error('Error saving child:', err);
+    alert('Ошибка при сохранении');
+  }
 }
 
 async function deleteChild(id) {
@@ -740,6 +1023,16 @@ async function deleteChild(id) {
     console.error('Error deleting child:', err);
     alert('Ошибка при удалении');
   }
+}
+
+function openModal() {
+  document.getElementById('childModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('childModal').classList.remove('active');
+  document.body.style.overflow = '';
 }
 
 function logout() {
