@@ -32,10 +32,14 @@ let dataItems = [];
 
 async function loadWebhook(){
   try{
-    const res = await fetch(API, { method:'GET' });
+    const res = await fetch(API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({})  // если нужно, можно поставить {resource:'groups', action:'list'}
+    });
     let data = await res.json();
 
-    // Убедимся, что это массив
+    // Если пришёл объект, оборачиваем в массив
     if(!Array.isArray(data)) data = [data];
     dataItems = data;
 
@@ -51,7 +55,6 @@ async function loadWebhook(){
   }
 }
 
-// Рендер таблицы по массиву объектов
 function renderTable(items){
   const keys = Object.keys(items[0]);
   const thead = document.getElementById('tableHead');
