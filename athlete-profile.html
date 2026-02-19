@@ -139,9 +139,10 @@ if(!token||!athleteId){window.location.href='/';throw new Error('No auth');}
 
 async function loadProfile(){
 try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'get',data:{id:parseInt(athleteId)}})});
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
 let d=await r.json();
-athlete=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
+const allChildren=d.merged||d||[];
+athlete=allChildren.find(c=>c.id==athleteId);
 if(!athlete||!athlete.id){alert('Спортсмен не найден');window.location.href='/children-list.html';return}
 renderProfile();
 loadAttendance();
@@ -199,7 +200,7 @@ t.appendChild(item);
 }
 
 function editAthlete(){
-window.location.href=`/children-list.html?edit=${athleteId}`;
+alert('Редактирование профиля в разработке. Пока можно редактировать через список спортсменов.');
 }
 
 loadProfile();
