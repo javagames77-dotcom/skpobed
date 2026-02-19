@@ -426,16 +426,16 @@ const g=groups.find(x=>x.id===id);
 if(!g)return;
 const childrenInGroup=children.filter(c=>c.group_id===id);
 if(childrenInGroup.length>0){
-if(!confirm(`В группе "${g.name}" есть ${childrenInGroup.length} спортсменов. Удалить группу и перенести их в "Без группы"?`))return;
-}else{
-if(!confirm('Удалить группу?'))return;
+alert(`❌ НЕЛЬЗЯ УДАЛИТЬ!\n\nВ группе "${g.name}" есть ${childrenInGroup.length} спортсменов.\n\nСначала переведите всех спортсменов в другие группы, затем удаляйте.`);
+return;
 }
+if(!confirm(`Удалить пустую группу "${g.name}"?`))return;
 try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'delete',data:{id}})});
 let d=await r.json();
 const result=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
 if(result&&result.success){
-alert('Группа удалена');
+alert('✅ Группа удалена');
 await loadGroups();
 await loadChildren();
 }
