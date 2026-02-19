@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Директор клуба — InSkill Online</title>
+<style>
+:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
+.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
+.logo-icon{width:40px;height:40px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-bars{display:flex;gap:3px;align-items:flex-end}
+.logo-bar{width:6px;background:#fff;border-radius:2px}
+.logo-bar:nth-child(1){height:12px}
+.logo-bar:nth-child(2){height:18px;background:var(--s)}
+.logo-bar:nth-child(3){height:24px;background:var(--s)}
+.badge-director{padding:.25rem .75rem;background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
+.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer}
+.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
+.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)}
+.tab{padding:1rem 2rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
+.tab.active{color:var(--p);border-bottom-color:var(--p)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
+.page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
+.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:.5rem}
+.table-container{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
+.table{width:100%;border-collapse:collapse}
+.table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
+.table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem}
+.table td{padding:1rem;border-bottom:1px solid var(--b)}
+.table tbody tr:hover{background:#f8f9ff}
+.table-actions{display:flex;gap:.5rem}
+.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.btn-edit{background:#e3f2fd;color:var(--p)}
+.btn-delete{background:#ffebee;color:#dc3545}
+.loading{text-align:center;padding:3rem;color:var(--p)}
+.child-photo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--b)}
+.group-badge{display:inline-block;padding:.35rem .75rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:500}
+</style>
+</head>
+<body>
+
+<header class="header">
+<div class="header-content">
+<a href="/" class="logo">
+<div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
+<span>InSkill<span style="color:var(--s)">.online</span></span>
+</a>
+<div style="display:flex;align-items:center;gap:1rem">
+<span class="badge-director">👔 ДИРЕКТОР</span>
+<span id="userName">—</span>
+<button class="btn-logout" onclick="logout()">Выход</button>
+</div>
+</div>
+</header>
+
+<div class="container">
+<div class="tabs">
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
+<button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
+<button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
+</div>
+
+<!-- CLUBS TAB -->
+<div class="tab-content active" id="tab-clubs">
+<div class="page-header">
+<h1 class="page-title">Мои клубы</h1>
+<button class="btn-add" onclick="addClub()"><span>➕</span><span>Добавить клуб</span></button>
+</div>
+<div class="table-container">
+<div id="loadingClubs" class="loading">Загрузка...</div>
+<table class="table" id="clubsTable" style="display:none">
+<thead><tr><th>Название</th><th>Адрес</th><th>Групп</th><th>Тренеров</th><th>Действия</th></tr></thead>
+<tbody id="clubsTableBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- TRAINERS TAB -->
+<div class="tab-content" id="tab-trainers">
+<div class="page-header">
+<h1 class="page-title">Тренеры</h1>
+<button class="btn-add" onclick="addTrainer()"><span>➕</span><span>Добавить тренера</span></button>
+</div>
+<div class="table-container">
+<div id="loadingTrainers" class="loading">Загрузка...</div>
+<table class="table" id="trainersTable" style="display:none">
+<thead><tr><th>ФИО</th><th>Email</th><th>Клубов</th><th>Групп</th><th>Действия</th></tr></thead>
+<tbody id="trainersTableBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- ATHLETES TAB -->
+<div class="tab-content" id="tab-athletes">
+<div class="page-header">
+<h1 class="page-title">Все спортсмены</h1>
+</div>
+<div class="table-container">
+<div id="loadingAthletes" class="loading">Загрузка...</div>
+<table class="table" id="athletesTable" style="display:none">
+<thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th><th>Действия</th></tr></thead>
+<tbody id="athletesTableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<script>
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+let token=localStorage.getItem('token');
+let user=null;
+let clubs=[],trainers=[],athletes=[];
+
+if(!token){window.location.href='/';throw new Error('No auth');}
+
+function loadUserInfo(){
+user=JSON.parse(localStorage.getItem('user')||'{}');
+if(user.role!=='director'){alert('Доступ запрещен');window.location.href='/';return}
+document.getElementById('userName').textContent=user.first_name?`${user.first_name} ${user.last_name||''}`.trim():user.email||'Пользователь';
+}
+
+function switchTab(t){
+document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+event.target.classList.add('active');
+document.getElementById(`tab-${t}`).classList.add('active');
+if(t==='trainers'&&trainers.length===0)loadTrainers();
+if(t==='athletes'&&athletes.length===0)loadAthletes();
+}
+
+async function loadClubs(){
+try{
+document.getElementById('loadingClubs').style.display='block';
+document.getElementById('clubsTable').style.display='none';
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list',data:{director_id:user.id}})});
+let d=await r.json();
+clubs=d.merged||d||[];
+document.getElementById('loadingClubs').style.display='none';
+document.getElementById('clubsTable').style.display='table';
+renderClubsTable();
+}catch(e){console.error(e)}
+}
+
+function renderClubsTable(){
+const t=document.getElementById('clubsTableBody');
+t.innerHTML='';
+clubs.forEach(c=>{
+const r=document.createElement('tr');
+r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td>${c.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button></div></td>`;
+t.appendChild(r);
+});
+}
+
+async function loadTrainers(){
+try{
+document.getElementById('loadingTrainers').style.display='block';
+document.getElementById('trainersTable').style.display='none';
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
+let d=await r.json();
+trainers=d.merged||d||[];
+document.getElementById('loadingTrainers').style.display='none';
+document.getElementById('trainersTable').style.display='table';
+renderTrainersTable();
+}catch(e){console.error(e)}
+}
+
+function renderTrainersTable(){
+const t=document.getElementById('trainersTableBody');
+t.innerHTML='';
+trainers.forEach(tr=>{
+const r=document.createElement('tr');
+r.innerHTML=`<td>${tr.first_name} ${tr.last_name}</td><td>${tr.email}</td><td>${tr.clubs_count||0}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button></div></td>`;
+t.appendChild(r);
+});
+}
+
+async function loadAthletes(){
+try{
+document.getElementById('loadingAthletes').style.display='block';
+document.getElementById('athletesTable').style.display='none';
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list',data:{director_id:user.id}})});
+let d=await r.json();
+athletes=d.merged||d||[];
+document.getElementById('loadingAthletes').style.display='none';
+document.getElementById('athletesTable').style.display='table';
+renderAthletesTable();
+}catch(e){console.error(e)}
+}
+
+function renderAthletesTable(){
+const t=document.getElementById('athletesTableBody');
+t.innerHTML='';
+athletes.forEach(a=>{
+const r=document.createElement('tr');
+r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_name||'Без группы'}</span></td><td>${a.club_name||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="window.location='/athlete-profile.html?id=${a.id}'">👁️</button></div></td>`;
+t.appendChild(r);
+});
+}
+
+function addClub(){alert('Функция в разработке')}
+function editClub(id){alert('Функция в разработке')}
+function addTrainer(){alert('Функция в разработке')}
+function editTrainer(id){alert('Функция в разработке')}
+
+function logout(){
+localStorage.removeItem('token');
+localStorage.removeItem('user');
+window.location.href='/';
+}
+
+loadUserInfo();
+loadClubs();
+</script>
+</body>
+</html>

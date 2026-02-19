@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Суперадмин — InSkill Online</title>
+<style>
+:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
+.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
+.logo-icon{width:40px;height:40px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-bars{display:flex;gap:3px;align-items:flex-end}
+.logo-bar{width:6px;background:#fff;border-radius:2px}
+.logo-bar:nth-child(1){height:12px}
+.logo-bar:nth-child(2){height:18px;background:var(--s)}
+.logo-bar:nth-child(3){height:24px;background:var(--s)}
+.user-menu{display:flex;align-items:center;gap:1rem}
+.badge-superadmin{padding:.25rem .75rem;background:linear-gradient(135deg,#dc3545,#c82333);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
+.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer}
+.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
+.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
+.page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
+.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:.5rem}
+.table-container{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
+.table{width:100%;border-collapse:collapse}
+.table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
+.table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem}
+.table td{padding:1rem;border-bottom:1px solid var(--b)}
+.table tbody tr:hover{background:#f8f9ff}
+.status-badge{padding:.35rem .75rem;border-radius:20px;font-size:.85rem;font-weight:500}
+.status-active{background:#d4edda;color:#155724}
+.status-inactive{background:#f8d7da;color:#721c24}
+.table-actions{display:flex;gap:.5rem}
+.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.btn-edit{background:#e3f2fd;color:var(--p)}
+.btn-delete{background:#ffebee;color:#dc3545}
+.loading{text-align:center;padding:3rem;color:var(--p)}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.modal.active{display:flex}
+.modal-content{background:#fff;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-header{padding:1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:1.5rem;font-weight:700;color:var(--p)}
+.modal-close{width:32px;height:32px;border:none;background:var(--l);border-radius:50%;cursor:pointer;font-size:1.2rem}
+.modal-body{padding:1.5rem}
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem}
+.form-input{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
+.modal-footer{padding:1.5rem;border-top:2px solid var(--b);display:flex;gap:1rem;justify-content:flex-end}
+.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
+.btn-cancel{background:var(--l);color:var(--d)}
+.btn-save{background:var(--s);color:#fff}
+</style>
+</head>
+<body>
+
+<header class="header">
+<div class="header-content">
+<a href="/" class="logo">
+<div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
+<span>InSkill<span style="color:var(--s)">.online</span></span>
+</a>
+<div class="user-menu">
+<span class="badge-superadmin">👑 SUPERADMIN</span>
+<span id="userName">—</span>
+<button class="btn-logout" onclick="logout()">Выход</button>
+</div>
+</div>
+</header>
+
+<div class="container">
+<div class="page-header">
+<h1 class="page-title">Директора клубов</h1>
+<button class="btn-add" onclick="addDirector()"><span>➕</span><span>Добавить директора</span></button>
+</div>
+
+<div class="table-container">
+<div id="loading" class="loading">Загрузка...</div>
+<table class="table" id="directorsTable" style="display:none">
+<thead>
+<tr>
+<th>ФИО</th>
+<th>Email</th>
+<th>Клубов</th>
+<th>Статус</th>
+<th>Дата регистрации</th>
+<th>Действия</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+</div>
+
+<div class="modal" id="directorModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="modalTitle">Добавить директора</h2>
+<button class="modal-close" onclick="closeModal()">✕</button>
+</div>
+<div class="modal-body">
+<form id="directorForm" onsubmit="saveDirector(event)">
+<input type="hidden" id="directorId">
+<div class="form-group">
+<label class="form-label">Email *</label>
+<input type="email" class="form-input" id="directorEmail" required>
+</div>
+<div class="form-group">
+<label class="form-label">Пароль *</label>
+<input type="password" class="form-input" id="directorPassword" required>
+<small style="color:#666">Минимум 6 символов</small>
+</div>
+<div class="form-group">
+<label class="form-label">Имя *</label>
+<input type="text" class="form-input" id="directorFirstName" required>
+</div>
+<div class="form-group">
+<label class="form-label">Фамилия *</label>
+<input type="text" class="form-input" id="directorLastName" required>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeModal()">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('directorForm').requestSubmit()">Создать</button>
+</div>
+</div>
+</div>
+
+<script>
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
+let token=localStorage.getItem('token');
+let directors=[];
+
+if(!token){window.location.href='/';throw new Error('No auth');}
+
+function loadUserInfo(){
+const u=JSON.parse(localStorage.getItem('user')||'{}');
+if(u.role!=='superadmin'){alert('Доступ запрещен');window.location.href='/';return}
+document.getElementById('userName').textContent=u.first_name?`${u.first_name} ${u.last_name||''}`.trim():u.email||'Пользователь';
+}
+
+async function loadDirectors(){
+try{
+document.getElementById('loading').style.display='block';
+document.getElementById('directorsTable').style.display='none';
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'director'}})});
+let d=await r.json();
+directors=d.merged||d||[];
+document.getElementById('loading').style.display='none';
+document.getElementById('directorsTable').style.display='table';
+renderTable();
+}catch(e){console.error(e);document.getElementById('loading').textContent='Ошибка загрузки'}
+}
+
+function renderTable(){
+const t=document.getElementById('tbody');
+t.innerHTML='';
+directors.forEach(dir=>{
+const statusClass=dir.is_active?'status-active':'status-inactive';
+const statusText=dir.is_active?'Активен':'Деактивирован';
+const clubsCount=dir.clubs_count||0;
+const r=document.createElement('tr');
+r.innerHTML=`
+<td>${dir.first_name} ${dir.last_name}</td>
+<td>${dir.email}</td>
+<td>${clubsCount}</td>
+<td><span class="status-badge ${statusClass}">${statusText}</span></td>
+<td>${new Date(dir.created_at).toLocaleDateString('ru-RU')}</td>
+<td>
+<div class="table-actions">
+<button class="btn-icon btn-edit" onclick="editDirector(${dir.id})" title="Редактировать">✏️</button>
+<button class="btn-icon btn-delete" onclick="deactivateDirector(${dir.id})" title="Деактивировать">🗑️</button>
+</div>
+</td>
+`;
+t.appendChild(r);
+});
+}
+
+function addDirector(){
+document.getElementById('modalTitle').textContent='Добавить директора';
+document.getElementById('directorId').value='';
+document.getElementById('directorEmail').value='';
+document.getElementById('directorPassword').value='';
+document.getElementById('directorFirstName').value='';
+document.getElementById('directorLastName').value='';
+openModal();
+}
+
+function editDirector(id){
+const dir=directors.find(d=>d.id===id);
+if(!dir)return;
+document.getElementById('modalTitle').textContent='Редактировать директора';
+document.getElementById('directorId').value=dir.id;
+document.getElementById('directorEmail').value=dir.email;
+document.getElementById('directorPassword').value='';
+document.getElementById('directorPassword').required=false;
+document.getElementById('directorFirstName').value=dir.first_name;
+document.getElementById('directorLastName').value=dir.last_name;
+openModal();
+}
+
+async function saveDirector(e){
+e.preventDefault();
+const id=document.getElementById('directorId').value;
+const email=document.getElementById('directorEmail').value.trim();
+const password=document.getElementById('directorPassword').value;
+const firstName=document.getElementById('directorFirstName').value.trim();
+const lastName=document.getElementById('directorLastName').value.trim();
+
+if(id){
+// UPDATE
+const data={id:parseInt(id),email,first_name:firstName,last_name:lastName};
+if(password)data.password=password;
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});
+let res=await r.json();
+const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+if(result&&result.id){
+closeModal();
+alert('Директор обновлен!');
+await loadDirectors();
+}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
+}catch(err){console.error(err);alert('Ошибка: '+err.message)}
+}else{
+// CREATE via AUTH API
+try{
+const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'director',first_name:firstName,last_name:lastName})});
+const res=await r.json();
+if(res.success&&res.token){
+closeModal();
+alert('Директор создан!');
+await loadDirectors();
+}else{alert('Ошибка: '+(res.error||'Неизвестная ошибка'))}
+}catch(err){console.error(err);alert('Ошибка: '+err.message)}
+}
+}
+
+async function deactivateDirector(id){
+if(!confirm('Деактивировать директора?'))return;
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});
+let d=await r.json();
+const result=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
+if(result&&result.success){
+alert('Директор деактивирован');
+await loadDirectors();
+}
+}catch(e){console.error(e);alert('Ошибка')}
+}
+
+function openModal(){
+document.getElementById('directorModal').classList.add('active');
+document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+document.getElementById('directorModal').classList.remove('active');
+document.body.style.overflow='';
+document.getElementById('directorPassword').required=true;
+}
+
+function logout(){
+localStorage.removeItem('token');
+localStorage.removeItem('user');
+window.location.href='/';
+}
+
+loadUserInfo();
+loadDirectors();
+</script>
+</body>
+</html>
