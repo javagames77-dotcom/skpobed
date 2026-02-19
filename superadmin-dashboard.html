@@ -130,8 +130,8 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 
 <script>
-const API='https://primary-production-4b93e.up.railway.app/webhook-test/api';
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth';
 let token=localStorage.getItem('token');
 let directors=[];
 
@@ -231,7 +231,7 @@ await loadDirectors();
 try{
 const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'director',first_name:firstName,last_name:lastName})});
 const res=await r.json();
-if(res.success&&res.token){
+if(res.success){
 closeModal();
 alert('Директор создан!');
 await loadDirectors();
@@ -246,11 +246,13 @@ try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});
 let d=await r.json();
 const result=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
-if(result&&result.success){
+if(result&&(result.success||result.id)){
 alert('Директор деактивирован');
 await loadDirectors();
+}else{
+alert('Ошибка: '+JSON.stringify(d));
 }
-}catch(e){console.error(e);alert('Ошибка')}
+}catch(e){console.error(e);alert('Ошибка: '+e.message)}
 }
 
 function openModal(){
