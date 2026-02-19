@@ -41,20 +41,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .loading{text-align:center;padding:3rem;color:var(--p)}
 .child-photo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--b)}
 .group-badge{display:inline-block;padding:.35rem .75rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:500}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem}
-.modal.active{display:flex}
-.modal-content{background:#fff;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.modal-header{padding:1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:1.5rem;font-weight:700;color:var(--p)}
-.modal-close{width:32px;height:32px;border:none;background:var(--l);border-radius:50%;cursor:pointer;font-size:1.2rem}
-.modal-body{padding:1.5rem}
-.form-group{margin-bottom:1.25rem}
-.form-label{display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem}
-.form-input{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
-.modal-footer{padding:1.5rem;border-top:2px solid var(--b);display:flex;gap:1rem;justify-content:flex-end}
-.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
-.btn-cancel{background:var(--l);color:var(--d)}
-.btn-save{background:var(--s);color:#fff}
 </style>
 </head>
 <body>
@@ -125,69 +111,8 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 </div>
 
-<div class="modal" id="clubModal">
-<div class="modal-content">
-<div class="modal-header">
-<h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2>
-<button class="modal-close" onclick="closeClubModal()">✕</button>
-</div>
-<div class="modal-body">
-<form id="clubForm" onsubmit="saveClub(event)">
-<input type="hidden" id="clubId">
-<div class="form-group">
-<label class="form-label">Название *</label>
-<input type="text" class="form-input" id="clubName" required>
-</div>
-<div class="form-group">
-<label class="form-label">Адрес</label>
-<input type="text" class="form-input" id="clubAddress">
-</div>
-</form>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeClubModal()">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()">Сохранить</button>
-</div>
-</div>
-</div>
-
-<div class="modal" id="trainerModal">
-<div class="modal-content">
-<div class="modal-header">
-<h2 class="modal-title" id="trainerModalTitle">Добавить тренера</h2>
-<button class="modal-close" onclick="closeTrainerModal()">✕</button>
-</div>
-<div class="modal-body">
-<form id="trainerForm" onsubmit="saveTrainer(event)">
-<input type="hidden" id="trainerId">
-<div class="form-group">
-<label class="form-label">Email *</label>
-<input type="email" class="form-input" id="trainerEmail" required>
-</div>
-<div class="form-group">
-<label class="form-label">Пароль *</label>
-<input type="password" class="form-input" id="trainerPassword" required>
-<small style="color:#666">Минимум 6 символов</small>
-</div>
-<div class="form-group">
-<label class="form-label">Имя *</label>
-<input type="text" class="form-input" id="trainerFirstName" required>
-</div>
-<div class="form-group">
-<label class="form-label">Фамилия *</label>
-<input type="text" class="form-input" id="trainerLastName" required>
-</div>
-</form>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeTrainerModal()">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('trainerForm').requestSubmit()">Сохранить</button>
-</div>
-</div>
-</div>
-
 <script>
-const API='https://primary-production-4b93e.up.railway.app/webhook-test/api';
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 let token=localStorage.getItem('token');
 let user=null;
 let clubs=[],trainers=[],athletes=[];
@@ -278,123 +203,10 @@ t.appendChild(r);
 });
 }
 
-function addClub(){
-document.getElementById('clubModalTitle').textContent='Добавить клуб';
-document.getElementById('clubId').value='';
-document.getElementById('clubName').value='';
-document.getElementById('clubAddress').value='';
-openClubModal();
-}
-
-function editClub(id){
-const c=clubs.find(x=>x.id===id);
-if(!c)return;
-document.getElementById('clubModalTitle').textContent='Редактировать клуб';
-document.getElementById('clubId').value=c.id;
-document.getElementById('clubName').value=c.name;
-document.getElementById('clubAddress').value=c.address||'';
-openClubModal();
-}
-
-async function saveClub(e){
-e.preventDefault();
-const id=document.getElementById('clubId').value;
-const name=document.getElementById('clubName').value.trim();
-const address=document.getElementById('clubAddress').value.trim();
-if(!name){alert('Введите название');return}
-const data={name,address,director_id:user.id};
-try{
-const a=id?'update':'create';
-if(id)data.id=parseInt(id);
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:a,data})});
-let res=await r.json();
-const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-if(result&&result.id){
-closeClubModal();
-alert(id?'Клуб обновлен!':'Клуб создан!');
-await loadClubs();
-}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
-}catch(err){console.error(err);alert('Ошибка: '+err.message)}
-}
-
-function addTrainer(){
-document.getElementById('trainerModalTitle').textContent='Добавить тренера';
-document.getElementById('trainerId').value='';
-document.getElementById('trainerEmail').value='';
-document.getElementById('trainerPassword').value='';
-document.getElementById('trainerPassword').required=true;
-document.getElementById('trainerFirstName').value='';
-document.getElementById('trainerLastName').value='';
-openTrainerModal();
-}
-
-function editTrainer(id){
-const t=trainers.find(x=>x.id===id);
-if(!t)return;
-document.getElementById('trainerModalTitle').textContent='Редактировать тренера';
-document.getElementById('trainerId').value=t.id;
-document.getElementById('trainerEmail').value=t.email;
-document.getElementById('trainerPassword').value='';
-document.getElementById('trainerPassword').required=false;
-document.getElementById('trainerFirstName').value=t.first_name;
-document.getElementById('trainerLastName').value=t.last_name;
-openTrainerModal();
-}
-
-async function saveTrainer(e){
-e.preventDefault();
-const id=document.getElementById('trainerId').value;
-const email=document.getElementById('trainerEmail').value.trim();
-const password=document.getElementById('trainerPassword').value;
-const firstName=document.getElementById('trainerFirstName').value.trim();
-const lastName=document.getElementById('trainerLastName').value.trim();
-if(id){
-const data={id:parseInt(id),email,first_name:firstName,last_name:lastName};
-if(password)data.password=password;
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});
-let res=await r.json();
-const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-if(result&&result.id){
-closeTrainerModal();
-alert('Тренер обновлен!');
-await loadTrainers();
-}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
-}catch(err){console.error(err);alert('Ошибка: '+err.message)}
-}else{
-try{
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth';
-const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName})});
-const res=await r.json();
-if(res.success){
-closeTrainerModal();
-alert('Тренер создан!');
-await loadTrainers();
-}else{alert('Ошибка: '+(res.error||'Неизвестная ошибка'))}
-}catch(err){console.error(err);alert('Ошибка: '+err.message)}
-}
-}
-
-function openClubModal(){
-document.getElementById('clubModal').classList.add('active');
-document.body.style.overflow='hidden';
-}
-
-function closeClubModal(){
-document.getElementById('clubModal').classList.remove('active');
-document.body.style.overflow='';
-}
-
-function openTrainerModal(){
-document.getElementById('trainerModal').classList.add('active');
-document.body.style.overflow='hidden';
-}
-
-function closeTrainerModal(){
-document.getElementById('trainerModal').classList.remove('active');
-document.body.style.overflow='';
-document.getElementById('trainerPassword').required=true;
-}
+function addClub(){alert('Функция в разработке')}
+function editClub(id){alert('Функция в разработке')}
+function addTrainer(){alert('Функция в разработке')}
+function editTrainer(id){alert('Функция в разработке')}
 
 function logout(){
 localStorage.removeItem('token');
