@@ -95,13 +95,13 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('children')">👶 Дети</button>
+<button class="tab active" onclick="switchTab('children')">👶 Спортсмены</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 </div>
 
 <div class="tab-content active" id="tab-children">
 <div class="page-header">
-<h1 class="page-title">Дети</h1>
+<h1 class="page-title">Спортсмены</h1>
 <button class="btn-add" onclick="addChild()"><span>➕</span><span>Добавить</span></button>
 </div>
 <div class="filters">
@@ -116,7 +116,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 <div class="table-container">
 <div id="loadingChildren" class="loading">Загрузка...</div>
-<div id="emptyChildren" class="empty-state" style="display:none"><h3>Нет детей</h3></div>
+<div id="emptyChildren" class="empty-state" style="display:none"><h3>Нет спортсменов</h3></div>
 <table class="table" id="childrenTable" style="display:none">
 <thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Действия</th></tr></thead>
 <tbody id="childrenTableBody"></tbody>
@@ -143,7 +143,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="modal" id="childModal">
 <div class="modal-content">
 <div class="modal-header">
-<h2 class="modal-title" id="childModalTitle">Добавить ребенка</h2>
+<h2 class="modal-title" id="childModalTitle">Добавить спортсмена</h2>
 <button class="modal-close" onclick="closeChildModal()">✕</button>
 </div>
 <div class="modal-body">
@@ -282,7 +282,7 @@ const t=document.getElementById('childrenTableBody');
 t.innerHTML='';
 filtered.forEach(c=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td data-label="Фото"><img src="${c.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td data-label="ФИО">${c.first_name} ${c.last_name}</td><td data-label="Группа"><span class="group-badge">${c.group_name||'Без группы'}</span></td><td data-label="Действия"><div class="table-actions"><button class="btn-icon btn-edit" onclick="editChild(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteChild(${c.id})">🗑️</button></div></td>`;
+r.innerHTML=`<td data-label="Фото"><img src="${c.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td data-label="ФИО"><a href="/athlete-profile.html?id=${c.id}" style="color:var(--p);text-decoration:none;font-weight:600">${c.first_name} ${c.last_name}</a></td><td data-label="Группа"><span class="group-badge">${c.group_name||'Без группы'}</span></td><td data-label="Действия"><div class="table-actions"><button class="btn-icon btn-edit" onclick="editChild(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteChild(${c.id})">🗑️</button></div></td>`;
 t.appendChild(r);
 });
 }
@@ -422,13 +422,20 @@ alert('Ошибка: '+err.message);
 }
 
 async function deleteGroup(id){
-if(!confirm('Удалить?'))return;
+const g=groups.find(x=>x.id===id);
+if(!g)return;
+const childrenInGroup=children.filter(c=>c.group_id===id);
+if(childrenInGroup.length>0){
+if(!confirm(`В группе "${g.name}" есть ${childrenInGroup.length} спортсменов. Удалить группу и перенести их в "Без группы"?`))return;
+}else{
+if(!confirm('Удалить группу?'))return;
+}
 try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'delete',data:{id}})});
 let d=await r.json();
-const result=Array.isArray(d)?d[0]:d;
+const result=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
 if(result&&result.success){
-alert('Удалено');
+alert('Группа удалена');
 await loadGroups();
 await loadChildren();
 }
