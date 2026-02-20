@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Директор клуба — InSkill Online</title>
+<title>Суперадмин — InSkill Online</title>
 <style>
 :root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -17,14 +17,10 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .logo-bar:nth-child(1){height:12px}
 .logo-bar:nth-child(2){height:18px;background:var(--s)}
 .logo-bar:nth-child(3){height:24px;background:var(--s)}
-.badge-director{padding:.25rem .75rem;background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
+.user-menu{display:flex;align-items:center;gap:1rem}
+.badge-superadmin{padding:.25rem .75rem;background:linear-gradient(135deg,#dc3545,#c82333);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
 .btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer}
 .container{max-width:1400px;margin:2rem auto;padding:0 2rem}
-.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)}
-.tab{padding:1rem 2rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
-.tab.active{color:var(--p);border-bottom-color:var(--p)}
-.tab-content{display:none}
-.tab-content.active{display:block}
 .page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
 .page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
 .btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:.5rem}
@@ -34,13 +30,14 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem}
 .table td{padding:1rem;border-bottom:1px solid var(--b)}
 .table tbody tr:hover{background:#f8f9ff}
+.status-badge{padding:.35rem .75rem;border-radius:20px;font-size:.85rem;font-weight:500}
+.status-active{background:#d4edda;color:#155724}
+.status-inactive{background:#f8d7da;color:#721c24}
 .table-actions{display:flex;gap:.5rem}
 .btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
 .btn-edit{background:#e3f2fd;color:var(--p)}
 .btn-delete{background:#ffebee;color:#dc3545}
 .loading{text-align:center;padding:3rem;color:var(--p)}
-.child-photo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--b)}
-.group-badge{display:inline-block;padding:.35rem .75rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:500}
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem}
 .modal.active{display:flex}
 .modal-content{background:#fff;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -65,8 +62,8 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
 <span>InSkill<span style="color:var(--s)">.online</span></span>
 </a>
-<div style="display:flex;align-items:center;gap:1rem">
-<span class="badge-director">👔 ДИРЕКТОР</span>
+<div class="user-menu">
+<span class="badge-superadmin">👑 SUPERADMIN</span>
 <span id="userName">—</span>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
@@ -74,284 +71,149 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </header>
 
 <div class="container">
-<div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
-<button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
-<button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
+<div class="page-header">
+<h1 class="page-title">Директора клубов</h1>
+<button class="btn-add" onclick="addDirector()"><span>➕</span><span>Добавить директора</span></button>
 </div>
 
-<!-- CLUBS TAB -->
-<div class="tab-content active" id="tab-clubs">
-<div class="page-header">
-<h1 class="page-title">Мои клубы</h1>
-<button class="btn-add" onclick="addClub()"><span>➕</span><span>Добавить клуб</span></button>
-</div>
 <div class="table-container">
-<div id="loadingClubs" class="loading">Загрузка...</div>
-<table class="table" id="clubsTable" style="display:none">
-<thead><tr><th>Название</th><th>Адрес</th><th>Групп</th><th>Тренеров</th><th>Действия</th></tr></thead>
-<tbody id="clubsTableBody"></tbody>
+<div id="loading" class="loading">Загрузка...</div>
+<table class="table" id="directorsTable" style="display:none">
+<thead>
+<tr>
+<th>ФИО</th>
+<th>Email</th>
+<th>Клубов</th>
+<th>Статус</th>
+<th>Дата регистрации</th>
+<th>Действия</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
 </table>
 </div>
 </div>
 
-<!-- TRAINERS TAB -->
-<div class="tab-content" id="tab-trainers">
-<div class="page-header">
-<h1 class="page-title">Тренеры</h1>
-<button class="btn-add" onclick="addTrainer()"><span>➕</span><span>Добавить тренера</span></button>
-</div>
-<div class="table-container">
-<div id="loadingTrainers" class="loading">Загрузка...</div>
-<table class="table" id="trainersTable" style="display:none">
-<thead><tr><th>ФИО</th><th>Email</th><th>Клубов</th><th>Групп</th><th>Действия</th></tr></thead>
-<tbody id="trainersTableBody"></tbody>
-</table>
-</div>
-</div>
-
-<!-- ATHLETES TAB -->
-<div class="tab-content" id="tab-athletes">
-<div class="page-header">
-<h1 class="page-title">Все спортсмены</h1>
-</div>
-<div class="table-container">
-<div id="loadingAthletes" class="loading">Загрузка...</div>
-<table class="table" id="athletesTable" style="display:none">
-<thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th><th>Действия</th></tr></thead>
-<tbody id="athletesTableBody"></tbody>
-</table>
-</div>
-</div>
-</div>
-
-<div class="modal" id="clubModal">
+<div class="modal" id="directorModal">
 <div class="modal-content">
 <div class="modal-header">
-<h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2>
-<button class="modal-close" onclick="closeClubModal()">✕</button>
+<h2 class="modal-title" id="modalTitle">Добавить директора</h2>
+<button class="modal-close" onclick="closeModal()">✕</button>
 </div>
 <div class="modal-body">
-<form id="clubForm" onsubmit="saveClub(event)">
-<input type="hidden" id="clubId">
-<div class="form-group">
-<label class="form-label">Название *</label>
-<input type="text" class="form-input" id="clubName" required>
-</div>
-<div class="form-group">
-<label class="form-label">Адрес</label>
-<input type="text" class="form-input" id="clubAddress">
-</div>
-</form>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeClubModal()">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()">Сохранить</button>
-</div>
-</div>
-</div>
-
-<div class="modal" id="trainerModal">
-<div class="modal-content">
-<div class="modal-header">
-<h2 class="modal-title" id="trainerModalTitle">Добавить тренера</h2>
-<button class="modal-close" onclick="closeTrainerModal()">✕</button>
-</div>
-<div class="modal-body">
-<form id="trainerForm" onsubmit="saveTrainer(event)">
-<input type="hidden" id="trainerId">
+<form id="directorForm" onsubmit="saveDirector(event)">
+<input type="hidden" id="directorId">
 <div class="form-group">
 <label class="form-label">Email *</label>
-<input type="email" class="form-input" id="trainerEmail" required>
+<input type="email" class="form-input" id="directorEmail" required>
 </div>
 <div class="form-group">
 <label class="form-label">Пароль *</label>
-<input type="password" class="form-input" id="trainerPassword" required>
+<input type="password" class="form-input" id="directorPassword" required>
 <small style="color:#666">Минимум 6 символов</small>
 </div>
 <div class="form-group">
 <label class="form-label">Имя *</label>
-<input type="text" class="form-input" id="trainerFirstName" required>
+<input type="text" class="form-input" id="directorFirstName" required>
 </div>
 <div class="form-group">
 <label class="form-label">Фамилия *</label>
-<input type="text" class="form-input" id="trainerLastName" required>
+<input type="text" class="form-input" id="directorLastName" required>
 </div>
 </form>
 </div>
 <div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeTrainerModal()">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('trainerForm').requestSubmit()">Сохранить</button>
+<button class="btn btn-cancel" onclick="closeModal()">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('directorForm').requestSubmit()">Создать</button>
 </div>
 </div>
 </div>
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 let token=localStorage.getItem('token');
-let user=null;
-let clubs=[],trainers=[],athletes=[];
+let directors=[];
 
 if(!token){window.location.href='/';throw new Error('No auth');}
 
 function loadUserInfo(){
-user=JSON.parse(localStorage.getItem('user')||'{}');
-if(user.role!=='director'){alert('Доступ запрещен');window.location.href='/';return}
-document.getElementById('userName').textContent=user.first_name?`${user.first_name} ${user.last_name||''}`.trim():user.email||'Пользователь';
+const u=JSON.parse(localStorage.getItem('user')||'{}');
+if(u.role!=='superadmin'){alert('Доступ запрещен');window.location.href='/';return}
+document.getElementById('userName').textContent=u.first_name?`${u.first_name} ${u.last_name||''}`.trim():u.email||'Пользователь';
 }
 
-function switchTab(t){
-document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
-event.target.classList.add('active');
-document.getElementById(`tab-${t}`).classList.add('active');
-if(t==='trainers'&&trainers.length===0)loadTrainers();
-if(t==='athletes'&&athletes.length===0)loadAthletes();
-}
-
-async function loadClubs(){
+async function loadDirectors(){
 try{
-document.getElementById('loadingClubs').style.display='block';
-document.getElementById('clubsTable').style.display='none';
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list',data:{director_id:user.id}})});
+document.getElementById('loading').style.display='block';
+document.getElementById('directorsTable').style.display='none';
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'director'}})});
 let d=await r.json();
-console.log('📦 CLUBS API RESPONSE:', d);
-console.log('👤 USER ID:', user.id, 'ROLE:', user.role);
-clubs=d.merged||d||[];
-console.log('📋 CLUBS PARSED:', clubs);
-document.getElementById('loadingClubs').style.display='none';
-document.getElementById('clubsTable').style.display='table';
-renderClubsTable();
-}catch(e){console.error(e)}
+directors=d.merged||d||[];
+document.getElementById('loading').style.display='none';
+document.getElementById('directorsTable').style.display='table';
+renderTable();
+}catch(e){console.error(e);document.getElementById('loading').textContent='Ошибка загрузки'}
 }
 
-function renderClubsTable(){
-const t=document.getElementById('clubsTableBody');
+function renderTable(){
+const t=document.getElementById('tbody');
 t.innerHTML='';
-clubs.forEach(c=>{
+directors.forEach(dir=>{
+const statusClass=dir.is_active?'status-active':'status-inactive';
+const statusText=dir.is_active?'Активен':'Деактивирован';
+const clubsCount=dir.clubs_count||0;
 const r=document.createElement('tr');
-r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td>${c.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button></div></td>`;
+r.innerHTML=`
+<td>${dir.first_name} ${dir.last_name}</td>
+<td>${dir.email}</td>
+<td>${clubsCount}</td>
+<td><span class="status-badge ${statusClass}">${statusText}</span></td>
+<td>${new Date(dir.created_at).toLocaleDateString('ru-RU')}</td>
+<td>
+<div class="table-actions">
+<button class="btn-icon btn-edit" onclick="editDirector(${dir.id})" title="Редактировать">✏️</button>
+<button class="btn-icon btn-delete" onclick="deactivateDirector(${dir.id})" title="Деактивировать">🗑️</button>
+</div>
+</td>
+`;
 t.appendChild(r);
 });
 }
 
-async function loadTrainers(){
-try{
-document.getElementById('loadingTrainers').style.display='block';
-document.getElementById('trainersTable').style.display='none';
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
-let d=await r.json();
-trainers=d.merged||d||[];
-document.getElementById('loadingTrainers').style.display='none';
-document.getElementById('trainersTable').style.display='table';
-renderTrainersTable();
-}catch(e){console.error(e)}
+function addDirector(){
+document.getElementById('modalTitle').textContent='Добавить директора';
+document.getElementById('directorId').value='';
+document.getElementById('directorEmail').value='';
+document.getElementById('directorPassword').value='';
+document.getElementById('directorFirstName').value='';
+document.getElementById('directorLastName').value='';
+openModal();
 }
 
-function renderTrainersTable(){
-const t=document.getElementById('trainersTableBody');
-t.innerHTML='';
-trainers.forEach(tr=>{
-const r=document.createElement('tr');
-r.innerHTML=`<td>${tr.first_name} ${tr.last_name}</td><td>${tr.email}</td><td>${tr.clubs_count||0}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button></div></td>`;
-t.appendChild(r);
-});
+function editDirector(id){
+const dir=directors.find(d=>d.id===id);
+if(!dir)return;
+document.getElementById('modalTitle').textContent='Редактировать директора';
+document.getElementById('directorId').value=dir.id;
+document.getElementById('directorEmail').value=dir.email;
+document.getElementById('directorPassword').value='';
+document.getElementById('directorPassword').required=false;
+document.getElementById('directorFirstName').value=dir.first_name;
+document.getElementById('directorLastName').value=dir.last_name;
+openModal();
 }
 
-async function loadAthletes(){
-try{
-document.getElementById('loadingAthletes').style.display='block';
-document.getElementById('athletesTable').style.display='none';
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list',data:{director_id:user.id}})});
-let d=await r.json();
-athletes=d.merged||d||[];
-document.getElementById('loadingAthletes').style.display='none';
-document.getElementById('athletesTable').style.display='table';
-renderAthletesTable();
-}catch(e){console.error(e)}
-}
-
-function renderAthletesTable(){
-const t=document.getElementById('athletesTableBody');
-t.innerHTML='';
-athletes.forEach(a=>{
-const r=document.createElement('tr');
-r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_name||'Без группы'}</span></td><td>${a.club_name||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="window.location='/athlete-profile.html?id=${a.id}'">👁️</button></div></td>`;
-t.appendChild(r);
-});
-}
-
-function addClub(){
-document.getElementById('clubModalTitle').textContent='Добавить клуб';
-document.getElementById('clubId').value='';
-document.getElementById('clubName').value='';
-document.getElementById('clubAddress').value='';
-openClubModal();
-}
-
-function editClub(id){
-const c=clubs.find(x=>x.id===id);
-if(!c)return;
-document.getElementById('clubModalTitle').textContent='Редактировать клуб';
-document.getElementById('clubId').value=c.id;
-document.getElementById('clubName').value=c.name;
-document.getElementById('clubAddress').value=c.address||'';
-openClubModal();
-}
-
-async function saveClub(e){
+async function saveDirector(e){
 e.preventDefault();
-const id=document.getElementById('clubId').value;
-const name=document.getElementById('clubName').value.trim();
-const address=document.getElementById('clubAddress').value.trim();
-if(!name){alert('Введите название');return}
-const data={name,address,director_id:user.id};
-try{
-const a=id?'update':'create';
-if(id)data.id=parseInt(id);
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:a,data})});
-let res=await r.json();
-const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-if(result&&result.id){
-closeClubModal();
-alert(id?'Клуб обновлен!':'Клуб создан!');
-await loadClubs();
-}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
-}catch(err){console.error(err);alert('Ошибка: '+err.message)}
-}
+const id=document.getElementById('directorId').value;
+const email=document.getElementById('directorEmail').value.trim();
+const password=document.getElementById('directorPassword').value;
+const firstName=document.getElementById('directorFirstName').value.trim();
+const lastName=document.getElementById('directorLastName').value.trim();
 
-function addTrainer(){
-document.getElementById('trainerModalTitle').textContent='Добавить тренера';
-document.getElementById('trainerId').value='';
-document.getElementById('trainerEmail').value='';
-document.getElementById('trainerPassword').value='';
-document.getElementById('trainerPassword').required=true;
-document.getElementById('trainerFirstName').value='';
-document.getElementById('trainerLastName').value='';
-openTrainerModal();
-}
-
-function editTrainer(id){
-const t=trainers.find(x=>x.id===id);
-if(!t)return;
-document.getElementById('trainerModalTitle').textContent='Редактировать тренера';
-document.getElementById('trainerId').value=t.id;
-document.getElementById('trainerEmail').value=t.email;
-document.getElementById('trainerPassword').value='';
-document.getElementById('trainerPassword').required=false;
-document.getElementById('trainerFirstName').value=t.first_name;
-document.getElementById('trainerLastName').value=t.last_name;
-openTrainerModal();
-}
-
-async function saveTrainer(e){
-e.preventDefault();
-const id=document.getElementById('trainerId').value;
-const email=document.getElementById('trainerEmail').value.trim();
-const password=document.getElementById('trainerPassword').value;
-const firstName=document.getElementById('trainerFirstName').value.trim();
-const lastName=document.getElementById('trainerLastName').value.trim();
 if(id){
+// UPDATE
 const data={id:parseInt(id),email,first_name:firstName,last_name:lastName};
 if(password)data.password=password;
 try{
@@ -359,45 +221,50 @@ const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json
 let res=await r.json();
 const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
 if(result&&result.id){
-closeTrainerModal();
-alert('Тренер обновлен!');
-await loadTrainers();
+closeModal();
+alert('Директор обновлен!');
+await loadDirectors();
 }else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
 }catch(err){console.error(err);alert('Ошибка: '+err.message)}
 }else{
+// CREATE via AUTH API
 try{
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
-const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName})});
+const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'director',first_name:firstName,last_name:lastName})});
 if(!r.ok)throw new Error('HTTP '+r.status);
 const res=await r.json();
 if(res.success||res.token){
-closeTrainerModal();
-alert('✅ Тренер создан!');
-await loadTrainers();
+closeModal();
+alert('✅ Директор создан!');
+await loadDirectors();
 }else{alert('❌ '+JSON.stringify(res))}
-}catch(err){console.error(err);alert('❌ Ошибка сети: '+err.message+'\n\nПроверьте n8n Auth API')}
+}catch(err){console.error(err);alert('❌ Ошибка сети: '+err.message+'\n\nПроверьте n8n workflow Auth API')}
 }
 }
 
-function openClubModal(){
-document.getElementById('clubModal').classList.add('active');
+async function deactivateDirector(id){
+if(!confirm('Деактивировать директора?'))return;
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});
+let d=await r.json();
+const result=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
+if(result&&(result.success||result.id)){
+alert('Директор деактивирован');
+await loadDirectors();
+}else{
+alert('Ошибка: '+JSON.stringify(d));
+}
+}catch(e){console.error(e);alert('Ошибка: '+e.message)}
+}
+
+function openModal(){
+document.getElementById('directorModal').classList.add('active');
 document.body.style.overflow='hidden';
 }
 
-function closeClubModal(){
-document.getElementById('clubModal').classList.remove('active');
+function closeModal(){
+document.getElementById('directorModal').classList.remove('active');
 document.body.style.overflow='';
-}
-
-function openTrainerModal(){
-document.getElementById('trainerModal').classList.add('active');
-document.body.style.overflow='hidden';
-}
-
-function closeTrainerModal(){
-document.getElementById('trainerModal').classList.remove('active');
-document.body.style.overflow='';
-document.getElementById('trainerPassword').required=true;
+document.getElementById('directorPassword').required=true;
 }
 
 function logout(){
@@ -407,7 +274,7 @@ window.location.href='/';
 }
 
 loadUserInfo();
-loadClubs();
+loadDirectors();
 </script>
 </body>
 </html>
