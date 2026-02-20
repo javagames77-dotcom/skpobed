@@ -110,6 +110,10 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <input type="text" class="filter-input" id="searchInput" placeholder="Имя...">
 </div>
 <div class="filter-group">
+<label class="filter-label">Клуб</label>
+<select class="filter-select" id="clubFilter"><option value="">Все</option></select>
+</div>
+<div class="filter-group">
 <label class="filter-label">Группа</label>
 <select class="filter-select" id="groupFilter"><option value="">Все</option></select>
 </div>
@@ -118,7 +122,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div id="loadingChildren" class="loading">Загрузка...</div>
 <div id="emptyChildren" class="empty-state" style="display:none"><h3>Нет спортсменов</h3></div>
 <table class="table" id="childrenTable" style="display:none">
-<thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Действия</th></tr></thead>
+<thead><tr><th>Фото</th><th>ФИО</th><th>Клуб</th><th>Группа</th><th>Действия</th></tr></thead>
 <tbody id="childrenTableBody"></tbody>
 </table>
 </div>
@@ -133,7 +137,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div id="loadingGroups" class="loading">Загрузка...</div>
 <div id="emptyGroups" class="empty-state" style="display:none"><h3>Нет групп</h3></div>
 <table class="table" id="groupsTable" style="display:none">
-<thead><tr><th>Название</th><th>Действия</th></tr></thead>
+<thead><tr><th>Название</th><th>Клуб</th><th>Действия</th></tr></thead>
 <tbody id="groupsTableBody"></tbody>
 </table>
 </div>
@@ -239,7 +243,7 @@ document.getElementById('loadingGroups').style.display='none';
 if(groups.length===0)document.getElementById('emptyGroups').style.display='block';
 else{document.getElementById('groupsTable').style.display='table';renderGroupsTable()}
 updateGroupFilter();
-}catch(e){console.error(e);document.getElementById('loadingGroups').textContent='Ошибка'}
+}catch(e){console.error(e);document.getElementById('loadingGroups').textContent='❌ Ошибка'}
 }
 
 function renderGroupsTable(){
@@ -247,7 +251,7 @@ const t=document.getElementById('groupsTableBody');
 t.innerHTML='';
 groups.forEach(g=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td data-label="Название">${g.name}</td><td data-label="Действия"><div class="table-actions"><button class="btn-icon btn-edit" onclick="editGroup(${g.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;
+r.innerHTML=`<td data-label="Название">${g.name}</td><td data-label="Клуб">${g.club_name||'-'}</td><td data-label="Действия"><div class="table-actions"><button class="btn-icon btn-edit" onclick="editGroup(${g.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;
 t.appendChild(r);
 });
 }
