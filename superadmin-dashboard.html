@@ -131,7 +131,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth';
+const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 let token=localStorage.getItem('token');
 let directors=[];
 
@@ -229,7 +229,6 @@ await loadDirectors();
 }else{
 // CREATE via AUTH API
 try{
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth';
 const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'director',first_name:firstName,last_name:lastName})});
 if(!r.ok)throw new Error('HTTP '+r.status);
 const res=await r.json();
