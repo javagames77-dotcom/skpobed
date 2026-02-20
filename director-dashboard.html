@@ -215,11 +215,14 @@ document.getElementById('loadingClubs').style.display='block';
 document.getElementById('clubsTable').style.display='none';
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list',data:{director_id:user.id}})});
 let d=await r.json();
+console.log('📦 CLUBS API RESPONSE:', d);
+console.log('👤 USER ID:', user.id, 'ROLE:', user.role);
 clubs=d.merged||d||[];
+console.log('📋 CLUBS PARSED:', clubs);
 document.getElementById('loadingClubs').style.display='none';
 document.getElementById('clubsTable').style.display='table';
 renderClubsTable();
-}catch(e){console.error(e)}
+}catch(e){console.error('❌ CLUBS ERROR:', e)}
 }
 
 function renderClubsTable(){
@@ -363,15 +366,16 @@ await loadTrainers();
 }catch(err){console.error(err);alert('Ошибка: '+err.message)}
 }else{
 try{
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth';
+const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName})});
+if(!r.ok)throw new Error('HTTP '+r.status);
 const res=await r.json();
-if(res.success){
+if(res.success||res.token){
 closeTrainerModal();
-alert('Тренер создан!');
+alert('✅ Тренер создан!');
 await loadTrainers();
-}else{alert('Ошибка: '+(res.error||'Неизвестная ошибка'))}
-}catch(err){console.error(err);alert('Ошибка: '+err.message)}
+}else{alert('❌ '+JSON.stringify(res))}
+}catch(err){console.error(err);alert('❌ Ошибка сети: '+err.message+'\n\nПроверьте n8n Auth API')}
 }
 }
 
