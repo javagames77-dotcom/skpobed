@@ -228,7 +228,7 @@ const t=document.getElementById('clubsTableBody');
 t.innerHTML='';
 clubs.forEach(c=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td>${c.name}</td><td>${c.address||'-'}</td><td>${c.groups_count||0}</td><td><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></td>`;
+r.innerHTML=`<td>${c.name}</td><td>${c.address||'-'}</td><td>${c.groups_count||0}</td><td><button class="btn-icon btn-edit" data-id="${c.id}">✏️</button><button class="btn-icon btn-delete" data-id="${c.id}">🗑️</button></td>`;
 t.appendChild(r);
 });
 }
@@ -262,9 +262,11 @@ const t=document.getElementById('groupsTableBody');
 t.innerHTML='';
 groups.forEach(g=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);font-weight:600">${g.name}</a></td><td>${g.club_name||'-'}</td><td><button class="btn-icon btn-edit" onclick="editGroup(${g.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></td>`;
+r.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);font-weight:600">${g.name}</a></td><td>${g.club_name||'-'}</td><td><button class="btn-icon btn-edit" data-id="${g.id}">✏️</button><button class="btn-icon btn-delete" data-id="${g.id}">🗑️</button></td>`;
 t.appendChild(r);
 });
+document.getElementById('loadingGroups').style.display='none';
+document.getElementById('groupsTable').style.display='table';
 }
 
 async function loadTrainers(){
@@ -285,9 +287,11 @@ const t=document.getElementById('trainersTableBody');
 t.innerHTML='';
 trainers.forEach(tr=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);font-weight:600">${tr.first_name||''} ${tr.last_name||''}</a></td><td>${tr.email}</td><td><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></td>`;
+r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);font-weight:600">${tr.first_name||''} ${tr.last_name||''}</a></td><td>${tr.email}</td><td><button class="btn-icon btn-edit" data-id="${tr.id}">✏️</button><button class="btn-icon btn-delete" data-id="${tr.id}">🗑️</button></td>`;
 t.appendChild(r);
 });
+document.getElementById('loadingTrainers').style.display='none';
+document.getElementById('trainersTable').style.display='table';
 }
 
 function addClub(){
@@ -545,5 +549,31 @@ loadUserInfo();
 initLangSelector();
 applyTranslations();
 setTimeout(loadClubs, 100); // Delay to ensure DOM is ready
+
+// Event delegation for table buttons
+document.addEventListener('click', function(e) {
+const target = e.target.closest('button[data-id]');
+if (!target) return;
+
+const id = parseInt(target.dataset.id);
+const isEdit = target.classList.contains('btn-edit');
+const isDelete = target.classList.contains('btn-delete');
+
+// Groups table
+if (target.closest('#groupsTableBody')) {
+if (isEdit) editGroup(id);
+else if (isDelete) deleteGroup(id);
+}
+// Trainers table
+else if (target.closest('#trainersTableBody')) {
+if (isEdit) editTrainer(id);
+else if (isDelete) deleteTrainer(id);
+}
+// Clubs table
+else if (target.closest('#clubsTableBody')) {
+if (isEdit) editClub(id);
+else if (isDelete) deleteClub(id);
+}
+});
 </script>
 </body></html>
