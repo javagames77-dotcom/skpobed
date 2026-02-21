@@ -1,579 +1,68 @@
 <!DOCTYPE html>
 <html><head><meta charset="UTF-8"><title>InSkill - Director</title>
 <script src="i18n.js"></script>
-<style>:root{--p:#0066CC;--s:#FF9933}*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:#f8f9fa}.header{background:#fff;padding:1rem 2rem;border-bottom:2px solid var(--p)}.header-content{display:flex;justify-content:space-between;align-items:center}.logo{font-size:1.5rem;font-weight:700;color:var(--p)}.btn-logout{padding:.5rem 1rem;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:#fff}.container{max-width:1400px;margin:2rem auto;padding:0 2rem}.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid #eee}.tab{padding:1rem 2rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}.tab.active{color:var(--p);border-bottom-color:var(--p)}.tab-content{display:none}.tab-content.active{display:block}.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center}.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;cursor:pointer}.table-container{background:#fff;border-radius:12px;overflow:hidden}.table{width:100%;border-collapse:collapse}.table thead{background:var(--p);color:#fff}.table th,.table td{padding:1rem;text-align:left}.table td{border-bottom:1px solid #eee}.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;margin:0 .25rem}.btn-edit{background:#e3f2fd;color:var(--p)}.btn-delete{background:#ffebee;color:#dc3545}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;padding:2rem}
-.modal.active{display:flex;align-items:center;justify-content:center}
-.modal-content{background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;z-index:1001;position:relative}.modal-header{padding:1.5rem;border-bottom:2px solid #eee;display:flex;justify-content:space-between}.modal-close{width:32px;height:32px;border:none;background:#f8f9fa;border-radius:50%;cursor:pointer}.modal-body{padding:1.5rem}.form-group{margin-bottom:1.25rem}.form-label{display:block;margin-bottom:.5rem;font-weight:600}.form-input,.form-select{width:100%;padding:.75rem;border:2px solid #eee;border-radius:8px}.modal-footer{padding:1.5rem;border-top:2px solid #eee;display:flex;gap:1rem;justify-content:flex-end}.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer}.btn-cancel{background:#f8f9fa}.btn-save{background:var(--s);color:#fff}.schedule-editor{border:2px solid #eee;border-radius:8px;padding:1rem}.schedule-day{margin-bottom:1rem;padding:1rem;background:#f8f9fa;border-radius:6px}.schedule-day-header{display:flex;justify-content:space-between;margin-bottom:.5rem}.schedule-time{display:flex;gap:1rem}.schedule-time input{flex:1;padding:.5rem;border:1px solid #ddd;border-radius:4px}</style>
+<style>:root{--p:#0066CC;--s:#FF9933}*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:#f8f9fa}.header{background:#fff;padding:1rem 2rem;border-bottom:2px solid var(--p)}.header-content{display:flex;justify-content:space-between;align-items:center}.logo{font-size:1.5rem;font-weight:700;color:var(--p)}.btn-logout{padding:.5rem 1rem;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:#fff}.container{max-width:1400px;margin:2rem auto;padding:0 2rem}.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid #eee}.tab{padding:1rem 2rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}.tab.active{color:var(--p);border-bottom-color:var(--p)}.tab-content{display:none}.tab-content.active{display:block}.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center}.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;cursor:pointer}.table-container{background:#fff;border-radius:12px;overflow:hidden}.table{width:100%;border-collapse:collapse}.table thead{background:var(--p);color:#fff}.table th,.table td{padding:1rem;text-align:left}.table td{border-bottom:1px solid #eee}.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;margin:0 .25rem}.btn-edit{background:#e3f2fd;color:var(--p)}.btn-delete{background:#ffebee;color:#dc3545}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;padding:2rem}.modal.active{display:flex;align-items:center;justify-content:center}.modal-content{background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;position:relative}.modal-header{padding:1.5rem;border-bottom:2px solid #eee;display:flex;justify-content:space-between}.modal-close{width:32px;height:32px;border:none;background:#f8f9fa;border-radius:50%;cursor:pointer}.modal-body{padding:1.5rem}.form-group{margin-bottom:1.25rem}.form-label{display:block;margin-bottom:.5rem;font-weight:600}.form-input,.form-select{width:100%;padding:.75rem;border:2px solid #eee;border-radius:8px}.modal-footer{padding:1.5rem;border-top:2px solid #eee;display:flex;gap:1rem;justify-content:flex-end}.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer}.btn-cancel{background:#f8f9fa}.btn-save{background:var(--s);color:#fff}.schedule-editor{border:2px solid #eee;border-radius:8px;padding:1rem}.schedule-day{margin-bottom:1rem;padding:1rem;background:#f8f9fa;border-radius:6px}.schedule-day-header{display:flex;justify-content:space-between;margin-bottom:.5rem}.schedule-time{display:flex;gap:1rem}.schedule-time input{flex:1;padding:.5rem;border:1px solid #ddd;border-radius:4px}</style>
 </head><body>
-
 <header class="header">
 <div class="header-content">
 <div class="logo">InSkill<span style="color:var(--s)">.online</span></div>
 <div style="display:flex;align-items:center;gap:1rem">
-<select id="langSelect" onchange="setLang(this.value)" style="padding:.5rem;border-radius:6px">
-<option value="ru">🇷🇺</option>
-<option value="uk">🇺🇦</option>
-<option value="en">🇬🇧</option>
-</select>
+<select id="langSelect" style="padding:.5rem;border-radius:6px"><option value="ru">🇷🇺</option><option value="uk">🇺🇦</option><option value="en">🇬🇧</option></select>
 <span id="userName">—</span>
-<button class="btn-logout" onclick="logout()" id="btnLogout">Выход</button>
-</div>
-</div>
-</header>
-
+<button class="btn-logout" id="btnLogout">Выход</button>
+</div></div></header>
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')" id="tabClubs">🏢 Clubs</button>
-<button class="tab" onclick="switchTab('groups')" id="tabGroups">👥 Groups</button>
-<button class="tab" onclick="switchTab('trainers')" id="tabTrainers">👨‍🏫 Trainers</button>
+<button class="tab active" id="tabClubs">🏢 Clubs</button>
+<button class="tab" id="tabGroups">👥 Groups</button>
+<button class="tab" id="tabTrainers">👨‍🏫 Trainers</button>
 </div>
-
 <div class="tab-content active" id="tab-clubs">
-<div class="page-header">
-<h1 id="titleClubs">Clubs</h1>
-<button class="btn-add" onclick="addClub()" id="btnAddClub">➕ Add</button>
-</div>
-<div class="table-container">
-<div id="loadingClubs">Loading...</div>
-<table class="table" id="clubsTable" style="display:none">
-<thead><tr><th id="thClubName">Name</th><th id="thClubAddress">Address</th><th id="thClubGroups">Groups</th><th id="thActions">Actions</th></tr></thead>
-<tbody id="clubsTableBody"></tbody>
-</table>
-</div>
-</div>
-
+<div class="page-header"><h1 id="titleClubs">Clubs</h1><button class="btn-add" id="btnAddClub">➕ Add</button></div>
+<div class="table-container"><div id="loadingClubs">Loading...</div>
+<table class="table" id="clubsTable" style="display:none"><thead><tr><th id="thClubName">Name</th><th id="thClubAddress">Address</th><th id="thClubGroups">Groups</th><th id="thActions">Actions</th></tr></thead><tbody id="clubsTableBody"></tbody></table></div></div>
 <div class="tab-content" id="tab-groups">
-<div class="page-header">
-<h1 id="titleGroups">Groups</h1>
-<button class="btn-add" onclick="addGroup()" id="btnAddGroup">➕ Add</button>
-</div>
-<div class="table-container">
-<div id="loadingGroups">Loading...</div>
-<table class="table" id="groupsTable" style="display:none">
-<thead><tr><th id="thGroupName">Name</th><th id="thGroupClub">Club</th><th id="thActions2">Actions</th></tr></thead>
-<tbody id="groupsTableBody"></tbody>
-</table>
-</div>
-</div>
-
+<div class="page-header"><h1 id="titleGroups">Groups</h1><button class="btn-add" id="btnAddGroup">➕ Add</button></div>
+<div class="table-container"><div id="loadingGroups">Loading...</div>
+<table class="table" id="groupsTable" style="display:none"><thead><tr><th id="thGroupName">Name</th><th id="thGroupClub">Club</th><th id="thActions2">Actions</th></tr></thead><tbody id="groupsTableBody"></tbody></table></div></div>
 <div class="tab-content" id="tab-trainers">
-<div class="page-header">
-<h1 id="titleTrainers">Trainers</h1>
-<button class="btn-add" onclick="addTrainer()" id="btnAddTrainer">➕ Add</button>
+<div class="page-header"><h1 id="titleTrainers">Trainers</h1><button class="btn-add" id="btnAddTrainer">➕ Add</button></div>
+<div class="table-container"><div id="loadingTrainers">Loading...</div>
+<table class="table" id="trainersTable" style="display:none"><thead><tr><th id="thTrainerName">Name</th><th id="thTrainerEmail">Email</th><th id="thActions3">Actions</th></tr></thead><tbody id="trainersTableBody"></tbody></table></div></div>
 </div>
-<div class="table-container">
-<div id="loadingTrainers">Loading...</div>
-<table class="table" id="trainersTable" style="display:none">
-<thead><tr><th id="thTrainerName">Name</th><th id="thTrainerEmail">Email</th><th id="thActions3">Actions</th></tr></thead>
-<tbody id="trainersTableBody"></tbody>
-</table>
-</div>
-</div>
-
-</div>
-
-<!-- CLUB MODAL -->
-<div class="modal" id="clubModal">
-<div class="modal-content">
-<div class="modal-header">
-<h2 id="clubModalTitle">Add Club</h2>
-<button class="modal-close" onclick="closeClubModal()">✕</button>
-</div>
-<div class="modal-body">
-<form id="clubForm" onsubmit="saveClub(event)">
-<input type="hidden" id="clubId">
-<div class="form-group">
-<label class="form-label" id="lblClubName">Name *</label>
-<input type="text" class="form-input" id="clubName" required>
-</div>
-<div class="form-group">
-<label class="form-label" id="lblClubAddress">Address</label>
-<input type="text" class="form-input" id="clubAddress">
-</div>
-</form>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeClubModal()" id="btnCancelClub">Cancel</button>
-<button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()" id="btnSaveClub">Save</button>
-</div>
-</div>
-</div>
-
-<!-- GROUP MODAL -->
-<div class="modal" id="groupModal">
-<div class="modal-content">
-<div class="modal-header">
-<h2 id="groupModalTitle">Add Group</h2>
-<button class="modal-close" onclick="closeGroupModal()">✕</button>
-</div>
-<div class="modal-body">
-<form id="groupForm" onsubmit="saveGroup(event)">
-<input type="hidden" id="groupId">
-<div class="form-group">
-<label class="form-label" id="lblGroupName">Name *</label>
-<input type="text" class="form-input" id="groupName" required>
-</div>
-<div class="form-group">
-<label class="form-label" id="lblGroupClub">Club *</label>
-<select class="form-select" id="groupClubId" required>
-<option value="">Select club</option>
-</select>
-</div>
-<div class="form-group">
-<label class="form-label" id="lblSchedule">Schedule</label>
-<div class="schedule-editor">
-<button type="button" class="btn-add" onclick="addScheduleDay()" id="btnAddSchedule">➕ Add day</button>
-<div id="scheduleDays"></div>
-</div>
-</div>
-</form>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeGroupModal()" id="btnCancelGroup">Cancel</button>
-<button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()" id="btnSaveGroup">Save</button>
-</div>
-</div>
-</div>
-
-<!-- TRAINER MODAL -->
-<div class="modal" id="trainerModal">
-<div class="modal-content">
-<div class="modal-header">
-<h2 id="trainerModalTitle">Add Trainer</h2>
-<button class="modal-close" onclick="closeTrainerModal()">✕</button>
-</div>
-<div class="modal-body">
-<form id="trainerForm" onsubmit="saveTrainer(event)">
-<input type="hidden" id="trainerId">
-<div class="form-group">
-<label class="form-label" id="lblTrainerEmail">Email *</label>
-<input type="email" class="form-input" id="trainerEmail" required>
-</div>
-<div class="form-group">
-<label class="form-label" id="lblTrainerPassword">Password *</label>
-<input type="password" class="form-input" id="trainerPassword" required>
-</div>
-<div class="form-group">
-<label class="form-label" id="lblTrainerFirstName">First Name *</label>
-<input type="text" class="form-input" id="trainerFirstName" required>
-</div>
-<div class="form-group">
-<label class="form-label" id="lblTrainerLastName">Last Name *</label>
-<input type="text" class="form-input" id="trainerLastName" required>
-</div>
-<div class="form-group">
-<label class="form-label" id="lblTrainerPhone">Phone</label>
-<input type="tel" class="form-input" id="trainerPhone">
-</div>
-<div class="form-group">
-<label class="form-label" id="lblTrainerBirthDate">Birth Date</label>
-<input type="date" class="form-input" id="trainerBirthDate">
-</div>
-<div class="form-group">
-<label class="form-label" id="lblTrainerQualification">Qualification</label>
-<input type="text" class="form-input" id="trainerQualification">
-</div>
-<div class="form-group">
-<label class="form-label" id="lblTrainerPhoto">Photo URL</label>
-<input type="url" class="form-input" id="trainerPhotoUrl" placeholder="https://...">
-</div>
-</form>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeTrainerModal()" id="btnCancelTrainer">Cancel</button>
-<button class="btn btn-save" onclick="document.getElementById('trainerForm').requestSubmit()" id="btnSaveTrainer">Save</button>
-</div>
-</div>
-</div>
-
+<div class="modal" id="clubModal"><div class="modal-content"><div class="modal-header"><h2 id="clubModalTitle">Add Club</h2><button class="modal-close">✕</button></div><div class="modal-body"><form id="clubForm"><input type="hidden" id="clubId"><div class="form-group"><label class="form-label" id="lblClubName">Name *</label><input type="text" class="form-input" id="clubName" required></div><div class="form-group"><label class="form-label" id="lblClubAddress">Address</label><input type="text" class="form-input" id="clubAddress"></div></form></div><div class="modal-footer"><button class="btn btn-cancel" id="btnCancelClub">Cancel</button><button class="btn btn-save" id="btnSaveClub">Save</button></div></div></div>
+<div class="modal" id="groupModal"><div class="modal-content"><div class="modal-header"><h2 id="groupModalTitle">Add Group</h2><button class="modal-close">✕</button></div><div class="modal-body"><form id="groupForm"><input type="hidden" id="groupId"><div class="form-group"><label class="form-label" id="lblGroupName">Name *</label><input type="text" class="form-input" id="groupName" required></div><div class="form-group"><label class="form-label" id="lblGroupClub">Club *</label><select class="form-select" id="groupClubId" required><option value="">Select club</option></select></div><div class="form-group"><label class="form-label" id="lblSchedule">Schedule</label><div class="schedule-editor"><button type="button" class="btn-add" id="btnAddSchedule">➕ Add day</button><div id="scheduleDays"></div></div></div></form></div><div class="modal-footer"><button class="btn btn-cancel" id="btnCancelGroup">Cancel</button><button class="btn btn-save" id="btnSaveGroup">Save</button></div></div></div>
+<div class="modal" id="trainerModal"><div class="modal-content"><div class="modal-header"><h2 id="trainerModalTitle">Add Trainer</h2><button class="modal-close">✕</button></div><div class="modal-body"><form id="trainerForm"><input type="hidden" id="trainerId"><div class="form-group"><label class="form-label" id="lblTrainerEmail">Email *</label><input type="email" class="form-input" id="trainerEmail" required></div><div class="form-group"><label class="form-label" id="lblTrainerPassword">Password *</label><input type="password" class="form-input" id="trainerPassword" required></div><div class="form-group"><label class="form-label" id="lblTrainerFirstName">First Name *</label><input type="text" class="form-input" id="trainerFirstName" required></div><div class="form-group"><label class="form-label" id="lblTrainerLastName">Last Name *</label><input type="text" class="form-input" id="trainerLastName" required></div><div class="form-group"><label class="form-label" id="lblTrainerPhone">Phone</label><input type="tel" class="form-input" id="trainerPhone"></div><div class="form-group"><label class="form-label" id="lblTrainerBirthDate">Birth Date</label><input type="date" class="form-input" id="trainerBirthDate"></div><div class="form-group"><label class="form-label" id="lblTrainerQualification">Qualification</label><input type="text" class="form-input" id="trainerQualification"></div><div class="form-group"><label class="form-label" id="lblTrainerPhoto">Photo URL</label><input type="url" class="form-input" id="trainerPhotoUrl"></div></form></div><div class="modal-footer"><button class="btn btn-cancel" id="btnCancelTrainer">Cancel</button><button class="btn btn-save" id="btnSaveTrainer">Save</button></div></div></div>
 <script>
-const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
-let token=localStorage.getItem('token');
-let user=JSON.parse(localStorage.getItem('user')||'{}');
-let clubs=[],groups=[],trainers=[],schedule=[];
-
-if(!token||user.role!=='director')location.href='/';
-
-function loadUserInfo(){
-document.getElementById('userName').textContent=user.first_name?`${user.first_name} ${user.last_name||''}`.trim():user.email;
-}
-
-function switchTab(t){
-document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
-document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
-event.target.classList.add('active');
-document.getElementById(`tab-${t}`).classList.add('active');
-if(t==='clubs'&&clubs.length===0)loadClubs();
-if(t==='groups'&&groups.length===0)loadGroups();
-if(t==='trainers'&&trainers.length===0)loadTrainers();
-}
-
-async function loadClubs(){
-try{
-document.getElementById('loadingClubs').style.display='block';
-document.getElementById('clubsTable').style.display='none';
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list',data:{director_id:user.id}})});
-let d=await r.json();
-clubs=d.merged||d||[];
-document.getElementById('loadingClubs').style.display='none';
-document.getElementById('clubsTable').style.display='table';
-renderClubsTable();
-updateClubSelect();
-}catch(e){console.error(e)}
-}
-
-function renderClubsTable(){
-const t=document.getElementById('clubsTableBody');
-t.innerHTML='';
-clubs.forEach(c=>{
-const r=document.createElement('tr');
-r.innerHTML=`<td>${c.name}</td><td>${c.address||'-'}</td><td>${c.groups_count||0}</td><td><button class="btn-icon btn-edit" data-id="${c.id}">✏️</button><button class="btn-icon btn-delete" data-id="${c.id}">🗑️</button></td>`;
-t.appendChild(r);
-});
-}
-
-function updateClubSelect(){
-const s=document.getElementById('groupClubId');
-s.innerHTML='<option value="">'+t('club')+'</option>';
-clubs.forEach(c=>{
-const o=document.createElement('option');
-o.value=c.id;
-o.textContent=c.name;
-s.appendChild(o);
-});
-}
-
-async function loadGroups(){
-try{
-document.getElementById('loadingGroups').style.display='block';
-document.getElementById('groupsTable').style.display='none';
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});
-let d=await r.json();
-groups=d.merged||d||[];
-document.getElementById('loadingGroups').style.display='none';
-document.getElementById('groupsTable').style.display='table';
-renderGroupsTable();
-}catch(e){console.error(e)}
-}
-
-function renderGroupsTable(){
-const t=document.getElementById('groupsTableBody');
-t.innerHTML='';
-groups.forEach(g=>{
-const r=document.createElement('tr');
-r.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);font-weight:600">${g.name}</a></td><td>${g.club_name||'-'}</td><td><button class="btn-icon btn-edit" data-id="${g.id}">✏️</button><button class="btn-icon btn-delete" data-id="${g.id}">🗑️</button></td>`;
-t.appendChild(r);
-});
-document.getElementById('loadingGroups').style.display='none';
-document.getElementById('groupsTable').style.display='table';
-}
-
-async function loadTrainers(){
-try{
-document.getElementById('loadingTrainers').style.display='block';
-document.getElementById('trainersTable').style.display='none';
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
-let d=await r.json();
-trainers=d.merged||d||[];
-document.getElementById('loadingTrainers').style.display='none';
-document.getElementById('trainersTable').style.display='table';
-renderTrainersTable();
-}catch(e){console.error(e)}
-}
-
-function renderTrainersTable(){
-const t=document.getElementById('trainersTableBody');
-t.innerHTML='';
-trainers.forEach(tr=>{
-const r=document.createElement('tr');
-r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);font-weight:600">${tr.first_name||''} ${tr.last_name||''}</a></td><td>${tr.email}</td><td><button class="btn-icon btn-edit" data-id="${tr.id}">✏️</button><button class="btn-icon btn-delete" data-id="${tr.id}">🗑️</button></td>`;
-t.appendChild(r);
-});
-document.getElementById('loadingTrainers').style.display='none';
-document.getElementById('trainersTable').style.display='table';
-}
-
-function addClub(){
-document.getElementById('clubModalTitle').textContent=t('addClub');
-document.getElementById('clubId').value='';
-document.getElementById('clubName').value='';
-document.getElementById('clubAddress').value='';
-openClubModal();
-}
-
-function editClub(id){
-const c=clubs.find(x=>x.id===id);
-if(!c)return;
-document.getElementById('clubModalTitle').textContent=t('edit');
-document.getElementById('clubId').value=c.id;
-document.getElementById('clubName').value=c.name;
-document.getElementById('clubAddress').value=c.address||'';
-openClubModal();
-}
-
-async function saveClub(e){
-e.preventDefault();
-const id=document.getElementById('clubId').value,n=document.getElementById('clubName').value.trim(),a=document.getElementById('clubAddress').value.trim();
-if(!n){alert(t('error'));return}
-const data={name:n,address:a,director_id:user.id};
-try{
-const action=id?'update':'create';
-if(id)data.id=parseInt(id);
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action,data})});
-const res=await r.json();
-if(res.id||res.success){closeClubModal();alert(t('saved'));loadClubs()}
-else alert(t('error'));
-}catch(err){console.error(err);alert(t('error'))}
-}
-
-async function deleteClub(id){
-if(!confirm(t('deleteConfirm')))return;
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'delete',data:{id}})});
-const d=await r.json();
-if(d.success||d.id){alert(t('deleted'));loadClubs()}
-}catch(e){console.error(e);alert(t('error'))}
-}
-
-function openClubModal(){document.getElementById('clubModal').classList.add('active')}
-function closeClubModal(){document.getElementById('clubModal').classList.remove('active')}
-
-function addGroup(){
-schedule=[];
-document.getElementById('groupModalTitle').textContent=t('addGroup');
-document.getElementById('groupId').value='';
-document.getElementById('groupName').value='';
-document.getElementById('groupClubId').value='';
-document.getElementById('scheduleDays').innerHTML='';
-openGroupModal();
-}
-
-function editGroup(id){
-const g=groups.find(x=>x.id===id);
-if(!g)return;
-schedule=g.schedule?(typeof g.schedule==='string'?JSON.parse(g.schedule):g.schedule):[];
-document.getElementById('groupModalTitle').textContent=t('edit');
-document.getElementById('groupId').value=g.id;
-document.getElementById('groupName').value=g.name;
-document.getElementById('groupClubId').value=g.club_id||'';
-renderSchedule();
-openGroupModal();
-}
-
-function addScheduleDay(){
-schedule.push({day:'',time_start:'',time_end:''});
-renderSchedule();
-}
-
-function renderSchedule(){
-const c=document.getElementById('scheduleDays');
-c.innerHTML='';
-schedule.forEach((s,i)=>{
-const d=document.createElement('div');
-d.className='schedule-day';
-d.innerHTML=`
-<div class="schedule-day-header">
-<select onchange="updateSchedule(${i},'day',this.value)" style="padding:.5rem">
-<option value="">Day</option>
-<option value="Monday" ${s.day==='Monday'?'selected':''}>Mon</option>
-<option value="Tuesday" ${s.day==='Tuesday'?'selected':''}>Tue</option>
-<option value="Wednesday" ${s.day==='Wednesday'?'selected':''}>Wed</option>
-<option value="Thursday" ${s.day==='Thursday'?'selected':''}>Thu</option>
-<option value="Friday" ${s.day==='Friday'?'selected':''}>Fri</option>
-<option value="Saturday" ${s.day==='Saturday'?'selected':''}>Sat</option>
-<option value="Sunday" ${s.day==='Sunday'?'selected':''}>Sun</option>
-</select>
-<button type="button" onclick="removeScheduleDay(${i})" style="background:#ffebee;border:none;padding:.5rem;border-radius:4px;cursor:pointer">🗑️</button>
-</div>
-<div class="schedule-time">
-<input type="time" value="${s.time_start}" onchange="updateSchedule(${i},'time_start',this.value)">
-<input type="time" value="${s.time_end}" onchange="updateSchedule(${i},'time_end',this.value)">
-</div>
-`;
-c.appendChild(d);
-});
-}
-
+const API='https://n8n.inskill.online/webhook/3a16e4f2-c8e4-42df-8c7f-01cbe2c31a49/api',AUTH_API='https://n8n.inskill.online/webhook/3a16e4f2-c8e4-42df-8c7f-01cbe2c31a49/auth';
+let token=localStorage.getItem('token'),user=null,clubs=[],groups=[],trainers=[],schedule=[];
+if(!token){location.href='/';throw new Error('No token')}
+function loadUserInfo(){const u=JSON.parse(localStorage.getItem('user')||'{}');user=u;document.getElementById('userName').textContent=(u.first_name||'')+' '+(u.last_name||'')}
+function switchTab(n){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById('tab'+n.charAt(0).toUpperCase()+n.slice(1)).classList.add('active');document.getElementById('tab-'+n).classList.add('active');if(n==='groups'&&!groups.length)loadGroups();if(n==='trainers'&&!trainers.length)loadTrainers()}
+async function loadClubs(){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list'})});let d=await r.json();clubs=d.merged||d||[];const sel=document.getElementById('groupClubId');sel.innerHTML='<option value="">Select club</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');renderClubsTable()}catch(e){console.error(e)}}
+function renderClubsTable(){const tb=document.getElementById('clubsTableBody');tb.innerHTML='';clubs.forEach(c=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${c.name}</td><td>${c.address||'-'}</td><td>${c.groups_count||0}</td><td></td>`;const editBtn=document.createElement('button');editBtn.className='btn-icon btn-edit';editBtn.textContent='✏️';editBtn.onclick=()=>editClub(c.id);const delBtn=document.createElement('button');delBtn.className='btn-icon btn-delete';delBtn.textContent='🗑️';delBtn.onclick=()=>deleteClub(c.id);tr.cells[3].appendChild(editBtn);tr.cells[3].appendChild(delBtn);tb.appendChild(tr)});document.getElementById('loadingClubs').style.display='none';document.getElementById('clubsTable').style.display='table'}
+function addClub(){document.getElementById('clubModalTitle').textContent=t('addClub');document.getElementById('clubId').value='';document.getElementById('clubForm').reset();document.getElementById('clubModal').classList.add('active')}
+function editClub(id){const c=clubs.find(x=>x.id===id);if(!c)return;document.getElementById('clubModalTitle').textContent=t('edit');document.getElementById('clubId').value=c.id;document.getElementById('clubName').value=c.name||'';document.getElementById('clubAddress').value=c.address||'';document.getElementById('clubModal').classList.add('active')}
+async function saveClub(){const id=document.getElementById('clubId').value,n=document.getElementById('clubName').value.trim(),a=document.getElementById('clubAddress').value.trim();if(!n){alert(t('error'));return}const data={name:n,address:a,director_id:user.id};try{const action=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action,data})});const res=await r.json();if(res.id||res.success){document.getElementById('clubModal').classList.remove('active');alert(t('saved'));loadClubs()}else alert(t('error'))}catch(err){console.error(err);alert(t('error'))}}
+async function deleteClub(id){if(!confirm(t('deleteConfirm')))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'delete',data:{id}})});const d=await r.json();if(d.success||d.id){alert(t('deleted'));loadClubs()}}catch(e){console.error(e);alert(t('error'))}}
+async function loadGroups(){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});let d=await r.json();groups=d.merged||d||[];renderGroupsTable()}catch(e){console.error(e)}}
+function renderGroupsTable(){const tb=document.getElementById('groupsTableBody');tb.innerHTML='';groups.forEach(g=>{const tr=document.createElement('tr');tr.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);font-weight:600">${g.name}</a></td><td>${g.club_name||'-'}</td><td></td>`;const editBtn=document.createElement('button');editBtn.className='btn-icon btn-edit';editBtn.textContent='✏️';editBtn.onclick=()=>editGroup(g.id);const delBtn=document.createElement('button');delBtn.className='btn-icon btn-delete';delBtn.textContent='🗑️';delBtn.onclick=()=>deleteGroup(g.id);tr.cells[2].appendChild(editBtn);tr.cells[2].appendChild(delBtn);tb.appendChild(tr)});document.getElementById('loadingGroups').style.display='none';document.getElementById('groupsTable').style.display='table'}
+function addGroup(){document.getElementById('groupModalTitle').textContent=t('addGroup');document.getElementById('groupId').value='';document.getElementById('groupForm').reset();schedule=[];renderSchedule();document.getElementById('groupModal').classList.add('active')}
+function editGroup(id){const g=groups.find(x=>x.id===id);if(!g)return;document.getElementById('groupModalTitle').textContent=t('edit');document.getElementById('groupId').value=g.id;document.getElementById('groupName').value=g.name||'';document.getElementById('groupClubId').value=g.club_id||'';schedule=g.schedule?(typeof g.schedule==='string'?JSON.parse(g.schedule):g.schedule):[];renderSchedule();document.getElementById('groupModal').classList.add('active')}
+function addScheduleDay(){schedule.push({day:'Monday',time_start:'10:00',time_end:'12:00'});renderSchedule()}
+function renderSchedule(){const d=document.getElementById('scheduleDays');d.innerHTML=schedule.map((s,i)=>`<div class="schedule-day"><div class="schedule-day-header"><select onchange="updateSchedule(${i},'day',this.value)"><option ${s.day==='Monday'?'selected':''}>Monday</option><option ${s.day==='Tuesday'?'selected':''}>Tuesday</option><option ${s.day==='Wednesday'?'selected':''}>Wednesday</option><option ${s.day==='Thursday'?'selected':''}>Thursday</option><option ${s.day==='Friday'?'selected':''}>Friday</option><option ${s.day==='Saturday'?'selected':''}>Saturday</option><option ${s.day==='Sunday'?'selected':''}>Sunday</option></select><button type="button" onclick="removeScheduleDay(${i})" class="btn-icon btn-delete">🗑️</button></div><div class="schedule-time"><input type="time" value="${s.time_start}" onchange="updateSchedule(${i},'time_start',this.value)"><input type="time" value="${s.time_end}" onchange="updateSchedule(${i},'time_end',this.value)"></div></div>`).join('')}
 function updateSchedule(i,k,v){schedule[i][k]=v}
 function removeScheduleDay(i){schedule.splice(i,1);renderSchedule()}
-
-async function saveGroup(e){
-e.preventDefault();
-const id=document.getElementById('groupId').value,n=document.getElementById('groupName').value.trim(),c=document.getElementById('groupClubId').value;
-if(!n||!c){alert(t('error'));return}
-const data={name:n,club_id:parseInt(c),schedule:JSON.stringify(schedule)};
-try{
-const action=id?'update':'create';
-if(id)data.id=parseInt(id);
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action,data})});
-const res=await r.json();
-if(res.id||res.success){closeGroupModal();alert(t('saved'));loadGroups()}
-else alert(t('error'));
-}catch(err){console.error(err);alert(t('error'))}
-}
-
-async function deleteGroup(id){
-if(!confirm(t('deleteConfirm')))return;
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'delete',data:{id}})});
-const d=await r.json();
-if(d.success||d.id){alert(t('deleted'));loadGroups()}
-}catch(e){console.error(e);alert(t('error'))}
-}
-
-function openGroupModal(){document.getElementById('groupModal').classList.add('active')}
-function closeGroupModal(){document.getElementById('groupModal').classList.remove('active')}
-
-function addTrainer(){
-document.getElementById('trainerModalTitle').textContent=t('addTrainer');
-document.getElementById('trainerId').value='';
-document.getElementById('trainerForm').reset();
-openTrainerModal();
-}
-
-function editTrainer(id){
-const tr=trainers.find(x=>x.id===id);
-if(!tr)return;
-document.getElementById('trainerModalTitle').textContent=t('edit');
-document.getElementById('trainerId').value=tr.id;
-document.getElementById('trainerEmail').value=tr.email||'';
-document.getElementById('trainerPassword').value='';
-document.getElementById('trainerPassword').required=false; // Password not required for edit
-document.getElementById('trainerFirstName').value=tr.first_name||'';
-document.getElementById('trainerLastName').value=tr.last_name||'';
-document.getElementById('trainerPhone').value=tr.phone||'';
-document.getElementById('trainerBirthDate').value=tr.birth_date||'';
-document.getElementById('trainerQualification').value=tr.qualification||'';
-document.getElementById('trainerPhotoUrl').value=tr.photo_url||'';
-openTrainerModal();
-}
-
-async function saveTrainer(e){
-e.preventDefault();
-const id=document.getElementById('trainerId').value,
-email=document.getElementById('trainerEmail').value.trim(),
-password=document.getElementById('trainerPassword').value,
-first_name=document.getElementById('trainerFirstName').value.trim(),
-last_name=document.getElementById('trainerLastName').value.trim(),
-phone=document.getElementById('trainerPhone').value.trim(),
-birth_date=document.getElementById('trainerBirthDate').value,
-qualification=document.getElementById('trainerQualification').value.trim(),
-photo_url=document.getElementById('trainerPhotoUrl').value.trim();
-
-if(!email||!first_name||!last_name){alert(t('error'));return}
-if(!id&&!password){alert('Password required');return}
-
-if(id){
-// UPDATE existing trainer
-const data={id:parseInt(id),email,first_name,last_name,phone,birth_date,qualification,photo_url};
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});
-const res=await r.json();
-if(res.id||res.success){closeTrainerModal();alert(t('saved'));loadTrainers()}
-else alert(t('error')+': '+(JSON.stringify(res)));
-}catch(err){console.error(err);alert(t('networkError'))}
-}else{
-// CREATE new trainer
-const data={email,password,first_name,last_name,phone,birth_date,qualification,photo_url,role:'trainer'};
-try{
-const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',...data})});
-const res=await r.json();
-if(res.success||res.token){closeTrainerModal();alert(t('created'));loadTrainers()}
-else alert(t('error')+': '+(res.error||JSON.stringify(res)));
-}catch(err){console.error(err);alert(t('networkError'))}
-}
-}
-
-async function deleteTrainer(id){
-if(!confirm(t('deleteConfirm')))return;
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});
-const d=await r.json();
-if(d.success||d.id){alert(t('deleted'));loadTrainers()}
-}catch(e){console.error(e);alert(t('error'))}
-}
-
-function openTrainerModal(){document.getElementById('trainerModal').classList.add('active')}
-function closeTrainerModal(){document.getElementById('trainerModal').classList.remove('active')}
-
-function logout(){
-localStorage.clear();
-location.href='/';
-}
-
-function applyTranslations(){
-document.getElementById('btnLogout').textContent=t('logout');
-document.getElementById('tabClubs').innerHTML='🏢 '+t('clubs');
-document.getElementById('tabGroups').innerHTML='👥 '+t('groups');
-document.getElementById('tabTrainers').innerHTML='👨‍🏫 '+t('trainers');
-document.getElementById('titleClubs').textContent=t('clubs');
-document.getElementById('titleGroups').textContent=t('groups');
-document.getElementById('titleTrainers').textContent=t('trainers');
-document.getElementById('btnAddClub').innerHTML='➕ '+t('add');
-document.getElementById('btnAddGroup').innerHTML='➕ '+t('add');
-document.getElementById('btnAddTrainer').innerHTML='➕ '+t('add');
-document.getElementById('thClubName').textContent=t('name');
-document.getElementById('thClubAddress').textContent=t('address');
-document.getElementById('thClubGroups').textContent=t('groupsCount');
-document.getElementById('thActions').textContent=t('actions');
-document.getElementById('thActions2').textContent=t('actions');
-document.getElementById('thActions3').textContent=t('actions');
-document.getElementById('thGroupName').textContent=t('name');
-document.getElementById('thGroupClub').textContent=t('club');
-document.getElementById('thTrainerName').textContent=t('name');
-document.getElementById('thTrainerEmail').textContent=t('email');
-document.getElementById('lblClubName').textContent=t('name')+' *';
-document.getElementById('lblClubAddress').textContent=t('address');
-document.getElementById('btnCancelClub').textContent=t('cancel');
-document.getElementById('btnSaveClub').textContent=t('save');
-document.getElementById('lblGroupName').textContent=t('name')+' *';
-document.getElementById('lblGroupClub').textContent=t('club')+' *';
-document.getElementById('lblSchedule').textContent=t('schedule');
-document.getElementById('btnAddSchedule').innerHTML='➕ '+t('add');
-document.getElementById('btnCancelGroup').textContent=t('cancel');
-document.getElementById('btnSaveGroup').textContent=t('save');
-document.getElementById('lblTrainerEmail').textContent=t('email')+' *';
-document.getElementById('lblTrainerPassword').textContent=t('password')+' *';
-document.getElementById('lblTrainerFirstName').textContent=t('firstName')+' *';
-document.getElementById('lblTrainerLastName').textContent=t('lastName')+' *';
-document.getElementById('lblTrainerPhone').textContent=t('phone');
-document.getElementById('lblTrainerBirthDate').textContent=t('birthDate');
-document.getElementById('lblTrainerQualification').textContent=t('qualification');
-document.getElementById('lblTrainerPhoto').textContent=t('photo');
-document.getElementById('btnCancelTrainer').textContent=t('cancel');
-document.getElementById('btnSaveTrainer').textContent=t('save');
-}
-
-loadUserInfo();
-initLangSelector();
-applyTranslations();
-setTimeout(loadClubs, 100); // Delay to ensure DOM is ready
-
-// Event delegation for table buttons
-document.addEventListener('click', function(e) {
-const target = e.target.closest('button[data-id]');
-if (!target) return;
-
-const id = parseInt(target.dataset.id);
-const isEdit = target.classList.contains('btn-edit');
-const isDelete = target.classList.contains('btn-delete');
-
-// Groups table
-if (target.closest('#groupsTableBody')) {
-if (isEdit) editGroup(id);
-else if (isDelete) deleteGroup(id);
-}
-// Trainers table
-else if (target.closest('#trainersTableBody')) {
-if (isEdit) editTrainer(id);
-else if (isDelete) deleteTrainer(id);
-}
-// Clubs table
-else if (target.closest('#clubsTableBody')) {
-if (isEdit) editClub(id);
-else if (isDelete) deleteClub(id);
-}
-});
+async function saveGroup(){const id=document.getElementById('groupId').value,n=document.getElementById('groupName').value.trim(),c=document.getElementById('groupClubId').value;if(!n||!c){alert(t('error'));return}const data={name:n,club_id:parseInt(c),schedule:JSON.stringify(schedule)};try{const action=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action,data})});const res=await r.json();if(res.id||res.success){document.getElementById('groupModal').classList.remove('active');alert(t('saved'));loadGroups()}else alert(t('error'))}catch(err){console.error(err);alert(t('error'))}}
+async function deleteGroup(id){if(!confirm(t('deleteConfirm')))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'delete',data:{id}})});const d=await r.json();if(d.success||d.id){alert(t('deleted'));loadGroups()}}catch(e){console.error(e);alert(t('error'))}}
+async function loadTrainers(){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});let d=await r.json();trainers=d.merged||d||[];renderTrainersTable()}catch(e){console.error(e)}}
+function renderTrainersTable(){const tb=document.getElementById('trainersTableBody');tb.innerHTML='';trainers.forEach(tr=>{const row=document.createElement('tr');row.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);font-weight:600">${tr.first_name||''} ${tr.last_name||''}</a></td><td>${tr.email}</td><td></td>`;const editBtn=document.createElement('button');editBtn.className='btn-icon btn-edit';editBtn.textContent='✏️';editBtn.onclick=()=>editTrainer(tr.id);const delBtn=document.createElement('button');delBtn.className='btn-icon btn-delete';delBtn.textContent='🗑️';delBtn.onclick=()=>deleteTrainer(tr.id);row.cells[2].appendChild(editBtn);row.cells[2].appendChild(delBtn);tb.appendChild(row)});document.getElementById('loadingTrainers').style.display='none';document.getElementById('trainersTable').style.display='table'}
+function addTrainer(){document.getElementById('trainerModalTitle').textContent=t('addTrainer');document.getElementById('trainerId').value='';document.getElementById('trainerForm').reset();document.getElementById('trainerPassword').required=true;document.getElementById('trainerModal').classList.add('active')}
+function editTrainer(id){const tr=trainers.find(x=>x.id===id);if(!tr)return;document.getElementById('trainerModalTitle').textContent=t('edit');document.getElementById('trainerId').value=tr.id;document.getElementById('trainerEmail').value=tr.email||'';document.getElementById('trainerPassword').value='';document.getElementById('trainerPassword').required=false;document.getElementById('trainerFirstName').value=tr.first_name||'';document.getElementById('trainerLastName').value=tr.last_name||'';document.getElementById('trainerPhone').value=tr.phone||'';document.getElementById('trainerBirthDate').value=tr.birth_date||'';document.getElementById('trainerQualification').value=tr.qualification||'';document.getElementById('trainerPhotoUrl').value=tr.photo_url||'';document.getElementById('trainerModal').classList.add('active')}
+async function saveTrainer(){const id=document.getElementById('trainerId').value,email=document.getElementById('trainerEmail').value.trim(),password=document.getElementById('trainerPassword').value,first_name=document.getElementById('trainerFirstName').value.trim(),last_name=document.getElementById('trainerLastName').value.trim(),phone=document.getElementById('trainerPhone').value.trim(),birth_date=document.getElementById('trainerBirthDate').value,qualification=document.getElementById('trainerQualification').value.trim(),photo_url=document.getElementById('trainerPhotoUrl').value.trim();if(!email||!first_name||!last_name){alert(t('error'));return}if(!id&&!password){alert('Password required');return}if(id){const data={id:parseInt(id),email,first_name,last_name,phone,birth_date,qualification,photo_url};try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});const res=await r.json();if(res.id||res.success){document.getElementById('trainerModal').classList.remove('active');alert(t('saved'));loadTrainers()}else alert(t('error')+': '+(JSON.stringify(res)))}catch(err){console.error(err);alert(t('networkError'))}}else{const data={email,password,first_name,last_name,phone,birth_date,qualification,photo_url,role:'trainer'};try{const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',...data})});const res=await r.json();if(res.success||res.token){document.getElementById('trainerModal').classList.remove('active');alert(t('created'));loadTrainers()}else alert(t('error')+': '+(res.error||JSON.stringify(res)))}catch(err){console.error(err);alert(t('networkError'))}}}
+async function deleteTrainer(id){if(!confirm(t('deleteConfirm')))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});const d=await r.json();if(d.success||d.id){alert(t('deleted'));loadTrainers()}}catch(e){console.error(e);alert(t('error'))}}
+function applyTranslations(){document.getElementById('btnLogout').textContent=t('logout');document.getElementById('tabClubs').innerHTML='🏢 '+t('clubs');document.getElementById('tabGroups').innerHTML='👥 '+t('groups');document.getElementById('tabTrainers').innerHTML='👨‍🏫 '+t('trainers');document.getElementById('titleClubs').textContent=t('clubs');document.getElementById('titleGroups').textContent=t('groups');document.getElementById('titleTrainers').textContent=t('trainers');document.getElementById('btnAddClub').innerHTML='➕ '+t('add');document.getElementById('btnAddGroup').innerHTML='➕ '+t('add');document.getElementById('btnAddTrainer').innerHTML='➕ '+t('add');document.getElementById('thClubName').textContent=t('name');document.getElementById('thClubAddress').textContent=t('address');document.getElementById('thClubGroups').textContent=t('groupsCount');document.getElementById('thActions').textContent=t('actions');document.getElementById('thActions2').textContent=t('actions');document.getElementById('thActions3').textContent=t('actions');document.getElementById('thGroupName').textContent=t('name');document.getElementById('thGroupClub').textContent=t('club');document.getElementById('thTrainerName').textContent=t('name');document.getElementById('thTrainerEmail').textContent=t('email');document.getElementById('lblClubName').textContent=t('name')+' *';document.getElementById('lblClubAddress').textContent=t('address');document.getElementById('btnCancelClub').textContent=t('cancel');document.getElementById('btnSaveClub').textContent=t('save');document.getElementById('lblGroupName').textContent=t('name')+' *';document.getElementById('lblGroupClub').textContent=t('club')+' *';document.getElementById('lblSchedule').textContent=t('schedule');document.getElementById('btnAddSchedule').innerHTML='➕ '+t('add');document.getElementById('btnCancelGroup').textContent=t('cancel');document.getElementById('btnSaveGroup').textContent=t('save');document.getElementById('lblTrainerEmail').textContent=t('email')+' *';document.getElementById('lblTrainerPassword').textContent=t('password')+' *';document.getElementById('lblTrainerFirstName').textContent=t('firstName')+' *';document.getElementById('lblTrainerLastName').textContent=t('lastName')+' *';document.getElementById('lblTrainerPhone').textContent=t('phone');document.getElementById('lblTrainerBirthDate').textContent=t('birthDate');document.getElementById('lblTrainerQualification').textContent=t('qualification');document.getElementById('lblTrainerPhoto').textContent=t('photo');document.getElementById('btnCancelTrainer').textContent=t('cancel');document.getElementById('btnSaveTrainer').textContent=t('save')}
+document.getElementById('tabClubs').onclick=()=>switchTab('clubs');document.getElementById('tabGroups').onclick=()=>switchTab('groups');document.getElementById('tabTrainers').onclick=()=>switchTab('trainers');document.getElementById('btnLogout').onclick=()=>{localStorage.clear();location.href='/'};document.getElementById('btnAddClub').onclick=addClub;document.getElementById('btnAddGroup').onclick=addGroup;document.getElementById('btnAddTrainer').onclick=addTrainer;document.getElementById('btnSaveClub').onclick=saveClub;document.getElementById('btnSaveGroup').onclick=saveGroup;document.getElementById('btnSaveTrainer').onclick=saveTrainer;document.getElementById('btnAddSchedule').onclick=addScheduleDay;document.querySelectorAll('.modal-close').forEach(b=>b.onclick=function(){this.closest('.modal').classList.remove('active')});document.querySelectorAll('.btn-cancel').forEach(b=>b.onclick=function(){this.closest('.modal').classList.remove('active')});document.getElementById('langSelect').onchange=function(){setLang(this.value);location.reload()};
+loadUserInfo();initLangSelector();applyTranslations();loadClubs();
 </script>
 </body></html>
