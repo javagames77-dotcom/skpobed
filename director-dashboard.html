@@ -1,72 +1,18 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>InSkill Online - Директор</title>
-<style>
-:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
-.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer}
-.lang-switcher{margin-right:1rem}
-.lang-switcher select{padding:.5rem;border-radius:6px;border:1px solid var(--b)}
-.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
-.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)}
-.tab{padding:1rem 2rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
-.tab.active{color:var(--p);border-bottom-color:var(--p)}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
-.page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
-.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
-.table-container{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
-.table{width:100%;border-collapse:collapse}
-.table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
-.table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem}
-.table td{padding:1rem;border-bottom:1px solid var(--b)}
-.table-actions{display:flex;gap:.5rem}
-.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;font-size:1.1rem}
-.btn-edit{background:#e3f2fd;color:var(--p)}
-.btn-delete{background:#ffebee;color:#dc3545}
-.loading{text-align:center;padding:3rem;color:var(--p)}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
-.modal.active{display:flex}
-.modal-content{background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto}
-.modal-header{padding:1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:1.5rem;font-weight:700;color:var(--p)}
-.modal-close{width:32px;height:32px;border:none;background:var(--l);border-radius:50%;cursor:pointer;font-size:1.2rem}
-.modal-body{padding:1.5rem}
-.form-group{margin-bottom:1.25rem}
-.form-label{display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem}
-.form-input,.form-select{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
-.modal-footer{padding:1.5rem;border-top:2px solid var(--b);display:flex;gap:1rem;justify-content:flex-end}
-.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
-.btn-cancel{background:var(--l);color:var(--d)}
-.btn-save{background:var(--s);color:#fff}
-.schedule-editor{border:2px solid var(--b);border-radius:8px;padding:1rem}
-.schedule-day{margin-bottom:1rem;padding:1rem;background:var(--l);border-radius:6px}
-.schedule-day-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
-.schedule-time{display:flex;gap:1rem}
-.schedule-time input{flex:1;padding:.5rem;border:1px solid var(--b);border-radius:4px}
-</style>
-</head>
-<body>
+<html><head><meta charset="UTF-8"><title>InSkill - Director</title>
+<script src="i18n.js"></script>
+<style>:root{--p:#0066CC;--s:#FF9933}*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:#f8f9fa}.header{background:#fff;padding:1rem 2rem;border-bottom:2px solid var(--p)}.header-content{display:flex;justify-content:space-between;align-items:center}.logo{font-size:1.5rem;font-weight:700;color:var(--p)}.btn-logout{padding:.5rem 1rem;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:#fff}.container{max-width:1400px;margin:2rem auto;padding:0 2rem}.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid #eee}.tab{padding:1rem 2rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}.tab.active{color:var(--p);border-bottom-color:var(--p)}.tab-content{display:none}.tab-content.active{display:block}.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center}.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;cursor:pointer}.table-container{background:#fff;border-radius:12px;overflow:hidden}.table{width:100%;border-collapse:collapse}.table thead{background:var(--p);color:#fff}.table th,.table td{padding:1rem;text-align:left}.table td{border-bottom:1px solid #eee}.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;margin:0 .25rem}.btn-edit{background:#e3f2fd;color:var(--p)}.btn-delete{background:#ffebee;color:#dc3545}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;padding:2rem}.modal.active{display:flex;align-items:center;justify-content:center}.modal-content{background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto}.modal-header{padding:1.5rem;border-bottom:2px solid #eee;display:flex;justify-content:space-between}.modal-close{width:32px;height:32px;border:none;background:#f8f9fa;border-radius:50%;cursor:pointer}.modal-body{padding:1.5rem}.form-group{margin-bottom:1.25rem}.form-label{display:block;margin-bottom:.5rem;font-weight:600}.form-input,.form-select{width:100%;padding:.75rem;border:2px solid #eee;border-radius:8px}.modal-footer{padding:1.5rem;border-top:2px solid #eee;display:flex;gap:1rem;justify-content:flex-end}.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer}.btn-cancel{background:#f8f9fa}.btn-save{background:var(--s);color:#fff}.schedule-editor{border:2px solid #eee;border-radius:8px;padding:1rem}.schedule-day{margin-bottom:1rem;padding:1rem;background:#f8f9fa;border-radius:6px}.schedule-day-header{display:flex;justify-content:space-between;margin-bottom:.5rem}.schedule-time{display:flex;gap:1rem}.schedule-time input{flex:1;padding:.5rem;border:1px solid #ddd;border-radius:4px}</style>
+</head><body>
 
 <header class="header">
 <div class="header-content">
-<a href="/" class="logo"><span>InSkill</span><span style="color:var(--s)">.online</span></a>
+<div class="logo">InSkill<span style="color:var(--s)">.online</span></div>
 <div style="display:flex;align-items:center;gap:1rem">
-<div class="lang-switcher">
-<select id="langSelect" onchange="setLang(this.value)">
+<select id="langSelect" onchange="setLang(this.value)" style="padding:.5rem;border-radius:6px">
 <option value="ru">🇷🇺</option>
 <option value="uk">🇺🇦</option>
 <option value="en">🇬🇧</option>
 </select>
-</div>
 <span id="userName">—</span>
 <button class="btn-logout" onclick="logout()" id="btnLogout">Выход</button>
 </div>
@@ -75,51 +21,48 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')" id="tabClubs">🏢 Клубы</button>
-<button class="tab" onclick="switchTab('groups')" id="tabGroups">👥 Группы</button>
-<button class="tab" onclick="switchTab('trainers')" id="tabTrainers">👨‍🏫 Тренеры</button>
+<button class="tab active" onclick="switchTab('clubs')" id="tabClubs">🏢 Clubs</button>
+<button class="tab" onclick="switchTab('groups')" id="tabGroups">👥 Groups</button>
+<button class="tab" onclick="switchTab('trainers')" id="tabTrainers">👨‍🏫 Trainers</button>
 </div>
 
-<!-- CLUBS TAB -->
 <div class="tab-content active" id="tab-clubs">
 <div class="page-header">
-<h1 class="page-title" id="titleClubs">Клубы</h1>
-<button class="btn-add" onclick="addClub()" id="btnAddClub">➕ Добавить</button>
+<h1 id="titleClubs">Clubs</h1>
+<button class="btn-add" onclick="addClub()" id="btnAddClub">➕ Add</button>
 </div>
 <div class="table-container">
-<div id="loadingClubs" class="loading">Загрузка...</div>
+<div id="loadingClubs">Loading...</div>
 <table class="table" id="clubsTable" style="display:none">
-<thead><tr><th id="thClubName">Название</th><th id="thClubAddress">Адрес</th><th id="thClubGroups">Групп</th><th id="thActions">Действия</th></tr></thead>
+<thead><tr><th id="thClubName">Name</th><th id="thClubAddress">Address</th><th id="thClubGroups">Groups</th><th id="thActions">Actions</th></tr></thead>
 <tbody id="clubsTableBody"></tbody>
 </table>
 </div>
 </div>
 
-<!-- GROUPS TAB -->
 <div class="tab-content" id="tab-groups">
 <div class="page-header">
-<h1 class="page-title" id="titleGroups">Группы</h1>
-<button class="btn-add" onclick="addGroup()" id="btnAddGroup">➕ Добавить</button>
+<h1 id="titleGroups">Groups</h1>
+<button class="btn-add" onclick="addGroup()" id="btnAddGroup">➕ Add</button>
 </div>
 <div class="table-container">
-<div id="loadingGroups" class="loading">Загрузка...</div>
+<div id="loadingGroups">Loading...</div>
 <table class="table" id="groupsTable" style="display:none">
-<thead><tr><th id="thGroupName">Название</th><th id="thGroupClub">Клуб</th><th id="thGroupChildren">Детей</th><th id="thGroupTrainers">Тренеров</th><th>Действия</th></tr></thead>
+<thead><tr><th id="thGroupName">Name</th><th id="thGroupClub">Club</th><th id="thActions2">Actions</th></tr></thead>
 <tbody id="groupsTableBody"></tbody>
 </table>
 </div>
 </div>
 
-<!-- TRAINERS TAB -->
 <div class="tab-content" id="tab-trainers">
 <div class="page-header">
-<h1 class="page-title" id="titleTrainers">Тренеры</h1>
-<button class="btn-add" onclick="addTrainer()" id="btnAddTrainer">➕ Добавить</button>
+<h1 id="titleTrainers">Trainers</h1>
+<button class="btn-add" onclick="addTrainer()" id="btnAddTrainer">➕ Add</button>
 </div>
 <div class="table-container">
-<div id="loadingTrainers" class="loading">Загрузка...</div>
+<div id="loadingTrainers">Loading...</div>
 <table class="table" id="trainersTable" style="display:none">
-<thead><tr><th id="thTrainerName">ФИО</th><th id="thTrainerEmail">Email</th><th id="thTrainerGroups">Групп</th><th>Действия</th></tr></thead>
+<thead><tr><th id="thTrainerName">Name</th><th id="thTrainerEmail">Email</th><th id="thActions3">Actions</th></tr></thead>
 <tbody id="trainersTableBody"></tbody>
 </table>
 </div>
@@ -131,25 +74,25 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="modal" id="clubModal">
 <div class="modal-content">
 <div class="modal-header">
-<h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2>
+<h2 id="clubModalTitle">Add Club</h2>
 <button class="modal-close" onclick="closeClubModal()">✕</button>
 </div>
 <div class="modal-body">
 <form id="clubForm" onsubmit="saveClub(event)">
 <input type="hidden" id="clubId">
 <div class="form-group">
-<label class="form-label" id="lblClubName">Название *</label>
+<label class="form-label" id="lblClubName">Name *</label>
 <input type="text" class="form-input" id="clubName" required>
 </div>
 <div class="form-group">
-<label class="form-label" id="lblClubAddress">Адрес</label>
+<label class="form-label" id="lblClubAddress">Address</label>
 <input type="text" class="form-input" id="clubAddress">
 </div>
 </form>
 </div>
 <div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeClubModal()" id="btnCancelClub">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()" id="btnSaveClub">Сохранить</button>
+<button class="btn btn-cancel" onclick="closeClubModal()" id="btnCancelClub">Cancel</button>
+<button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()" id="btnSaveClub">Save</button>
 </div>
 </div>
 </div>
@@ -158,34 +101,34 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="modal" id="groupModal">
 <div class="modal-content">
 <div class="modal-header">
-<h2 class="modal-title" id="groupModalTitle">Добавить группу</h2>
+<h2 id="groupModalTitle">Add Group</h2>
 <button class="modal-close" onclick="closeGroupModal()">✕</button>
 </div>
 <div class="modal-body">
 <form id="groupForm" onsubmit="saveGroup(event)">
 <input type="hidden" id="groupId">
 <div class="form-group">
-<label class="form-label" id="lblGroupName">Название *</label>
+<label class="form-label" id="lblGroupName">Name *</label>
 <input type="text" class="form-input" id="groupName" required>
 </div>
 <div class="form-group">
-<label class="form-label" id="lblGroupClub">Клуб *</label>
+<label class="form-label" id="lblGroupClub">Club *</label>
 <select class="form-select" id="groupClubId" required>
-<option value="">Выберите клуб</option>
+<option value="">Select club</option>
 </select>
 </div>
 <div class="form-group">
-<label class="form-label" id="lblSchedule">Расписание</label>
-<div class="schedule-editor" id="scheduleEditor">
-<button type="button" class="btn btn-add" onclick="addScheduleDay()" id="btnAddSchedule">➕ Добавить день</button>
+<label class="form-label" id="lblSchedule">Schedule</label>
+<div class="schedule-editor">
+<button type="button" class="btn-add" onclick="addScheduleDay()" id="btnAddSchedule">➕ Add day</button>
 <div id="scheduleDays"></div>
 </div>
 </div>
 </form>
 </div>
 <div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeGroupModal()" id="btnCancelGroup">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()" id="btnSaveGroup">Сохранить</button>
+<button class="btn btn-cancel" onclick="closeGroupModal()" id="btnCancelGroup">Cancel</button>
+<button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()" id="btnSaveGroup">Save</button>
 </div>
 </div>
 </div>
@@ -194,7 +137,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="modal" id="trainerModal">
 <div class="modal-content">
 <div class="modal-header">
-<h2 class="modal-title" id="trainerModalTitle">Добавить тренера</h2>
+<h2 id="trainerModalTitle">Add Trainer</h2>
 <button class="modal-close" onclick="closeTrainerModal()">✕</button>
 </div>
 <div class="modal-body">
@@ -205,48 +148,50 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <input type="email" class="form-input" id="trainerEmail" required>
 </div>
 <div class="form-group">
-<label class="form-label" id="lblTrainerPassword">Пароль *</label>
+<label class="form-label" id="lblTrainerPassword">Password *</label>
 <input type="password" class="form-input" id="trainerPassword" required>
 </div>
 <div class="form-group">
-<label class="form-label" id="lblTrainerFirstName">Имя *</label>
+<label class="form-label" id="lblTrainerFirstName">First Name *</label>
 <input type="text" class="form-input" id="trainerFirstName" required>
 </div>
 <div class="form-group">
-<label class="form-label" id="lblTrainerLastName">Фамилия *</label>
+<label class="form-label" id="lblTrainerLastName">Last Name *</label>
 <input type="text" class="form-input" id="trainerLastName" required>
 </div>
 <div class="form-group">
-<label class="form-label" id="lblTrainerPhone">Телефон</label>
+<label class="form-label" id="lblTrainerPhone">Phone</label>
 <input type="tel" class="form-input" id="trainerPhone">
 </div>
 <div class="form-group">
-<label class="form-label" id="lblTrainerAge">Возраст</label>
-<input type="number" class="form-input" id="trainerAge" min="18" max="100">
+<label class="form-label" id="lblTrainerBirthDate">Birth Date</label>
+<input type="date" class="form-input" id="trainerBirthDate">
 </div>
 <div class="form-group">
-<label class="form-label" id="lblTrainerQualification">Квалификация</label>
+<label class="form-label" id="lblTrainerQualification">Qualification</label>
 <input type="text" class="form-input" id="trainerQualification">
+</div>
+<div class="form-group">
+<label class="form-label" id="lblTrainerPhoto">Photo URL</label>
+<input type="url" class="form-input" id="trainerPhotoUrl" placeholder="https://...">
 </div>
 </form>
 </div>
 <div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeTrainerModal()" id="btnCancelTrainer">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('trainerForm').requestSubmit()" id="btnSaveTrainer">Сохранить</button>
+<button class="btn btn-cancel" onclick="closeTrainerModal()" id="btnCancelTrainer">Cancel</button>
+<button class="btn btn-save" onclick="document.getElementById('trainerForm').requestSubmit()" id="btnSaveTrainer">Save</button>
 </div>
 </div>
 </div>
 
-<script src="i18n.js"></script>
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 let token=localStorage.getItem('token');
 let user=JSON.parse(localStorage.getItem('user')||'{}');
-let clubs=[],groups=[],trainers=[];
-let schedule=[];
+let clubs=[],groups=[],trainers=[],schedule=[];
 
-if(!token||user.role!=='director')window.location.href='/';
+if(!token||user.role!=='director')location.href='/';
 
 function loadUserInfo(){
 document.getElementById('userName').textContent=user.first_name?`${user.first_name} ${user.last_name||''}`.trim():user.email;
@@ -273,7 +218,7 @@ document.getElementById('loadingClubs').style.display='none';
 document.getElementById('clubsTable').style.display='table';
 renderClubsTable();
 updateClubSelect();
-}catch(e){console.error('❌ CLUBS ERROR:', e)}
+}catch(e){console.error(e)}
 }
 
 function renderClubsTable(){
@@ -281,7 +226,7 @@ const t=document.getElementById('clubsTableBody');
 t.innerHTML='';
 clubs.forEach(c=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td>${c.name}</td><td>${c.address||'-'}</td><td>${c.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></div></td>`;
+r.innerHTML=`<td>${c.name}</td><td>${c.address||'-'}</td><td>${c.groups_count||0}</td><td><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></td>`;
 t.appendChild(r);
 });
 }
@@ -315,7 +260,7 @@ const t=document.getElementById('groupsTableBody');
 t.innerHTML='';
 groups.forEach(g=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);font-weight:600">${g.name}</a></td><td>${g.club_name||'-'}</td><td>0</td><td>0</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editGroup(${g.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;
+r.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);font-weight:600">${g.name}</a></td><td>${g.club_name||'-'}</td><td><button class="btn-icon btn-edit" onclick="editGroup(${g.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></td>`;
 t.appendChild(r);
 });
 }
@@ -338,7 +283,7 @@ const t=document.getElementById('trainersTableBody');
 t.innerHTML='';
 trainers.forEach(tr=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);font-weight:600">${tr.first_name||''} ${tr.last_name||''}</a></td><td>${tr.email}</td><td>0</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></div></td>`;
+r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);font-weight:600">${tr.first_name||''} ${tr.last_name||''}</a></td><td>${tr.email}</td><td><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></td>`;
 t.appendChild(r);
 });
 }
@@ -371,11 +316,8 @@ const action=id?'update':'create';
 if(id)data.id=parseInt(id);
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action,data})});
 const res=await r.json();
-if(res.id||res.success){
-closeClubModal();
-alert(t('saved'));
-loadClubs();
-}else alert(t('error'));
+if(res.id||res.success){closeClubModal();alert(t('saved'));loadClubs()}
+else alert(t('error'));
 }catch(err){console.error(err);alert(t('error'))}
 }
 
@@ -404,7 +346,7 @@ openGroupModal();
 function editGroup(id){
 const g=groups.find(x=>x.id===id);
 if(!g)return;
-schedule=g.schedule?JSON.parse(g.schedule):[];
+schedule=g.schedule?(typeof g.schedule==='string'?JSON.parse(g.schedule):g.schedule):[];
 document.getElementById('groupModalTitle').textContent=t('edit');
 document.getElementById('groupId').value=g.id;
 document.getElementById('groupName').value=g.name;
@@ -427,14 +369,14 @@ d.className='schedule-day';
 d.innerHTML=`
 <div class="schedule-day-header">
 <select onchange="updateSchedule(${i},'day',this.value)" style="padding:.5rem">
-<option value="">День</option>
-<option value="Понедельник" ${s.day==='Понедельник'?'selected':''}>Пн</option>
-<option value="Вторник" ${s.day==='Вторник'?'selected':''}>Вт</option>
-<option value="Среда" ${s.day==='Среда'?'selected':''}>Ср</option>
-<option value="Четверг" ${s.day==='Четверг'?'selected':''}>Чт</option>
-<option value="Пятница" ${s.day==='Пятница'?'selected':''}>Пт</option>
-<option value="Суббота" ${s.day==='Суббота'?'selected':''}>Сб</option>
-<option value="Воскресенье" ${s.day==='Воскресенье'?'selected':''}>Вс</option>
+<option value="">Day</option>
+<option value="Monday" ${s.day==='Monday'?'selected':''}>Mon</option>
+<option value="Tuesday" ${s.day==='Tuesday'?'selected':''}>Tue</option>
+<option value="Wednesday" ${s.day==='Wednesday'?'selected':''}>Wed</option>
+<option value="Thursday" ${s.day==='Thursday'?'selected':''}>Thu</option>
+<option value="Friday" ${s.day==='Friday'?'selected':''}>Fri</option>
+<option value="Saturday" ${s.day==='Saturday'?'selected':''}>Sat</option>
+<option value="Sunday" ${s.day==='Sunday'?'selected':''}>Sun</option>
 </select>
 <button type="button" onclick="removeScheduleDay(${i})" style="background:#ffebee;border:none;padding:.5rem;border-radius:4px;cursor:pointer">🗑️</button>
 </div>
@@ -484,6 +426,22 @@ document.getElementById('trainerForm').reset();
 openTrainerModal();
 }
 
+function editTrainer(id){
+const tr=trainers.find(x=>x.id===id);
+if(!tr)return;
+document.getElementById('trainerModalTitle').textContent=t('edit');
+document.getElementById('trainerId').value=tr.id;
+document.getElementById('trainerEmail').value=tr.email||'';
+document.getElementById('trainerPassword').value='';
+document.getElementById('trainerFirstName').value=tr.first_name||'';
+document.getElementById('trainerLastName').value=tr.last_name||'';
+document.getElementById('trainerPhone').value=tr.phone||'';
+document.getElementById('trainerBirthDate').value=tr.birth_date||'';
+document.getElementById('trainerQualification').value=tr.qualification||'';
+document.getElementById('trainerPhotoUrl').value=tr.photo_url||'';
+openTrainerModal();
+}
+
 async function saveTrainer(e){
 e.preventDefault();
 const id=document.getElementById('trainerId').value,
@@ -492,17 +450,28 @@ password=document.getElementById('trainerPassword').value,
 first_name=document.getElementById('trainerFirstName').value.trim(),
 last_name=document.getElementById('trainerLastName').value.trim(),
 phone=document.getElementById('trainerPhone').value.trim(),
-age=document.getElementById('trainerAge').value,
-qualification=document.getElementById('trainerQualification').value.trim();
+birth_date=document.getElementById('trainerBirthDate').value,
+qualification=document.getElementById('trainerQualification').value.trim(),
+photo_url=document.getElementById('trainerPhotoUrl').value.trim();
 
-if(!email||!password||!first_name||!last_name){alert(t('error'));return}
+if(!email||!first_name||!last_name){alert(t('error'));return}
+if(!id&&!password){alert('Password required');return}
 
-const data={email,password,first_name,last_name,phone,age:age?parseInt(age):null,qualification,role:'trainer'};
+const data={email,first_name,last_name,phone,birth_date,qualification,photo_url,role:'trainer'};
+if(!id)data.password=password;
+
 try{
+if(id){
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data:{...data,id:parseInt(id)}})});
+const res=await r.json();
+if(res.id||res.success){closeTrainerModal();alert(t('saved'));loadTrainers()}
+else alert(t('error'));
+}else{
 const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',...data})});
 const res=await r.json();
 if(res.success||res.token){closeTrainerModal();alert(t('created'));loadTrainers()}
 else alert(t('error')+': '+(res.error||''));
+}
 }catch(err){console.error(err);alert(t('networkError'))}
 }
 
@@ -520,7 +489,7 @@ function closeTrainerModal(){document.getElementById('trainerModal').classList.r
 
 function logout(){
 localStorage.clear();
-window.location.href='/';
+location.href='/';
 }
 
 function applyTranslations(){
@@ -537,6 +506,28 @@ document.getElementById('btnAddTrainer').innerHTML='➕ '+t('add');
 document.getElementById('thClubName').textContent=t('name');
 document.getElementById('thClubAddress').textContent=t('address');
 document.getElementById('thActions').textContent=t('actions');
+document.getElementById('thActions2').textContent=t('actions');
+document.getElementById('thActions3').textContent=t('actions');
+document.getElementById('lblClubName').textContent=t('name')+' *';
+document.getElementById('lblClubAddress').textContent=t('address');
+document.getElementById('btnCancelClub').textContent=t('cancel');
+document.getElementById('btnSaveClub').textContent=t('save');
+document.getElementById('lblGroupName').textContent=t('name')+' *';
+document.getElementById('lblGroupClub').textContent=t('club')+' *';
+document.getElementById('lblSchedule').textContent=t('schedule');
+document.getElementById('btnAddSchedule').innerHTML='➕ '+t('add');
+document.getElementById('btnCancelGroup').textContent=t('cancel');
+document.getElementById('btnSaveGroup').textContent=t('save');
+document.getElementById('lblTrainerEmail').textContent=t('email')+' *';
+document.getElementById('lblTrainerPassword').textContent=t('password')+' *';
+document.getElementById('lblTrainerFirstName').textContent=t('firstName')+' *';
+document.getElementById('lblTrainerLastName').textContent=t('lastName')+' *';
+document.getElementById('lblTrainerPhone').textContent=t('phone');
+document.getElementById('lblTrainerBirthDate').textContent=t('birthDate');
+document.getElementById('lblTrainerQualification').textContent=t('qualification');
+document.getElementById('lblTrainerPhoto').textContent=t('photo');
+document.getElementById('btnCancelTrainer').textContent=t('cancel');
+document.getElementById('btnSaveTrainer').textContent=t('save');
 }
 
 loadUserInfo();
@@ -544,5 +535,4 @@ initLangSelector();
 applyTranslations();
 loadClubs();
 </script>
-</body>
-</html>
+</body></html>

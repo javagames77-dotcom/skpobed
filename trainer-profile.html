@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>InSkill - Trainer</title>
+<script src="i18n.js"></script>
+<style>:root{--p:#0066CC;--s:#FF9933}*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:#f8f9fa;padding:2rem}.card{background:#fff;border-radius:12px;padding:2rem;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}.title{font-size:2rem;color:var(--p);margin-bottom:1rem}.photo{width:150px;height:150px;border-radius:50%;object-fit:cover;margin-bottom:1rem}.info-row{padding:.75rem 0;border-bottom:1px solid #eee;display:flex;justify-content:space-between}.badge{display:inline-block;padding:.5rem 1rem;background:#e3f2fd;color:var(--p);border-radius:20px;margin:.25rem}.btn{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;cursor:pointer;margin:.5rem}</style>
+</head><body>
+<div class="card" style="text-align:center">
+<img id="trainerPhoto" src="https://via.placeholder.com/150" class="photo">
+<h1 class="title" id="trainerName">Loading...</h1>
+<p id="trainerEmail">-</p>
+</div>
+
+<div class="card">
+<h2 id="lblInfo">Information</h2>
+<div class="info-row"><span id="lblPhone">Phone</span><span id="trainerPhone">-</span></div>
+<div class="info-row"><span id="lblBirthDate">Birth Date</span><span id="trainerBirthDate">-</span></div>
+<div class="info-row"><span id="lblQualification">Qualification</span><span id="trainerQualification">-</span></div>
+</div>
+
+<div class="card">
+<h2 id="lblGroups">Groups</h2>
+<div id="groupsList"></div>
+</div>
+
+<button class="btn" onclick="history.back()" id="btnBack">Back</button>
+
+<script>
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+let token=localStorage.getItem('token');
+const id=new URLSearchParams(location.search).get('id');
+if(!token||!id)location.href='/';
+
+async function loadTrainer(){
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});
+const groups=await r.json();
+
+// Get trainer info from users
+const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
+const users=await r2.json();
+const trainer=(users.merged||users||[]).find(u=>u.id==id);
+
+if(trainer){
+document.getElementById('trainerName').textContent=`${trainer.first_name||''} ${trainer.last_name||''}`.trim();
+document.getElementById('trainerEmail').textContent=trainer.email||'';
+document.getElementById('trainerPhone').textContent=trainer.phone||'-';
+document.getElementById('trainerBirthDate').textContent=trainer.birth_date||'-';
+document.getElementById('trainerQualification').textContent=trainer.qualification||'-';
+if(trainer.photo_url)document.getElementById('trainerPhoto').src=trainer.photo_url;
+}
+
+const g=groups.merged||groups||[];
+document.getElementById('groupsList').innerHTML=g.length?g.map(gr=>`<div class="badge">${gr.name} (${gr.club_name||''})</div>`).join(''):'<p>No groups assigned</p>';
+}catch(e){console.error(e);alert('Error')}
+}
+
+function applyTranslations(){
+document.getElementById('lblInfo').textContent=t('statistics');
+document.getElementById('lblPhone').textContent=t('phone');
+document.getElementById('lblBirthDate').textContent=t('birthDate');
+document.getElementById('lblQualification').textContent=t('qualification');
+document.getElementById('lblGroups').textContent=t('groups');
+document.getElementById('btnBack').textContent=t('back');
+}
+
+initLangSelector();
+applyTranslations();
+loadTrainer();
+</script>
+</body></html>

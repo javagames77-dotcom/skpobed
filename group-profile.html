@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>InSkill - Group</title>
+<script src="i18n.js"></script>
+<style>:root{--p:#0066CC;--s:#FF9933}*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:#f8f9fa;padding:2rem}.card{background:#fff;border-radius:12px;padding:2rem;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}.title{font-size:2rem;color:var(--p);margin-bottom:1rem}.badge{display:inline-block;padding:.5rem 1rem;background:#e3f2fd;color:var(--p);border-radius:20px;margin:.25rem}.schedule{background:#f8f9fa;padding:1rem;border-radius:8px;margin:.5rem 0}.schedule-day{padding:.5rem;border-bottom:1px solid #ddd}.list-item{padding:1rem;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}.avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;margin-right:1rem}.btn{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;cursor:pointer;margin:.5rem}</style>
+</head><body>
+<div class="card">
+<h1 class="title" id="groupName">Loading...</h1>
+<p><span id="lblClub">Club</span>: <span id="clubName">-</span></p>
+<p><span id="lblChildren">Children</span>: <span id="childrenCount">0</span></p>
+<p><span id="lblTrainers">Trainers</span>: <span id="trainersCount">0</span></p>
+</div>
+
+<div class="card">
+<h2 id="lblSchedule">Schedule</h2>
+<div id="scheduleList"></div>
+</div>
+
+<div class="card">
+<h2 id="lblTrainersList">Trainers</h2>
+<div id="trainersList"></div>
+</div>
+
+<div class="card">
+<h2 id="lblChildrenList">Children</h2>
+<div id="childrenList"></div>
+</div>
+
+<button class="btn" onclick="history.back()" id="btnBack">Back</button>
+
+<script>
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+let token=localStorage.getItem('token');
+const id=new URLSearchParams(location.search).get('id');
+if(!token||!id)location.href='/';
+
+async function loadGroup(){
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'get',data:{id:parseInt(id)}})});
+const d=await r.json();
+const g=d.merged?d.merged[0]:d;
+document.getElementById('groupName').textContent=g.name||'';
+document.getElementById('clubName').textContent=g.club_name||'-';
+document.getElementById('childrenCount').textContent=g.children_count||0;
+document.getElementById('trainersCount').textContent=g.trainers_count||0;
+
+if(g.schedule){
+const s=typeof g.schedule==='string'?JSON.parse(g.schedule):g.schedule;
+document.getElementById('scheduleList').innerHTML=s.map(d=>`<div class="schedule-day">${d.day}: ${d.time_start} - ${d.time_end}</div>`).join('')||'<p>No schedule</p>';
+}
+
+if(g.trainers){
+const tr=typeof g.trainers==='string'?JSON.parse(g.trainers):g.trainers;
+document.getElementById('trainersList').innerHTML=tr.map(t=>`<div class="list-item"><span>${t.trainer_name}</span><span>${t.trainer_email}</span></div>`).join('')||'<p>No trainers</p>';
+}
+
+if(g.children){
+const ch=typeof g.children==='string'?JSON.parse(g.children):g.children;
+document.getElementById('childrenList').innerHTML=ch.map(c=>`<div class="list-item"><div style="display:flex;align-items:center"><img src="${c.photo_url||'https://via.placeholder.com/40'}" class="avatar"><span>${c.child_name}</span></div></div>`).join('')||'<p>No children</p>';
+}
+}catch(e){console.error(e);alert('Error loading group')}
+}
+
+function applyTranslations(){
+document.getElementById('lblClub').textContent=t('club');
+document.getElementById('lblChildren').textContent=t('childrenCount');
+document.getElementById('lblTrainers').textContent=t('trainersCount');
+document.getElementById('lblSchedule').textContent=t('schedule');
+document.getElementById('lblTrainersList').textContent=t('trainers');
+document.getElementById('lblChildrenList').textContent=t('athletes');
+document.getElementById('btnBack').textContent=t('back');
+}
+
+initLangSelector();
+applyTranslations();
+loadGroup();
+</script>
+</body></html>

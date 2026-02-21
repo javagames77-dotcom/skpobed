@@ -35,7 +35,20 @@ const TRANSLATIONS = {
     noData: "Нет данных", networkError: "Ошибка сети",
     
     // Months
-    months: ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"]
+    months: ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"],
+    back: "Назад", schedule: "Расписание", phone: "Телефон", qualification: "Квалификация", info: "Информация"
+  },,
+    
+    // Additional
+    back: "Назад",
+    schedule: "Расписание",
+    noSchedule: "Расписание не установлено",
+    noTrainers: "Нет тренеров",
+    noGroups: "Нет групп",
+    noChildren: "Нет спортсменов",
+    clubsCount: "Клубов",
+    birthDate: "Дата рождения",
+    qualification: "Квалификация"
   },
   
   uk: {
@@ -62,7 +75,19 @@ const TRANSLATIONS = {
     updated: "Оновлено!", deleted: "Видалено!", error: "Помилка",
     noData: "Немає даних", networkError: "Помилка мережі",
     
-    months: ["Січень","Лютий","Березень","Квітень","Травень","Червень","Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"]
+    months: ["Січень","Лютий","Березень","Квітень","Травень","Червень","Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"],
+    back: "Назад", schedule: "Розклад", phone: "Телефон", qualification: "Кваліфікація", info: "Інформація"
+  },,
+    
+    back: "Назад",
+    schedule: "Розклад",
+    noSchedule: "Розклад не встановлено",
+    noTrainers: "Немає тренерів",
+    noGroups: "Немає груп",
+    noChildren: "Немає спортсменів",
+    clubsCount: "Клубів",
+    birthDate: "Дата народження",
+    qualification: "Кваліфікація"
   },
   
   en: {
@@ -89,7 +114,17 @@ const TRANSLATIONS = {
     updated: "Updated!", deleted: "Deleted!", error: "Error",
     noData: "No data", networkError: "Network error",
     
-    months: ["January","February","March","April","May","June","July","August","September","October","November","December"]
+    months: ["January","February","March","April","May","June","July","August","September","October","November","December"],
+    
+    back: "Back",
+    schedule: "Schedule",
+    noSchedule: "No schedule set",
+    noTrainers: "No trainers",
+    noGroups: "No groups",
+    noChildren: "No athletes",
+    clubsCount: "Clubs",
+    birthDate: "Birth Date",
+    qualification: "Qualification"
   }
 };
 
