@@ -282,7 +282,7 @@ const t=document.getElementById('clubsTableBody');
 t.innerHTML='';
 clubs.forEach(c=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td>${c.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button></div></td>`;
+r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td>${c.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></div></td>`;
 t.appendChild(r);
 });
 }
@@ -305,7 +305,7 @@ const t=document.getElementById('trainersTableBody');
 t.innerHTML='';
 trainers.forEach(tr=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td>${tr.first_name} ${tr.last_name}</td><td>${tr.email}</td><td>${tr.clubs_count||0}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button></div></td>`;
+r.innerHTML=`<td>${tr.first_name} ${tr.last_name}</td><td>${tr.email}</td><td>${tr.clubs_count||0}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></div></td>`;
 t.appendChild(r);
 });
 }
@@ -328,7 +328,7 @@ const t=document.getElementById('athletesTableBody');
 t.innerHTML='';
 athletes.forEach(a=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_name||'Без группы'}</span></td><td>${a.club_name||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="window.location='/athlete-profile.html?id=${a.id}'">👁️</button></div></td>`;
+r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="window.location='/athlete-profile.html?id=${a.id}'">👁️</button></div></td>`;
 t.appendChild(r);
 });
 }
@@ -369,6 +369,18 @@ closeClubModal();
 alert(id?'Клуб обновлен!':'Клуб создан!');
 await loadClubs();
 }else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
+}catch(err){console.error(err);alert('Ошибка: '+err.message)}
+}
+
+async function deleteClub(id){
+if(!confirm('Удалить клуб? Это действие нельзя отменить!'))return;
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'delete',data:{id}})});
+const res=await r.json();
+if(res.success||res.id){
+alert('Клуб удален!');
+await loadClubs();
+}else{alert('Ошибка удаления')}
 }catch(err){console.error(err);alert('Ошибка: '+err.message)}
 }
 
@@ -429,6 +441,18 @@ await loadTrainers();
 }else{alert('❌ '+JSON.stringify(res))}
 }catch(err){console.error(err);alert('❌ Ошибка сети: '+err.message+'\n\nПроверьте n8n Auth API')}
 }
+}
+
+async function deleteTrainer(id){
+if(!confirm('Удалить тренера? Это действие нельзя отменить!'))return;
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});
+const res=await r.json();
+if(res.success||res.id){
+alert('Тренер удален!');
+await loadTrainers();
+}else{alert('Ошибка удаления')}
+}catch(err){console.error(err);alert('Ошибка: '+err.message)}
 }
 
 function openClubModal(){
