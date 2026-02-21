@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html><head><meta charset="UTF-8"><title>InSkill - Director</title>
 <script src="i18n.js"></script>
-<style>:root{--p:#0066CC;--s:#FF9933}*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:#f8f9fa}.header{background:#fff;padding:1rem 2rem;border-bottom:2px solid var(--p)}.header-content{display:flex;justify-content:space-between;align-items:center}.logo{font-size:1.5rem;font-weight:700;color:var(--p)}.btn-logout{padding:.5rem 1rem;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:#fff}.container{max-width:1400px;margin:2rem auto;padding:0 2rem}.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid #eee}.tab{padding:1rem 2rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}.tab.active{color:var(--p);border-bottom-color:var(--p)}.tab-content{display:none}.tab-content.active{display:block}.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center}.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;cursor:pointer}.table-container{background:#fff;border-radius:12px;overflow:hidden}.table{width:100%;border-collapse:collapse}.table thead{background:var(--p);color:#fff}.table th,.table td{padding:1rem;text-align:left}.table td{border-bottom:1px solid #eee}.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;margin:0 .25rem}.btn-edit{background:#e3f2fd;color:var(--p)}.btn-delete{background:#ffebee;color:#dc3545}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;padding:2rem}.modal.active{display:flex;align-items:center;justify-content:center}.modal-content{background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto}.modal-header{padding:1.5rem;border-bottom:2px solid #eee;display:flex;justify-content:space-between}.modal-close{width:32px;height:32px;border:none;background:#f8f9fa;border-radius:50%;cursor:pointer}.modal-body{padding:1.5rem}.form-group{margin-bottom:1.25rem}.form-label{display:block;margin-bottom:.5rem;font-weight:600}.form-input,.form-select{width:100%;padding:.75rem;border:2px solid #eee;border-radius:8px}.modal-footer{padding:1.5rem;border-top:2px solid #eee;display:flex;gap:1rem;justify-content:flex-end}.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer}.btn-cancel{background:#f8f9fa}.btn-save{background:var(--s);color:#fff}.schedule-editor{border:2px solid #eee;border-radius:8px;padding:1rem}.schedule-day{margin-bottom:1rem;padding:1rem;background:#f8f9fa;border-radius:6px}.schedule-day-header{display:flex;justify-content:space-between;margin-bottom:.5rem}.schedule-time{display:flex;gap:1rem}.schedule-time input{flex:1;padding:.5rem;border:1px solid #ddd;border-radius:4px}</style>
+<style>:root{--p:#0066CC;--s:#FF9933}*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:#f8f9fa}.header{background:#fff;padding:1rem 2rem;border-bottom:2px solid var(--p)}.header-content{display:flex;justify-content:space-between;align-items:center}.logo{font-size:1.5rem;font-weight:700;color:var(--p)}.btn-logout{padding:.5rem 1rem;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:#fff}.container{max-width:1400px;margin:2rem auto;padding:0 2rem}.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid #eee}.tab{padding:1rem 2rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}.tab.active{color:var(--p);border-bottom-color:var(--p)}.tab-content{display:none}.tab-content.active{display:block}.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center}.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;cursor:pointer}.table-container{background:#fff;border-radius:12px;overflow:hidden}.table{width:100%;border-collapse:collapse}.table thead{background:var(--p);color:#fff}.table th,.table td{padding:1rem;text-align:left}.table td{border-bottom:1px solid #eee}.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;margin:0 .25rem}.btn-edit{background:#e3f2fd;color:var(--p)}.btn-delete{background:#ffebee;color:#dc3545}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;padding:2rem}
+.modal.active{display:flex;align-items:center;justify-content:center}
+.modal-content{background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;z-index:1001;position:relative}.modal-header{padding:1.5rem;border-bottom:2px solid #eee;display:flex;justify-content:space-between}.modal-close{width:32px;height:32px;border:none;background:#f8f9fa;border-radius:50%;cursor:pointer}.modal-body{padding:1.5rem}.form-group{margin-bottom:1.25rem}.form-label{display:block;margin-bottom:.5rem;font-weight:600}.form-input,.form-select{width:100%;padding:.75rem;border:2px solid #eee;border-radius:8px}.modal-footer{padding:1.5rem;border-top:2px solid #eee;display:flex;gap:1rem;justify-content:flex-end}.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer}.btn-cancel{background:#f8f9fa}.btn-save{background:var(--s);color:#fff}.schedule-editor{border:2px solid #eee;border-radius:8px;padding:1rem}.schedule-day{margin-bottom:1rem;padding:1rem;background:#f8f9fa;border-radius:6px}.schedule-day-header{display:flex;justify-content:space-between;margin-bottom:.5rem}.schedule-time{display:flex;gap:1rem}.schedule-time input{flex:1;padding:.5rem;border:1px solid #ddd;border-radius:4px}</style>
 </head><body>
 
 <header class="header">
@@ -433,6 +435,7 @@ document.getElementById('trainerModalTitle').textContent=t('edit');
 document.getElementById('trainerId').value=tr.id;
 document.getElementById('trainerEmail').value=tr.email||'';
 document.getElementById('trainerPassword').value='';
+document.getElementById('trainerPassword').required=false; // Password not required for edit
 document.getElementById('trainerFirstName').value=tr.first_name||'';
 document.getElementById('trainerLastName').value=tr.last_name||'';
 document.getElementById('trainerPhone').value=tr.phone||'';
@@ -457,22 +460,25 @@ photo_url=document.getElementById('trainerPhotoUrl').value.trim();
 if(!email||!first_name||!last_name){alert(t('error'));return}
 if(!id&&!password){alert('Password required');return}
 
-const data={email,first_name,last_name,phone,birth_date,qualification,photo_url,role:'trainer'};
-if(!id)data.password=password;
-
-try{
 if(id){
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data:{...data,id:parseInt(id)}})});
+// UPDATE existing trainer
+const data={id:parseInt(id),email,first_name,last_name,phone,birth_date,qualification,photo_url};
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});
 const res=await r.json();
 if(res.id||res.success){closeTrainerModal();alert(t('saved'));loadTrainers()}
-else alert(t('error'));
+else alert(t('error')+': '+(JSON.stringify(res)));
+}catch(err){console.error(err);alert(t('networkError'))}
 }else{
+// CREATE new trainer
+const data={email,password,first_name,last_name,phone,birth_date,qualification,photo_url,role:'trainer'};
+try{
 const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',...data})});
 const res=await r.json();
 if(res.success||res.token){closeTrainerModal();alert(t('created'));loadTrainers()}
-else alert(t('error')+': '+(res.error||''));
-}
+else alert(t('error')+': '+(res.error||JSON.stringify(res)));
 }catch(err){console.error(err);alert(t('networkError'))}
+}
 }
 
 async function deleteTrainer(id){
@@ -505,9 +511,14 @@ document.getElementById('btnAddGroup').innerHTML='➕ '+t('add');
 document.getElementById('btnAddTrainer').innerHTML='➕ '+t('add');
 document.getElementById('thClubName').textContent=t('name');
 document.getElementById('thClubAddress').textContent=t('address');
+document.getElementById('thClubGroups').textContent=t('groupsCount');
 document.getElementById('thActions').textContent=t('actions');
 document.getElementById('thActions2').textContent=t('actions');
 document.getElementById('thActions3').textContent=t('actions');
+document.getElementById('thGroupName').textContent=t('name');
+document.getElementById('thGroupClub').textContent=t('club');
+document.getElementById('thTrainerName').textContent=t('name');
+document.getElementById('thTrainerEmail').textContent=t('email');
 document.getElementById('lblClubName').textContent=t('name')+' *';
 document.getElementById('lblClubAddress').textContent=t('address');
 document.getElementById('btnCancelClub').textContent=t('cancel');
@@ -533,6 +544,6 @@ document.getElementById('btnSaveTrainer').textContent=t('save');
 loadUserInfo();
 initLangSelector();
 applyTranslations();
-loadClubs();
+setTimeout(loadClubs, 100); // Delay to ensure DOM is ready
 </script>
 </body></html>

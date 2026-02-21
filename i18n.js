@@ -138,7 +138,7 @@ function setLang(lang) {
   if (TRANSLATIONS[lang]) {
     currentLang = lang;
     localStorage.setItem('lang', lang);
-    location.reload();
+    location.reload(); // Reload page to apply translations
   }
 }
 

@@ -37,7 +37,12 @@ async function loadGroup(){
 try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'get',data:{id:parseInt(id)}})});
 const d=await r.json();
-const g=d.merged?d.merged[0]:d;
+console.log('Group data:', d); // Debug
+const g=d; // Response is direct object, not wrapped in merged
+if(!g||!g.id){
+document.getElementById('groupName').textContent='Group not found';
+return;
+}
 document.getElementById('groupName').textContent=g.name||'';
 document.getElementById('clubName').textContent=g.club_name||'-';
 document.getElementById('childrenCount').textContent=g.children_count||0;
@@ -45,19 +50,31 @@ document.getElementById('trainersCount').textContent=g.trainers_count||0;
 
 if(g.schedule){
 const s=typeof g.schedule==='string'?JSON.parse(g.schedule):g.schedule;
-document.getElementById('scheduleList').innerHTML=s.map(d=>`<div class="schedule-day">${d.day}: ${d.time_start} - ${d.time_end}</div>`).join('')||'<p>No schedule</p>';
+if(Array.isArray(s)&&s.length>0){
+document.getElementById('scheduleList').innerHTML=s.map(d=>`<div class="schedule-day">${d.day}: ${d.time_start} - ${d.time_end}</div>`).join('');
+}else{
+document.getElementById('scheduleList').innerHTML='<p>'+t('noSchedule')+'</p>';
+}
 }
 
 if(g.trainers){
 const tr=typeof g.trainers==='string'?JSON.parse(g.trainers):g.trainers;
-document.getElementById('trainersList').innerHTML=tr.map(t=>`<div class="list-item"><span>${t.trainer_name}</span><span>${t.trainer_email}</span></div>`).join('')||'<p>No trainers</p>';
+if(Array.isArray(tr)&&tr.length>0){
+document.getElementById('trainersList').innerHTML=tr.map(t=>`<div class="list-item"><span>${t.trainer_name}</span><span>${t.trainer_email}</span></div>`).join('');
+}else{
+document.getElementById('trainersList').innerHTML='<p>'+t('noTrainers')+'</p>';
+}
 }
 
 if(g.children){
 const ch=typeof g.children==='string'?JSON.parse(g.children):g.children;
-document.getElementById('childrenList').innerHTML=ch.map(c=>`<div class="list-item"><div style="display:flex;align-items:center"><img src="${c.photo_url||'https://via.placeholder.com/40'}" class="avatar"><span>${c.child_name}</span></div></div>`).join('')||'<p>No children</p>';
+if(Array.isArray(ch)&&ch.length>0){
+document.getElementById('childrenList').innerHTML=ch.map(c=>`<div class="list-item"><div style="display:flex;align-items:center"><img src="${c.photo_url||'https://via.placeholder.com/40'}" class="avatar"><span>${c.child_name}</span></div></div>`).join('');
+}else{
+document.getElementById('childrenList').innerHTML='<p>'+t('noChildren')+'</p>';
 }
-}catch(e){console.error(e);alert('Error loading group')}
+}
+}catch(e){console.error('Load group error:',e);alert('Error loading group: '+e.message)}
 }
 
 function applyTranslations(){

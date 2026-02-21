@@ -31,13 +31,12 @@ if(!token||!id)location.href='/';
 
 async function loadTrainer(){
 try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});
-const groups=await r.json();
-
-// Get trainer info from users
+// Get trainer info
 const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
-const users=await r2.json();
-const trainer=(users.merged||users||[]).find(u=>u.id==id);
+const usersResp=await r2.json();
+console.log('Users response:', usersResp); // Debug
+const users=usersResp.merged||usersResp||[];
+const trainer=users.find(u=>u.id==id);
 
 if(trainer){
 document.getElementById('trainerName').textContent=`${trainer.first_name||''} ${trainer.last_name||''}`.trim();
@@ -46,11 +45,22 @@ document.getElementById('trainerPhone').textContent=trainer.phone||'-';
 document.getElementById('trainerBirthDate').textContent=trainer.birth_date||'-';
 document.getElementById('trainerQualification').textContent=trainer.qualification||'-';
 if(trainer.photo_url)document.getElementById('trainerPhoto').src=trainer.photo_url;
+}else{
+document.getElementById('trainerName').textContent='Trainer not found';
 }
 
-const g=groups.merged||groups||[];
-document.getElementById('groupsList').innerHTML=g.length?g.map(gr=>`<div class="badge">${gr.name} (${gr.club_name||''})</div>`).join(''):'<p>No groups assigned</p>';
-}catch(e){console.error(e);alert('Error')}
+// Get trainer groups
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});
+const groupsResp=await r.json();
+console.log('Groups response:', groupsResp); // Debug
+const groups=groupsResp.merged||groupsResp||[];
+
+if(Array.isArray(groups)&&groups.length>0){
+document.getElementById('groupsList').innerHTML=groups.map(gr=>`<div class="badge">${gr.name} (${gr.club_name||''})</div>`).join('');
+}else{
+document.getElementById('groupsList').innerHTML='<p>'+t('noGroups')+'</p>';
+}
+}catch(e){console.error('Load trainer error:',e);alert('Error: '+e.message)}
 }
 
 function applyTranslations(){
