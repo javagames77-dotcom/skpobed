@@ -1,563 +1,413 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Director Dashboard - InSkill</title>
-    <script src="i18n.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
-        .header { background: #2196F3; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 1.5rem; }
-        .user-info { display: flex; align-items: center; gap: 1rem; }
-        .btn-logout { background: white; color: #2196F3; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
-        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-        .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 2px solid #ddd; }
-        .tab { padding: 1rem 2rem; background: none; border: none; border-bottom: 3px solid transparent; cursor: pointer; font-size: 1rem; transition: all 0.3s; }
-        .tab.active { border-bottom-color: #2196F3; color: #2196F3; font-weight: 600; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .section { background: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .btn-primary { background: #2196F3; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; font-size: 1rem; }
-        .btn-primary:hover { background: #1976D2; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background: #f5f5f5; font-weight: 600; }
-        .btn-edit, .btn-delete { padding: 0.5rem 1rem; margin: 0 0.25rem; border: none; border-radius: 4px; cursor: pointer; }
-        .btn-edit { background: #4CAF50; color: white; }
-        .btn-delete { background: #f44336; color: white; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
-        .modal.active { display: flex; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
-        .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
-        .form-group input, .form-group select { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; }
-        .modal-footer { display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1.5rem; }
-        .btn-cancel { background: #9E9E9E; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Директор клуба — InSkill Online</title>
+<style>
+:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
+.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
+.logo-icon{width:40px;height:40px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-bars{display:flex;gap:3px;align-items:flex-end}
+.logo-bar{width:6px;background:#fff;border-radius:2px}
+.logo-bar:nth-child(1){height:12px}
+.logo-bar:nth-child(2){height:18px;background:var(--s)}
+.logo-bar:nth-child(3){height:24px;background:var(--s)}
+.badge-director{padding:.25rem .75rem;background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
+.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer}
+.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
+.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)}
+.tab{padding:1rem 2rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
+.tab.active{color:var(--p);border-bottom-color:var(--p)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
+.page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
+.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:.5rem}
+.table-container{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
+.table{width:100%;border-collapse:collapse}
+.table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
+.table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem}
+.table td{padding:1rem;border-bottom:1px solid var(--b)}
+.table tbody tr:hover{background:#f8f9ff}
+.table-actions{display:flex;gap:.5rem}
+.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.btn-edit{background:#e3f2fd;color:var(--p)}
+.btn-delete{background:#ffebee;color:#dc3545}
+.loading{text-align:center;padding:3rem;color:var(--p)}
+.child-photo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--b)}
+.group-badge{display:inline-block;padding:.35rem .75rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:500}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.modal.active{display:flex}
+.modal-content{background:#fff;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-header{padding:1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:1.5rem;font-weight:700;color:var(--p)}
+.modal-close{width:32px;height:32px;border:none;background:var(--l);border-radius:50%;cursor:pointer;font-size:1.2rem}
+.modal-body{padding:1.5rem}
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem}
+.form-input{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
+.modal-footer{padding:1.5rem;border-top:2px solid var(--b);display:flex;gap:1rem;justify-content:flex-end}
+.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
+.btn-cancel{background:var(--l);color:var(--d)}
+.btn-save{background:var(--s);color:#fff}
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>InSkill - Director Dashboard</h1>
-        <div class="user-info">
-            <select id="langSelect" style="padding:0.5rem;border-radius:4px;">
-                <option value="ru">🇷🇺 РУ</option>
-                <option value="uk">🇺🇦 УК</option>
-                <option value="en">🇬🇧 EN</option>
-            </select>
-            <span id="userName"></span>
-            <button class="btn-logout" id="btnLogout">Logout</button>
-        </div>
-    </div>
 
-    <div class="container">
-        <div class="tabs">
-            <button class="tab active" data-tab="clubs" id="tabClubs">Clubs</button>
-            <button class="tab" data-tab="groups" id="tabGroups">Groups</button>
-            <button class="tab" data-tab="trainers" id="tabTrainers">Trainers</button>
-        </div>
+<header class="header">
+<div class="header-content">
+<a href="/" class="logo">
+<div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
+<span>InSkill<span style="color:var(--s)">.online</span></span>
+</a>
+<div style="display:flex;align-items:center;gap:1rem">
+<span class="badge-director">👔 ДИРЕКТОР</span>
+<span id="userName">—</span>
+<button class="btn-logout" onclick="logout()">Выход</button>
+</div>
+</div>
+</header>
 
-        <div class="tab-content active" id="clubs-content">
-            <div class="section">
-                <div class="section-header">
-                    <h2 id="titleClubs">Clubs</h2>
-                    <button class="btn-primary" id="btnAddClub">+ Add Club</button>
-                </div>
-                <div id="clubsLoading">Loading...</div>
-                <table id="clubsTable" style="display:none;">
-                    <thead>
-                        <tr>
-                            <th id="thClubName">Name</th>
-                            <th id="thClubAddress">Address</th>
-                            <th id="thClubGroups">Groups</th>
-                            <th id="thActions">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="clubsBody"></tbody>
-                </table>
-            </div>
-        </div>
+<div class="container">
+<div class="tabs">
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
+<button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
+<button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
+</div>
 
-        <div class="tab-content" id="groups-content">
-            <div class="section">
-                <div class="section-header">
-                    <h2 id="titleGroups">Groups</h2>
-                    <button class="btn-primary" id="btnAddGroup">+ Add Group</button>
-                </div>
-                <div id="groupsLoading">Loading...</div>
-                <table id="groupsTable" style="display:none;">
-                    <thead>
-                        <tr>
-                            <th id="thGroupName">Name</th>
-                            <th id="thGroupClub">Club</th>
-                            <th id="thActions2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="groupsBody"></tbody>
-                </table>
-            </div>
-        </div>
+<!-- CLUBS TAB -->
+<div class="tab-content active" id="tab-clubs">
+<div class="page-header">
+<h1 class="page-title">Мои клубы</h1>
+<button class="btn-add" onclick="addClub()"><span>➕</span><span>Добавить клуб</span></button>
+</div>
+<div class="table-container">
+<div id="loadingClubs" class="loading">Загрузка...</div>
+<table class="table" id="clubsTable" style="display:none">
+<thead><tr><th>Название</th><th>Адрес</th><th>Групп</th><th>Тренеров</th><th>Действия</th></tr></thead>
+<tbody id="clubsTableBody"></tbody>
+</table>
+</div>
+</div>
 
-        <div class="tab-content" id="trainers-content">
-            <div class="section">
-                <div class="section-header">
-                    <h2 id="titleTrainers">Trainers</h2>
-                    <button class="btn-primary" id="btnAddTrainer">+ Add Trainer</button>
-                </div>
-                <div id="trainersLoading">Loading...</div>
-                <table id="trainersTable" style="display:none;">
-                    <thead>
-                        <tr>
-                            <th id="thTrainerName">Name</th>
-                            <th id="thTrainerEmail">Email</th>
-                            <th id="thActions3">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="trainersBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+<!-- TRAINERS TAB -->
+<div class="tab-content" id="tab-trainers">
+<div class="page-header">
+<h1 class="page-title">Тренеры</h1>
+<button class="btn-add" onclick="addTrainer()"><span>➕</span><span>Добавить тренера</span></button>
+</div>
+<div class="table-container">
+<div id="loadingTrainers" class="loading">Загрузка...</div>
+<table class="table" id="trainersTable" style="display:none">
+<thead><tr><th>ФИО</th><th>Email</th><th>Клубов</th><th>Групп</th><th>Действия</th></tr></thead>
+<tbody id="trainersTableBody"></tbody>
+</table>
+</div>
+</div>
 
-    <!-- Club Modal -->
-    <div class="modal" id="clubModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="clubModalTitle">Add Club</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <form id="clubForm">
-                <input type="hidden" id="clubId">
-                <div class="form-group">
-                    <label id="lblClubName">Name *</label>
-                    <input type="text" id="clubName" required>
-                </div>
-                <div class="form-group">
-                    <label id="lblClubAddress">Address</label>
-                    <input type="text" id="clubAddress">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel" id="btnCancelClub">Cancel</button>
-                    <button type="submit" class="btn-primary" id="btnSaveClub">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<!-- ATHLETES TAB -->
+<div class="tab-content" id="tab-athletes">
+<div class="page-header">
+<h1 class="page-title">Все спортсмены</h1>
+</div>
+<div class="table-container">
+<div id="loadingAthletes" class="loading">Загрузка...</div>
+<table class="table" id="athletesTable" style="display:none">
+<thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th><th>Действия</th></tr></thead>
+<tbody id="athletesTableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
 
-    <!-- Group Modal -->
-    <div class="modal" id="groupModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="groupModalTitle">Add Group</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <form id="groupForm">
-                <input type="hidden" id="groupId">
-                <div class="form-group">
-                    <label id="lblGroupName">Name *</label>
-                    <input type="text" id="groupName" required>
-                </div>
-                <div class="form-group">
-                    <label id="lblGroupClub">Club *</label>
-                    <select id="groupClubId" required></select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel" id="btnCancelGroup">Cancel</button>
-                    <button type="submit" class="btn-primary" id="btnSaveGroup">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="modal" id="clubModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2>
+<button class="modal-close" onclick="closeClubModal()">✕</button>
+</div>
+<div class="modal-body">
+<form id="clubForm" onsubmit="saveClub(event)">
+<input type="hidden" id="clubId">
+<div class="form-group">
+<label class="form-label">Название *</label>
+<input type="text" class="form-input" id="clubName" required>
+</div>
+<div class="form-group">
+<label class="form-label">Адрес</label>
+<input type="text" class="form-input" id="clubAddress">
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeClubModal()">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()">Сохранить</button>
+</div>
+</div>
+</div>
 
-    <!-- Trainer Modal -->
-    <div class="modal" id="trainerModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="trainerModalTitle">Add Trainer</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <form id="trainerForm">
-                <input type="hidden" id="trainerId">
-                <div class="form-group">
-                    <label id="lblTrainerEmail">Email *</label>
-                    <input type="email" id="trainerEmail" required>
-                </div>
-                <div class="form-group">
-                    <label id="lblTrainerPassword">Password *</label>
-                    <input type="password" id="trainerPassword" required>
-                </div>
-                <div class="form-group">
-                    <label id="lblTrainerFirstName">First Name *</label>
-                    <input type="text" id="trainerFirstName" required>
-                </div>
-                <div class="form-group">
-                    <label id="lblTrainerLastName">Last Name *</label>
-                    <input type="text" id="trainerLastName" required>
-                </div>
-                <div class="form-group">
-                    <label id="lblTrainerPhone">Phone</label>
-                    <input type="tel" id="trainerPhone">
-                </div>
-                <div class="form-group">
-                    <label id="lblTrainerBirthDate">Birth Date</label>
-                    <input type="date" id="trainerBirthDate">
-                </div>
-                <div class="form-group">
-                    <label id="lblTrainerQualification">Qualification</label>
-                    <input type="text" id="trainerQualification">
-                </div>
-                <div class="form-group">
-                    <label id="lblTrainerPhoto">Photo URL</label>
-                    <input type="url" id="trainerPhotoUrl">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel" id="btnCancelTrainer">Cancel</button>
-                    <button type="submit" class="btn-primary" id="btnSaveTrainer">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="modal" id="trainerModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="trainerModalTitle">Добавить тренера</h2>
+<button class="modal-close" onclick="closeTrainerModal()">✕</button>
+</div>
+<div class="modal-body">
+<form id="trainerForm" onsubmit="saveTrainer(event)">
+<input type="hidden" id="trainerId">
+<div class="form-group">
+<label class="form-label">Email *</label>
+<input type="email" class="form-input" id="trainerEmail" required>
+</div>
+<div class="form-group">
+<label class="form-label">Пароль *</label>
+<input type="password" class="form-input" id="trainerPassword" required>
+<small style="color:#666">Минимум 6 символов</small>
+</div>
+<div class="form-group">
+<label class="form-label">Имя *</label>
+<input type="text" class="form-input" id="trainerFirstName" required>
+</div>
+<div class="form-group">
+<label class="form-label">Фамилия *</label>
+<input type="text" class="form-input" id="trainerLastName" required>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeTrainerModal()">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('trainerForm').requestSubmit()">Сохранить</button>
+</div>
+</div>
+</div>
 
-    <script>
-        const API = 'https://n8n.inskill.online/webhook/3a16e4f2-c8e4-42df-8c7f-01cbe2c31a49/api';
-        const AUTH_API = 'https://n8n.inskill.online/webhook/3a16e4f2-c8e4-42df-8c7f-01cbe2c31a49/auth';
-        let token = localStorage.getItem('token');
-        let user = null;
-        let clubs = [], groups = [], trainers = [];
+<script>
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+let token=localStorage.getItem('token');
+let user=null;
+let clubs=[],trainers=[],athletes=[];
 
-        if (!token) { location.href = '/'; }
+if(!token){window.location.href='/';throw new Error('No auth');}
 
-        // Load user info
-        function loadUserInfo() {
-            const u = JSON.parse(localStorage.getItem('user') || '{}');
-            user = u;
-            document.getElementById('userName').textContent = `${u.first_name || ''} ${u.last_name || ''}`;
-        }
+function loadUserInfo(){
+user=JSON.parse(localStorage.getItem('user')||'{}');
+if(user.role!=='director'){alert('Доступ запрещен');window.location.href='/';return}
+document.getElementById('userName').textContent=user.first_name?`${user.first_name} ${user.last_name||''}`.trim():user.email||'Пользователь';
+}
 
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabName = tab.dataset.tab;
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById(tabName + '-content').classList.add('active');
-                
-                if (tabName === 'groups' && !groups.length) loadGroups();
-                if (tabName === 'trainers' && !trainers.length) loadTrainers();
-            });
-        });
+function switchTab(t){
+document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+event.target.classList.add('active');
+document.getElementById(`tab-${t}`).classList.add('active');
+if(t==='trainers'&&trainers.length===0)loadTrainers();
+if(t==='athletes'&&athletes.length===0)loadAthletes();
+}
 
-        // Clubs
-        async function loadClubs() {
-            try {
-                const r = await fetch(API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, resource: 'clubs', action: 'list' })
-                });
-                const d = await r.json();
-                clubs = d.merged || d || [];
-                
-                // Populate club select
-                const sel = document.getElementById('groupClubId');
-                sel.innerHTML = '<option value="">Select club</option>' + 
-                    clubs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-                
-                renderClubs();
-            } catch (e) { console.error(e); }
-        }
+async function loadClubs(){
+try{
+document.getElementById('loadingClubs').style.display='block';
+document.getElementById('clubsTable').style.display='none';
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list',data:{director_id:user.id}})});
+let d=await r.json();
+console.log('📦 CLUBS API RESPONSE:', d);
+console.log('👤 USER ID:', user.id, 'ROLE:', user.role);
+clubs=d.merged||d||[];
+console.log('📋 CLUBS PARSED:', clubs);
+document.getElementById('loadingClubs').style.display='none';
+document.getElementById('clubsTable').style.display='table';
+renderClubsTable();
+}catch(e){console.error('❌ CLUBS ERROR:', e)}
+}
 
-        function renderClubs() {
-            const tbody = document.getElementById('clubsBody');
-            tbody.innerHTML = '';
-            clubs.forEach(club => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${club.name}</td>
-                    <td>${club.address || '-'}</td>
-                    <td>${club.groups_count || 0}</td>
-                    <td>
-                        <button class="btn-edit" onclick="editClub(${club.id})">Edit</button>
-                        <button class="btn-delete" onclick="deleteClub(${club.id})">Delete</button>
-                    </td>
-                `;
-            });
-            document.getElementById('clubsLoading').style.display = 'none';
-            document.getElementById('clubsTable').style.display = 'table';
-        }
+function renderClubsTable(){
+const t=document.getElementById('clubsTableBody');
+t.innerHTML='';
+clubs.forEach(c=>{
+const r=document.createElement('tr');
+r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td>${c.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button></div></td>`;
+t.appendChild(r);
+});
+}
 
-        function editClub(id) {
-            const club = clubs.find(c => c.id === id);
-            if (!club) return;
-            document.getElementById('clubId').value = club.id;
-            document.getElementById('clubName').value = club.name;
-            document.getElementById('clubAddress').value = club.address || '';
-            document.getElementById('clubModal').classList.add('active');
-        }
+async function loadTrainers(){
+try{
+document.getElementById('loadingTrainers').style.display='block';
+document.getElementById('trainersTable').style.display='none';
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
+let d=await r.json();
+trainers=d.merged||d||[];
+document.getElementById('loadingTrainers').style.display='none';
+document.getElementById('trainersTable').style.display='table';
+renderTrainersTable();
+}catch(e){console.error(e)}
+}
 
-        async function deleteClub(id) {
-            if (!confirm('Delete this club?')) return;
-            try {
-                await fetch(API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, resource: 'clubs', action: 'delete', data: { id } })
-                });
-                loadClubs();
-            } catch (e) { console.error(e); }
-        }
+function renderTrainersTable(){
+const t=document.getElementById('trainersTableBody');
+t.innerHTML='';
+trainers.forEach(tr=>{
+const r=document.createElement('tr');
+r.innerHTML=`<td>${tr.first_name} ${tr.last_name}</td><td>${tr.email}</td><td>${tr.clubs_count||0}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button></div></td>`;
+t.appendChild(r);
+});
+}
 
-        // Groups
-        async function loadGroups() {
-            try {
-                const r = await fetch(API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, resource: 'groups', action: 'list' })
-                });
-                const d = await r.json();
-                groups = d.merged || d || [];
-                renderGroups();
-            } catch (e) { console.error(e); }
-        }
+async function loadAthletes(){
+try{
+document.getElementById('loadingAthletes').style.display='block';
+document.getElementById('athletesTable').style.display='none';
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list',data:{director_id:user.id}})});
+let d=await r.json();
+athletes=d.merged||d||[];
+document.getElementById('loadingAthletes').style.display='none';
+document.getElementById('athletesTable').style.display='table';
+renderAthletesTable();
+}catch(e){console.error(e)}
+}
 
-        function renderGroups() {
-            const tbody = document.getElementById('groupsBody');
-            tbody.innerHTML = '';
-            groups.forEach(group => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td><a href="/group-profile.html?id=${group.id}" style="color:#2196F3;font-weight:600">${group.name}</a></td>
-                    <td>${group.club_name || '-'}</td>
-                    <td>
-                        <button class="btn-edit" onclick="editGroup(${group.id})">Edit</button>
-                        <button class="btn-delete" onclick="deleteGroup(${group.id})">Delete</button>
-                    </td>
-                `;
-            });
-            document.getElementById('groupsLoading').style.display = 'none';
-            document.getElementById('groupsTable').style.display = 'table';
-        }
+function renderAthletesTable(){
+const t=document.getElementById('athletesTableBody');
+t.innerHTML='';
+athletes.forEach(a=>{
+const r=document.createElement('tr');
+r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_name||'Без группы'}</span></td><td>${a.club_name||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="window.location='/athlete-profile.html?id=${a.id}'">👁️</button></div></td>`;
+t.appendChild(r);
+});
+}
 
-        function editGroup(id) {
-            const group = groups.find(g => g.id === id);
-            if (!group) return;
-            document.getElementById('groupId').value = group.id;
-            document.getElementById('groupName').value = group.name;
-            document.getElementById('groupClubId').value = group.club_id;
-            document.getElementById('groupModal').classList.add('active');
-        }
+function addClub(){
+document.getElementById('clubModalTitle').textContent='Добавить клуб';
+document.getElementById('clubId').value='';
+document.getElementById('clubName').value='';
+document.getElementById('clubAddress').value='';
+openClubModal();
+}
 
-        async function deleteGroup(id) {
-            if (!confirm('Delete this group?')) return;
-            try {
-                await fetch(API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, resource: 'groups', action: 'delete', data: { id } })
-                });
-                loadGroups();
-            } catch (e) { console.error(e); }
-        }
+function editClub(id){
+const c=clubs.find(x=>x.id===id);
+if(!c)return;
+document.getElementById('clubModalTitle').textContent='Редактировать клуб';
+document.getElementById('clubId').value=c.id;
+document.getElementById('clubName').value=c.name;
+document.getElementById('clubAddress').value=c.address||'';
+openClubModal();
+}
 
-        // Trainers
-        async function loadTrainers() {
-            try {
-                const r = await fetch(API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, resource: 'users', action: 'list', data: { role: 'trainer' } })
-                });
-                const d = await r.json();
-                trainers = d.merged || d || [];
-                renderTrainers();
-            } catch (e) { console.error(e); }
-        }
+async function saveClub(e){
+e.preventDefault();
+const id=document.getElementById('clubId').value;
+const name=document.getElementById('clubName').value.trim();
+const address=document.getElementById('clubAddress').value.trim();
+if(!name){alert('Введите название');return}
+const data={name,address,director_id:user.id};
+try{
+const a=id?'update':'create';
+if(id)data.id=parseInt(id);
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:a,data})});
+let res=await r.json();
+const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+if(result&&result.id){
+closeClubModal();
+alert(id?'Клуб обновлен!':'Клуб создан!');
+await loadClubs();
+}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
+}catch(err){console.error(err);alert('Ошибка: '+err.message)}
+}
 
-        function renderTrainers() {
-            const tbody = document.getElementById('trainersBody');
-            tbody.innerHTML = '';
-            trainers.forEach(trainer => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td><a href="/trainer-profile.html?id=${trainer.id}" style="color:#2196F3;font-weight:600">${trainer.first_name || ''} ${trainer.last_name || ''}</a></td>
-                    <td>${trainer.email}</td>
-                    <td>
-                        <button class="btn-edit" onclick="editTrainer(${trainer.id})">Edit</button>
-                        <button class="btn-delete" onclick="deleteTrainer(${trainer.id})">Delete</button>
-                    </td>
-                `;
-            });
-            document.getElementById('trainersLoading').style.display = 'none';
-            document.getElementById('trainersTable').style.display = 'table';
-        }
+function addTrainer(){
+document.getElementById('trainerModalTitle').textContent='Добавить тренера';
+document.getElementById('trainerId').value='';
+document.getElementById('trainerEmail').value='';
+document.getElementById('trainerPassword').value='';
+document.getElementById('trainerPassword').required=true;
+document.getElementById('trainerFirstName').value='';
+document.getElementById('trainerLastName').value='';
+openTrainerModal();
+}
 
-        function editTrainer(id) {
-            const trainer = trainers.find(t => t.id === id);
-            if (!trainer) return;
-            document.getElementById('trainerId').value = trainer.id;
-            document.getElementById('trainerEmail').value = trainer.email;
-            document.getElementById('trainerPassword').value = '';
-            document.getElementById('trainerPassword').required = false;
-            document.getElementById('trainerFirstName').value = trainer.first_name || '';
-            document.getElementById('trainerLastName').value = trainer.last_name || '';
-            document.getElementById('trainerPhone').value = trainer.phone || '';
-            document.getElementById('trainerBirthDate').value = trainer.birth_date || '';
-            document.getElementById('trainerQualification').value = trainer.qualification || '';
-            document.getElementById('trainerPhotoUrl').value = trainer.photo_url || '';
-            document.getElementById('trainerModal').classList.add('active');
-        }
+function editTrainer(id){
+const t=trainers.find(x=>x.id===id);
+if(!t)return;
+document.getElementById('trainerModalTitle').textContent='Редактировать тренера';
+document.getElementById('trainerId').value=t.id;
+document.getElementById('trainerEmail').value=t.email;
+document.getElementById('trainerPassword').value='';
+document.getElementById('trainerPassword').required=false;
+document.getElementById('trainerFirstName').value=t.first_name;
+document.getElementById('trainerLastName').value=t.last_name;
+openTrainerModal();
+}
 
-        async function deleteTrainer(id) {
-            if (!confirm('Delete this trainer?')) return;
-            try {
-                await fetch(API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, resource: 'users', action: 'delete', data: { id } })
-                });
-                loadTrainers();
-            } catch (e) { console.error(e); }
-        }
+async function saveTrainer(e){
+e.preventDefault();
+const id=document.getElementById('trainerId').value;
+const email=document.getElementById('trainerEmail').value.trim();
+const password=document.getElementById('trainerPassword').value;
+const firstName=document.getElementById('trainerFirstName').value.trim();
+const lastName=document.getElementById('trainerLastName').value.trim();
+if(id){
+const data={id:parseInt(id),email,first_name:firstName,last_name:lastName};
+if(password)data.password=password;
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});
+let res=await r.json();
+const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+if(result&&result.id){
+closeTrainerModal();
+alert('Тренер обновлен!');
+await loadTrainers();
+}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
+}catch(err){console.error(err);alert('Ошибка: '+err.message)}
+}else{
+try{
+const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
+const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName})});
+if(!r.ok)throw new Error('HTTP '+r.status);
+const res=await r.json();
+if(res.success||res.token){
+closeTrainerModal();
+alert('✅ Тренер создан!');
+await loadTrainers();
+}else{alert('❌ '+JSON.stringify(res))}
+}catch(err){console.error(err);alert('❌ Ошибка сети: '+err.message+'\n\nПроверьте n8n Auth API')}
+}
+}
 
-        // Event listeners
-        document.getElementById('btnLogout').onclick = () => { localStorage.clear(); location.href = '/'; };
-        document.getElementById('btnAddClub').onclick = () => {
-            document.getElementById('clubForm').reset();
-            document.getElementById('clubId').value = '';
-            document.getElementById('clubModal').classList.add('active');
-        };
-        document.getElementById('btnAddGroup').onclick = () => {
-            document.getElementById('groupForm').reset();
-            document.getElementById('groupId').value = '';
-            document.getElementById('groupModal').classList.add('active');
-        };
-        document.getElementById('btnAddTrainer').onclick = () => {
-            document.getElementById('trainerForm').reset();
-            document.getElementById('trainerId').value = '';
-            document.getElementById('trainerPassword').required = true;
-            document.getElementById('trainerModal').classList.add('active');
-        };
+function openClubModal(){
+document.getElementById('clubModal').classList.add('active');
+document.body.style.overflow='hidden';
+}
 
-        document.getElementById('clubForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('clubId').value;
-            const data = {
-                name: document.getElementById('clubName').value,
-                address: document.getElementById('clubAddress').value,
-                director_id: user.id
-            };
-            if (id) data.id = parseInt(id);
-            try {
-                await fetch(API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, resource: 'clubs', action: id ? 'update' : 'create', data })
-                });
-                document.getElementById('clubModal').classList.remove('active');
-                loadClubs();
-            } catch (e) { console.error(e); }
-        };
+function closeClubModal(){
+document.getElementById('clubModal').classList.remove('active');
+document.body.style.overflow='';
+}
 
-        document.getElementById('groupForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('groupId').value;
-            const data = {
-                name: document.getElementById('groupName').value,
-                club_id: parseInt(document.getElementById('groupClubId').value),
-                schedule: '[]'
-            };
-            if (id) data.id = parseInt(id);
-            try {
-                await fetch(API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, resource: 'groups', action: id ? 'update' : 'create', data })
-                });
-                document.getElementById('groupModal').classList.remove('active');
-                loadGroups();
-            } catch (e) { console.error(e); }
-        };
+function openTrainerModal(){
+document.getElementById('trainerModal').classList.add('active');
+document.body.style.overflow='hidden';
+}
 
-        document.getElementById('trainerForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('trainerId').value;
-            const data = {
-                email: document.getElementById('trainerEmail').value,
-                first_name: document.getElementById('trainerFirstName').value,
-                last_name: document.getElementById('trainerLastName').value,
-                phone: document.getElementById('trainerPhone').value,
-                birth_date: document.getElementById('trainerBirthDate').value,
-                qualification: document.getElementById('trainerQualification').value,
-                photo_url: document.getElementById('trainerPhotoUrl').value,
-                role: 'trainer'
-            };
-            
-            try {
-                if (id) {
-                    data.id = parseInt(id);
-                    await fetch(API, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ token, resource: 'users', action: 'update', data })
-                    });
-                } else {
-                    data.password = document.getElementById('trainerPassword').value;
-                    await fetch(AUTH_API, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ action: 'register', ...data })
-                    });
-                }
-                document.getElementById('trainerModal').classList.remove('active');
-                loadTrainers();
-            } catch (e) { console.error(e); }
-        };
+function closeTrainerModal(){
+document.getElementById('trainerModal').classList.remove('active');
+document.body.style.overflow='';
+document.getElementById('trainerPassword').required=true;
+}
 
-        // Close modals
-        document.querySelectorAll('.modal-close, .btn-cancel').forEach(btn => {
-            btn.onclick = function() { this.closest('.modal').classList.remove('active'); };
-        });
+function logout(){
+localStorage.removeItem('token');
+localStorage.removeItem('user');
+window.location.href='/';
+}
 
-        // Language
-        document.getElementById('langSelect').onchange = function() {
-            setLang(this.value);
-            applyTranslations();
-        };
-
-        function applyTranslations() {
-            document.getElementById('btnLogout').textContent = t('logout');
-            document.getElementById('tabClubs').textContent = t('clubs');
-            document.getElementById('tabGroups').textContent = t('groups');
-            document.getElementById('tabTrainers').textContent = t('trainers');
-            document.getElementById('titleClubs').textContent = t('clubs');
-            document.getElementById('titleGroups').textContent = t('groups');
-            document.getElementById('titleTrainers').textContent = t('trainers');
-            document.getElementById('btnAddClub').textContent = '+ ' + t('add') + ' ' + t('club');
-            document.getElementById('btnAddGroup').textContent = '+ ' + t('add') + ' ' + t('group');
-            document.getElementById('btnAddTrainer').textContent = '+ ' + t('add') + ' Trainer';
-            document.getElementById('thClubName').textContent = t('name');
-            document.getElementById('thClubAddress').textContent = t('address');
-            document.getElementById('thClubGroups').textContent = t('groups');
-            document.getElementById('thActions').textContent = t('actions');
-            document.getElementById('thActions2').textContent = t('actions');
-            document.getElementById('thActions3').textContent = t('actions');
-            document.getElementById('thGroupName').textContent = t('name');
-            document.getElementById('thGroupClub').textContent = t('club');
-            document.getElementById('thTrainerName').textContent = t('name');
-            document.getElementById('thTrainerEmail').textContent = t('email');
-        }
-
-        // Init
-        loadUserInfo();
-        initLangSelector();
-        applyTranslations();
-        loadClubs();
-    </script>
+loadUserInfo();
+loadClubs();
+</script>
 </body>
 </html>
