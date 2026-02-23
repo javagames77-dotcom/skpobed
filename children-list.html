@@ -252,6 +252,21 @@ const o2=document.createElement('option');o2.value=g.id;o2.textContent=g.name;c.
 });
 }
 
+function updateClubFilter(){
+const clubsSet=new Set();
+children.forEach(c=>{
+if(c.club_names&&c.club_names!=='')clubsSet.add(c.club_names);
+});
+const clubFilter=document.getElementById('clubFilter');
+clubFilter.innerHTML='<option value="">Все</option>';
+Array.from(clubsSet).forEach(club=>{
+const opt=document.createElement('option');
+opt.value=club;
+opt.textContent=club;
+clubFilter.appendChild(opt);
+});
+}
+
 async function loadChildren(){
 try{
 document.getElementById('loadingChildren').style.display='block';
@@ -280,6 +295,7 @@ return group&&c.group_names.includes(group.name);
 });
 console.log('Filtered children for trainer:', children.length);
 
+updateClubFilter();
 filtered=children;
 document.getElementById('loadingChildren').style.display='none';
 if(children.length===0)document.getElementById('emptyChildren').style.display='block';
@@ -298,16 +314,20 @@ t.appendChild(r);
 }
 
 document.getElementById('searchInput').addEventListener('input',filterChildren);
+document.getElementById('clubFilter').addEventListener('change',filterChildren);
 document.getElementById('groupFilter').addEventListener('change',filterChildren);
 
 function filterChildren(){
-const s=document.getElementById('searchInput').value.toLowerCase(),g=document.getElementById('groupFilter').value;
+const s=document.getElementById('searchInput').value.toLowerCase();
+const club=document.getElementById('clubFilter').value;
+const g=document.getElementById('groupFilter').value;
 filtered=children.filter(c=>{
 const n=(c.first_name+' '+c.last_name).toLowerCase().includes(s);
-if(!g)return n;
+const clubMatch=!club||(c.club_names&&c.club_names.includes(club));
+if(!g)return n&&clubMatch;
 const groupName=groups.find(gr=>gr.id==g)?.name;
 const gr=groupName&&c.group_names&&c.group_names.includes(groupName);
-return n&&gr;
+return n&&clubMatch&&gr;
 });
 renderChildrenTable();
 }
