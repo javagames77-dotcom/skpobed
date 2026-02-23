@@ -304,7 +304,9 @@ function filterChildren(){
 const s=document.getElementById('searchInput').value.toLowerCase(),g=document.getElementById('groupFilter').value;
 filtered=children.filter(c=>{
 const n=(c.first_name+' '+c.last_name).toLowerCase().includes(s);
-const gr=!g||c.group_id==g;
+if(!g)return n;
+const groupName=groups.find(gr=>gr.id==g)?.name;
+const gr=groupName&&c.group_names&&c.group_names.includes(groupName);
 return n&&gr;
 });
 renderChildrenTable();
