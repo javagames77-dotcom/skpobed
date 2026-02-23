@@ -397,26 +397,35 @@ if(d&&m&&y)data.birth_date=`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
 try{
 if(id){
 data.id=parseInt(id);
+console.log('UPDATE child:', data);
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'update',data})});
 let res=await r.json();
+console.log('UPDATE response:', res);
 const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
 if(result&&result.id){
 const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
 const d2=await r2.json();
 const allChildren=d2.merged||d2||[];
 const child=allChildren.find(c=>c.id==parseInt(id));
+console.log('Current child data:', child);
+
 const currentGroupNames=child&&child.group_names&&child.group_names!=='Без группы'?child.group_names.split(', '):[];
 const currentGroupIds=groups.filter(g=>currentGroupNames.includes(g.name)).map(g=>g.id);
+console.log('Current groups:', currentGroupIds, 'Selected groups:', selectedGroups);
 
 for(let gid of currentGroupIds){
 if(!selectedGroups.includes(gid)){
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(id),group_id:gid}})});
+console.log('Removing group', gid);
+const removeRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(id),group_id:gid}})});
+console.log('Remove result:', await removeRes.json());
 }
 }
 
 for(let gid of selectedGroups){
 if(!currentGroupIds.includes(gid)){
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});
+console.log('Adding group', gid);
+const assignRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});
+console.log('Assign result:', await assignRes.json());
 }
 }
 
@@ -429,16 +438,22 @@ alert('Ошибка: '+(result?.error||JSON.stringify(res)));
 }else{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'create',data})});
 let res=await r.json();
+console.log('CREATE response:', res);
 const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-if(result&&result.id){
+const childId=result?.id||res?.id;
+console.log('New child ID:', childId);
+
+if(childId){
 for(let gid of selectedGroups){
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:result.id,group_id:gid}})});
+console.log('Assigning group', gid, 'to child', childId);
+const assignRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:childId,group_id:gid}})});
+console.log('Assign result:', await assignRes.json());
 }
 closeChildModal();
 alert('Добавлено!');
 await loadChildren();
 }else{
-alert('Ошибка: '+(result?.error||JSON.stringify(res)));
+alert('Ошибка: не получен ID ребенка. Ответ: '+JSON.stringify(res));
 }
 }
 }catch(err){
