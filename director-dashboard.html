@@ -246,7 +246,11 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 <div class="form-group">
 <label class="form-label">Дата рождения</label>
-<input type="date" class="form-input" id="trainerBirthDate">
+<div style="display:flex;gap:0.75rem">
+<select class="form-input" id="trainerBirthDay" style="flex:1"><option value="">День</option></select>
+<select class="form-input" id="trainerBirthMonth" style="flex:1"><option value="">Месяц</option></select>
+<select class="form-input" id="trainerBirthYear" style="flex:1"><option value="">Год</option></select>
+</div>
 </div>
 <div class="form-group">
 <label class="form-label">Телефон</label>
@@ -280,6 +284,36 @@ function loadUserInfo(){
 const u=JSON.parse(localStorage.getItem('user')||'{}');
 user=u;
 document.getElementById('userName').textContent=`${u.first_name||''} ${u.last_name||''}`;
+populateDateSelects();
+}
+
+function populateDateSelects(){
+const daySelect=document.getElementById('trainerBirthDay');
+const monthSelect=document.getElementById('trainerBirthMonth');
+const yearSelect=document.getElementById('trainerBirthYear');
+
+for(let d=1;d<=31;d++){
+const opt=document.createElement('option');
+opt.value=d;
+opt.textContent=d;
+daySelect.appendChild(opt);
+}
+
+const months=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+months.forEach((m,i)=>{
+const opt=document.createElement('option');
+opt.value=i+1;
+opt.textContent=m;
+monthSelect.appendChild(opt);
+});
+
+const currentYear=new Date().getFullYear();
+for(let y=currentYear;y>=1940;y--){
+const opt=document.createElement('option');
+opt.value=y;
+opt.textContent=y;
+yearSelect.appendChild(opt);
+}
 }
 
 function switchTab(t){
@@ -470,7 +504,9 @@ document.getElementById('trainerPassword').value='';
 document.getElementById('trainerPassword').required=true;
 document.getElementById('trainerFirstName').value='';
 document.getElementById('trainerLastName').value='';
-document.getElementById('trainerBirthDate').value='';
+document.getElementById('trainerBirthDay').value='';
+document.getElementById('trainerBirthMonth').value='';
+document.getElementById('trainerBirthYear').value='';
 document.getElementById('trainerPhone').value='';
 document.getElementById('trainerQualification').value='';
 document.getElementById('trainerGroupsCheckboxes').innerHTML='';
@@ -488,7 +524,20 @@ document.getElementById('trainerPassword').value='';
 document.getElementById('trainerPassword').required=false;
 document.getElementById('trainerFirstName').value=t.first_name;
 document.getElementById('trainerLastName').value=t.last_name;
-document.getElementById('trainerBirthDate').value=t.birth_date||'';
+
+if(t.birth_date){
+const parts=t.birth_date.split('-');
+if(parts.length===3){
+document.getElementById('trainerBirthYear').value=parts[0];
+document.getElementById('trainerBirthMonth').value=parseInt(parts[1]);
+document.getElementById('trainerBirthDay').value=parseInt(parts[2]);
+}
+}else{
+document.getElementById('trainerBirthDay').value='';
+document.getElementById('trainerBirthMonth').value='';
+document.getElementById('trainerBirthYear').value='';
+}
+
 document.getElementById('trainerPhone').value=t.phone||'';
 document.getElementById('trainerQualification').value=t.qualification||'';
 await loadGroupsForTrainer(t.id);
@@ -525,21 +574,36 @@ const email=document.getElementById('trainerEmail').value.trim();
 const password=document.getElementById('trainerPassword').value;
 const firstName=document.getElementById('trainerFirstName').value.trim();
 const lastName=document.getElementById('trainerLastName').value.trim();
-const birthDate=document.getElementById('trainerBirthDate').value;
+
+const day=document.getElementById('trainerBirthDay').value;
+const month=document.getElementById('trainerBirthMonth').value;
+const year=document.getElementById('trainerBirthYear').value;
+const birthDate=(day&&month&&year)?`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`:'';
+
 const phone=document.getElementById('trainerPhone').value.trim();
 const qualification=document.getElementById('trainerQualification').value.trim();
 
 const selectedGroups=Array.from(document.querySelectorAll('#trainerGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
 
 if(id){
-const data={id:parseInt(id),email,first_name:firstName,last_name:lastName,birth_date:birthDate,phone,qualification};
+const data={id:parseInt(id),email,first_name:firstName,last_name:lastName,phone,qualification};
+if(birthDate)data.birth_date=birthDate;
 if(password)data.password=password;
 try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});
 let res=await r.json();
 const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
 if(result&&result.id){
-for(let gid of selectedGroups){
+const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});
+const d2=await r2.json();
+const currentGroups=(d2.merged||d2||[]).map(g=>g.id);
+const toRemove=currentGroups.filter(gid=>!selectedGroups.includes(gid));
+const toAdd=selectedGroups.filter(gid=>!currentGroups.includes(gid));
+
+for(let gid of toRemove){
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'remove',data:{trainer_id:parseInt(id),group_id:gid}})});
+}
+for(let gid of toAdd){
 await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(id),group_id:gid}})});
 }
 closeTrainerModal();
@@ -552,17 +616,18 @@ try{
 const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName,birth_date:birthDate,phone,qualification})});
 if(!r.ok)throw new Error('HTTP '+r.status);
 const res=await r.json();
-if(res.success||res.token){
-if(res.user_id){
+if(res.success||res.token||res.user_id){
+const newTrainerId=res.user_id||res.id;
+if(newTrainerId&&selectedGroups.length>0){
 for(let gid of selectedGroups){
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:res.user_id,group_id:gid}})});
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:newTrainerId,group_id:gid}})});
 }
 }
 closeTrainerModal();
 alert('✅ Тренер создан!');
 await loadTrainers();
 }else{alert('❌ '+JSON.stringify(res))}
-}catch(err){console.error(err);alert('❌ Ошибка сети: '+err.message+'\n\nПроверьте n8n Auth API')}
+}catch(err){console.error(err);alert('❌ Ошибка: '+err.message)}
 }
 }
 
