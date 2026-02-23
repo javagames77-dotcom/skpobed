@@ -549,12 +549,24 @@ try{
 const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});
 const d1=await r1.json();
 const allGroups=d1.merged||d1||[];
+console.log('All groups loaded:', allGroups);
 
 let trainerGroupIds=[];
 if(trainerId){
-const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:trainerId}})});
+try{
+const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(trainerId)}})});
 const d2=await r2.json();
+console.log('Trainer groups response:', d2);
 trainerGroupIds=(d2.merged||d2||[]).map(g=>g.id);
+console.log('Trainer group IDs:', trainerGroupIds);
+}catch(e2){
+console.error('Error loading trainer groups:', e2);
+}
+}
+
+if(allGroups.length===0){
+document.getElementById('trainerGroupsCheckboxes').innerHTML='<p style="color:#999;padding:1rem;text-align:center">Нет доступных групп</p>';
+return;
 }
 
 const html=allGroups.map(g=>`
@@ -563,8 +575,12 @@ const html=allGroups.map(g=>`
 ${g.name} <span style="color:#666">(${g.club_name||'—'})</span>
 </label>
 `).join('');
-document.getElementById('trainerGroupsCheckboxes').innerHTML=html||'<p style="color:#999;padding:1rem">Нет групп</p>';
-}catch(e){console.error(e)}
+document.getElementById('trainerGroupsCheckboxes').innerHTML=html;
+console.log('Groups checkboxes rendered:', allGroups.length, 'checked:', trainerGroupIds.length);
+}catch(e){
+console.error('Error in loadGroupsForTrainer:', e);
+document.getElementById('trainerGroupsCheckboxes').innerHTML='<p style="color:red;padding:1rem">Ошибка загрузки групп</p>';
+}
 }
 
 async function saveTrainer(e){
@@ -585,26 +601,36 @@ const qualification=document.getElementById('trainerQualification').value.trim()
 
 const selectedGroups=Array.from(document.querySelectorAll('#trainerGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
 
+console.log('SAVE TRAINER:', {id, email, firstName, lastName, birthDate, phone, selectedGroups});
+
 if(id){
 const data={id:parseInt(id),email,first_name:firstName,last_name:lastName,phone,qualification};
 if(birthDate)data.birth_date=birthDate;
 if(password)data.password=password;
+console.log('UPDATE data:', data);
 try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});
 let res=await r.json();
+console.log('UPDATE response:', res);
 const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
 if(result&&result.id){
 const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});
 const d2=await r2.json();
 const currentGroups=(d2.merged||d2||[]).map(g=>g.id);
+console.log('Current groups:', currentGroups, 'Selected:', selectedGroups);
+
 const toRemove=currentGroups.filter(gid=>!selectedGroups.includes(gid));
 const toAdd=selectedGroups.filter(gid=>!currentGroups.includes(gid));
+console.log('To remove:', toRemove, 'To add:', toAdd);
 
 for(let gid of toRemove){
+console.log('Removing group', gid);
 await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'remove',data:{trainer_id:parseInt(id),group_id:gid}})});
 }
 for(let gid of toAdd){
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(id),group_id:gid}})});
+console.log('Adding group', gid);
+const addRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(id),group_id:gid}})});
+console.log('Add result:', await addRes.json());
 }
 closeTrainerModal();
 alert('Тренер обновлен!');
@@ -613,20 +639,27 @@ await loadTrainers();
 }catch(err){console.error(err);alert('Ошибка: '+err.message)}
 }else{
 try{
-const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName,birth_date:birthDate,phone,qualification})});
+const registerData={action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName,phone,qualification};
+if(birthDate)registerData.birth_date=birthDate;
+console.log('REGISTER data:', registerData);
+const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(registerData)});
 if(!r.ok)throw new Error('HTTP '+r.status);
 const res=await r.json();
-if(res.success||res.token||res.user_id){
-const newTrainerId=res.user_id||res.id;
+console.log('REGISTER response:', res);
+const newTrainerId=res.user_id||res.id||res.userId;
+console.log('New trainer ID:', newTrainerId);
+if(res.success||res.token||newTrainerId){
 if(newTrainerId&&selectedGroups.length>0){
+console.log('Assigning groups to new trainer:', newTrainerId, selectedGroups);
 for(let gid of selectedGroups){
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:newTrainerId,group_id:gid}})});
+const assignRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(newTrainerId),group_id:gid}})});
+console.log('Assign result:', await assignRes.json());
 }
 }
 closeTrainerModal();
 alert('✅ Тренер создан!');
 await loadTrainers();
-}else{alert('❌ '+JSON.stringify(res))}
+}else{alert('❌ Регистрация не вернула ID: '+JSON.stringify(res))}
 }catch(err){console.error(err);alert('❌ Ошибка: '+err.message)}
 }
 }
