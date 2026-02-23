@@ -2,208 +2,171 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Профиль спортсмена — InSkill Online</title>
+<title>Профиль спортсмена - InSkill</title>
 <style>
 :root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.header-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
-.btn-back{padding:.5rem 1rem;background:var(--l);border:1px solid var(--b);border-radius:6px;cursor:pointer;text-decoration:none;color:var(--d);font-weight:500}
+.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem}
+.btn-back{padding:0.5rem 1rem;background:var(--p);color:#fff;border:none;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
 .container{max-width:1200px;margin:2rem auto;padding:0 2rem}
-.profile-header{background:#fff;padding:2rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;gap:2rem;align-items:center}
-.athlete-photo{width:150px;height:150px;border-radius:50%;object-fit:cover;border:4px solid var(--p)}
-.athlete-info h1{font-size:2rem;color:var(--p);margin-bottom:.5rem}
-.athlete-meta{display:flex;gap:1.5rem;color:#666;font-size:.9rem;flex-wrap:wrap}
-.meta-item{display:flex;align-items:center;gap:.5rem}
-.section{background:#fff;padding:2rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.section-title{font-size:1.5rem;color:var(--p);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:2px solid var(--b)}
-.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
-.info-item{padding:1rem;background:var(--l);border-radius:8px}
-.info-label{font-size:.85rem;color:#666;text-transform:uppercase;font-weight:600;margin-bottom:.5rem}
-.info-value{font-size:1.1rem;color:var(--d);font-weight:500}
-.attendance-stats{display:flex;gap:2rem;flex-wrap:wrap}
-.stat-card{flex:1;min-width:200px;padding:1.5rem;background:linear-gradient(135deg,var(--p),#0052a3);color:#fff;border-radius:12px;text-align:center}
-.stat-value{font-size:3rem;font-weight:700;margin-bottom:.5rem}
-.stat-label{font-size:1rem;opacity:.9}
-.timeline{position:relative;padding-left:2rem}
-.timeline:before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--b)}
-.timeline-item{position:relative;padding-bottom:1.5rem}
-.timeline-dot{position:absolute;left:-2.25rem;top:4px;width:12px;height:12px;border-radius:50%;background:var(--p)}
-.timeline-date{font-size:.85rem;color:#666;margin-bottom:.25rem}
-.timeline-content{padding:.75rem;background:var(--l);border-radius:8px}
-.btn-edit{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
-.loading{text-align:center;padding:3rem;color:var(--p)}
-@media (max-width:768px){
-.container{padding:0 1rem}
-.profile-header{flex-direction:column;text-align:center}
-.athlete-meta{justify-content:center}
-.info-grid{grid-template-columns:1fr}
-.attendance-stats{flex-direction:column}
-}
+.profile-card{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.profile-header{display:flex;gap:2rem;align-items:start}
+.profile-photo{width:150px;height:150px;border-radius:50%;object-fit:cover;border:3px solid var(--p)}
+.profile-info h1{font-size:2rem;color:var(--p);margin-bottom:0.5rem}
+.profile-info p{color:#666;margin-bottom:0.25rem}
+.section{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.section-title{font-size:1.5rem;color:var(--p);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:2px solid var(--b)}
+.group-badge{display:inline-block;padding:0.5rem 1rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:0.9rem;font-weight:600;margin:0.25rem}
+.btn-edit{padding:0.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal.active{display:flex}
+.modal-content{background:#fff;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:2rem}
+.modal-title{font-size:1.5rem;color:var(--p);margin-bottom:1.5rem}
+.form-group{margin-bottom:1rem}
+.form-label{display:block;margin-bottom:0.5rem;font-weight:600;color:#555}
+.form-input{width:100%;padding:0.75rem;border:2px solid var(--b);border-radius:8px}
+.group-checkbox{display:block;padding:0.75rem;border:1px solid var(--b);border-radius:8px;margin-bottom:0.5rem;cursor:pointer;transition:all 0.2s}
+.group-checkbox:hover{background:var(--l)}
+.group-checkbox input{margin-right:0.5rem}
+.btn-row{display:flex;gap:1rem;margin-top:1.5rem}
+.btn{padding:0.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer}
+.btn-cancel{background:var(--l);color:var(--d)}
+.btn-save{background:var(--s);color:#fff}
 </style>
 </head>
 <body>
-
-<header class="header">
-<div class="header-content">
-<a href="/" class="logo">
-<span>InSkill<span style="color:var(--s)">.online</span></span>
-</a>
-<a href="/children-list.html" class="btn-back">← Назад</a>
+<div class="header">
+<a href="javascript:history.back()" class="btn-back">← Назад</a>
 </div>
-</header>
 
 <div class="container">
-<div id="loading" class="loading">Загрузка профиля...</div>
-
-<div id="profile" style="display:none">
+<div class="profile-card">
 <div class="profile-header">
-<img id="athletePhoto" src="https://via.placeholder.com/150" class="athlete-photo" alt="">
-<div class="athlete-info">
+<img id="athletePhoto" src="https://via.placeholder.com/150" class="profile-photo">
+<div class="profile-info">
 <h1 id="athleteName">—</h1>
-<div class="athlete-meta">
-<div class="meta-item">📅 <span id="athleteAge">—</span></div>
-<div class="meta-item">👥 <span id="athleteGroup">—</span></div>
-<div class="meta-item">📍 <span id="athleteClub">—</span></div>
-</div>
-<button class="btn-edit" onclick="editAthlete()" style="margin-top:1rem">✏️ Редактировать</button>
-</div>
-</div>
-
-<div class="section">
-<h2 class="section-title">Статистика посещаемости</h2>
-<div class="attendance-stats">
-<div class="stat-card">
-<div class="stat-value" id="statTotal">—</div>
-<div class="stat-label">Всего тренировок</div>
-</div>
-<div class="stat-card" style="background:linear-gradient(135deg,#28a745,#1e7e34)">
-<div class="stat-value" id="statPresent">—</div>
-<div class="stat-label">Посещено</div>
-</div>
-<div class="stat-card" style="background:linear-gradient(135deg,var(--s),#ff8800)">
-<div class="stat-value" id="statPercent">—%</div>
-<div class="stat-label">Процент</div>
+<p>🎂 <span id="athleteBirthDate">—</span></p>
+<p>👤 <span id="athleteParent">—</span></p>
 </div>
 </div>
 </div>
 
 <div class="section">
-<h2 class="section-title">Личные данные</h2>
-<div class="info-grid">
-<div class="info-item">
-<div class="info-label">Имя</div>
-<div class="info-value" id="infoFirstName">—</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+<h2 class="section-title" style="margin:0;border:none">Группы</h2>
+<button class="btn-edit" onclick="openGroupsModal()">Изменить группы</button>
 </div>
-<div class="info-item">
-<div class="info-label">Фамилия</div>
-<div class="info-value" id="infoLastName">—</div>
-</div>
-<div class="info-item">
-<div class="info-label">Дата рождения</div>
-<div class="info-value" id="infoBirthDate">—</div>
-</div>
-<div class="info-item">
-<div class="info-label">Группа</div>
-<div class="info-value" id="infoGroup">—</div>
-</div>
-<div class="info-item">
-<div class="info-label">Face Token</div>
-<div class="info-value" id="infoFaceToken" style="font-size:.8rem;word-break:break-all">—</div>
-</div>
+<div id="groupsList"></div>
 </div>
 </div>
 
-<div class="section">
-<h2 class="section-title">История посещений</h2>
-<div class="timeline" id="timeline">
-<div class="timeline-item">
-<div class="timeline-dot"></div>
-<div class="timeline-date">Загрузка...</div>
-</div>
-</div>
+<div class="modal" id="groupsModal">
+<div class="modal-content">
+<h2 class="modal-title">Выбор групп</h2>
+<div id="groupsCheckboxes"></div>
+<div class="btn-row">
+<button class="btn btn-cancel" onclick="closeGroupsModal()">Отмена</button>
+<button class="btn btn-save" onclick="saveGroups()">Сохранить</button>
 </div>
 </div>
 </div>
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-let token=localStorage.getItem('token');
-let athleteId=new URLSearchParams(window.location.search).get('id');
-let athlete=null;
+const token=localStorage.getItem('token');
+const athleteId=new URLSearchParams(location.search).get('id');
+let athlete=null,allGroups=[],athleteGroupIds=[];
 
-if(!token||!athleteId){window.location.href='/';throw new Error('No auth');}
+if(!token||!athleteId){location.href='/';throw new Error('No auth');}
 
-async function loadProfile(){
+async function loadAthlete(){
 try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-let d=await r.json();
-const allChildren=d.merged||d||[];
-athlete=allChildren.find(c=>c.id==athleteId);
-if(!athlete||!athlete.id){alert('Спортсмен не найден');window.location.href='/children-list.html';return}
-renderProfile();
-loadAttendance();
+const d=await r.json();
+const children=d.merged||d||[];
+athlete=children.find(c=>c.id==athleteId);
+if(!athlete){alert('Спортсмен не найден');history.back();return;}
+
+document.getElementById('athleteName').textContent=`${athlete.first_name} ${athlete.last_name}`;
+document.getElementById('athleteBirthDate').textContent=athlete.birth_date||'—';
+document.getElementById('athleteParent').textContent=athlete.parent_email||'—';
+if(athlete.photo_url)document.getElementById('athletePhoto').src=athlete.photo_url;
+
+const groupNames=athlete.group_names&&athlete.group_names!=='Без группы'?athlete.group_names.split(', '):[];
+document.getElementById('groupsList').innerHTML=groupNames.length>0?groupNames.map(g=>`<span class="group-badge">${g}</span>`).join(''):'<p style="color:#999">Нет групп</p>';
+
+await loadGroups();
 }catch(e){console.error(e);alert('Ошибка загрузки')}
 }
 
-function renderProfile(){
-document.getElementById('loading').style.display='none';
-document.getElementById('profile').style.display='block';
-document.getElementById('athletePhoto').src=athlete.photo_url||'https://via.placeholder.com/150';
-document.getElementById('athleteName').textContent=`${athlete.first_name} ${athlete.last_name}`;
-if(athlete.birth_date){
-const age=new Date().getFullYear()-new Date(athlete.birth_date).getFullYear();
-document.getElementById('athleteAge').textContent=`${age} лет`;
-document.getElementById('infoBirthDate').textContent=new Date(athlete.birth_date).toLocaleDateString('ru-RU');
-}
-document.getElementById('athleteGroup').textContent=athlete.group_name||'Без группы';
-document.getElementById('athleteClub').textContent=athlete.club_name||'—';
-document.getElementById('infoFirstName').textContent=athlete.first_name;
-document.getElementById('infoLastName').textContent=athlete.last_name;
-document.getElementById('infoGroup').textContent=athlete.group_name||'Без группы';
-document.getElementById('infoFaceToken').textContent=athlete.face_token||'Не установлен';
-}
-
-async function loadAttendance(){
+async function loadGroups(){
 try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'list',data:{child_id:parseInt(athleteId)}})});
-let d=await r.json();
-const records=(d.merged||d||[]).filter(x=>x.child_id==athleteId);
-const total=records.length;
-const present=records.filter(x=>x.status==='present').length;
-const percent=total>0?Math.round((present/total)*100):0;
-document.getElementById('statTotal').textContent=total;
-document.getElementById('statPresent').textContent=present;
-document.getElementById('statPercent').textContent=percent+'%';
-renderTimeline(records);
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});
+const d=await r.json();
+allGroups=d.merged||d||[];
+
+const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
+const d2=await r2.json();
+const children=d2.merged||d2||[];
+const child=children.find(c=>c.id==athleteId);
+
+athleteGroupIds=[];
+if(child&&child.group_names&&child.group_names!=='Без группы'){
+const groupNames=child.group_names.split(', ');
+athleteGroupIds=allGroups.filter(g=>groupNames.includes(g.name)).map(g=>g.id);
+}
+console.log('Athlete group IDs:',athleteGroupIds);
 }catch(e){console.error(e)}
 }
 
-function renderTimeline(records){
-const t=document.getElementById('timeline');
-t.innerHTML='';
-if(records.length===0){
-t.innerHTML='<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content">История посещений пока пуста</div></div>';
-return;
-}
-records.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,10).forEach(r=>{
-const item=document.createElement('div');
-item.className='timeline-item';
-const status=r.status==='present'?'✅ Присутствовал':'❌ Отсутствовал';
-const confidence=r.confidence?` (${r.confidence}%)` :'';
-item.innerHTML=`<div class="timeline-dot"></div><div class="timeline-date">${new Date(r.date).toLocaleDateString('ru-RU')}</div><div class="timeline-content">${status}${confidence}</div>`;
-t.appendChild(item);
-});
+function openGroupsModal(){
+const html=allGroups.map(g=>`
+<label class="group-checkbox">
+<input type="checkbox" value="${g.id}" ${athleteGroupIds.includes(g.id)?'checked':''}>
+${g.name} <span style="color:#666">(${g.club_name||'—'})</span>
+</label>
+`).join('');
+document.getElementById('groupsCheckboxes').innerHTML=html||'<p style="color:#999">Нет доступных групп</p>';
+document.getElementById('groupsModal').classList.add('active');
 }
 
-function editAthlete(){
-alert('Редактирование профиля в разработке. Пока можно редактировать через список спортсменов.');
+function closeGroupsModal(){
+document.getElementById('groupsModal').classList.remove('active');
 }
 
-loadProfile();
+async function saveGroups(){
+const selected=Array.from(document.querySelectorAll('#groupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
+console.log('Saving groups:',selected);
+
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
+const d=await r.json();
+const children=d.merged||d||[];
+const child=children.find(c=>c.id==athleteId);
+
+if(child&&child.group_names&&child.group_names!=='Без группы'){
+const currentGroupNames=child.group_names.split(', ');
+const currentGroupIds=allGroups.filter(g=>currentGroupNames.includes(g.name)).map(g=>g.id);
+
+for(let gid of currentGroupIds){
+if(!selected.includes(gid)){
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:athleteId,group_id:gid}})});
+}
+}
+}
+
+for(let gid of selected){
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:athleteId,group_id:gid}})});
+}
+
+closeGroupsModal();
+alert('Группы обновлены!');
+location.reload();
+}catch(e){console.error(e);alert('Ошибка: '+e.message)}
+}
+
+loadAthlete();
 </script>
 </body>
 </html>
