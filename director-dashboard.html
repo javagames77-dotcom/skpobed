@@ -646,20 +646,35 @@ const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application
 if(!r.ok)throw new Error('HTTP '+r.status);
 const res=await r.json();
 console.log('REGISTER response:', res);
-const newTrainerId=res.user_id||res.id||res.userId;
-console.log('New trainer ID:', newTrainerId);
-if(res.success||res.token||newTrainerId){
+
+let newTrainerId=res.user_id||res.id||res.userId;
+console.log('Extracted trainer ID from response:', newTrainerId);
+
+if(!newTrainerId&&(res.success||res.token)){
+console.log('No ID in response, fetching trainer by email...');
+await new Promise(resolve=>setTimeout(resolve,500));
+const listRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
+const listData=await listRes.json();
+const allTrainers=listData.merged||listData||[];
+console.log('All trainers:', allTrainers);
+const newTrainer=allTrainers.find(t=>t.email===email);
+if(newTrainer){
+newTrainerId=newTrainer.id;
+console.log('Found new trainer ID:', newTrainerId);
+}
+}
+
 if(newTrainerId&&selectedGroups.length>0){
 console.log('Assigning groups to new trainer:', newTrainerId, selectedGroups);
 for(let gid of selectedGroups){
 const assignRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(newTrainerId),group_id:gid}})});
-console.log('Assign result:', await assignRes.json());
+const assignResult=await assignRes.json();
+console.log('Assign group',gid,'result:', assignResult);
 }
 }
 closeTrainerModal();
 alert('✅ Тренер создан!');
 await loadTrainers();
-}else{alert('❌ Регистрация не вернула ID: '+JSON.stringify(res))}
 }catch(err){console.error(err);alert('❌ Ошибка: '+err.message)}
 }
 }
