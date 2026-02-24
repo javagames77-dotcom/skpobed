@@ -448,6 +448,33 @@ reader.readAsDataURL(file);
 });
 }
 
+async function getOrCreateFaceSet(groupId){
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'group_facesets',action:'get',data:{id:groupId}})});
+const d=await r.json();
+const faceset=(d.merged||d||[])[0];
+if(faceset&&faceset.faceset_token)return faceset.faceset_token;
+
+const formData=new FormData();
+formData.append('api_key',FACEPP_KEY);
+formData.append('api_secret',FACEPP_SECRET);
+formData.append('display_name',`group_${groupId}`);
+const r2=await fetch('https://api-us.faceplusplus.com/facepp/v3/faceset/create',{method:'POST',body:formData});
+const d2=await r2.json();
+const newToken=d2.faceset_token;
+
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'group_facesets',action:'create',data:{group_id:groupId,faceset_token:newToken}})});
+return newToken;
+}
+
+async function addFaceToFaceSet(faceToken,facesetToken){
+const formData=new FormData();
+formData.append('api_key',FACEPP_KEY);
+formData.append('api_secret',FACEPP_SECRET);
+formData.append('face_tokens',faceToken);
+formData.append('faceset_token',facesetToken);
+await fetch('https://api-us.faceplusplus.com/facepp/v3/faceset/addface',{method:'POST',body:formData});
+}
+
 async function uploadChildPhoto(photoFile, childData, selectedGroups){
 const compressedPhoto=await compressImage(photoFile);
 const formData=new FormData();
