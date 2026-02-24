@@ -27,11 +27,21 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .list-item-info p{color:#666;font-size:0.9rem}
 .empty{text-align:center;padding:2rem;color:#999}
 .loading{text-align:center;padding:3rem;color:var(--p)}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal.active{display:flex}
+.modal-content{background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:2rem}
+.modal-title{font-size:1.5rem;color:var(--p);margin-bottom:1.5rem}
+.schedule-item{background:var(--l);padding:1rem;border-radius:8px;margin-bottom:1rem;display:flex;gap:1rem;align-items:start}
+.schedule-item select,.schedule-item input{padding:0.5rem;border:2px solid var(--b);border-radius:6px;font-size:0.9rem}
+.schedule-item button{padding:0.5rem;background:#ffebee;color:#dc3545;border:none;border-radius:6px;cursor:pointer}
+.btn-add{padding:0.75rem 1.5rem;background:var(--p);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-bottom:1rem}
+.btn-save{padding:0.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer}
+.btn-cancel{padding:0.75rem 1.5rem;background:var(--l);color:var(--d);border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-right:1rem}
 </style>
 </head>
 <body>
 <div class="header">
-<a href="/director-dashboard.html" class="btn-back">← Назад к группам</a>
+<a href="/director-dashboard.html#groups" class="btn-back">← Назад к группам</a>
 </div>
 
 <div class="container">
@@ -45,7 +55,10 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 
 <div class="section">
-<h2 class="section-title">📅 Расписание</h2>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+<h2 class="section-title" style="margin:0;border:none">📅 Расписание</h2>
+<button class="btn-edit" onclick="openScheduleModal()" style="padding:0.5rem 1rem;background:var(--s);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">Редактировать</button>
+</div>
 <div id="scheduleContainer" class="loading">Загрузка...</div>
 </div>
 
@@ -60,12 +73,84 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 </div>
 
+<div class="modal" id="scheduleModal">
+<div class="modal-content">
+<h2 class="modal-title">Редактировать расписание</h2>
+<button class="btn-add" onclick="addScheduleItem()">➕ Добавить занятие</button>
+<div id="scheduleItems"></div>
+<div style="margin-top:1.5rem">
+<button class="btn-cancel" onclick="closeScheduleModal()">Отмена</button>
+<button class="btn-save" onclick="saveSchedule()">Сохранить</button>
+</div>
+</div>
+</div>
+
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const token=localStorage.getItem('token');
 const groupId=new URLSearchParams(location.search).get('id');
+let currentGroup=null;
+let scheduleData=[];
 
 if(!token||!groupId){location.href='/';throw new Error('No auth');}
+
+function openScheduleModal(){
+scheduleData=currentGroup.schedule&&currentGroup.schedule!=='[]'?(typeof currentGroup.schedule==='string'?JSON.parse(currentGroup.schedule):currentGroup.schedule):[];
+renderScheduleItems();
+document.getElementById('scheduleModal').classList.add('active');
+}
+
+function closeScheduleModal(){
+document.getElementById('scheduleModal').classList.remove('active');
+}
+
+function renderScheduleItems(){
+const container=document.getElementById('scheduleItems');
+if(scheduleData.length===0){
+container.innerHTML='<p style="color:#999;text-align:center">Нет занятий</p>';
+return;
+}
+const days=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
+const html=scheduleData.map((s,i)=>`
+<div class="schedule-item">
+<select onchange="updateScheduleDay(${i},this.value)" style="flex:1">
+${days.map((d,idx)=>`<option value="${idx}" ${s.day==idx?'selected':''}>${d}</option>`).join('')}
+</select>
+<input type="time" value="${s.time||''}" onchange="updateScheduleTime(${i},this.value)" style="flex:1">
+<input type="text" value="${s.location||''}" placeholder="Место" onchange="updateScheduleLocation(${i},this.value)" style="flex:1">
+<button onclick="removeScheduleItem(${i})">🗑️</button>
+</div>
+`).join('');
+container.innerHTML=html;
+}
+
+function addScheduleItem(){
+scheduleData.push({day:0,time:'18:00',location:''});
+renderScheduleItems();
+}
+
+function removeScheduleItem(idx){
+scheduleData.splice(idx,1);
+renderScheduleItems();
+}
+
+function updateScheduleDay(idx,val){scheduleData[idx].day=parseInt(val)}
+function updateScheduleTime(idx,val){scheduleData[idx].time=val}
+function updateScheduleLocation(idx,val){scheduleData[idx].location=val}
+
+async function saveSchedule(){
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'update',data:{id:parseInt(groupId),name:currentGroup.name,club_id:currentGroup.club_id,schedule:JSON.stringify(scheduleData)}})});
+const res=await r.json();
+if(res.id||res.success){
+alert('Расписание сохранено!');
+closeScheduleModal();
+loadGroup();
+}else{
+alert('Ошибка: '+JSON.stringify(res));
+}
+}catch(e){console.error(e);alert('Ошибка: '+e.message)}
+}
 
 async function loadGroup(){
 try{
@@ -74,6 +159,8 @@ const d=await r.json();
 const group=Array.isArray(d)?d[0]:d;
 
 if(!group||!group.id){alert('Группа не найдена');history.back();return;}
+
+currentGroup=group;
 
 document.getElementById('groupName').textContent=group.name;
 document.getElementById('clubName').textContent=group.club_name||'—';
