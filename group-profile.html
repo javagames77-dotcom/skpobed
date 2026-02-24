@@ -75,7 +75,16 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="modal" id="scheduleModal">
 <div class="modal-content">
-<h2 class="modal-title">Редактировать расписание</h2>
+<h2 class="modal-title">Редактировать группу</h2>
+<div style="margin-bottom:1.5rem">
+<label style="display:block;margin-bottom:0.5rem;font-weight:600;color:#555">Название группы</label>
+<input type="text" id="groupNameInput" style="width:100%;padding:0.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem">
+</div>
+<div style="margin-bottom:1.5rem">
+<label style="display:block;margin-bottom:0.5rem;font-weight:600;color:#555">Клуб</label>
+<select id="groupClubInput" style="width:100%;padding:0.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem"></select>
+</div>
+<h3 style="font-size:1.2rem;color:var(--p);margin-bottom:1rem">Расписание</h3>
 <button class="btn-add" onclick="addScheduleItem()">➕ Добавить занятие</button>
 <div id="scheduleItems"></div>
 <div style="margin-top:1.5rem">
@@ -91,11 +100,23 @@ const token=localStorage.getItem('token');
 const groupId=new URLSearchParams(location.search).get('id');
 let currentGroup=null;
 let scheduleData=[];
+let clubs=[];
 
 if(!token||!groupId){location.href='/';throw new Error('No auth');}
 
-function openScheduleModal(){
+async function openScheduleModal(){
 scheduleData=currentGroup.schedule&&currentGroup.schedule!=='[]'?(typeof currentGroup.schedule==='string'?JSON.parse(currentGroup.schedule):currentGroup.schedule):[];
+
+if(clubs.length===0){
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list'})});
+const d=await r.json();
+clubs=d.merged||d||[];
+}
+
+document.getElementById('groupNameInput').value=currentGroup.name;
+const clubSelect=document.getElementById('groupClubInput');
+clubSelect.innerHTML=clubs.map(c=>`<option value="${c.id}" ${c.id==currentGroup.club_id?'selected':''}>${c.name}</option>`).join('');
+
 renderScheduleItems();
 document.getElementById('scheduleModal').classList.add('active');
 }
@@ -140,10 +161,13 @@ function updateScheduleEndTime(idx,val){scheduleData[idx].end_time=val}
 
 async function saveSchedule(){
 try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'update',data:{id:parseInt(groupId),name:currentGroup.name,club_id:currentGroup.club_id,schedule:JSON.stringify(scheduleData)}})});
+const name=document.getElementById('groupNameInput').value.trim();
+const club_id=parseInt(document.getElementById('groupClubInput').value);
+if(!name){alert('Введите название группы');return;}
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'update',data:{id:parseInt(groupId),name,club_id,schedule:JSON.stringify(scheduleData)}})});
 const res=await r.json();
 if(res.id||res.success){
-alert('Расписание сохранено!');
+alert('Группа сохранена!');
 closeScheduleModal();
 loadGroup();
 }else{
