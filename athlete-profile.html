@@ -89,7 +89,8 @@ athlete=children.find(c=>c.id==athleteId);
 if(!athlete){alert('Спортсмен не найден');history.back();return;}
 
 document.getElementById('athleteName').textContent=`${athlete.first_name} ${athlete.last_name}`;
-document.getElementById('athleteBirthDate').textContent=athlete.birth_date||'—';
+const birthDate=athlete.birth_date?new Date(athlete.birth_date).toLocaleDateString('ru-RU'):' —';
+document.getElementById('athleteBirthDate').textContent=birthDate;
 document.getElementById('athleteParent').textContent=athlete.parent_email||'—';
 if(athlete.photo_url)document.getElementById('athletePhoto').src=athlete.photo_url;
 
@@ -145,19 +146,26 @@ const d=await r.json();
 const children=d.merged||d||[];
 const child=children.find(c=>c.id==athleteId);
 
+let currentGroupIds=[];
 if(child&&child.group_names&&child.group_names!=='Без группы'){
 const currentGroupNames=child.group_names.split(', ');
-const currentGroupIds=allGroups.filter(g=>currentGroupNames.includes(g.name)).map(g=>g.id);
+currentGroupIds=allGroups.filter(g=>currentGroupNames.includes(g.name)).map(g=>g.id);
+}
+console.log('Current groups:', currentGroupIds, 'Selected:', selected);
 
-for(let gid of currentGroupIds){
-if(!selected.includes(gid)){
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:athleteId,group_id:gid}})});
-}
-}
+const toRemove=currentGroupIds.filter(gid=>!selected.includes(gid));
+const toAdd=selected.filter(gid=>!currentGroupIds.includes(gid));
+console.log('To remove:', toRemove, 'To add:', toAdd);
+
+for(let gid of toRemove){
+console.log('Removing group', gid);
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(athleteId),group_id:gid}})});
 }
 
-for(let gid of selected){
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:athleteId,group_id:gid}})});
+for(let gid of toAdd){
+console.log('Adding group', gid);
+const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(athleteId),group_id:gid}})});
+console.log('Add result:', await res.json());
 }
 
 closeGroupsModal();
