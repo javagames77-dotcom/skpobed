@@ -28,10 +28,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
 .page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
 .btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:.5rem}
-.filters{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;gap:1rem;flex-wrap:wrap}
-.filter-group{flex:1;min-width:200px}
-.filter-label{display:block;margin-bottom:.5rem;font-size:.85rem;font-weight:600;color:#555;text-transform:uppercase}
-.filter-input,.filter-select{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
 .table-container{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
 .table{width:100%;border-collapse:collapse}
 .table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
@@ -59,10 +55,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
 .btn-cancel{background:var(--l);color:var(--d)}
 .btn-save{background:var(--s);color:#fff}
-.group-checkbox{display:block;padding:0.5rem;cursor:pointer;border-bottom:1px solid var(--b)}
-.group-checkbox:last-child{border-bottom:none}
-.group-checkbox:hover{background:var(--l)}
-.group-checkbox input{margin-right:0.5rem}
 </style>
 </head>
 <body>
@@ -98,7 +90,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="table-container">
 <div id="loadingClubs" class="loading">Загрузка...</div>
 <table class="table" id="clubsTable" style="display:none">
-<thead><tr><th>Название</th><th>Адрес</th><th>Групп</th><th>Действия</th></tr></thead>
+<thead><tr><th>Название</th><th>Адрес</th><th>Групп</th><th>Тренеров</th><th>Действия</th></tr></thead>
 <tbody id="clubsTableBody"></tbody>
 </table>
 </div>
@@ -128,7 +120,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="table-container">
 <div id="loadingTrainers" class="loading">Загрузка...</div>
 <table class="table" id="trainersTable" style="display:none">
-<thead><tr><th>ФИО</th><th>Email</th><th>Групп</th><th>Действия</th></tr></thead>
+<thead><tr><th>ФИО</th><th>Email</th><th>Клубов</th><th>Групп</th><th>Действия</th></tr></thead>
 <tbody id="trainersTableBody"></tbody>
 </table>
 </div>
@@ -138,20 +130,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="tab-content" id="tab-athletes">
 <div class="page-header">
 <h1 class="page-title">Все спортсмены</h1>
-</div>
-<div class="filters">
-<div class="filter-group">
-<label class="filter-label">Поиск</label>
-<input type="text" class="filter-input" id="athleteSearch" placeholder="Имя...">
-</div>
-<div class="filter-group">
-<label class="filter-label">Клуб</label>
-<select class="filter-select" id="athleteClubFilter"><option value="">Все</option></select>
-</div>
-<div class="filter-group">
-<label class="filter-label">Группа</label>
-<select class="filter-select" id="athleteGroupFilter"><option value="">Все</option></select>
-</div>
 </div>
 <div class="table-container">
 <div id="loadingAthletes" class="loading">Загрузка...</div>
@@ -163,7 +141,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 </div>
 
-<!-- CLUB MODAL -->
 <div class="modal" id="clubModal">
 <div class="modal-content">
 <div class="modal-header">
@@ -190,34 +167,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 </div>
 
-<!-- GROUP MODAL -->
-<div class="modal" id="groupModal">
-<div class="modal-content">
-<div class="modal-header">
-<h2 class="modal-title" id="groupModalTitle">Добавить группу</h2>
-<button class="modal-close" onclick="closeGroupModal()">✕</button>
-</div>
-<div class="modal-body">
-<form id="groupForm" onsubmit="saveGroup(event)">
-<input type="hidden" id="groupId">
-<div class="form-group">
-<label class="form-label">Название *</label>
-<input type="text" class="form-input" id="groupName" required>
-</div>
-<div class="form-group">
-<label class="form-label">Клуб *</label>
-<select class="form-input" id="groupClubId" required><option value="">Выберите</option></select>
-</div>
-</form>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeGroupModal()">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()">Сохранить</button>
-</div>
-</div>
-</div>
-
-<!-- TRAINER MODAL -->
 <div class="modal" id="trainerModal">
 <div class="modal-content">
 <div class="modal-header">
@@ -244,26 +193,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <label class="form-label">Фамилия *</label>
 <input type="text" class="form-input" id="trainerLastName" required>
 </div>
-<div class="form-group">
-<label class="form-label">Дата рождения</label>
-<div style="display:flex;gap:0.75rem">
-<select class="form-input" id="trainerBirthDay" style="flex:1"><option value="">День</option></select>
-<select class="form-input" id="trainerBirthMonth" style="flex:1"><option value="">Месяц</option></select>
-<select class="form-input" id="trainerBirthYear" style="flex:1"><option value="">Год</option></select>
-</div>
-</div>
-<div class="form-group">
-<label class="form-label">Телефон</label>
-<input type="tel" class="form-input" id="trainerPhone">
-</div>
-<div class="form-group">
-<label class="form-label">Квалификация</label>
-<input type="text" class="form-input" id="trainerQualification">
-</div>
-<div class="form-group">
-<label class="form-label">Группы</label>
-<div id="trainerGroupsCheckboxes" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);padding:1rem;border-radius:8px;background:#f9f9f9"></div>
-</div>
 </form>
 </div>
 <div class="modal-footer">
@@ -273,47 +202,53 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 </div>
 
+<div class="modal" id="groupModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="groupModalTitle">Добавить группу</h2>
+<button class="modal-close" onclick="closeGroupModal()">✕</button>
+</div>
+<div class="modal-body">
+<form id="groupForm" onsubmit="saveGroup(event)">
+<input type="hidden" id="groupId">
+<div class="form-group">
+<label class="form-label">Название *</label>
+<input type="text" class="form-input" id="groupName" required>
+</div>
+<div class="form-group">
+<label class="form-label">Клуб *</label>
+<select class="form-input" id="groupClubId" required>
+<option value="">Выберите клуб</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">Расписание</label>
+<div style="border:1px solid var(--b);padding:1rem;border-radius:8px">
+<button type="button" class="btn-add" style="margin-bottom:1rem" onclick="addScheduleDay()"><span>➕</span><span>Добавить день</span></button>
+<div id="scheduleDays"></div>
+</div>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeGroupModal()">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()">Сохранить</button>
+</div>
+</div>
+</div>
+
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 let token=localStorage.getItem('token');
-let user,clubs=[],trainers=[],athletes=[],groups=[],allAthletes=[];
+let user=null;
+let clubs=[],trainers=[],athletes=[],groups=[],schedule=[];
+
 if(!token){window.location.href='/';throw new Error('No auth');}
 
 function loadUserInfo(){
-const u=JSON.parse(localStorage.getItem('user')||'{}');
-user=u;
-document.getElementById('userName').textContent=`${u.first_name||''} ${u.last_name||''}`;
-populateDateSelects();
-}
-
-function populateDateSelects(){
-const daySelect=document.getElementById('trainerBirthDay');
-const monthSelect=document.getElementById('trainerBirthMonth');
-const yearSelect=document.getElementById('trainerBirthYear');
-
-for(let d=1;d<=31;d++){
-const opt=document.createElement('option');
-opt.value=d;
-opt.textContent=d;
-daySelect.appendChild(opt);
-}
-
-const months=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-months.forEach((m,i)=>{
-const opt=document.createElement('option');
-opt.value=i+1;
-opt.textContent=m;
-monthSelect.appendChild(opt);
-});
-
-const currentYear=new Date().getFullYear();
-for(let y=currentYear;y>=1940;y--){
-const opt=document.createElement('option');
-opt.value=y;
-opt.textContent=y;
-yearSelect.appendChild(opt);
-}
+user=JSON.parse(localStorage.getItem('user')||'{}');
+if(user.role!=='director'){alert('Доступ запрещен');window.location.href='/';return}
+document.getElementById('userName').textContent=user.first_name?`${user.first_name} ${user.last_name||''}`.trim():user.email||'Пользователь';
 }
 
 function switchTab(t){
@@ -321,25 +256,25 @@ document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
 document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
 event.target.classList.add('active');
 document.getElementById(`tab-${t}`).classList.add('active');
-if(t==='trainers'&&trainers.length===0)loadTrainers();
-if(t==='athletes'&&allAthletes.length===0)loadAthletes();
 if(t==='groups'&&groups.length===0)loadGroups();
+if(t==='trainers'&&trainers.length===0)loadTrainers();
+if(t==='athletes'&&athletes.length===0)loadAthletes();
 }
 
 async function loadClubs(){
 try{
 document.getElementById('loadingClubs').style.display='block';
 document.getElementById('clubsTable').style.display='none';
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list'})});
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list',data:{director_id:user.id}})});
 let d=await r.json();
+console.log('📦 CLUBS API RESPONSE:', d);
+console.log('👤 USER ID:', user.id, 'ROLE:', user.role);
 clubs=d.merged||d||[];
+console.log('📋 CLUBS PARSED:', clubs);
 document.getElementById('loadingClubs').style.display='none';
 document.getElementById('clubsTable').style.display='table';
 renderClubsTable();
-
-const sel=document.getElementById('groupClubId');
-sel.innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
-}catch(e){console.error(e)}
+}catch(e){console.error('❌ CLUBS ERROR:', e)}
 }
 
 function renderClubsTable(){
@@ -347,9 +282,71 @@ const t=document.getElementById('clubsTableBody');
 t.innerHTML='';
 clubs.forEach(c=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></div></td>`;
+r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td>${c.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></div></td>`;
 t.appendChild(r);
 });
+}
+
+async function loadTrainers(){
+try{
+document.getElementById('loadingTrainers').style.display='block';
+document.getElementById('trainersTable').style.display='none';
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
+let d=await r.json();
+trainers=d.merged||d||[];
+document.getElementById('loadingTrainers').style.display='none';
+document.getElementById('trainersTable').style.display='table';
+renderTrainersTable();
+}catch(e){console.error(e)}
+}
+
+function renderTrainersTable(){
+const t=document.getElementById('trainersTableBody');
+t.innerHTML='';
+trainers.forEach(tr=>{
+const r=document.createElement('tr');
+r.innerHTML=`<td>${tr.first_name} ${tr.last_name}</td><td>${tr.email}</td><td>${tr.clubs_count||0}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></div></td>`;
+t.appendChild(r);
+});
+}
+
+async function loadAthletes(){
+try{
+document.getElementById('loadingAthletes').style.display='block';
+document.getElementById('athletesTable').style.display='none';
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list',data:{director_id:user.id}})});
+let d=await r.json();
+athletes=d.merged||d||[];
+document.getElementById('loadingAthletes').style.display='none';
+document.getElementById('athletesTable').style.display='table';
+renderAthletesTable();
+}catch(e){console.error(e)}
+}
+
+function renderAthletesTable(){
+const t=document.getElementById('athletesTableBody');
+t.innerHTML='';
+athletes.forEach(a=>{
+const r=document.createElement('tr');
+r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="window.location='/athlete-profile.html?id=${a.id}'">👁️</button><button class="btn-icon btn-edit" onclick="editAthlete(${a.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteAthlete(${a.id})">🗑️</button></div></td>`;
+t.appendChild(r);
+});
+}
+
+function editAthlete(id){
+window.location.href=`/athlete-profile.html?id=${id}`;
+}
+
+async function deleteAthlete(id){
+if(!confirm('Удалить спортсмена?'))return;
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'delete',data:{id}})});
+const res=await r.json();
+if(res.success||res.id){
+alert('Спортсмен удален!');
+await loadAthletes();
+}else{alert('Ошибка удаления')}
+}catch(err){console.error(err);alert('Ошибка: '+err.message)}
 }
 
 function addClub(){
@@ -392,7 +389,7 @@ await loadClubs();
 }
 
 async function deleteClub(id){
-if(!confirm('Удалить клуб?'))return;
+if(!confirm('Удалить клуб? Это действие нельзя отменить!'))return;
 try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'delete',data:{id}})});
 const res=await r.json();
@@ -403,6 +400,104 @@ await loadClubs();
 }catch(err){console.error(err);alert('Ошибка: '+err.message)}
 }
 
+function addTrainer(){
+document.getElementById('trainerModalTitle').textContent='Добавить тренера';
+document.getElementById('trainerId').value='';
+document.getElementById('trainerEmail').value='';
+document.getElementById('trainerPassword').value='';
+document.getElementById('trainerPassword').required=true;
+document.getElementById('trainerFirstName').value='';
+document.getElementById('trainerLastName').value='';
+openTrainerModal();
+}
+
+function editTrainer(id){
+const t=trainers.find(x=>x.id===id);
+if(!t)return;
+document.getElementById('trainerModalTitle').textContent='Редактировать тренера';
+document.getElementById('trainerId').value=t.id;
+document.getElementById('trainerEmail').value=t.email;
+document.getElementById('trainerPassword').value='';
+document.getElementById('trainerPassword').required=false;
+document.getElementById('trainerFirstName').value=t.first_name;
+document.getElementById('trainerLastName').value=t.last_name;
+openTrainerModal();
+}
+
+async function saveTrainer(e){
+e.preventDefault();
+const id=document.getElementById('trainerId').value;
+const email=document.getElementById('trainerEmail').value.trim();
+const password=document.getElementById('trainerPassword').value;
+const firstName=document.getElementById('trainerFirstName').value.trim();
+const lastName=document.getElementById('trainerLastName').value.trim();
+if(id){
+const data={id:parseInt(id),email,first_name:firstName,last_name:lastName};
+if(password)data.password=password;
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});
+let res=await r.json();
+const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+if(result&&result.id){
+closeTrainerModal();
+alert('Тренер обновлен!');
+await loadTrainers();
+}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
+}catch(err){console.error(err);alert('Ошибка: '+err.message)}
+}else{
+try{
+const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
+const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName})});
+if(!r.ok)throw new Error('HTTP '+r.status);
+const res=await r.json();
+if(res.success||res.token){
+closeTrainerModal();
+alert('✅ Тренер создан!');
+await loadTrainers();
+}else{alert('❌ '+JSON.stringify(res))}
+}catch(err){console.error(err);alert('❌ Ошибка сети: '+err.message+'\n\nПроверьте n8n Auth API')}
+}
+}
+
+async function deleteTrainer(id){
+if(!confirm('Удалить тренера? Это действие нельзя отменить!'))return;
+try{
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});
+const res=await r.json();
+if(res.success||res.id){
+alert('Тренер удален!');
+await loadTrainers();
+}else{alert('Ошибка удаления')}
+}catch(err){console.error(err);alert('Ошибка: '+err.message)}
+}
+
+function openClubModal(){
+document.getElementById('clubModal').classList.add('active');
+document.body.style.overflow='hidden';
+}
+
+function closeClubModal(){
+document.getElementById('clubModal').classList.remove('active');
+document.body.style.overflow='';
+}
+
+function openTrainerModal(){
+document.getElementById('trainerModal').classList.add('active');
+document.body.style.overflow='hidden';
+}
+
+function closeTrainerModal(){
+document.getElementById('trainerModal').classList.remove('active');
+document.body.style.overflow='';
+document.getElementById('trainerPassword').required=true;
+}
+
+function logout(){
+localStorage.removeItem('token');
+localStorage.removeItem('user');
+window.location.href='/';
+}
+
 async function loadGroups(){
 try{
 document.getElementById('loadingGroups').style.display='block';
@@ -410,6 +505,8 @@ document.getElementById('groupsTable').style.display='none';
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});
 let d=await r.json();
 groups=d.merged||d||[];
+const sel=document.getElementById('groupClubId');
+sel.innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
 document.getElementById('loadingGroups').style.display='none';
 document.getElementById('groupsTable').style.display='table';
 renderGroupsTable();
@@ -431,6 +528,8 @@ document.getElementById('groupModalTitle').textContent='Добавить гру�
 document.getElementById('groupId').value='';
 document.getElementById('groupName').value='';
 document.getElementById('groupClubId').value='';
+schedule=[];
+renderSchedule();
 openGroupModal();
 }
 
@@ -441,7 +540,17 @@ document.getElementById('groupModalTitle').textContent='Редактироват
 document.getElementById('groupId').value=g.id;
 document.getElementById('groupName').value=g.name;
 document.getElementById('groupClubId').value=g.club_id;
+schedule=g.schedule?(typeof g.schedule==='string'?JSON.parse(g.schedule):g.schedule):[];
+renderSchedule();
 openGroupModal();
+}
+
+async function deleteGroup(id){
+if(!confirm('Удалить группу?'))return;
+try{
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'delete',data:{id}})});
+await loadGroups();
+}catch(e){console.error(e)}
 }
 
 async function saveGroup(e){
@@ -450,7 +559,7 @@ const id=document.getElementById('groupId').value;
 const name=document.getElementById('groupName').value.trim();
 const club_id=document.getElementById('groupClubId').value;
 if(!name||!club_id){alert('Заполните все поля');return}
-const data={name,club_id:parseInt(club_id),schedule:'[]'};
+const data={name,club_id:parseInt(club_id),schedule:JSON.stringify(schedule)};
 try{
 const a=id?'update':'create';
 if(id)data.id=parseInt(id);
@@ -465,294 +574,32 @@ await loadGroups();
 }catch(err){console.error(err);alert('Ошибка: '+err.message)}
 }
 
-async function deleteGroup(id){
-if(!confirm('Удалить группу?'))return;
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'delete',data:{id}})});
-await loadGroups();
-}catch(e){console.error(e)}
+function addScheduleDay(){
+schedule.push({day:'Monday',time_start:'10:00',time_end:'12:00'});
+renderSchedule();
 }
 
-async function loadTrainers(){
-try{
-document.getElementById('loadingTrainers').style.display='block';
-document.getElementById('trainersTable').style.display='none';
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
-let d=await r.json();
-trainers=d.merged||d||[];
-document.getElementById('loadingTrainers').style.display='none';
-document.getElementById('trainersTable').style.display='table';
-renderTrainersTable();
-}catch(e){console.error(e)}
-}
-
-function renderTrainersTable(){
-const t=document.getElementById('trainersTableBody');
-t.innerHTML='';
-trainers.forEach(tr=>{
-const r=document.createElement('tr');
-r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);text-decoration:none;font-weight:600">${tr.first_name} ${tr.last_name}</a></td><td>${tr.email}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></div></td>`;
-t.appendChild(r);
-});
-}
-
-function addTrainer(){
-document.getElementById('trainerModalTitle').textContent='Добавить тренера';
-document.getElementById('trainerId').value='';
-document.getElementById('trainerEmail').value='';
-document.getElementById('trainerPassword').value='';
-document.getElementById('trainerPassword').required=true;
-document.getElementById('trainerFirstName').value='';
-document.getElementById('trainerLastName').value='';
-document.getElementById('trainerBirthDay').value='';
-document.getElementById('trainerBirthMonth').value='';
-document.getElementById('trainerBirthYear').value='';
-document.getElementById('trainerPhone').value='';
-document.getElementById('trainerQualification').value='';
-document.getElementById('trainerGroupsCheckboxes').innerHTML='';
-loadGroupsForTrainer(null);
-openTrainerModal();
-}
-
-async function editTrainer(id){
-const t=trainers.find(x=>x.id===id);
-if(!t)return;
-document.getElementById('trainerModalTitle').textContent='Редактировать тренера';
-document.getElementById('trainerId').value=t.id;
-document.getElementById('trainerEmail').value=t.email;
-document.getElementById('trainerPassword').value='';
-document.getElementById('trainerPassword').required=false;
-document.getElementById('trainerFirstName').value=t.first_name;
-document.getElementById('trainerLastName').value=t.last_name;
-
-if(t.birth_date){
-const parts=t.birth_date.split('-');
-if(parts.length===3){
-document.getElementById('trainerBirthYear').value=parts[0];
-document.getElementById('trainerBirthMonth').value=parseInt(parts[1]);
-document.getElementById('trainerBirthDay').value=parseInt(parts[2]);
-}
-}else{
-document.getElementById('trainerBirthDay').value='';
-document.getElementById('trainerBirthMonth').value='';
-document.getElementById('trainerBirthYear').value='';
-}
-
-document.getElementById('trainerPhone').value=t.phone||'';
-document.getElementById('trainerQualification').value=t.qualification||'';
-await loadGroupsForTrainer(t.id);
-openTrainerModal();
-}
-
-async function loadGroupsForTrainer(trainerId){
-try{
-const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});
-const d1=await r1.json();
-const allGroups=d1.merged||d1||[];
-console.log('All groups loaded:', allGroups);
-
-let trainerGroupIds=[];
-if(trainerId){
-try{
-const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(trainerId)}})});
-const d2=await r2.json();
-console.log('Trainer groups response:', d2);
-trainerGroupIds=(d2.merged||d2||[]).map(g=>g.id);
-console.log('Trainer group IDs:', trainerGroupIds);
-}catch(e2){
-console.error('Error loading trainer groups:', e2);
-}
-}
-
-if(allGroups.length===0){
-document.getElementById('trainerGroupsCheckboxes').innerHTML='<p style="color:#999;padding:1rem;text-align:center">Нет доступных групп</p>';
-return;
-}
-
-const html=allGroups.map(g=>`
-<label class="group-checkbox">
-<input type="checkbox" value="${g.id}" ${trainerGroupIds.includes(g.id)?'checked':''}>
-${g.name} <span style="color:#666">(${g.club_name||'—'})</span>
-</label>
-`).join('');
-document.getElementById('trainerGroupsCheckboxes').innerHTML=html;
-console.log('Groups checkboxes rendered:', allGroups.length, 'checked:', trainerGroupIds.length);
-}catch(e){
-console.error('Error in loadGroupsForTrainer:', e);
-document.getElementById('trainerGroupsCheckboxes').innerHTML='<p style="color:red;padding:1rem">Ошибка загрузки групп</p>';
-}
-}
-
-async function saveTrainer(e){
-e.preventDefault();
-const id=document.getElementById('trainerId').value;
-const email=document.getElementById('trainerEmail').value.trim();
-const password=document.getElementById('trainerPassword').value;
-const firstName=document.getElementById('trainerFirstName').value.trim();
-const lastName=document.getElementById('trainerLastName').value.trim();
-
-const day=document.getElementById('trainerBirthDay').value;
-const month=document.getElementById('trainerBirthMonth').value;
-const year=document.getElementById('trainerBirthYear').value;
-const birthDate=(day&&month&&year)?`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`:'';
-
-const phone=document.getElementById('trainerPhone').value.trim();
-const qualification=document.getElementById('trainerQualification').value.trim();
-
-const selectedGroups=Array.from(document.querySelectorAll('#trainerGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
-
-console.log('SAVE TRAINER:', {id, email, firstName, lastName, birthDate, phone, selectedGroups});
-
-if(id){
-const data={id:parseInt(id),email,first_name:firstName,last_name:lastName,phone,qualification};
-if(birthDate)data.birth_date=birthDate;
-if(password)data.password=password;
-console.log('UPDATE data:', data);
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});
-let res=await r.json();
-console.log('UPDATE response:', res);
-const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-if(result&&result.id){
-const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});
-const d2=await r2.json();
-const currentGroups=(d2.merged||d2||[]).map(g=>g.id);
-console.log('Current groups:', currentGroups, 'Selected:', selectedGroups);
-
-const toRemove=currentGroups.filter(gid=>!selectedGroups.includes(gid));
-const toAdd=selectedGroups.filter(gid=>!currentGroups.includes(gid));
-console.log('To remove:', toRemove, 'To add:', toAdd);
-
-for(let gid of toRemove){
-console.log('Removing group', gid);
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'remove',data:{trainer_id:parseInt(id),group_id:gid}})});
-}
-for(let gid of toAdd){
-console.log('Adding group', gid);
-const addRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(id),group_id:gid}})});
-console.log('Add result:', await addRes.json());
-}
-closeTrainerModal();
-alert('Тренер обновлен!');
-await loadTrainers();
-}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
-}catch(err){console.error(err);alert('Ошибка: '+err.message)}
-}else{
-try{
-const registerData={action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName,phone,qualification};
-if(birthDate)registerData.birth_date=birthDate;
-console.log('REGISTER data:', registerData);
-const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(registerData)});
-if(!r.ok)throw new Error('HTTP '+r.status);
-const res=await r.json();
-console.log('REGISTER response:', res);
-
-let newTrainerId=res.user_id||res.id||res.userId;
-console.log('Extracted trainer ID from response:', newTrainerId);
-
-if(!newTrainerId&&(res.success||res.token)){
-console.log('No ID in response, fetching trainer by email...');
-await new Promise(resolve=>setTimeout(resolve,500));
-const listRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
-const listData=await listRes.json();
-const allTrainers=listData.merged||listData||[];
-console.log('All trainers:', allTrainers);
-const newTrainer=allTrainers.find(t=>t.email===email);
-if(newTrainer){
-newTrainerId=newTrainer.id;
-console.log('Found new trainer ID:', newTrainerId);
-}
-}
-
-if(newTrainerId&&selectedGroups.length>0){
-console.log('Assigning groups to new trainer:', newTrainerId, selectedGroups);
-for(let gid of selectedGroups){
-const assignRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(newTrainerId),group_id:gid}})});
-const assignResult=await assignRes.json();
-console.log('Assign group',gid,'result:', assignResult);
-}
-}
-closeTrainerModal();
-alert('✅ Тренер создан!');
-await loadTrainers();
-}catch(err){console.error(err);alert('❌ Ошибка: '+err.message)}
-}
-}
-
-async function deleteTrainer(id){
-if(!confirm('Удалить тренера?'))return;
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});
-const res=await r.json();
-if(res.success||res.id){
-alert('Тренер удален!');
-await loadTrainers();
-}else{alert('Ошибка удаления')}
-}catch(err){console.error(err);alert('Ошибка: '+err.message)}
-}
-
-async function loadAthletes(){
-try{
-document.getElementById('loadingAthletes').style.display='block';
-document.getElementById('athletesTable').style.display='none';
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-let d=await r.json();
-allAthletes=d.merged||d||[];
-
-const clubsSet=new Set(allAthletes.map(a=>a.club_names).filter(Boolean));
-document.getElementById('athleteClubFilter').innerHTML='<option value="">Все</option>'+Array.from(clubsSet).map(c=>`<option value="${c}">${c}</option>`).join('');
-
-const groupsSet=new Set();
-allAthletes.forEach(a=>{
-if(a.group_names&&a.group_names!=='Без группы'){
-a.group_names.split(', ').forEach(g=>groupsSet.add(g));
-}
-});
-document.getElementById('athleteGroupFilter').innerHTML='<option value="">Все</option>'+Array.from(groupsSet).map(g=>`<option value="${g}">${g}</option>`).join('');
-
-document.getElementById('loadingAthletes').style.display='none';
-document.getElementById('athletesTable').style.display='table';
-renderAthletesTable(allAthletes);
-}catch(e){console.error(e)}
-}
-
-function renderAthletesTable(data){
-const t=document.getElementById('athletesTableBody');
-t.innerHTML='';
-data.forEach(a=>{
-const r=document.createElement('tr');
-r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="window.location='/athlete-profile.html?id=${a.id}'">👁️</button></div></td>`;
-t.appendChild(r);
-});
-}
-
-function filterAthletes(){
-const search=(document.getElementById('athleteSearch')?.value||'').toLowerCase();
-const club=document.getElementById('athleteClubFilter')?.value||'';
-const group=document.getElementById('athleteGroupFilter')?.value||'';
-
-const filtered=allAthletes.filter(a=>{
-const name=`${a.first_name} ${a.last_name}`.toLowerCase();
-if(search&&!name.includes(search))return false;
-if(club&&a.club_names!==club)return false;
-if(group&&(!a.group_names||!a.group_names.includes(group)))return false;
-return true;
-});
-renderAthletesTable(filtered);
-}
-
-document.getElementById('athleteSearch')?.addEventListener('input',filterAthletes);
-document.getElementById('athleteClubFilter')?.addEventListener('change',filterAthletes);
-document.getElementById('athleteGroupFilter')?.addEventListener('change',filterAthletes);
-
-function openClubModal(){
-document.getElementById('clubModal').classList.add('active');
-document.body.style.overflow='hidden';
-}
-
-function closeClubModal(){
-document.getElementById('clubModal').classList.remove('active');
-document.body.style.overflow='';
+function renderSchedule(){
+const d=document.getElementById('scheduleDays');
+d.innerHTML=schedule.map((s,i)=>`
+<div style="background:var(--l);padding:1rem;margin-bottom:0.5rem;border-radius:8px">
+<div style="display:flex;justify-content:space-between;margin-bottom:0.5rem">
+<select onchange="schedule[${i}].day=this.value" style="padding:0.5rem;border:1px solid var(--b);border-radius:4px">
+<option ${s.day==='Monday'?'selected':''}>Monday</option>
+<option ${s.day==='Tuesday'?'selected':''}>Tuesday</option>
+<option ${s.day==='Wednesday'?'selected':''}>Wednesday</option>
+<option ${s.day==='Thursday'?'selected':''}>Thursday</option>
+<option ${s.day==='Friday'?'selected':''}>Friday</option>
+<option ${s.day==='Saturday'?'selected':''}>Saturday</option>
+<option ${s.day==='Sunday'?'selected':''}>Sunday</option>
+</select>
+<button type="button" class="btn-icon btn-delete" onclick="schedule.splice(${i},1);renderSchedule()">🗑️</button>
+</div>
+<div style="display:flex;gap:1rem">
+<input type="time" value="${s.time_start}" onchange="schedule[${i}].time_start=this.value" style="flex:1;padding:0.5rem;border:1px solid var(--b);border-radius:4px">
+<input type="time" value="${s.time_end}" onchange="schedule[${i}].time_end=this.value" style="flex:1;padding:0.5rem;border:1px solid var(--b);border-radius:4px">
+</div>
+</div>`).join('');
 }
 
 function openGroupModal(){
@@ -763,23 +610,6 @@ document.body.style.overflow='hidden';
 function closeGroupModal(){
 document.getElementById('groupModal').classList.remove('active');
 document.body.style.overflow='';
-}
-
-function openTrainerModal(){
-document.getElementById('trainerModal').classList.add('active');
-document.body.style.overflow='hidden';
-}
-
-function closeTrainerModal(){
-document.getElementById('trainerModal').classList.remove('active');
-document.body.style.overflow='';
-document.getElementById('trainerPassword').required=true;
-}
-
-function logout(){
-localStorage.removeItem('token');
-localStorage.removeItem('user');
-window.location.href='/';
 }
 
 loadUserInfo();
