@@ -116,8 +116,8 @@ const html=scheduleData.map((s,i)=>`
 <select onchange="updateScheduleDay(${i},this.value)" style="flex:1">
 ${days.map((d,idx)=>`<option value="${idx}" ${s.day==idx?'selected':''}>${d}</option>`).join('')}
 </select>
-<input type="time" value="${s.time||''}" onchange="updateScheduleTime(${i},this.value)" style="flex:1">
-<input type="text" value="${s.location||''}" placeholder="Место" onchange="updateScheduleLocation(${i},this.value)" style="flex:1">
+<input type="time" value="${s.time||''}" onchange="updateScheduleTime(${i},this.value)" placeholder="Начало" style="flex:1">
+<input type="time" value="${s.end_time||''}" onchange="updateScheduleEndTime(${i},this.value)" placeholder="Конец" style="flex:1">
 <button onclick="removeScheduleItem(${i})">🗑️</button>
 </div>
 `).join('');
@@ -125,7 +125,7 @@ container.innerHTML=html;
 }
 
 function addScheduleItem(){
-scheduleData.push({day:0,time:'18:00',location:''});
+scheduleData.push({day:0,time:'18:00',end_time:'19:00'});
 renderScheduleItems();
 }
 
@@ -136,7 +136,7 @@ renderScheduleItems();
 
 function updateScheduleDay(idx,val){scheduleData[idx].day=parseInt(val)}
 function updateScheduleTime(idx,val){scheduleData[idx].time=val}
-function updateScheduleLocation(idx,val){scheduleData[idx].location=val}
+function updateScheduleEndTime(idx,val){scheduleData[idx].end_time=val}
 
 async function saveSchedule(){
 try{
@@ -184,8 +184,7 @@ const parsedSchedule=typeof schedule==='string'?JSON.parse(schedule):schedule;
 const html=parsedSchedule.map((s,i)=>`
 <div class="schedule-day">
 <h3>${days[s.day]||'День '+s.day}</h3>
-<p>🕐 ${s.time}</p>
-${s.location?`<p>📍 ${s.location}</p>`:''}
+<p>🕐 ${s.time}${s.end_time?' - '+s.end_time:''}</p>
 </div>
 `).join('');
 container.innerHTML=`<div class="schedule-grid">${html}</div>`;
