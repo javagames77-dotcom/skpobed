@@ -424,8 +424,7 @@ console.log('Remove result:', await removeRes.json());
 for(let gid of selectedGroups){
 if(!currentGroupIds.includes(gid)){
 console.log('Adding group', gid);
-const assignRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});
-console.log('Assign result:', await assignRes.json());
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});
 }
 }
 
@@ -446,8 +445,7 @@ console.log('New child ID:', childId);
 if(childId){
 for(let gid of selectedGroups){
 console.log('Assigning group', gid, 'to child', childId);
-const assignRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:childId,group_id:gid}})});
-console.log('Assign result:', await assignRes.json());
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:childId,group_id:gid}})});
 }
 closeChildModal();
 alert('Добавлено!');
