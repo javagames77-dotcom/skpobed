@@ -164,8 +164,7 @@ await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:
 
 for(let gid of toAdd){
 console.log('Adding group', gid);
-const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(athleteId),group_id:gid}})});
-console.log('Add result:', await res.json());
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(athleteId),group_id:gid}})});
 }
 
 closeGroupsModal();
