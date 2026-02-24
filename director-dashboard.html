@@ -328,16 +328,16 @@ const t=document.getElementById('athletesTableBody');
 t.innerHTML='';
 athletes.forEach(a=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="window.location='/athlete-profile.html?id=${a.id}'">👁️</button><button class="btn-icon btn-edit" onclick="editAthlete(${a.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteAthlete(${a.id})">🗑️</button></div></td>`;
+r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editDirectorAthlete(${a.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteDirectorAthlete(${a.id})">🗑️</button></div></td>`;
 t.appendChild(r);
 });
 }
 
-function editAthlete(id){
-window.location.href=`/athlete-profile.html?id=${id}`;
+async function editDirectorAthlete(id){
+alert('Редактирование в разработке');
 }
 
-async function deleteAthlete(id){
+async function deleteDirectorAthlete(id){
 if(!confirm('Удалить спортсмена?'))return;
 try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'delete',data:{id}})});
