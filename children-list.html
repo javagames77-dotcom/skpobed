@@ -412,48 +412,22 @@ document.getElementById('photoPreview').style.display='none';
 openChildModal();
 }
 
-async function uploadToCloudinary(file){
+async function uploadChildPhoto(photoFile, childData, selectedGroups){
 const formData=new FormData();
-formData.append('file',file);
-formData.append('upload_preset','ml_default');
-const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`,{method:'POST',body:formData});
-const d=await r.json();
-return d.secure_url;
-}
+formData.append('token',token);
+formData.append('photo',photoFile);
+formData.append('child_data',JSON.stringify({
+  first_name:childData.first_name,
+  last_name:childData.last_name,
+  birth_date:childData.birth_date,
+  group_ids:selectedGroups
+}));
 
-async function detectFace(photoUrl){
-const formData=new FormData();
-formData.append('api_key',FACEPP_KEY);
-formData.append('api_secret',FACEPP_SECRET);
-formData.append('image_url',photoUrl);
-const r=await fetch('https://api-us.faceplusplus.com/facepp/v3/detect',{method:'POST',body:formData});
-const d=await r.json();
-if(!d.faces||d.faces.length===0)throw new Error('Лицо не распознано');
-return d.faces[0].face_token;
-}
-
-async function getOrCreateFaceSet(groupId){
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'get',data:{id:groupId}})});
-const d=await r.json();
-const group=Array.isArray(d)?d[0]:d;
-if(group.faceset_token)return group.faceset_token;
-const formData=new FormData();
-formData.append('api_key',FACEPP_KEY);
-formData.append('api_secret',FACEPP_SECRET);
-formData.append('display_name',`group_${groupId}`);
-const r2=await fetch('https://api-us.faceplusplus.com/facepp/v3/faceset/create',{method:'POST',body:formData});
-const d2=await r2.json();
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'group_facesets',action:'create',data:{group_id:groupId,faceset_token:d2.faceset_token}})});
-return d2.faceset_token;
-}
-
-async function addFaceToFaceSet(faceToken,facesetToken){
-const formData=new FormData();
-formData.append('api_key',FACEPP_KEY);
-formData.append('api_secret',FACEPP_SECRET);
-formData.append('face_tokens',faceToken);
-formData.append('faceset_token',facesetToken);
-await fetch('https://api-us.faceplusplus.com/facepp/v3/faceset/addface',{method:'POST',body:formData});
+const r=await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-child-photo',{
+  method:'POST',
+  body:formData
+});
+return await r.json();
 }
 
 async function saveChild(e){
@@ -535,40 +509,15 @@ alert('Ошибка: '+(result?.error||JSON.stringify(res)));
 const photoFile=document.getElementById('childPhoto').files[0];
 if(!photoFile){alert('Загрузите фото');return;}
 
-alert('Загрузка фото...');
-const photoUrl=await uploadToCloudinary(photoFile);
-console.log('Photo uploaded:', photoUrl);
+alert('Обработка... Пожалуйста, подождите');
+const result=await uploadChildPhoto(photoFile,data,selectedGroups);
 
-alert('Распознавание лица...');
-const faceToken=await detectFace(photoUrl);
-console.log('Face detected:', faceToken);
-
-data.photo_url=photoUrl;
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'create',data})});
-let res=await r.json();
-console.log('CREATE response:', res);
-const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-const childId=result?.id||res?.id;
-console.log('New child ID:', childId);
-
-if(childId){
-alert('Сохранение face_token...');
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'face_tokens',action:'create',data:{child_id:childId,face_token:faceToken,photo_url:photoUrl}})});
-
-alert('Добавление в группы...');
-for(let gid of selectedGroups){
-console.log('Assigning group', gid, 'to child', childId);
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:childId,group_id:gid}})});
-
-const facesetToken=await getOrCreateFaceSet(gid);
-console.log('FaceSet for group', gid, ':', facesetToken);
-await addFaceToFaceSet(faceToken,facesetToken);
-}
+if(result.success){
 closeChildModal();
 alert('Добавлено!');
 await loadChildren();
 }else{
-alert('Ошибка: не получен ID ребенка. Ответ: '+JSON.stringify(res));
+alert('Ошибка: '+(result.error||JSON.stringify(result)));
 }
 }
 }catch(err){
