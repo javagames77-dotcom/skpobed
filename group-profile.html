@@ -1,94 +1,147 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>InSkill - Group</title>
-<script src="i18n.js"></script>
-<style>:root{--p:#0066CC;--s:#FF9933}*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;background:#f8f9fa;padding:2rem}.card{background:#fff;border-radius:12px;padding:2rem;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}.title{font-size:2rem;color:var(--p);margin-bottom:1rem}.badge{display:inline-block;padding:.5rem 1rem;background:#e3f2fd;color:var(--p);border-radius:20px;margin:.25rem}.schedule{background:#f8f9fa;padding:1rem;border-radius:8px;margin:.5rem 0}.schedule-day{padding:.5rem;border-bottom:1px solid #ddd}.list-item{padding:1rem;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}.avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;margin-right:1rem}.btn{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;cursor:pointer;margin:.5rem}</style>
-</head><body>
-<div class="card">
-<h1 class="title" id="groupName">Loading...</h1>
-<p><span id="lblClub">Club</span>: <span id="clubName">-</span></p>
-<p><span id="lblChildren">Children</span>: <span id="childrenCount">0</span></p>
-<p><span id="lblTrainers">Trainers</span>: <span id="trainersCount">0</span></p>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Профиль группы - InSkill</title>
+<style>
+:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
+.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem}
+.btn-back{padding:0.5rem 1rem;background:var(--p);color:#fff;border:none;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
+.container{max-width:1200px;margin:2rem auto;padding:0 2rem}
+.profile-card{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.profile-header h1{font-size:2rem;color:var(--p);margin-bottom:0.5rem}
+.profile-header p{color:#666;margin-bottom:0.25rem}
+.section{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.section-title{font-size:1.5rem;color:var(--p);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:2px solid var(--b)}
+.schedule-grid{display:grid;gap:1rem;margin-top:1rem}
+.schedule-day{padding:1rem;background:var(--l);border-radius:8px;border-left:4px solid var(--p)}
+.schedule-day h3{color:var(--p);font-size:1.1rem;margin-bottom:0.5rem}
+.schedule-day p{color:#666;font-size:0.95rem}
+.list-grid{display:grid;gap:1rem;margin-top:1rem}
+.list-item{padding:1rem;background:var(--l);border-radius:8px;display:flex;align-items:center;gap:1rem}
+.list-item img{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--b)}
+.list-item-info h4{color:var(--p);font-size:1rem;margin-bottom:0.25rem}
+.list-item-info p{color:#666;font-size:0.9rem}
+.empty{text-align:center;padding:2rem;color:#999}
+.loading{text-align:center;padding:3rem;color:var(--p)}
+</style>
+</head>
+<body>
+<div class="header">
+<a href="/director-dashboard.html" class="btn-back">← Назад к группам</a>
 </div>
 
-<div class="card">
-<h2 id="lblSchedule">Schedule</h2>
-<div id="scheduleList"></div>
+<div class="container">
+<div class="profile-card">
+<div class="profile-header">
+<h1 id="groupName">—</h1>
+<p>🏢 Клуб: <span id="clubName">—</span></p>
+<p>👥 Детей: <span id="childrenCount">—</span></p>
+<p>👨‍🏫 Тренеров: <span id="trainersCount">—</span></p>
+</div>
 </div>
 
-<div class="card">
-<h2 id="lblTrainersList">Trainers</h2>
-<div id="trainersList"></div>
+<div class="section">
+<h2 class="section-title">📅 Расписание</h2>
+<div id="scheduleContainer" class="loading">Загрузка...</div>
 </div>
 
-<div class="card">
-<h2 id="lblChildrenList">Children</h2>
-<div id="childrenList"></div>
+<div class="section">
+<h2 class="section-title">👨‍🏫 Тренеры</h2>
+<div id="trainersContainer" class="loading">Загрузка...</div>
 </div>
 
-<button class="btn" onclick="history.back()" id="btnBack">Back</button>
+<div class="section">
+<h2 class="section-title">👥 Спортсмены</h2>
+<div id="childrenContainer" class="loading">Загрузка...</div>
+</div>
+</div>
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-let token=localStorage.getItem('token');
-const id=new URLSearchParams(location.search).get('id');
-if(!token||!id)location.href='/';
+const token=localStorage.getItem('token');
+const groupId=new URLSearchParams(location.search).get('id');
+
+if(!token||!groupId){location.href='/';throw new Error('No auth');}
 
 async function loadGroup(){
 try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'get',data:{id:parseInt(id)}})});
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'get',data:{id:parseInt(groupId)}})});
 const d=await r.json();
-console.log('Group data:', d); // Debug
-const g=d; // Response is direct object, not wrapped in merged
-if(!g||!g.id){
-document.getElementById('groupName').textContent='Group not found';
+const group=Array.isArray(d)?d[0]:d;
+
+if(!group||!group.id){alert('Группа не найдена');history.back();return;}
+
+document.getElementById('groupName').textContent=group.name;
+document.getElementById('clubName').textContent=group.club_name||'—';
+document.getElementById('childrenCount').textContent=group.children_count||0;
+document.getElementById('trainersCount').textContent=group.trainers_count||0;
+
+renderSchedule(group.schedule);
+renderTrainers(group.trainers);
+renderChildren(group.children);
+}catch(e){console.error(e);alert('Ошибка загрузки')}
+}
+
+function renderSchedule(schedule){
+const container=document.getElementById('scheduleContainer');
+if(!schedule||schedule.length===0||schedule==='[]'){
+container.innerHTML='<p class="empty">Расписание не задано</p>';
 return;
 }
-document.getElementById('groupName').textContent=g.name||'';
-document.getElementById('clubName').textContent=g.club_name||'-';
-document.getElementById('childrenCount').textContent=g.children_count||0;
-document.getElementById('trainersCount').textContent=g.trainers_count||0;
-
-if(g.schedule){
-const s=typeof g.schedule==='string'?JSON.parse(g.schedule):g.schedule;
-if(Array.isArray(s)&&s.length>0){
-document.getElementById('scheduleList').innerHTML=s.map(d=>`<div class="schedule-day">${d.day}: ${d.time_start} - ${d.time_end}</div>`).join('');
-}else{
-document.getElementById('scheduleList').innerHTML='<p>'+t('noSchedule')+'</p>';
-}
+const days=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
+const parsedSchedule=typeof schedule==='string'?JSON.parse(schedule):schedule;
+const html=parsedSchedule.map((s,i)=>`
+<div class="schedule-day">
+<h3>${days[s.day]||'День '+s.day}</h3>
+<p>🕐 ${s.time}</p>
+${s.location?`<p>📍 ${s.location}</p>`:''}
+</div>
+`).join('');
+container.innerHTML=`<div class="schedule-grid">${html}</div>`;
 }
 
-if(g.trainers){
-const tr=typeof g.trainers==='string'?JSON.parse(g.trainers):g.trainers;
-if(Array.isArray(tr)&&tr.length>0){
-document.getElementById('trainersList').innerHTML=tr.map(t=>`<div class="list-item"><span>${t.trainer_name}</span><span>${t.trainer_email}</span></div>`).join('');
-}else{
-document.getElementById('trainersList').innerHTML='<p>'+t('noTrainers')+'</p>';
+function renderTrainers(trainers){
+const container=document.getElementById('trainersContainer');
+if(!trainers||trainers.length===0||trainers[0]===null){
+container.innerHTML='<p class="empty">Нет тренеров</p>';
+return;
 }
-}
-
-if(g.children){
-const ch=typeof g.children==='string'?JSON.parse(g.children):g.children;
-if(Array.isArray(ch)&&ch.length>0){
-document.getElementById('childrenList').innerHTML=ch.map(c=>`<div class="list-item"><div style="display:flex;align-items:center"><img src="${c.photo_url||'https://via.placeholder.com/40'}" class="avatar"><span>${c.child_name}</span></div></div>`).join('');
-}else{
-document.getElementById('childrenList').innerHTML='<p>'+t('noChildren')+'</p>';
-}
-}
-}catch(e){console.error('Load group error:',e);alert('Error loading group: '+e.message)}
-}
-
-function applyTranslations(){
-document.getElementById('lblClub').textContent=t('club');
-document.getElementById('lblChildren').textContent=t('childrenCount');
-document.getElementById('lblTrainers').textContent=t('trainersCount');
-document.getElementById('lblSchedule').textContent=t('schedule');
-document.getElementById('lblTrainersList').textContent=t('trainers');
-document.getElementById('lblChildrenList').textContent=t('athletes');
-document.getElementById('btnBack').textContent=t('back');
+const html=trainers.map(t=>`
+<div class="list-item">
+<img src="${t.photo_url||'https://ui-avatars.com/api/?name='+encodeURIComponent(t.trainer_name)}" alt="${t.trainer_name}">
+<div class="list-item-info">
+<h4>${t.trainer_name}</h4>
+<p>📧 ${t.trainer_email}</p>
+${t.trainer_phone?`<p>📱 ${t.trainer_phone}</p>`:''}
+</div>
+</div>
+`).join('');
+container.innerHTML=`<div class="list-grid">${html}</div>`;
 }
 
-initLangSelector();
-applyTranslations();
+function renderChildren(children){
+const container=document.getElementById('childrenContainer');
+if(!children||children.length===0||children[0]===null){
+container.innerHTML='<p class="empty">Нет спортсменов</p>';
+return;
+}
+const html=children.map(c=>`
+<div class="list-item">
+<img src="${c.photo_url||'https://ui-avatars.com/api/?name='+encodeURIComponent(c.child_name)}" alt="${c.child_name}">
+<div class="list-item-info">
+<h4><a href="/athlete-profile.html?id=${c.child_id}" style="color:var(--p);text-decoration:none">${c.child_name}</a></h4>
+${c.birth_date?`<p>🎂 ${new Date(c.birth_date).toLocaleDateString('ru-RU')}</p>`:''}
+</div>
+</div>
+`).join('');
+container.innerHTML=`<div class="list-grid">${html}</div>`;
+}
+
 loadGroup();
 </script>
-</body></html>
+</body>
+</html>
