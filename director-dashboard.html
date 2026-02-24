@@ -211,6 +211,7 @@ function openTrainerModal(){document.getElementById('trainerModal').classList.ad
 function closeTrainerModal(){document.getElementById('trainerModal').classList.remove('active');document.body.style.overflow='';document.getElementById('trainerPassword').required=true}
 function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/'}
 loadUserInfo();loadClubs();
+if(location.hash==='#groups'){setTimeout(()=>{document.querySelector('.tab:nth-child(2)').click()},100);}
 </script>
 </body>
 </html>
