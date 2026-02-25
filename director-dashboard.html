@@ -189,13 +189,14 @@ async function loadGroups(){try{document.getElementById('loadingGroups').style.d
 // Get real children count for each group
 const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'list'})});
 const d2=await r2.json();
-const childrenGroups=d2.merged||d2||[];
+const childrenGroupsRaw=d2.merged||d2||[];
+const childrenGroups=Array.isArray(childrenGroupsRaw)?childrenGroupsRaw:[];
 
 groups.forEach(g=>{
 g.real_children_count=childrenGroups.filter(cg=>cg.group_id===g.id&&cg.is_active).length;
 });
 
-document.getElementById('loadingGroups').style.display='none';document.getElementById('groupsTable').style.display='table';renderGroupsTable()}catch(e){console.error(e)}}
+document.getElementById('loadingGroups').style.display='none';document.getElementById('groupsTable').style.display='table';renderGroupsTable()}catch(e){console.error(e);document.getElementById('loadingGroups').textContent='Ошибка загрузки: '+e.message}}
 function renderGroupsTable(){const t=document.getElementById('groupsTableBody');t.innerHTML='';groups.forEach(g=>{const r=document.createElement('tr');r.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);text-decoration:none;font-weight:600">${g.name}</a></td><td>${g.club_name||'—'}</td><td>${g.real_children_count||0}</td><td>${g.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 function addGroup(){document.getElementById('groupModalTitle').textContent='Добавить группу';document.getElementById('groupId').value='';document.getElementById('groupName').value='';document.getElementById('groupClubId').value='';openGroupModal()}
 function editGroup(id){const g=groups.find(x=>x.id===id);if(!g)return;document.getElementById('groupModalTitle').textContent='Редактировать группу';document.getElementById('groupId').value=g.id;document.getElementById('groupName').value=g.name;document.getElementById('groupClubId').value=g.club_id;openGroupModal()}
