@@ -528,12 +528,13 @@ addedGroups.push(gid);
 
 if(childFaceToken && (removedGroups.length > 0 || addedGroups.length > 0)){
 console.log('Syncing Face++ groups:', {removed: removedGroups, added: addedGroups});
-await fetch('https://primary-production-4b93e.up.railway.app/webhook/update-child-groups', {
+await fetch('https://primary-production-4b93e.up.railway.app/webhook/sync-child-facesets', {
 method: 'POST',
 headers: {'Content-Type': 'application/json'},
 body: JSON.stringify({
 token,
 child_id: parseInt(id),
+action: 'update',
 removed_groups: removedGroups,
 added_groups: addedGroups
 })
@@ -571,14 +572,32 @@ alert('Ошибка: '+err.message);
 async function deleteChild(id){
 if(!confirm('Удалить?'))return;
 try{
+// Sync Face++ first (remove from all FaceSets)
+await fetch('https://primary-production-4b93e.up.railway.app/webhook/sync-child-facesets', {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({
+token,
+child_id: parseInt(id),
+action: 'delete',
+removed_groups: [],
+added_groups: []
+})
+});
+
+// Then delete from DB
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'delete',data:{id}})});
 let d=await r.json();
-const result=Array.isArray(d)?d[0]:d;
-if(result&&result.success){
+if(d.merged||d.id||Array.isArray(d)){
 alert('Удалено');
 await loadChildren();
+}else{
+alert('Ошибка: '+JSON.stringify(d));
 }
-}catch(e){console.error(e);alert('Ошибка')}
+}catch(err){
+console.error(err);
+alert('Ошибка: '+err.message);
+}
 }
 
 function openChildModal(){
