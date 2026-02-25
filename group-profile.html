@@ -186,10 +186,17 @@ if(!group||!group.id){alert('Группа не найдена');history.back();r
 
 currentGroup=group;
 
-// Filter children to only include those in THIS group
-const groupChildren = group.children ? group.children.filter(c => {
-  return c.group_names && c.group_names.split(', ').includes(group.name);
-}) : [];
+// Load ALL children separately (like director-dashboard)
+const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
+const d2=await r2.json();
+const allChildren=Array.isArray(d2.merged)?d2.merged:(Array.isArray(d2)?d2:[]);
+
+// Filter to only this group
+const groupChildren = allChildren.filter(c => 
+  c.group_names && 
+  c.group_names !== 'Без группы' && 
+  c.group_names.split(', ').includes(group.name)
+);
 
 document.getElementById('groupName').textContent=group.name;
 document.getElementById('clubName').textContent=group.club_name||'—';
