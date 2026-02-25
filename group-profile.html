@@ -186,14 +186,19 @@ if(!group||!group.id){alert('Группа не найдена');history.back();r
 
 currentGroup=group;
 
+// Filter children to only include those in THIS group
+const groupChildren = group.children ? group.children.filter(c => {
+  return c.group_names && c.group_names.split(', ').includes(group.name);
+}) : [];
+
 document.getElementById('groupName').textContent=group.name;
 document.getElementById('clubName').textContent=group.club_name||'—';
-document.getElementById('childrenCount').textContent=group.children_count||0;
-document.getElementById('trainersCount').textContent=group.trainers_count||0;
+document.getElementById('childrenCount').textContent=groupChildren.length;
+document.getElementById('trainersCount').textContent=group.trainers?group.trainers.length:0;
 
 renderSchedule(group.schedule);
 renderTrainers(group.trainers);
-renderChildren(group.children);
+renderChildren(groupChildren);
 }catch(e){console.error(e);alert('Ошибка загрузки')}
 }
 
