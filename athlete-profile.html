@@ -54,21 +54,48 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="section">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-<h2 class="section-title" style="margin:0;border:none">Группы</h2>
-<button class="btn-edit" onclick="openGroupsModal()">Изменить группы</button>
+<h2 class="section-title" style="margin:0;border:none">Информация</h2>
+<button class="btn-edit" onclick="openEditModal()">Редактировать</button>
 </div>
 <div id="groupsList"></div>
 </div>
 </div>
 
-<div class="modal" id="groupsModal">
+<div class="modal" id="editModal">
 <div class="modal-content">
-<h2 class="modal-title">Выбор групп</h2>
-<div id="groupsCheckboxes"></div>
-<div class="btn-row">
-<button class="btn btn-cancel" onclick="closeGroupsModal()">Отмена</button>
-<button class="btn btn-save" onclick="saveGroups()">Сохранить</button>
+<h2 class="modal-title">Редактировать спортсмена</h2>
+<form onsubmit="saveAthlete(event)">
+<div class="form-group">
+<label class="form-label">Имя *</label>
+<input type="text" id="editFirstName" class="form-input" required>
 </div>
+<div class="form-group">
+<label class="form-label">Фамилия *</label>
+<input type="text" id="editLastName" class="form-input" required>
+</div>
+<div class="form-group">
+<label class="form-label">Дата рождения</label>
+<div style="display:flex;gap:0.5rem">
+<select id="editBirthDay" class="form-input" style="flex:1">
+<option value="">День</option>
+</select>
+<select id="editBirthMonth" class="form-input" style="flex:1">
+<option value="">Месяц</option>
+</select>
+<select id="editBirthYear" class="form-input" style="flex:1">
+<option value="">Год</option>
+</select>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Группы *</label>
+<div id="editGroupsCheckboxes"></div>
+</div>
+<div class="btn-row">
+<button type="button" class="btn btn-cancel" onclick="closeEditModal()">Отмена</button>
+<button type="submit" class="btn btn-save">Сохранить</button>
+</div>
+</form>
 </div>
 </div>
 
@@ -89,7 +116,7 @@ athlete=children.find(c=>c.id==athleteId);
 if(!athlete){alert('Спортсмен не найден');history.back();return;}
 
 document.getElementById('athleteName').textContent=`${athlete.first_name} ${athlete.last_name}`;
-const birthDate=athlete.birth_date?new Date(athlete.birth_date).toLocaleDateString('ru-RU'):' —';
+const birthDate=athlete.birth_date?new Date(athlete.birth_date).toLocaleDateString('ru-RU'):'—';
 document.getElementById('athleteBirthDate').textContent=birthDate;
 document.getElementById('athleteParent').textContent=athlete.parent_email||'—';
 if(athlete.photo_url)document.getElementById('athletePhoto').src=athlete.photo_url;
@@ -117,60 +144,127 @@ if(child&&child.group_names&&child.group_names!=='Без группы'){
 const groupNames=child.group_names.split(', ');
 athleteGroupIds=allGroups.filter(g=>groupNames.includes(g.name)).map(g=>g.id);
 }
-console.log('Athlete group IDs:',athleteGroupIds);
 }catch(e){console.error(e)}
 }
 
-function openGroupsModal(){
+function openEditModal(){
+// Populate birth date selects
+const daySelect=document.getElementById('editBirthDay');
+const monthSelect=document.getElementById('editBirthMonth');
+const yearSelect=document.getElementById('editBirthYear');
+
+daySelect.innerHTML='<option value="">День</option>'+Array.from({length:31},(_, i)=>`<option value="${i+1}">${i+1}</option>`).join('');
+monthSelect.innerHTML='<option value="">Месяц</option>'+['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'].map((m,i)=>`<option value="${i+1}">${m}</option>`).join('');
+yearSelect.innerHTML='<option value="">Год</option>'+Array.from({length:50},(_, i)=>`<option value="${new Date().getFullYear()-i}">${new Date().getFullYear()-i}</option>`).join('');
+
+// Fill current values
+document.getElementById('editFirstName').value=athlete.first_name||'';
+document.getElementById('editLastName').value=athlete.last_name||'';
+
+if(athlete.birth_date){
+const bd=new Date(athlete.birth_date);
+daySelect.value=bd.getDate();
+monthSelect.value=bd.getMonth()+1;
+yearSelect.value=bd.getFullYear();
+}
+
+// Groups checkboxes
 const html=allGroups.map(g=>`
 <label class="group-checkbox">
 <input type="checkbox" value="${g.id}" ${athleteGroupIds.includes(g.id)?'checked':''}>
 ${g.name} <span style="color:#666">(${g.club_name||'—'})</span>
 </label>
 `).join('');
-document.getElementById('groupsCheckboxes').innerHTML=html||'<p style="color:#999">Нет доступных групп</p>';
-document.getElementById('groupsModal').classList.add('active');
+document.getElementById('editGroupsCheckboxes').innerHTML=html||'<p style="color:#999">Нет доступных групп</p>';
+
+document.getElementById('editModal').classList.add('active');
+document.body.style.overflow='hidden';
 }
 
-function closeGroupsModal(){
-document.getElementById('groupsModal').classList.remove('active');
+function closeEditModal(){
+document.getElementById('editModal').classList.remove('active');
+document.body.style.overflow='auto';
 }
 
-async function saveGroups(){
-const selected=Array.from(document.querySelectorAll('#groupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
-console.log('Saving groups:',selected);
+async function saveAthlete(event){
+event.preventDefault();
+
+const fn=document.getElementById('editFirstName').value.trim();
+const ln=document.getElementById('editLastName').value.trim();
+const d=document.getElementById('editBirthDay').value;
+const m=document.getElementById('editBirthMonth').value;
+const y=document.getElementById('editBirthYear').value;
+const selectedGroups=Array.from(document.querySelectorAll('#editGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
+
+if(!fn||!ln){alert('Заполните имя и фамилию');return;}
+if(selectedGroups.length===0){alert('Выберите хотя бы одну группу');return;}
+
+const data={id:parseInt(athleteId),first_name:fn,last_name:ln};
+if(d&&m&&y)data.birth_date=`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
 
 try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-const d=await r.json();
-const children=d.merged||d||[];
-const child=children.find(c=>c.id==athleteId);
+// Update basic info
+const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'update',data})});
+let res=await r.json();
+const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
 
-let currentGroupIds=[];
-if(child&&child.group_names&&child.group_names!=='Без группы'){
-const currentGroupNames=child.group_names.split(', ');
-currentGroupIds=allGroups.filter(g=>currentGroupNames.includes(g.name)).map(g=>g.id);
+if(result&&result.id){
+// Get face token
+const r3=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'face_tokens',action:'list',data:{child_id:parseInt(athleteId)}})});
+const d3=await r3.json();
+const faceTokensData=(d3.merged||d3||[]).filter(ft=>ft.child_id==parseInt(athleteId));
+const childFaceToken=faceTokensData.length>0?faceTokensData[0].face_token:null;
+
+const removedGroups=[];
+const addedGroups=[];
+
+// Determine changes
+for(let gid of athleteGroupIds){
+if(!selectedGroups.includes(gid)){
+removedGroups.push(gid);
 }
-console.log('Current groups:', currentGroupIds, 'Selected:', selected);
+}
 
-const toRemove=currentGroupIds.filter(gid=>!selected.includes(gid));
-const toAdd=selected.filter(gid=>!currentGroupIds.includes(gid));
-console.log('To remove:', toRemove, 'To add:', toAdd);
+for(let gid of selectedGroups){
+if(!athleteGroupIds.includes(gid)){
+addedGroups.push(gid);
+}
+}
 
-for(let gid of toRemove){
-console.log('Removing group', gid);
+// Sync Face++ FIRST
+if(childFaceToken && (removedGroups.length > 0 || addedGroups.length > 0)){
+await fetch('https://primary-production-4b93e.up.railway.app/webhook/sync-child-facesets', {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({
+token,
+child_id: parseInt(athleteId),
+action: 'update',
+removed_groups: removedGroups,
+added_groups: addedGroups
+})
+});
+}
+
+// THEN update DB
+for(let gid of removedGroups){
 await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(athleteId),group_id:gid}})});
 }
 
-for(let gid of toAdd){
-console.log('Adding group', gid);
+for(let gid of addedGroups){
 await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(athleteId),group_id:gid}})});
 }
 
-closeGroupsModal();
-alert('Группы обновлены!');
-location.reload();
-}catch(e){console.error(e);alert('Ошибка: '+e.message)}
+closeEditModal();
+alert('Сохранено!');
+await loadAthlete();
+}else{
+alert('Ошибка: '+(result?.error||JSON.stringify(res)));
+}
+}catch(err){
+console.error(err);
+alert('Ошибка: '+err.message);
+}
 }
 
 loadAthlete();
