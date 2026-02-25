@@ -448,33 +448,6 @@ reader.readAsDataURL(file);
 });
 }
 
-async function getOrCreateFaceSet(groupId){
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'group_facesets',action:'get',data:{id:groupId}})});
-const d=await r.json();
-const faceset=(d.merged||d||[])[0];
-if(faceset&&faceset.faceset_token)return faceset.faceset_token;
-
-const formData=new FormData();
-formData.append('api_key',FACEPP_KEY);
-formData.append('api_secret',FACEPP_SECRET);
-formData.append('display_name',`group_${groupId}`);
-const r2=await fetch('https://api-us.faceplusplus.com/facepp/v3/faceset/create',{method:'POST',body:formData});
-const d2=await r2.json();
-const newToken=d2.faceset_token;
-
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'group_facesets',action:'create',data:{group_id:groupId,faceset_token:newToken}})});
-return newToken;
-}
-
-async function addFaceToFaceSet(faceToken,facesetToken){
-const formData=new FormData();
-formData.append('api_key',FACEPP_KEY);
-formData.append('api_secret',FACEPP_SECRET);
-formData.append('face_tokens',faceToken);
-formData.append('faceset_token',facesetToken);
-await fetch('https://api-us.faceplusplus.com/facepp/v3/faceset/addface',{method:'POST',body:formData});
-}
-
 async function uploadChildPhoto(photoFile, childData, selectedGroups){
 const compressedPhoto=await compressImage(photoFile);
 const formData=new FormData();
@@ -534,20 +507,14 @@ const d3=await r3.json();
 const faceTokensData=(d3.merged||d3||[]).filter(ft=>ft.child_id==parseInt(id));
 const childFaceToken=faceTokensData.length>0?faceTokensData[0].face_token:null;
 
+const removedGroups=[];
+const addedGroups=[];
+
 for(let gid of currentGroupIds){
 if(!selectedGroups.includes(gid)){
 console.log('Removing group', gid);
 await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(id),group_id:gid}})});
-if(childFaceToken){
-const facesetToken=await getOrCreateFaceSet(gid);
-const formData=new FormData();
-formData.append('api_key',FACEPP_KEY);
-formData.append('api_secret',FACEPP_SECRET);
-formData.append('face_tokens',childFaceToken);
-formData.append('faceset_token',facesetToken);
-await fetch('https://api-us.faceplusplus.com/facepp/v3/faceset/removeface',{method:'POST',body:formData});
-console.log('Removed face from FaceSet', facesetToken);
-}
+removedGroups.push(gid);
 }
 }
 
@@ -555,12 +522,23 @@ for(let gid of selectedGroups){
 if(!currentGroupIds.includes(gid)){
 console.log('Adding group', gid);
 await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});
-if(childFaceToken){
-const facesetToken=await getOrCreateFaceSet(gid);
-await addFaceToFaceSet(childFaceToken,facesetToken);
-console.log('Added face to FaceSet', facesetToken);
+addedGroups.push(gid);
 }
 }
+
+if(childFaceToken && (removedGroups.length > 0 || addedGroups.length > 0)){
+console.log('Syncing Face++ groups:', {removed: removedGroups, added: addedGroups});
+await fetch('https://primary-production-4b93e.up.railway.app/webhook/update-child-groups', {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({
+token,
+child_id: parseInt(id),
+removed_groups: removedGroups,
+added_groups: addedGroups
+})
+});
+console.log('Face++ sync completed');
 }
 
 closeChildModal();
