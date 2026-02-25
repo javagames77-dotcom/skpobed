@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Face++ Test Utility</title>
+<style>
+body{font-family:Arial;padding:20px;max-width:1200px;margin:0 auto}
+.section{border:1px solid #ccc;padding:15px;margin:10px 0;border-radius:5px}
+h2{margin-top:0;color:#333}
+button{padding:8px 15px;margin:5px;cursor:pointer;background:#007bff;color:white;border:none;border-radius:4px}
+button:hover{background:#0056b3}
+input,select{padding:6px;margin:5px;border:1px solid #ccc;border-radius:4px}
+pre{background:#f5f5f5;padding:10px;border-radius:4px;overflow:auto;max-height:300px}
+.success{color:green}
+.error{color:red}
+table{border-collapse:collapse;width:100%;margin:10px 0}
+th,td{border:1px solid #ddd;padding:8px;text-align:left}
+th{background:#f2f2f2}
+</style>
+</head>
+<body>
+<h1>🔍 Face++ Test Utility</h1>
+
+<div class="section">
+<h2>1. List All FaceSets</h2>
+<button onclick="listFaceSets()">Получить список FaceSets</button>
+<div id="facesetsResult"></div>
+</div>
+
+<div class="section">
+<h2>2. Get FaceSet Details</h2>
+<input id="facesetToken" placeholder="faceset_token" style="width:400px">
+<button onclick="getFaceSetDetails()">Получить детали</button>
+<div id="facesetDetails"></div>
+</div>
+
+<div class="section">
+<h2>3. Database → Face++ Comparison</h2>
+<button onclick="compareDBtoFacePP()">Сравнить БД с Face++</button>
+<div id="comparisonResult"></div>
+</div>
+
+<div class="section">
+<h2>4. Cleanup Orphaned Faces</h2>
+<button onclick="cleanupOrphans()">Удалить лишние лица из Face++</button>
+<div id="cleanupResult"></div>
+</div>
+
+<div class="section">
+<h2>5. Full Sync Test</h2>
+<input id="testChildId" placeholder="Child ID" type="number">
+<button onclick="testFullSync()">Тест синхронизации</button>
+<div id="syncTestResult"></div>
+</div>
+
+<script>
+const API_KEY='ZdR2xNAbSgwc93z8TZ2h31CVq5Pr4UES';
+const API_SECRET='sh6HWQ_gYuvkAJwsu1STZWbyx40';
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const token=localStorage.getItem('token');
+
+async function facePPRequest(endpoint,params){
+const formData=new FormData();
+formData.append('api_key',API_KEY);
+formData.append('api_secret',API_SECRET);
+for(let k in params)formData.append(k,params[k]);
+const r=await fetch(`https://api-us.faceplusplus.com/facepp/v3/${endpoint}`,{method:'POST',body:formData});
+return await r.json();
+}
+
+async function listFaceSets(){
+const d=document.getElementById('facesetsResult');
+d.innerHTML='<p>Загрузка...</p>';
+try{
+const result=await facePPRequest('faceset/getfacesets',{});
+if(result.facesets){
+let html='<table><tr><th>Display Name</th><th>FaceSet Token</th><th>Actions</th></tr>';
+for(let fs of result.facesets){
+html+=`<tr>
+<td>${fs.display_name}</td>
+<td><code>${fs.faceset_token}</code></td>
+<td><button onclick="getFaceSetDetailsById('${fs.faceset_token}')">Детали</button></td>
+</tr>`;
+}
+html+='</table>';
+d.innerHTML=html;
+}else{
+d.innerHTML=`<p class="error">Ошибка: ${JSON.stringify(result)}</p>`;
+}
+}catch(e){
+d.innerHTML=`<p class="error">${e.message}</p>`;
+}
+}
+
+async function getFaceSetDetailsById(token){
+document.getElementById('facesetToken').value=token;
+getFaceSetDetails();
+}
+
+async function getFaceSetDetails(){
+const facesetToken=document.getElementById('facesetToken').value;
+const d=document.getElementById('facesetDetails');
+if(!facesetToken){d.innerHTML='<p class="error">Введите faceset_token</p>';return}
+d.innerHTML='<p>Загрузка...</p>';
+try{
+const result=await facePPRequest('faceset/getdetail',{faceset_token:facesetToken});
+if(result.face_tokens){
+d.innerHTML=`
+<h3>${result.display_name}</h3>
+<p><strong>Face Count:</strong> ${result.face_count}</p>
+<p><strong>Face Tokens:</strong></p>
+<pre>${JSON.stringify(result.face_tokens,null,2)}</pre>
+`;
+}else{
+d.innerHTML=`<p class="error">${JSON.stringify(result)}</p>`;
+}
+}catch(e){
+d.innerHTML=`<p class="error">${e.message}</p>`;
+}
+}
+
+async function compareDBtoFacePP(){
+const d=document.getElementById('comparisonResult');
+d.innerHTML='<p>Анализ...</p>';
+try{
+// Получить все FaceSets
+const facesetsResult=await facePPRequest('faceset/getfacesets',{});
+const facesets=facesetsResult.facesets||[];
+
+// Получить все группы из БД
+const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});
+const dbGroups=(await r1.json()).merged||[];
+
+// Получить все дети и их группы
+const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
+const dbChildren=(await r2.json()).merged||[];
+
+let html='<h3>Сравнение БД ↔ Face++</h3><table><tr><th>Группа</th><th>БД Детей</th><th>Face++ Faces</th><th>Статус</th></tr>';
+
+for(let group of dbGroups){
+const groupChildren=dbChildren.filter(c=>c.group_names&&c.group_names.includes(group.name));
+const faceset=facesets.find(fs=>fs.display_name===`group_${group.id}`);
+const faceCount=faceset?'?':'0 (нет FaceSet)';
+const status=faceset?'✓':'❌ Нет FaceSet';
+html+=`<tr><td>${group.name}</td><td>${groupChildren.length}</td><td>${faceCount}</td><td>${status}</td></tr>`;
+}
+html+='</table>';
+d.innerHTML=html;
+}catch(e){
+d.innerHTML=`<p class="error">${e.message}</p>`;
+}
+}
+
+async function cleanupOrphans(){
+const d=document.getElementById('cleanupResult');
+if(!confirm('Это удалит лица из Face++, которых нет в БД. Продолжить?'))return;
+d.innerHTML='<p>Очистка...</p>';
+try{
+// TODO: реализовать логику очистки
+d.innerHTML='<p class="success">Функция в разработке</p>';
+}catch(e){
+d.innerHTML=`<p class="error">${e.message}</p>`;
+}
+}
+
+async function testFullSync(){
+const childId=document.getElementById('testChildId').value;
+const d=document.getElementById('syncTestResult');
+if(!childId){d.innerHTML='<p class="error">Введите Child ID</p>';return}
+d.innerHTML='<p>Тестирование...</p>';
+try{
+// Получить ребенка
+const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
+const children=(await r1.json()).merged||[];
+const child=children.find(c=>c.id==childId);
+if(!child){d.innerHTML='<p class="error">Ребенок не найден</p>';return}
+
+// Получить face_token
+const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'face_tokens',action:'list',data:{child_id:childId}})});
+const facetokens=(await r2.json()).merged||[];
+const faceToken=facetokens[0]?.face_token;
+
+d.innerHTML=`
+<h3>Ребенок: ${child.first_name} ${child.last_name}</h3>
+<p><strong>Группы:</strong> ${child.group_names||'Нет'}</p>
+<p><strong>Face Token:</strong> ${faceToken?`<code>${faceToken}</code>`:'❌ Нет'}</p>
+<p><strong>Фото:</strong> ${child.photo_url?`<a href="${child.photo_url}" target="_blank">Открыть</a>`:'❌ Нет'}</p>
+`;
+}catch(e){
+d.innerHTML=`<p class="error">${e.message}</p>`;
+}
+}
+</script>
+</body>
+</html>
