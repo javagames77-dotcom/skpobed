@@ -510,22 +510,20 @@ const childFaceToken=faceTokensData.length>0?faceTokensData[0].face_token:null;
 const removedGroups=[];
 const addedGroups=[];
 
+// Determine what to remove/add
 for(let gid of currentGroupIds){
 if(!selectedGroups.includes(gid)){
-console.log('Removing group', gid);
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(id),group_id:gid}})});
 removedGroups.push(gid);
 }
 }
 
 for(let gid of selectedGroups){
 if(!currentGroupIds.includes(gid)){
-console.log('Adding group', gid);
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});
 addedGroups.push(gid);
 }
 }
 
+// Sync Face++ FIRST (while children_groups still intact)
 if(childFaceToken && (removedGroups.length > 0 || addedGroups.length > 0)){
 console.log('Syncing Face++ groups:', {removed: removedGroups, added: addedGroups});
 await fetch('https://primary-production-4b93e.up.railway.app/webhook/sync-child-facesets', {
@@ -540,6 +538,17 @@ added_groups: addedGroups
 })
 });
 console.log('Face++ sync completed');
+}
+
+// THEN update DB
+for(let gid of removedGroups){
+console.log('Removing group', gid);
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(id),group_id:gid}})});
+}
+
+for(let gid of addedGroups){
+console.log('Adding group', gid);
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});
 }
 
 closeChildModal();
