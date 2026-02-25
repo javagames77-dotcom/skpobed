@@ -184,12 +184,81 @@ function addClub(){document.getElementById('clubModalTitle').textContent='Доб
 function editClub(id){const c=clubs.find(x=>x.id===id);if(!c)return;document.getElementById('clubModalTitle').textContent='Редактировать клуб';document.getElementById('clubId').value=c.id;document.getElementById('clubName').value=c.name;document.getElementById('clubAddress').value=c.address||'';openClubModal()}
 async function saveClub(e){e.preventDefault();const id=document.getElementById('clubId').value;const name=document.getElementById('clubName').value.trim();const address=document.getElementById('clubAddress').value.trim();if(!name){alert('Введите название');return}const data={name,address,director_id:user.id};try{const a=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:a,data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeClubModal();alert(id?'Клуб обновлен!':'Клуб создан!');await loadClubs()}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
 async function deleteClub(id){if(!confirm('Удалить клуб?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Клуб удален!');await loadClubs()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
-async function loadGroups(){try{document.getElementById('loadingGroups').style.display='block';document.getElementById('groupsTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});let d=await r.json();groups=d.merged||d||[];document.getElementById('loadingGroups').style.display='none';document.getElementById('groupsTable').style.display='table';renderGroupsTable()}catch(e){console.error(e)}}
-function renderGroupsTable(){const t=document.getElementById('groupsTableBody');t.innerHTML='';groups.forEach(g=>{const r=document.createElement('tr');r.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);text-decoration:none;font-weight:600">${g.name}</a></td><td>${g.club_name||'—'}</td><td>${g.children_count||0}</td><td>${g.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;t.appendChild(r)})}
+async function loadGroups(){try{document.getElementById('loadingGroups').style.display='block';document.getElementById('groupsTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});let d=await r.json();groups=d.merged||d||[];
+
+// Get real children count for each group
+const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'list'})});
+const d2=await r2.json();
+const childrenGroups=d2.merged||d2||[];
+
+groups.forEach(g=>{
+g.real_children_count=childrenGroups.filter(cg=>cg.group_id===g.id&&cg.is_active).length;
+});
+
+document.getElementById('loadingGroups').style.display='none';document.getElementById('groupsTable').style.display='table';renderGroupsTable()}catch(e){console.error(e)}}
+function renderGroupsTable(){const t=document.getElementById('groupsTableBody');t.innerHTML='';groups.forEach(g=>{const r=document.createElement('tr');r.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);text-decoration:none;font-weight:600">${g.name}</a></td><td>${g.club_name||'—'}</td><td>${g.real_children_count||0}</td><td>${g.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 function addGroup(){document.getElementById('groupModalTitle').textContent='Добавить группу';document.getElementById('groupId').value='';document.getElementById('groupName').value='';document.getElementById('groupClubId').value='';openGroupModal()}
 function editGroup(id){const g=groups.find(x=>x.id===id);if(!g)return;document.getElementById('groupModalTitle').textContent='Редактировать группу';document.getElementById('groupId').value=g.id;document.getElementById('groupName').value=g.name;document.getElementById('groupClubId').value=g.club_id;openGroupModal()}
 async function saveGroup(e){e.preventDefault();const id=document.getElementById('groupId').value;const name=document.getElementById('groupName').value.trim();const club_id=document.getElementById('groupClubId').value;if(!name||!club_id){alert('Заполните все поля');return}const data={name,club_id:parseInt(club_id),schedule:'[]'};try{const a=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:a,data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeGroupModal();alert(id?'Группа обновлена!':'Группа создана!');await loadGroups()}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
-async function deleteGroup(id){if(!confirm('Удалить группу?'))return;try{await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'delete',data:{id}})});await loadGroups()}catch(e){console.error(e)}}
+async function deleteGroup(id){
+const group=groups.find(g=>g.id===id);
+if(!group)return;
+
+// Check if group has children
+if(group.real_children_count>0){
+alert(`Невозможно удалить группу "${group.name}".\nВ группе ${group.real_children_count} детей.\n\nСначала удалите всех детей из группы.`);
+return;
+}
+
+if(!confirm(`Удалить группу "${group.name}"?`))return;
+
+try{
+// 1. Get FaceSet token
+const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'group_facesets',action:'list',data:{group_id:id}})});
+const d1=await r1.json();
+const facesets=(d1.merged||d1||[]).filter(fs=>fs.group_id===id&&fs.is_active);
+
+// 2. Delete FaceSet from Face++ (if exists)
+if(facesets.length>0){
+for(const fs of facesets){
+try{
+await fetch('https://api-us.faceplusplus.com/facepp/v3/faceset/delete',{
+method:'POST',
+headers:{'Content-Type':'application/x-www-form-urlencoded'},
+body:new URLSearchParams({
+api_key:'ZdR2xNAbSgwc93z8TZ2h31CVq5Pr4UES',
+api_secret:'9SGMFUyTYnIIrQiU8hFuoFrYVjqz8bVb',
+faceset_token:fs.faceset_token
+})
+});
+// Delete from group_facesets table
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'group_facesets',action:'delete',data:{id:fs.id}})});
+}catch(faceErr){
+console.error('Face++ delete error:',faceErr);
+}
+}
+}
+
+// 3. Delete trainer_groups associations
+const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list'})});
+const d2=await r2.json();
+const trainerGroups=(d2.merged||d2||[]).filter(tg=>tg.group_id===id);
+
+for(const tg of trainerGroups){
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'remove',data:{trainer_id:tg.trainer_id,group_id:id}})});
+}
+
+// 4. Delete group itself
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'delete',data:{id}})});
+
+alert('Группа удалена!');
+await loadGroups();
+await loadTrainers(); // Refresh trainer counts
+}catch(e){
+console.error(e);
+alert('Ошибка удаления: '+e.message);
+}
+}
 async function loadTrainers(){try{document.getElementById('loadingTrainers').style.display='block';document.getElementById('trainersTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});let d=await r.json();trainers=d.merged||d||[];document.getElementById('loadingTrainers').style.display='none';document.getElementById('trainersTable').style.display='table';renderTrainersTable()}catch(e){console.error(e)}}
 function renderTrainersTable(){const t=document.getElementById('trainersTableBody');t.innerHTML='';trainers.forEach(tr=>{const r=document.createElement('tr');r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);text-decoration:none;font-weight:600">${tr.first_name} ${tr.last_name}</a></td><td>${tr.email}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 function addTrainer(){document.getElementById('trainerModalTitle').textContent='Добавить тренера';document.getElementById('trainerId').value='';document.getElementById('trainerEmail').value='';document.getElementById('trainerPassword').value='';document.getElementById('trainerPassword').required=true;document.getElementById('trainerFirstName').value='';document.getElementById('trainerLastName').value='';document.getElementById('trainerBirthDay').value='';document.getElementById('trainerBirthMonth').value='';document.getElementById('trainerBirthYear').value='';document.getElementById('trainerPhone').value='';document.getElementById('trainerQualification').value='';document.getElementById('trainerGroupsCheckboxes').innerHTML='';loadGroupsForTrainer(null);openTrainerModal()}
@@ -211,6 +280,7 @@ function closeTrainerModal(){document.getElementById('trainerModal').classList.r
 function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/'}
 loadUserInfo();loadClubs();
 if(location.hash==='#groups'){setTimeout(()=>{document.querySelector('.tab:nth-child(2)').click()},100);}
+if(location.hash==='#trainers'){setTimeout(()=>{document.querySelector('.tab:nth-child(3)').click()},100);}
 </script>
 </body>
 </html>
