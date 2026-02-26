@@ -912,7 +912,7 @@ const todayTrainings = [];
 for (const g of groups) {
 try {
 const schedule = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
-const todaySlots = schedule.filter(s => s.day === dayOfWeek);
+const todaySlots = schedule.filter(s => s.day === dayOfWeek && s.time);
 
 for (const slot of todaySlots) {
 todayTrainings.push({
@@ -934,9 +934,9 @@ function isTrainingActive(timeStr) {
 const [hours, minutes] = timeStr.split(':').map(Number);
 const now = new Date();
 const trainingStart = new Date();
-trainingStart.setHours(hours, minutes, 0);
-const trainingEnd = new Date(trainingStart);
-trainingEnd.setHours(hours + 2);
+trainingStart.setHours(hours, minutes, 0, 0);
+const trainingEnd = new Date();
+trainingEnd.setHours(hours + 2, minutes, 0, 0);
 
 return now >= trainingStart && now <= trainingEnd;
 }
@@ -1002,7 +1002,8 @@ data: {id: groupId}
 })
 });
 
-const group = (await r.json())[0] || await r.json();
+const groupData = await r.json();
+const group = Array.isArray(groupData) ? groupData[0] : groupData;
 
 const r2 = await fetch(API, {
 method: 'POST',
@@ -1014,7 +1015,8 @@ action: 'list'
 })
 });
 
-const allChildren = (await r2.json()).merged || await r2.json() || [];
+const childrenData = await r2.json();
+const allChildren = childrenData.merged || childrenData || [];
 currentGroupChildren = allChildren.filter(c => 
 c.group_names && c.group_names.split(', ').includes(group.name)
 );
@@ -1033,7 +1035,8 @@ training_date: currentTrainingDate
 })
 });
 
-const attendance = (await r3.json()).merged || await r3.json() || [];
+const attendanceData = await r3.json();
+const attendance = attendanceData.merged || attendanceData || [];
 
 const currentMonth = new Date().toISOString().slice(0, 7);
 const r4 = await fetch(API, {
@@ -1050,7 +1053,8 @@ month_year: currentMonth
 })
 });
 
-const limits = (await r4.json()).merged || await r4.json() || [];
+const limitsData = await r4.json();
+const limits = limitsData.merged || limitsData || [];
 const uploadsCount = limits.length > 0 ? limits[0].uploads_count : 0;
 
 document.getElementById('markGroupName').textContent = group.name;
