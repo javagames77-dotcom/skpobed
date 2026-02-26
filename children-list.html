@@ -433,7 +433,7 @@ return;
 }
 container.innerHTML=groups.map(g=>`
 <label style="display:block;padding:0.5rem;cursor:pointer;border-bottom:1px solid var(--b)">
-<input type="checkbox" value="${g.id}" ${selectedIds.includes(g.id)?'checked':''} style="margin-right:0.5rem">
+<input type="checkbox" value="${g.group_id}" ${selectedIds.includes(g.group_id)?'checked':''} style="margin-right:0.5rem">
 ${g.group_name} <span style="color:#666">(${g.club_name||'—'})</span>
 </label>
 `).join('');
@@ -561,7 +561,7 @@ document.getElementById('childBirthYear').value=d.getFullYear();
 }
 
 const childGroupNames=c.group_names&&c.group_names!=='Без группы'?c.group_names.split(', '):[];
-const childGroupIds=groups.filter(g=>childGroupNames.includes(g.group_name)).map(g=>g.id);
+const childGroupIds=groups.filter(g=>childGroupNames.includes(g.group_name)).map(g=>g.group_id);
 renderGroupCheckboxes(childGroupIds);
 
 document.getElementById('childPhoto').required=false;
@@ -662,7 +662,7 @@ const child=allChildren.find(c=>c.id==parseInt(id));
 console.log('Current child data:', child);
 
 const currentGroupNames=child&&child.group_names&&child.group_names!=='Без группы'?child.group_names.split(', '):[];
-const currentGroupIds=groups.filter(g=>currentGroupNames.includes(g.group_name)).map(g=>g.id);
+const currentGroupIds=groups.filter(g=>currentGroupNames.includes(g.group_name)).map(g=>g.group_id);
 console.log('Current groups:', currentGroupIds, 'Selected groups:', selectedGroups);
 
 const r3=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'face_tokens',action:'list',data:{child_id:parseInt(id)}})});
