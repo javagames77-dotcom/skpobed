@@ -260,8 +260,28 @@ console.error(e);
 alert('Ошибка удаления: '+e.message);
 }
 }
-async function loadTrainers(){try{document.getElementById('loadingTrainers').style.display='block';document.getElementById('trainersTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});let d=await r.json();trainers=d.merged||d||[];document.getElementById('loadingTrainers').style.display='none';document.getElementById('trainersTable').style.display='table';renderTrainersTable()}catch(e){console.error(e)}}
-function renderTrainersTable(){const t=document.getElementById('trainersTableBody');t.innerHTML='';trainers.forEach(tr=>{const r=document.createElement('tr');r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);text-decoration:none;font-weight:600">${tr.first_name} ${tr.last_name}</a></td><td>${tr.email}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></div></td>`;t.appendChild(r)})}
+
+  async function loadTrainers() {
+  try {
+    const r = await fetch(API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({token, resource: 'users', action: 'list', data: {role: 'trainer'}})
+    });
+    
+    const data = await r.json();
+    trainers = Array.isArray(data.merged) ? data.merged : (Array.isArray(data) ? data : []);
+    
+    renderTrainersTable();
+  } catch(e) {
+    console.error(e);
+    trainers = [];
+    renderTrainersTable();
+  }
+}
+  
+  
+  function renderTrainersTable(){const t=document.getElementById('trainersTableBody');t.innerHTML='';trainers.forEach(tr=>{const r=document.createElement('tr');r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);text-decoration:none;font-weight:600">${tr.first_name} ${tr.last_name}</a></td><td>${tr.email}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 function addTrainer(){document.getElementById('trainerModalTitle').textContent='Добавить тренера';document.getElementById('trainerId').value='';document.getElementById('trainerEmail').value='';document.getElementById('trainerPassword').value='';document.getElementById('trainerPassword').required=true;document.getElementById('trainerFirstName').value='';document.getElementById('trainerLastName').value='';document.getElementById('trainerBirthDay').value='';document.getElementById('trainerBirthMonth').value='';document.getElementById('trainerBirthYear').value='';document.getElementById('trainerPhone').value='';document.getElementById('trainerQualification').value='';document.getElementById('trainerGroupsCheckboxes').innerHTML='';loadGroupsForTrainer(null);openTrainerModal()}
 async function editTrainer(id){const t=trainers.find(x=>x.id===id);if(!t)return;document.getElementById('trainerModalTitle').textContent='Редактировать тренера';document.getElementById('trainerId').value=t.id;document.getElementById('trainerEmail').value=t.email;document.getElementById('trainerPassword').value='';document.getElementById('trainerPassword').required=false;document.getElementById('trainerFirstName').value=t.first_name;document.getElementById('trainerLastName').value=t.last_name;if(t.birth_date){const parts=t.birth_date.split('-');if(parts.length===3){document.getElementById('trainerBirthYear').value=parts[0];document.getElementById('trainerBirthMonth').value=parseInt(parts[1]);document.getElementById('trainerBirthDay').value=parseInt(parts[2])}}else{document.getElementById('trainerBirthDay').value='';document.getElementById('trainerBirthMonth').value='';document.getElementById('trainerBirthYear').value=''}document.getElementById('trainerPhone').value=t.phone||'';document.getElementById('trainerQualification').value=t.qualification||'';await loadGroupsForTrainer(t.id);openTrainerModal()}
 async function loadGroupsForTrainer(trainerId){try{const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});const d1=await r1.json();const allGroups=d1.merged||d1||[];let trainerGroupIds=[];if(trainerId){try{const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(trainerId)}})});const d2=await r2.json();trainerGroupIds=(d2.merged||d2||[]).map(g=>g.id)}catch(e2){console.error(e2)}}if(allGroups.length===0){document.getElementById('trainerGroupsCheckboxes').innerHTML='<p style="color:#999;padding:1rem;text-align:center">Нет доступных групп</p>';return}const html=allGroups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" ${trainerGroupIds.includes(g.id)?'checked':''}>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');document.getElementById('trainerGroupsCheckboxes').innerHTML=html}catch(e){console.error(e);document.getElementById('trainerGroupsCheckboxes').innerHTML='<p style="color:red;padding:1rem">Ошибка загрузки групп</p>'}}
