@@ -259,7 +259,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="page-header">
 <h1 class="page-title">Спортсмены</h1>
 <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
-<button class="btn-add" onclick="addChild()"><span>➕</span><span>Добавить1</span></button>
+<button class="btn-add" onclick="addChild()"><span>➕</span><span>Добавить</span></button>
 <button class="btn-attendance" onclick="openAttendanceModal()">📋 Посещение</button>
 <button id="activeTrainingBtn" class="btn-active-training" style="display:none" onclick="openAttendanceForGroup(activeGroupId)">
 🟢 <span id="activeGroupName"></span>
@@ -1037,47 +1037,13 @@ currentGroupChildren = allChildren.filter(c =>
 c.group_names && c.group_names.split(', ').includes(group.name)
 );
 
-console.log('Fetching attendance for', groupId, currentTrainingDate);
-const r3 = await fetch(API, {
-method: 'POST',
-headers: {'Content-Type': 'application/json'},
-body: JSON.stringify({
-token,
-resource: 'attendance',
-action: 'list',
-data: {
-group_id: groupId,
-training_date: currentTrainingDate
-}
-})
-});
+// TODO: Enable when attendance API is ready
+// const r3 = await fetch(API, {...});
+const attendance = []; // Empty for now
 
-console.log('Attendance response status:', r3.status);
-const attendanceData = await r3.json();
-console.log('Attendance data:', attendanceData);
-const attendance = attendanceData.merged || attendanceData || [];
-
-const currentMonth = new Date().toISOString().slice(0, 7);
-console.log('Fetching photo limits for', groupId, currentMonth);
-const r4 = await fetch(API, {
-method: 'POST',
-headers: {'Content-Type': 'application/json'},
-body: JSON.stringify({
-token,
-resource: 'photo_upload_limits',
-action: 'list',
-data: {
-group_id: groupId,
-month_year: currentMonth
-}
-})
-});
-
-console.log('Limits response status:', r4.status);
-const limitsData = await r4.json();
-console.log('Limits data:', limitsData);
-const limits = limitsData.merged || limitsData || [];
-const uploadsCount = limits.length > 0 ? limits[0].uploads_count : 0;
+// TODO: Enable when limits API is ready
+// const r4 = await fetch(API, {...});
+const uploadsCount = 0; // Default for now
 
 document.getElementById('markGroupName').textContent = group.name;
 document.getElementById('markDate').textContent = new Date().toLocaleDateString('ru-RU');
