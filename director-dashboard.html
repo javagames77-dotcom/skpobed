@@ -261,25 +261,39 @@ alert('Ошибка удаления: '+e.message);
 }
 }
 
-  async function loadTrainers() {
+ async function loadTrainers() {
   try {
+    document.getElementById('loadingTrainers').style.display = 'block';
+    document.getElementById('trainersTable').style.display = 'none';
+    
     const r = await fetch(API, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({token, resource: 'users', action: 'list', data: {role: 'trainer'}})
+      body: JSON.stringify({
+        token,
+        resource: 'users',
+        action: 'list',
+        data: {role: 'trainer'}
+      })
     });
     
     const data = await r.json();
-    trainers = Array.isArray(data.merged) ? data.merged : (Array.isArray(data) ? data : []);
+    
+    // ВАЖНО: API возвращает массив напрямую, без .merged
+    trainers = Array.isArray(data) ? data : (data.merged || []);
+    
+    console.log('Trainers loaded:', trainers);
+    
+    document.getElementById('loadingTrainers').style.display = 'none';
+    document.getElementById('trainersTable').style.display = 'table';
     
     renderTrainersTable();
   } catch(e) {
-    console.error(e);
+    console.error('Load trainers error:', e);
+    document.getElementById('loadingTrainers').textContent = 'Ошибка загрузки: ' + e.message;
     trainers = [];
-    renderTrainersTable();
   }
 }
-  
   
   function renderTrainersTable(){const t=document.getElementById('trainersTableBody');t.innerHTML='';trainers.forEach(tr=>{const r=document.createElement('tr');r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);text-decoration:none;font-weight:600">${tr.first_name} ${tr.last_name}</a></td><td>${tr.email}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 function addTrainer(){document.getElementById('trainerModalTitle').textContent='Добавить тренера';document.getElementById('trainerId').value='';document.getElementById('trainerEmail').value='';document.getElementById('trainerPassword').value='';document.getElementById('trainerPassword').required=true;document.getElementById('trainerFirstName').value='';document.getElementById('trainerLastName').value='';document.getElementById('trainerBirthDay').value='';document.getElementById('trainerBirthMonth').value='';document.getElementById('trainerBirthYear').value='';document.getElementById('trainerPhone').value='';document.getElementById('trainerQualification').value='';document.getElementById('trainerGroupsCheckboxes').innerHTML='';loadGroupsForTrainer(null);openTrainerModal()}
