@@ -76,6 +76,163 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .table td:first-child:before{display:none}
 .date-inputs{flex-direction:column}
 }
+  /* === ATTENDANCE SYSTEM STYLES === */
+.btn-attendance {
+  padding: 0.75rem 1.5rem;
+  background: #2196F3;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.btn-active-training {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+  50% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+}
+
+.training-card {
+  padding: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.training-card:hover {
+  border-color: var(--p);
+  background: #f8f9ff;
+}
+
+.training-card.active {
+  border-color: #28a745;
+  background: #e8f5e9;
+}
+
+.training-card.upcoming {
+  border-color: #ccc;
+  opacity: 0.7;
+}
+
+.training-time {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.child-checkbox-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s;
+}
+
+.child-checkbox-item:hover {
+  background: #f8f9ff;
+}
+
+.child-checkbox-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.75rem;
+  cursor: pointer;
+}
+
+.child-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.confidence-badge {
+  padding: 0.25rem 0.75rem;
+  background: #28a745;
+  color: white;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.stats-box {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.stats-row:last-child {
+  margin-bottom: 0;
+}
+
+.photo-upload-section {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.btn-photo {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: #2196F3;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  border: none;
+  font-size: 1rem;
+}
+
+.btn-photo:hover {
+  background: #1976D2;
+}
+
+.btn-photo:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.btn-calendar {
+  width: 100%;
+  padding: 0.75rem;
+  background: #fff;
+  border: 2px solid var(--p);
+  color: var(--p);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.btn-calendar:hover {
+  background: #f8f9ff;
+}
 </style>
 </head>
 <body>
@@ -101,7 +258,13 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="tab-content active" id="tab-children">
 <div class="page-header">
 <h1 class="page-title">Спортсмены</h1>
+<div style="display:flex;gap:0.75rem;flex-wrap:wrap">
 <button class="btn-add" onclick="addChild()"><span>➕</span><span>Добавить</span></button>
+<button class="btn-attendance" onclick="openAttendanceModal()">📋 Посещение</button>
+<button id="activeTrainingBtn" class="btn-active-training" style="display:none" onclick="openAttendanceForGroup(activeGroupId)">
+🟢 <span id="activeGroupName"></span>
+</button>
+</div>
 </div>
 <div class="filters">
 <div class="filter-group">
@@ -701,6 +864,441 @@ window.location.href='/';
 loadUserInfo();
 initDateDropdowns();
 loadChildren();
+
+// ===== ATTENDANCE SYSTEM =====
+
+let currentGroupId = null;
+let currentTrainingDate = null;
+let activeGroupId = null;
+let currentGroupChildren = [];
+
+async function checkActiveTraining() {
+try {
+const trainings = await loadTodayTrainings();
+const activeTraining = trainings.find(t => t.isActive);
+
+if (activeTraining) {
+activeGroupId = activeTraining.group_id;
+document.getElementById('activeGroupName').textContent = activeTraining.group_name;
+document.getElementById('activeTrainingBtn').style.display = 'flex';
+} else {
+document.getElementById('activeTrainingBtn').style.display = 'none';
+}
+} catch (e) {
+console.error('Error checking active training:', e);
+}
+}
+
+async function loadTodayTrainings() {
+const today = new Date();
+const dayOfWeek = today.getDay();
+
+const r = await fetch(API, {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({
+token,
+resource: 'trainer_groups',
+action: 'list',
+data: {trainer_id: user.id}
+})
+});
+
+const data = await r.json();
+const groups = data.merged || data || [];
+
+const todayTrainings = [];
+
+for (const g of groups) {
+try {
+const schedule = JSON.parse(g.schedule || '[]');
+const todaySlots = schedule.filter(s => s.day === dayOfWeek);
+
+for (const slot of todaySlots) {
+todayTrainings.push({
+group_id: g.id,
+group_name: g.name,
+time: slot.time,
+isActive: isTrainingActive(slot.time)
+});
+}
+} catch (e) {
+console.error('Error parsing schedule for group', g.id, e);
+}
+}
+
+return todayTrainings.sort((a, b) => a.time.localeCompare(b.time));
+}
+
+function isTrainingActive(timeStr) {
+const [hours, minutes] = timeStr.split(':').map(Number);
+const now = new Date();
+const trainingStart = new Date();
+trainingStart.setHours(hours, minutes, 0);
+const trainingEnd = new Date(trainingStart);
+trainingEnd.setHours(hours + 2);
+
+return now >= trainingStart && now <= trainingEnd;
+}
+
+async function openAttendanceModal() {
+try {
+const today = new Date();
+const dateStr = today.toLocaleDateString('ru-RU', {
+day: 'numeric',
+month: 'long'
+});
+
+document.getElementById('todayDate').textContent = dateStr;
+document.getElementById('attendanceModal').classList.add('active');
+document.body.style.overflow = 'hidden';
+
+const trainings = await loadTodayTrainings();
+
+if (trainings.length === 0) {
+document.getElementById('todayTrainings').innerHTML = 
+'<p style="text-align:center;padding:2rem;color:#999">На сегодня тренировок нет</p>';
+return;
+}
+
+const html = trainings.map(t => `
+<div class="training-card ${t.isActive ? 'active' : 'upcoming'}" onclick="openAttendanceForGroup(${t.group_id})">
+<div>
+<strong>${t.group_name}</strong>
+${t.isActive ? '<div style="color:#28a745;font-size:0.85rem">🟢 Идёт сейчас</div>' : ''}
+</div>
+<div class="training-time">${t.time}</div>
+</div>
+`).join('');
+
+document.getElementById('todayTrainings').innerHTML = html;
+
+} catch (e) {
+console.error('Error opening attendance modal:', e);
+alert('Ошибка загрузки: ' + e.message);
+}
+}
+
+function closeAttendanceModal() {
+document.getElementById('attendanceModal').classList.remove('active');
+document.body.style.overflow = '';
+}
+
+async function openAttendanceForGroup(groupId) {
+try {
+currentGroupId = groupId;
+currentTrainingDate = new Date().toISOString().split('T')[0];
+
+closeAttendanceModal();
+
+const r = await fetch(API, {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({
+token,
+resource: 'groups',
+action: 'get',
+data: {id: groupId}
+})
+});
+
+const group = (await r.json())[0] || await r.json();
+
+const r2 = await fetch(API, {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({
+token,
+resource: 'children',
+action: 'list'
+})
+});
+
+const allChildren = (await r2.json()).merged || await r2.json() || [];
+currentGroupChildren = allChildren.filter(c => 
+c.group_names && c.group_names.split(', ').includes(group.name)
+);
+
+const r3 = await fetch(API, {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({
+token,
+resource: 'attendance',
+action: 'list',
+data: {
+group_id: groupId,
+training_date: currentTrainingDate
+}
+})
+});
+
+const attendance = (await r3.json()).merged || await r3.json() || [];
+
+const currentMonth = new Date().toISOString().slice(0, 7);
+const r4 = await fetch(API, {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({
+token,
+resource: 'photo_upload_limits',
+action: 'list',
+data: {
+group_id: groupId,
+month_year: currentMonth
+}
+})
+});
+
+const limits = (await r4.json()).merged || await r4.json() || [];
+const uploadsCount = limits.length > 0 ? limits[0].uploads_count : 0;
+
+document.getElementById('markGroupName').textContent = group.name;
+document.getElementById('markDate').textContent = new Date().toLocaleDateString('ru-RU');
+document.getElementById('uploadsCount').textContent = uploadsCount;
+document.getElementById('totalCount').textContent = currentGroupChildren.length;
+
+const html = currentGroupChildren.map(child => {
+const marked = attendance.find(a => a.child_id === child.id);
+const isPresent = marked ? marked.is_present : false;
+const confidence = marked && marked.confidence ? marked.confidence : null;
+
+return `
+<div class="child-checkbox-item">
+<input type="checkbox" 
+value="${child.id}" 
+${isPresent ? 'checked' : ''}
+onchange="updatePresentCount()">
+<span class="child-name">${child.first_name} ${child.last_name}</span>
+${confidence ? `<span class="confidence-badge">${confidence.toFixed(0)}%</span>` : ''}
+</div>
+`;
+}).join('');
+
+document.getElementById('childrenCheckboxes').innerHTML = html;
+updatePresentCount();
+
+document.getElementById('markAttendanceModal').classList.add('active');
+document.body.style.overflow = 'hidden';
+
+} catch (e) {
+console.error('Error opening group attendance:', e);
+alert('Ошибка: ' + e.message);
+}
+}
+
+function closeMarkAttendanceModal() {
+document.getElementById('markAttendanceModal').classList.remove('active');
+document.body.style.overflow = '';
+currentGroupId = null;
+currentTrainingDate = null;
+}
+
+function updatePresentCount() {
+const checkboxes = document.querySelectorAll('#childrenCheckboxes input[type="checkbox"]');
+const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+document.getElementById('presentCount').textContent = checked;
+}
+
+async function uploadGroupPhoto(event) {
+const file = event.target.files[0];
+if (!file) return;
+
+const btn = document.getElementById('photoUploadBtn');
+btn.disabled = true;
+btn.textContent = '⏳ Обработка фото...';
+
+try {
+const base64 = await new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.onload = () => resolve(reader.result.split(',')[1]);
+reader.onerror = reject;
+reader.readAsDataURL(file);
+});
+
+const response = await fetch('https://primary-production-4b93e.up.railway.app/webhook/mark-attendance-photo', {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({
+token,
+group_id: currentGroupId,
+training_date: currentTrainingDate,
+photo_base64: base64
+})
+});
+
+if (!response.ok) {
+throw new Error('Ошибка сервера: ' + response.status);
+}
+
+const result = await response.json();
+
+if (result.error) {
+throw new Error(result.error);
+}
+
+result.present.forEach(p => {
+const checkbox = document.querySelector(`input[value="${p.child_id}"]`);
+if (checkbox) {
+checkbox.checked = true;
+
+const item = checkbox.parentElement;
+const existing = item.querySelector('.confidence-badge');
+if (existing) existing.remove();
+
+const badge = document.createElement('span');
+badge.className = 'confidence-badge';
+badge.textContent = p.confidence.toFixed(0) + '%';
+item.appendChild(badge);
+}
+});
+
+document.getElementById('uploadsCount').textContent = result.total_uploads_this_month;
+updatePresentCount();
+
+alert(`✅ Распознано: ${result.present.length} детей\n❓ Неизвестных: ${result.unknown.length}`);
+
+} catch (err) {
+console.error('Upload error:', err);
+alert('Ошибка обработки фото: ' + err.message);
+} finally {
+btn.disabled = false;
+btn.textContent = '📸 Загрузить фото группы';
+event.target.value = '';
+}
+}
+
+async function saveAttendance() {
+try {
+const checkboxes = document.querySelectorAll('#childrenCheckboxes input[type="checkbox"]');
+const children = [];
+
+checkboxes.forEach(cb => {
+const confidenceBadge = cb.parentElement.querySelector('.confidence-badge');
+const confidence = confidenceBadge ? parseFloat(confidenceBadge.textContent) : null;
+
+children.push({
+child_id: parseInt(cb.value),
+is_present: cb.checked,
+confidence: confidence
+});
+});
+
+const r = await fetch(API, {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({
+token,
+resource: 'attendance',
+action: 'upsert_bulk',
+data: {
+group_id: currentGroupId,
+training_date: currentTrainingDate,
+marked_by: user.id,
+children: children
+}
+})
+});
+
+const result = await r.json();
+
+if (result.success || result.merged) {
+alert('✅ Посещаемость сохранена!');
+closeMarkAttendanceModal();
+} else {
+throw new Error(result.error || 'Unknown error');
+}
+
+} catch (err) {
+console.error('Save error:', err);
+alert('Ошибка сохранения: ' + err.message);
+}
+}
+
+function openCalendarModal() {
+closeAttendanceModal();
+document.getElementById('calendarModal').classList.add('active');
+}
+
+function closeCalendarModal() {
+document.getElementById('calendarModal').classList.remove('active');
+}
+
+// Initialize
+if (user && user.role === 'trainer') {
+checkActiveTraining();
+setInterval(checkActiveTraining, 60000);
+}
+  
 </script>
+  <!-- ATTENDANCE MODALS -->
+
+<div class="modal" id="attendanceModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">📋 Посещаемость</h2>
+<button class="modal-close" onclick="closeAttendanceModal()">✕</button>
+</div>
+<div class="modal-body">
+<p style="color:#666;margin-bottom:1rem">Сегодня, <span id="todayDate"></span></p>
+<div id="todayTrainings">
+<p class="loading">Загрузка тренировок...</p>
+</div>
+<button class="btn-calendar" onclick="openCalendarModal()">
+📅 Показать календарь
+</button>
+</div>
+</div>
+</div>
+
+<div class="modal" id="markAttendanceModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="markGroupName">Группа</h2>
+<button class="modal-close" onclick="closeMarkAttendanceModal()">✕</button>
+</div>
+<div class="modal-body">
+<p style="color:#666;margin-bottom:1rem" id="markDate"></p>
+
+<div id="childrenCheckboxes" style="max-height:400px;overflow-y:auto">
+<p class="loading">Загрузка...</p>
+</div>
+
+<div class="stats-box">
+<div class="stats-row">
+<strong>Присутствуют:</strong> 
+<span><span id="presentCount">0</span> / <span id="totalCount">0</span></span>
+</div>
+<div class="stats-row" style="font-size:0.85rem;color:#666">
+<span>Загрузок в этом месяце:</span>
+<span><span id="uploadsCount">0</span> / 20</span>
+</div>
+</div>
+
+<div class="photo-upload-section">
+<label class="btn-photo" id="photoUploadBtn">
+📸 Загрузить фото группы
+<input type="file" id="groupPhoto" accept="image/*" style="display:none" onchange="uploadGroupPhoto(event)">
+</label>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeMarkAttendanceModal()">Отмена</button>
+<button class="btn btn-save" onclick="saveAttendance()">Сохранить</button>
+</div>
+</div>
+</div>
+
+<div class="modal" id="calendarModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">📅 История посещений</h2>
+<button class="modal-close" onclick="closeCalendarModal()">✕</button>
+</div>
+<div class="modal-body">
+<p style="text-align:center;padding:2rem;color:#999">Календарь будет доступен в следующей версии</p>
+</div>
+</div>
+</div>
 </body>
 </html>
