@@ -257,7 +257,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="tab-content active" id="tab-children">
 <div class="page-header">
-<h1 class="page-title">Спортсмены1</h1>
+<h1 class="page-title">Спортсмены</h1>
 <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
 <button class="btn-add" onclick="addChild()"><span>➕</span><span>Добавить</span></button>
 <button class="btn-attendance" onclick="openAttendanceModal()">📋 Посещение</button>
@@ -420,7 +420,7 @@ function updateGroupFilter(){
 const s=document.getElementById('groupFilter');
 s.innerHTML='<option value="">Все</option>';
 groups.forEach(g=>{
-const o1=document.createElement('option');o1.value=g.id;o1.textContent=g.group_name;s.appendChild(o1);
+const o1=document.createElement('option');o1.value=g.group_id;o1.textContent=g.group_name;s.appendChild(o1);
 });
 renderGroupCheckboxes([]);
 }
@@ -893,7 +893,9 @@ async function loadTodayTrainings() {
 const today = new Date();
 const dayOfWeek = today.getDay();
 
-console.log('Loading today trainings. Day of week:', dayOfWeek, '(Wednesday=3)');
+console.log('=== LOAD TODAY TRAININGS ===');
+console.log('Today date:', today.toLocaleDateString('ru-RU'));
+console.log('Day of week:', dayOfWeek, '(0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)');
 
 const r = await fetch(API, {
 method: 'POST',
@@ -909,21 +911,25 @@ data: {trainer_id: user.id}
 const data = await r.json();
 const groups = data.merged || data || [];
 
-console.log('Trainer has', groups.length, 'groups');
+console.log('Trainer has', groups.length, 'groups:', groups);
 
 const todayTrainings = [];
 
 for (const g of groups) {
 try {
-console.log('Group:', g.group_name, 'Schedule:', g.schedule);
+console.log('Processing group:', g.group_id, g.group_name);
+console.log('  Raw schedule:', g.schedule);
 const schedule = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
-console.log('Parsed schedule:', schedule);
-const todaySlots = schedule.filter(s => s.day === dayOfWeek && s.time);
-console.log('Today slots for', g.group_name, ':', todaySlots);
+console.log('  Parsed schedule:', schedule);
+const todaySlots = schedule.filter(s => {
+console.log('    Checking slot:', s, 'day match:', s.day === dayOfWeek);
+return s.day === dayOfWeek && s.time;
+});
+console.log('  Today slots:', todaySlots);
 
 for (const slot of todaySlots) {
 const isActive = isTrainingActive(slot.time);
-console.log('Training', g.group_name, 'at', slot.time, 'isActive:', isActive);
+console.log('  Adding training:', g.group_name, 'at', slot.time, 'isActive:', isActive);
 todayTrainings.push({
 group_id: g.group_id,
 group_name: g.group_name,
@@ -932,11 +938,12 @@ isActive: isActive
 });
 }
 } catch (e) {
-console.error('Error parsing schedule for group', g.id, e);
+console.error('Error parsing schedule for group', g.group_id, e);
 }
 }
 
-console.log('Total today trainings:', todayTrainings);
+console.log('=== TOTAL TODAY TRAININGS:', todayTrainings.length, '===');
+console.log(todayTrainings);
 return todayTrainings.sort((a, b) => a.time.localeCompare(b.time));
 }
 
