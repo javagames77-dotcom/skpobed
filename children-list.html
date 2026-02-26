@@ -252,7 +252,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('children')">👶 Спортсмены2</button>
+<button class="tab active" onclick="switchTab('children')">👶 Спортсмены</button>
 </div>
 
 <div class="tab-content active" id="tab-children">
@@ -891,11 +891,14 @@ console.error('Error checking active training:', e);
 
 async function loadTodayTrainings() {
 const today = new Date();
-const dayOfWeek = today.getDay();
+const jsDay = today.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+// Convert to schedule format: 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
+const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1;
 
 console.log('=== LOAD TODAY TRAININGS ===');
 console.log('Today date:', today.toLocaleDateString('ru-RU'));
-console.log('Day of week:', dayOfWeek, '(0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat)');
+console.log('JS day:', jsDay, '(0=Sun, 1=Mon, ..., 6=Sat)');
+console.log('Schedule day:', dayOfWeek, '(0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun)');
 
 const r = await fetch(API, {
 method: 'POST',
