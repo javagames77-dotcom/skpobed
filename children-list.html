@@ -911,7 +911,7 @@ const todayTrainings = [];
 
 for (const g of groups) {
 try {
-const schedule = JSON.parse(g.schedule || '[]');
+const schedule = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
 const todaySlots = schedule.filter(s => s.day === dayOfWeek);
 
 for (const slot of todaySlots) {
