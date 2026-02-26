@@ -893,6 +893,8 @@ async function loadTodayTrainings() {
 const today = new Date();
 const dayOfWeek = today.getDay();
 
+console.log('Loading today trainings. Day of week:', dayOfWeek, '(Wednesday=3)');
+
 const r = await fetch(API, {
 method: 'POST',
 headers: {'Content-Type': 'application/json'},
@@ -907,19 +909,26 @@ data: {trainer_id: user.id}
 const data = await r.json();
 const groups = data.merged || data || [];
 
+console.log('Trainer has', groups.length, 'groups');
+
 const todayTrainings = [];
 
 for (const g of groups) {
 try {
+console.log('Group:', g.name, 'Schedule:', g.schedule);
 const schedule = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
+console.log('Parsed schedule:', schedule);
 const todaySlots = schedule.filter(s => s.day === dayOfWeek && s.time);
+console.log('Today slots for', g.name, ':', todaySlots);
 
 for (const slot of todaySlots) {
+const isActive = isTrainingActive(slot.time);
+console.log('Training', g.name, 'at', slot.time, 'isActive:', isActive);
 todayTrainings.push({
 group_id: g.id,
 group_name: g.name,
 time: slot.time,
-isActive: isTrainingActive(slot.time)
+isActive: isActive
 });
 }
 } catch (e) {
@@ -927,6 +936,7 @@ console.error('Error parsing schedule for group', g.id, e);
 }
 }
 
+console.log('Total today trainings:', todayTrainings);
 return todayTrainings.sort((a, b) => a.time.localeCompare(b.time));
 }
 
@@ -991,6 +1001,7 @@ currentTrainingDate = new Date().toISOString().split('T')[0];
 
 closeAttendanceModal();
 
+console.log('Fetching group:', groupId);
 const r = await fetch(API, {
 method: 'POST',
 headers: {'Content-Type': 'application/json'},
@@ -1002,9 +1013,12 @@ data: {id: groupId}
 })
 });
 
+console.log('Group response status:', r.status);
 const groupData = await r.json();
+console.log('Group data:', groupData);
 const group = Array.isArray(groupData) ? groupData[0] : groupData;
 
+console.log('Fetching children');
 const r2 = await fetch(API, {
 method: 'POST',
 headers: {'Content-Type': 'application/json'},
@@ -1015,12 +1029,15 @@ action: 'list'
 })
 });
 
+console.log('Children response status:', r2.status);
 const childrenData = await r2.json();
+console.log('Children data length:', (childrenData.merged || childrenData || []).length);
 const allChildren = childrenData.merged || childrenData || [];
 currentGroupChildren = allChildren.filter(c => 
 c.group_names && c.group_names.split(', ').includes(group.name)
 );
 
+console.log('Fetching attendance for', groupId, currentTrainingDate);
 const r3 = await fetch(API, {
 method: 'POST',
 headers: {'Content-Type': 'application/json'},
@@ -1035,10 +1052,13 @@ training_date: currentTrainingDate
 })
 });
 
+console.log('Attendance response status:', r3.status);
 const attendanceData = await r3.json();
+console.log('Attendance data:', attendanceData);
 const attendance = attendanceData.merged || attendanceData || [];
 
 const currentMonth = new Date().toISOString().slice(0, 7);
+console.log('Fetching photo limits for', groupId, currentMonth);
 const r4 = await fetch(API, {
 method: 'POST',
 headers: {'Content-Type': 'application/json'},
@@ -1053,7 +1073,9 @@ month_year: currentMonth
 })
 });
 
+console.log('Limits response status:', r4.status);
 const limitsData = await r4.json();
+console.log('Limits data:', limitsData);
 const limits = limitsData.merged || limitsData || [];
 const uploadsCount = limits.length > 0 ? limits[0].uploads_count : 0;
 
