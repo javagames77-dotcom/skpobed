@@ -411,7 +411,7 @@ const t=document.getElementById('groupsTableBody');
 t.innerHTML='';
 groups.forEach(g=>{
 const r=document.createElement('tr');
-r.innerHTML=`<td data-label="Название">${g.name}</td><td data-label="Клуб">${g.club_name||'-'}</td><td data-label="Действия"><div class="table-actions"><button class="btn-icon btn-edit" onclick="editGroup(${g.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;
+r.innerHTML=`<td data-label="Название">${g.group_name}</td><td data-label="Клуб">${g.club_name||'-'}</td><td data-label="Действия"><div class="table-actions"><button class="btn-icon btn-edit" onclick="editGroup(${g.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;
 t.appendChild(r);
 });
 }
@@ -420,7 +420,7 @@ function updateGroupFilter(){
 const s=document.getElementById('groupFilter');
 s.innerHTML='<option value="">Все</option>';
 groups.forEach(g=>{
-const o1=document.createElement('option');o1.value=g.id;o1.textContent=g.name;s.appendChild(o1);
+const o1=document.createElement('option');o1.value=g.id;o1.textContent=g.group_name;s.appendChild(o1);
 });
 renderGroupCheckboxes([]);
 }
@@ -434,7 +434,7 @@ return;
 container.innerHTML=groups.map(g=>`
 <label style="display:block;padding:0.5rem;cursor:pointer;border-bottom:1px solid var(--b)">
 <input type="checkbox" value="${g.id}" ${selectedIds.includes(g.id)?'checked':''} style="margin-right:0.5rem">
-${g.name} <span style="color:#666">(${g.club_name||'—'})</span>
+${g.group_name} <span style="color:#666">(${g.club_name||'—'})</span>
 </label>
 `).join('');
 }
@@ -464,7 +464,7 @@ const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/jso
 let d2=await r2.json();
 const trainerGroups=d2.merged||d2||[];
 groups=trainerGroups;
-const groupIds=trainerGroups.map(g=>g.id);
+const groupIds=trainerGroups.map(g=>g.group_id);
 console.log('Trainer groups:', groupIds, trainerGroups);
 updateGroupFilter();
 
@@ -476,8 +476,8 @@ console.log('All children loaded:', allChildren.length);
 children=allChildren.filter(c=>{
 if(!c.group_names||c.group_names==='Без группы')return false;
 return groupIds.some(gid=>{
-const group=trainerGroups.find(tg=>tg.id===gid);
-return group&&c.group_names.includes(group.name);
+const group=trainerGroups.find(tg=>tg.group_id===gid);
+return group&&c.group_names.includes(group.group_name);
 });
 });
 console.log('Filtered children for trainer:', children.length);
@@ -561,7 +561,7 @@ document.getElementById('childBirthYear').value=d.getFullYear();
 }
 
 const childGroupNames=c.group_names&&c.group_names!=='Без группы'?c.group_names.split(', '):[];
-const childGroupIds=groups.filter(g=>childGroupNames.includes(g.name)).map(g=>g.id);
+const childGroupIds=groups.filter(g=>childGroupNames.includes(g.group_name)).map(g=>g.id);
 renderGroupCheckboxes(childGroupIds);
 
 document.getElementById('childPhoto').required=false;
@@ -662,7 +662,7 @@ const child=allChildren.find(c=>c.id==parseInt(id));
 console.log('Current child data:', child);
 
 const currentGroupNames=child&&child.group_names&&child.group_names!=='Без группы'?child.group_names.split(', '):[];
-const currentGroupIds=groups.filter(g=>currentGroupNames.includes(g.name)).map(g=>g.id);
+const currentGroupIds=groups.filter(g=>currentGroupNames.includes(g.group_name)).map(g=>g.id);
 console.log('Current groups:', currentGroupIds, 'Selected groups:', selectedGroups);
 
 const r3=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'face_tokens',action:'list',data:{child_id:parseInt(id)}})});
@@ -794,7 +794,7 @@ const g=groups.find(x=>x.id===id);
 if(!g)return;
 document.getElementById('groupModalTitle').textContent='Редактировать';
 document.getElementById('groupId').value=g.id;
-document.getElementById('groupName').value=g.name;
+document.getElementById('groupName').value=g.group_name;
 openGroupModal();
 }
 
@@ -829,10 +829,10 @@ const g=groups.find(x=>x.id===id);
 if(!g)return;
 const childrenInGroup=children.filter(c=>c.group_id===id);
 if(childrenInGroup.length>0){
-alert(`❌ НЕЛЬЗЯ УДАЛИТЬ!\n\nВ группе "${g.name}" есть ${childrenInGroup.length} спортсменов.\n\nСначала переведите всех спортсменов в другие группы, затем удаляйте.`);
+alert(`❌ НЕЛЬЗЯ УДАЛИТЬ!\n\nВ группе "${g.group_name}" есть ${childrenInGroup.length} спортсменов.\n\nСначала переведите всех спортсменов в другие группы, затем удаляйте.`);
 return;
 }
-if(!confirm(`Удалить пустую группу "${g.name}"?`))return;
+if(!confirm(`Удалить пустую группу "${g.group_name}"?`))return;
 try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'delete',data:{id}})});
 let d=await r.json();
@@ -915,18 +915,18 @@ const todayTrainings = [];
 
 for (const g of groups) {
 try {
-console.log('Group:', g.name, 'Schedule:', g.schedule);
+console.log('Group:', g.group_name, 'Schedule:', g.schedule);
 const schedule = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
 console.log('Parsed schedule:', schedule);
 const todaySlots = schedule.filter(s => s.day === dayOfWeek && s.time);
-console.log('Today slots for', g.name, ':', todaySlots);
+console.log('Today slots for', g.group_name, ':', todaySlots);
 
 for (const slot of todaySlots) {
 const isActive = isTrainingActive(slot.time);
-console.log('Training', g.name, 'at', slot.time, 'isActive:', isActive);
+console.log('Training', g.group_name, 'at', slot.time, 'isActive:', isActive);
 todayTrainings.push({
 group_id: g.id,
-group_name: g.name,
+group_name: g.group_name,
 time: slot.time,
 isActive: isActive
 });
