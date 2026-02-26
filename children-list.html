@@ -512,7 +512,7 @@ filtered=children.filter(c=>{
 const n=(c.first_name+' '+c.last_name).toLowerCase().includes(s);
 const clubMatch=!club||(c.club_names&&c.club_names.includes(club));
 if(!g)return n&&clubMatch;
-const groupName=groups.find(gr=>gr.id==g)?.name;
+const groupName=groups.find(gr=>gr.group_id==g)?.group_name;
 const gr=groupName&&c.group_names&&c.group_names.includes(groupName);
 return n&&clubMatch&&gr;
 });
@@ -925,7 +925,7 @@ for (const slot of todaySlots) {
 const isActive = isTrainingActive(slot.time);
 console.log('Training', g.group_name, 'at', slot.time, 'isActive:', isActive);
 todayTrainings.push({
-group_id: g.id,
+group_id: g.group_id,
 group_name: g.group_name,
 time: slot.time,
 isActive: isActive
