@@ -1,263 +1,43 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Директор клуба — InSkill Online</title>
-<style>
-:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
-.logo-icon{width:40px;height:40px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
-.logo-bars{display:flex;gap:3px;align-items:flex-end}
-.logo-bar{width:6px;background:#fff;border-radius:2px}
-.logo-bar:nth-child(1){height:12px}
-.logo-bar:nth-child(2){height:18px;background:var(--s)}
-.logo-bar:nth-child(3){height:24px;background:var(--s)}
-.badge-director{padding:.25rem .75rem;background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
-.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer}
-.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
-.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)}
-.tab{padding:1rem 2rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
-.tab.active{color:var(--p);border-bottom-color:var(--p)}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
-.page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
-.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:.5rem}
-.filters{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;gap:1rem;flex-wrap:wrap}
-.filter-group{flex:1;min-width:200px}
-.filter-label{display:block;margin-bottom:.5rem;font-size:.85rem;font-weight:600;color:#555;text-transform:uppercase}
-.filter-input,.filter-select{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
-.table-container{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
-.table{width:100%;border-collapse:collapse}
-.table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
-.table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem}
-.table td{padding:1rem;border-bottom:1px solid var(--b)}
-.table tbody tr:hover{background:#f8f9ff}
-.table-actions{display:flex;gap:.5rem}
-.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
-.btn-edit{background:#e3f2fd;color:var(--p)}
-.btn-delete{background:#ffebee;color:#dc3545}
-.loading{text-align:center;padding:3rem;color:var(--p)}
-.child-photo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--b)}
-.group-badge{display:inline-block;padding:.35rem .75rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:500}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem}
-.modal.active{display:flex}
-.modal-content{background:#fff;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.modal-header{padding:1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:1.5rem;font-weight:700;color:var(--p)}
-.modal-close{width:32px;height:32px;border:none;background:var(--l);border-radius:50%;cursor:pointer;font-size:1.2rem}
-.modal-body{padding:1.5rem}
-.form-group{margin-bottom:1.25rem}
-.form-label{display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem}
-.form-input{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
-.modal-footer{padding:1.5rem;border-top:2px solid var(--b);display:flex;gap:1rem;justify-content:flex-end}
-.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
-.btn-cancel{background:var(--l);color:var(--d)}
-.btn-save{background:var(--s);color:#fff}
-.group-checkbox{display:block;padding:0.5rem;cursor:pointer;border-bottom:1px solid var(--b)}
-.group-checkbox:last-child{border-bottom:none}
-.group-checkbox:hover{background:var(--l)}
-.group-checkbox input{margin-right:0.5rem}
-</style>
-</head>
-<body>
-
-<header class="header">
-<div class="header-content">
-<a href="/" class="logo">
-<div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
-<span>InSkill<span style="color:var(--s)">.online</span></span>
-</a>
-<div style="display:flex;align-items:center;gap:1rem">
-<span class="badge-director">👔 ДИРЕКТОР</span>
-<span id="userName">—</span>
-<button class="btn-logout" onclick="logout()">Выход</button>
-</div>
-</div>
-</header>
-
-<div class="container">
-<div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
-<button class="tab" onclick="switchTab('groups')">👥 Группы</button>
-<button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
-<button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
-</div>
-
-<!-- CLUBS TAB -->
-<div class="tab-content active" id="tab-clubs">
-<div class="page-header">
-<h1 class="page-title">Мои клубы</h1>
-<button class="btn-add" onclick="addClub()"><span>➕</span><span>Добавить клуб</span></button>
-</div>
-<div class="table-container">
-<div id="loadingClubs" class="loading">Загрузка...</div>
-<table class="table" id="clubsTable" style="display:none">
-<thead><tr><th>Название</th><th>Адрес</th><th>Групп</th><th>Действия</th></tr></thead>
-<tbody id="clubsTableBody"></tbody>
-</table>
-</div>
-</div>
-
-<!-- GROUPS TAB -->
-<div class="tab-content" id="tab-groups">
-<div class="page-header">
-<h1 class="page-title">Группы</h1>
-<button class="btn-add" onclick="addGroup()"><span>➕</span><span>Добавить группу</span></button>
-</div>
-<div class="table-container">
-<div id="loadingGroups" class="loading">Загрузка...</div>
-<table class="table" id="groupsTable" style="display:none">
-<thead><tr><th>Название</th><th>Клуб</th><th>Детей</th><th>Тренеров</th><th>Действия</th></tr></thead>
-<tbody id="groupsTableBody"></tbody>
-</table>
-</div>
-</div>
-
-<!-- TRAINERS TAB -->
-<div class="tab-content" id="tab-trainers">
-<div class="page-header">
-<h1 class="page-title">Тренеры</h1>
-<button class="btn-add" onclick="addTrainer()"><span>➕</span><span>Добавить тренера</span></button>
-</div>
-<div class="table-container">
-<div id="loadingTrainers" class="loading">Загрузка...</div>
-<table class="table" id="trainersTable" style="display:none">
-<thead><tr><th>ФИО</th><th>Email</th><th>Групп</th><th>Действия</th></tr></thead>
-<tbody id="trainersTableBody"></tbody>
-</table>
-</div>
-</div>
-
-<!-- ATHLETES TAB -->
-<div class="tab-content" id="tab-athletes">
-<div class="page-header">
-<h1 class="page-title">Все спортсмены</h1>
-</div>
-<div class="filters">
-<div class="filter-group">
-<label class="filter-label">Поиск</label>
-<input type="text" class="filter-input" id="athleteSearch" placeholder="Имя...">
-</div>
-<div class="filter-group">
-<label class="filter-label">Клуб</label>
-<select class="filter-select" id="athleteClubFilter"><option value="">Все</option></select>
-</div>
-<div class="filter-group">
-<label class="filter-label">Группа</label>
-<select class="filter-select" id="athleteGroupFilter"><option value="">Все</option></select>
-</div>
-</div>
-<div class="table-container">
-<div id="loadingAthletes" class="loading">Загрузка...</div>
-<table class="table" id="athletesTable" style="display:none">
-<thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th><th>Действия</th></tr></thead>
-<tbody id="athletesTableBody"></tbody>
-</table>
-</div>
-</div>
-</div>
-
-<!-- MODALS from document -->
-<div class="modal" id="clubModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2><button class="modal-close" onclick="closeClubModal()">✕</button></div><div class="modal-body"><form id="clubForm" onsubmit="saveClub(event)"><input type="hidden" id="clubId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="clubName" required></div><div class="form-group"><label class="form-label">Адрес</label><input type="text" class="form-input" id="clubAddress"></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeClubModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()">Сохранить</button></div></div></div>
-<div class="modal" id="groupModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="groupModalTitle">Добавить группу</h2><button class="modal-close" onclick="closeGroupModal()">✕</button></div><div class="modal-body"><form id="groupForm" onsubmit="saveGroup(event)"><input type="hidden" id="groupId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="groupName" required></div><div class="form-group"><label class="form-label">Клуб *</label><select class="form-input" id="groupClubId" required><option value="">Выберите</option></select></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeGroupModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()">Сохранить</button></div></div></div>
-<div class="modal" id="trainerModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="trainerModalTitle">Добавить тренера</h2><button class="modal-close" onclick="closeTrainerModal()">✕</button></div><div class="modal-body"><form id="trainerForm" onsubmit="saveTrainer(event)"><input type="hidden" id="trainerId"><div class="form-group"><label class="form-label">Email *</label><input type="email" class="form-input" id="trainerEmail" required></div><div class="form-group"><label class="form-label">Пароль *</label><input type="password" class="form-input" id="trainerPassword" required><small style="color:#666">Минимум 6 символов</small></div><div class="form-group"><label class="form-label">Имя *</label><input type="text" class="form-input" id="trainerFirstName" required></div><div class="form-group"><label class="form-label">Фамилия *</label><input type="text" class="form-input" id="trainerLastName" required></div><div class="form-group"><label class="form-label">Дата рождения</label><div style="display:flex;gap:0.75rem"><select class="form-input" id="trainerBirthDay" style="flex:1"><option value="">День</option></select><select class="form-input" id="trainerBirthMonth" style="flex:1"><option value="">Месяц</option></select><select class="form-input" id="trainerBirthYear" style="flex:1"><option value="">Год</option></select></div></div><div class="form-group"><label class="form-label">Телефон</label><input type="tel" class="form-input" id="trainerPhone"></div><div class="form-group"><label class="form-label">Квалификация</label><input type="text" class="form-input" id="trainerQualification"></div><div class="form-group"><label class="form-label">Группы</label><div id="trainerGroupsCheckboxes" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);padding:1rem;border-radius:8px;background:#f9f9f9"></div></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeTrainerModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('trainerForm').requestSubmit()">Сохранить</button></div></div></div>
-
-<script>
-const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
-let token=localStorage.getItem('token');
-let user,clubs=[],trainers=[],allAthletes=[],groups=[];
-if(!token){window.location.href='/';throw new Error('No auth');}
-
-function loadUserInfo(){user=JSON.parse(localStorage.getItem('user')||'{}');document.getElementById('userName').textContent=`${user.first_name||''} ${user.last_name||''}`;populateDateSelects()}
-function populateDateSelects(){const d=document.getElementById('trainerBirthDay'),m=document.getElementById('trainerBirthMonth'),y=document.getElementById('trainerBirthYear');for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i;d.appendChild(o)}['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'].forEach((n,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=n;m.appendChild(o)});const cy=new Date().getFullYear();for(let i=cy;i>=1940;i--){const o=document.createElement('option');o.value=i;o.textContent=i;y.appendChild(o)}}
-function switchTab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));event.target.classList.add('active');document.getElementById(`tab-${t}`).classList.add('active');if(t==='trainers'&&trainers.length===0)loadTrainers();if(t==='athletes'&&allAthletes.length===0)loadAthletes();if(t==='groups'&&groups.length===0)loadGroups()}
-async function loadClubs(){try{document.getElementById('loadingClubs').style.display='block';document.getElementById('clubsTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list'})});let d=await r.json();clubs=d.merged||d||[];document.getElementById('loadingClubs').style.display='none';document.getElementById('clubsTable').style.display='table';renderClubsTable();const sel=document.getElementById('groupClubId');sel.innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}catch(e){console.error(e)}}
-function renderClubsTable(){const t=document.getElementById('clubsTableBody');t.innerHTML='';clubs.forEach(c=>{const r=document.createElement('tr');r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></div></td>`;t.appendChild(r)})}
-function addClub(){document.getElementById('clubModalTitle').textContent='Добавить клуб';document.getElementById('clubId').value='';document.getElementById('clubName').value='';document.getElementById('clubAddress').value='';openClubModal()}
-function editClub(id){const c=clubs.find(x=>x.id===id);if(!c)return;document.getElementById('clubModalTitle').textContent='Редактировать клуб';document.getElementById('clubId').value=c.id;document.getElementById('clubName').value=c.name;document.getElementById('clubAddress').value=c.address||'';openClubModal()}
-async function saveClub(e){e.preventDefault();const id=document.getElementById('clubId').value;const name=document.getElementById('clubName').value.trim();const address=document.getElementById('clubAddress').value.trim();if(!name){alert('Введите название');return}const data={name,address,director_id:user.id};try{const a=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:a,data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeClubModal();alert(id?'Клуб обновлен!':'Клуб создан!');await loadClubs()}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
-async function deleteClub(id){if(!confirm('Удалить клуб?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Клуб удален!');await loadClubs()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
-async function loadGroups(){try{document.getElementById('loadingGroups').style.display='block';document.getElementById('groupsTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});let d=await r.json();groups=d.merged||d||[];
-
-// Get real children count from children list
-const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-const d2=await r2.json();
-const allChildren=Array.isArray(d2.merged)?d2.merged:(Array.isArray(d2)?d2:[]);
-
-groups.forEach(g=>{
-g.real_children_count=allChildren.filter(c=>c.group_names&&c.group_names!=='Без группы'&&c.group_names.split(', ').includes(g.name)).length;
-});
-
-document.getElementById('loadingGroups').style.display='none';document.getElementById('groupsTable').style.display='table';renderGroupsTable()}catch(e){console.error(e);document.getElementById('loadingGroups').textContent='Ошибка загрузки: '+e.message}}
-function renderGroupsTable(){const t=document.getElementById('groupsTableBody');t.innerHTML='';groups.forEach(g=>{const r=document.createElement('tr');r.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);text-decoration:none;font-weight:600">${g.name}</a></td><td>${g.club_name||'—'}</td><td>${g.real_children_count||0}</td><td>${g.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;t.appendChild(r)})}
-function addGroup(){document.getElementById('groupModalTitle').textContent='Добавить группу';document.getElementById('groupId').value='';document.getElementById('groupName').value='';document.getElementById('groupClubId').value='';openGroupModal()}
-function editGroup(id){const g=groups.find(x=>x.id===id);if(!g)return;document.getElementById('groupModalTitle').textContent='Редактировать группу';document.getElementById('groupId').value=g.id;document.getElementById('groupName').value=g.name;document.getElementById('groupClubId').value=g.club_id;openGroupModal()}
-async function saveGroup(e){e.preventDefault();const id=document.getElementById('groupId').value;const name=document.getElementById('groupName').value.trim();const club_id=document.getElementById('groupClubId').value;if(!name||!club_id){alert('Заполните все поля');return}const data={name,club_id:parseInt(club_id),schedule:'[]'};try{const a=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:a,data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeGroupModal();alert(id?'Группа обновлена!':'Группа создана!');await loadGroups()}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
-async function deleteGroup(id){
-const group=groups.find(g=>g.id===id);
-if(!group)return;
-
-// Check if group has children
-if(group.real_children_count>0){
-alert(`Невозможно удалить группу "${group.name}".\nВ группе ${group.real_children_count} детей.\n\nСначала удалите всех детей из группы.`);
-return;
-}
-
-if(!confirm(`Удалить группу "${group.name}"?`))return;
-
-try{
-const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/delete-group', {
-method: 'POST',
-headers: {'Content-Type': 'application/json'},
-body: JSON.stringify({
-token,
-group_id: id
-})
-});
-
-const res = await r.json();
-
-if(res.success){
-alert('Группа удалена!');
-await loadGroups();
-await loadTrainers();
-}else{
-alert('Ошибка удаления');
-}
-}catch(e){
-console.error(e);
-alert('Ошибка: '+e.message);
-}
-}
-async function loadTrainers(){try{document.getElementById('loadingTrainers').style.display='block';document.getElementById('trainersTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});let d=await r.json();trainers=Array.isArray(d)?d:(d.merged||[]);console.log('Trainers loaded:',trainers);document.getElementById('loadingTrainers').style.display='none';document.getElementById('trainersTable').style.display='table';renderTrainersTable()}catch(e){console.error('Load trainers error:',e);document.getElementById('loadingTrainers').textContent='Ошибка загрузки: '+e.message;trainers=[]}}
-function renderTrainersTable(){const t=document.getElementById('trainersTableBody');t.innerHTML='';trainers.forEach(tr=>{const r=document.createElement('tr');r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);text-decoration:none;font-weight:600">${tr.first_name} ${tr.last_name}</a></td><td>${tr.email}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></div></td>`;t.appendChild(r)})}
-function addTrainer(){document.getElementById('trainerModalTitle').textContent='Добавить тренера';document.getElementById('trainerId').value='';document.getElementById('trainerEmail').value='';document.getElementById('trainerPassword').value='';document.getElementById('trainerPassword').required=true;document.getElementById('trainerFirstName').value='';document.getElementById('trainerLastName').value='';document.getElementById('trainerBirthDay').value='';document.getElementById('trainerBirthMonth').value='';document.getElementById('trainerBirthYear').value='';document.getElementById('trainerPhone').value='';document.getElementById('trainerQualification').value='';document.getElementById('trainerGroupsCheckboxes').innerHTML='';loadGroupsForTrainer(null);openTrainerModal()}
-async function editTrainer(id){const t=trainers.find(x=>x.id===id);if(!t)return;document.getElementById('trainerModalTitle').textContent='Редактировать тренера';document.getElementById('trainerId').value=t.id;document.getElementById('trainerEmail').value=t.email;document.getElementById('trainerPassword').value='';document.getElementById('trainerPassword').required=false;document.getElementById('trainerFirstName').value=t.first_name;document.getElementById('trainerLastName').value=t.last_name;if(t.birth_date){const parts=t.birth_date.split('-');if(parts.length===3){document.getElementById('trainerBirthYear').value=parts[0];document.getElementById('trainerBirthMonth').value=parseInt(parts[1]);document.getElementById('trainerBirthDay').value=parseInt(parts[2])}}else{document.getElementById('trainerBirthDay').value='';document.getElementById('trainerBirthMonth').value='';document.getElementById('trainerBirthYear').value=''}document.getElementById('trainerPhone').value=t.phone||'';document.getElementById('trainerQualification').value=t.qualification||'';await loadGroupsForTrainer(t.id);openTrainerModal()}
-async function loadGroupsForTrainer(trainerId){try{const allGroups=groups||[];let trainerGroupIds=[];if(trainerId){try{const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(trainerId)}})});if(r2.ok){const d2=await r2.json();const trainerGroups=Array.isArray(d2)?d2:(d2.merged||[]);trainerGroupIds=trainerGroups.map(tg=>tg.group_id).filter(Boolean);console.log('Trainer groups:',trainerGroupIds)}}catch(e2){console.error('Error loading trainer groups:',e2)}}if(allGroups.length===0){document.getElementById('trainerGroupsCheckboxes').innerHTML='<p style="color:#999;padding:1rem;text-align:center">Нет доступных групп</p>';return}const html=allGroups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" ${trainerGroupIds.includes(g.id)?'checked':''}>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');document.getElementById('trainerGroupsCheckboxes').innerHTML=html}catch(e){console.error('loadGroupsForTrainer error:',e);document.getElementById('trainerGroupsCheckboxes').innerHTML='<p style="color:red;padding:1rem">Ошибка загрузки групп</p>'}}
-async function saveTrainer(e){e.preventDefault();const id=document.getElementById('trainerId').value;const email=document.getElementById('trainerEmail').value.trim();const password=document.getElementById('trainerPassword').value;const firstName=document.getElementById('trainerFirstName').value.trim();const lastName=document.getElementById('trainerLastName').value.trim();const day=document.getElementById('trainerBirthDay').value;const month=document.getElementById('trainerBirthMonth').value;const year=document.getElementById('trainerBirthYear').value;const birthDate=(day&&month&&year)?`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`:'';const phone=document.getElementById('trainerPhone').value.trim();const qualification=document.getElementById('trainerQualification').value.trim();const selectedGroups=Array.from(document.querySelectorAll('#trainerGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));if(id){const data={id:parseInt(id),email,first_name:firstName,last_name:lastName,phone,qualification};if(birthDate)data.birth_date=birthDate;if(password)data.password=password;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});const d2=await r2.json();const currentGroups=(d2.merged||d2||[]).map(g=>g.id);const toRemove=currentGroups.filter(gid=>!selectedGroups.includes(gid));const toAdd=selectedGroups.filter(gid=>!currentGroups.includes(gid));for(let gid of toRemove){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'remove',data:{trainer_id:parseInt(id),group_id:gid}})})}for(let gid of toAdd){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(id),group_id:gid}})})}closeTrainerModal();alert('Тренер обновлен!');await loadTrainers()}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}else{try{const registerData={action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName,phone,qualification};if(birthDate)registerData.birth_date=birthDate;const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(registerData)});if(!r.ok)throw new Error('HTTP '+r.status);const res=await r.json();let newTrainerId=res.user_id||res.id||res.userId;if(!newTrainerId&&(res.success||res.token)){await new Promise(resolve=>setTimeout(resolve,500));const listRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});const listData=await listRes.json();const allTrainers=listData.merged||listData||[];const newTrainer=allTrainers.find(t=>t.email===email);if(newTrainer){newTrainerId=newTrainer.id}}if(newTrainerId&&selectedGroups.length>0){for(let gid of selectedGroups){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(newTrainerId),group_id:gid}})})}}closeTrainerModal();alert('✅ Тренер создан!');await loadTrainers()}catch(err){console.error(err);alert('❌ Ошибка: '+err.message)}}}
-async function deleteTrainer(id){if(!confirm('Удалить тренера?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Тренер удален!');await loadTrainers()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
-async function loadAthletes(){try{document.getElementById('loadingAthletes').style.display='block';document.getElementById('athletesTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});let d=await r.json();allAthletes=d.merged||d||[];const clubsSet=new Set(allAthletes.map(a=>a.club_names).filter(Boolean));document.getElementById('athleteClubFilter').innerHTML='<option value="">Все</option>'+Array.from(clubsSet).map(c=>`<option value="${c}">${c}</option>`).join('');const groupsSet=new Set();allAthletes.forEach(a=>{if(a.group_names&&a.group_names!=='Без группы'){a.group_names.split(', ').forEach(g=>groupsSet.add(g))}});document.getElementById('athleteGroupFilter').innerHTML='<option value="">Все</option>'+Array.from(groupsSet).map(g=>`<option value="${g}">${g}</option>`).join('');document.getElementById('loadingAthletes').style.display='none';document.getElementById('athletesTable').style.display='table';renderAthletesTable(allAthletes)}catch(e){console.error(e)}}
-function renderAthletesTable(data){const t=document.getElementById('athletesTableBody');t.innerHTML='';data.forEach(a=>{const r=document.createElement('tr');r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteAthlete(${a.id})">🗑️</button></div></td>`;t.appendChild(r)})}
-async function deleteAthlete(id){if(!confirm('Удалить спортсмена?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Спортсмен удален!');await loadAthletes()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
-function filterAthletes(){const search=(document.getElementById('athleteSearch')?.value||'').toLowerCase();const club=document.getElementById('athleteClubFilter')?.value||'';const group=document.getElementById('athleteGroupFilter')?.value||'';const filtered=allAthletes.filter(a=>{const name=`${a.first_name} ${a.last_name}`.toLowerCase();if(search&&!name.includes(search))return false;if(club&&a.club_names!==club)return false;if(group&&(!a.group_names||!a.group_names.includes(group)))return false;return true});renderAthletesTable(filtered)}
-document.getElementById('athleteSearch')?.addEventListener('input',filterAthletes);document.getElementById('athleteClubFilter')?.addEventListener('change',filterAthletes);document.getElementById('athleteGroupFilter')?.addEventListener('change',filterAthletes);
-function openClubModal(){document.getElementById('clubModal').classList.add('active');document.body.style.overflow='hidden'}
-function closeClubModal(){document.getElementById('clubModal').classList.remove('active');document.body.style.overflow=''}
-function openGroupModal(){document.getElementById('groupModal').classList.add('active');document.body.style.overflow='hidden'}
-function closeGroupModal(){document.getElementById('groupModal').classList.remove('active');document.body.style.overflow=''}
-function openTrainerModal(){document.getElementById('trainerModal').classList.add('active');document.body.style.overflow='hidden'}
-function closeTrainerModal(){document.getElementById('trainerModal').classList.remove('active');document.body.style.overflow='';document.getElementById('trainerPassword').required=true}
-function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/'}
-loadUserInfo();loadClubs();
-if(location.hash==='#groups'){setTimeout(()=>{document.querySelector('.tab:nth-child(2)').click()},100);}
-if(location.hash==='#trainers'){setTimeout(()=>{document.querySelector('.tab:nth-child(3)').click()},100);}
-</script>
-</body>
-</html>
+[
+  {
+    "total": "2"
+  },
+  {
+    "id": 116,
+    "first_name": "Степан",
+    "last_name": "Мирный",
+    "birth_date": "2013-02-15T00:00:00.000Z",
+    "photo_url": "https://res.cloudinary.com/dzxvshxvk/image/upload/v1772124911/dnclobcaj8kotsfubfbp.jpg",
+    "parent_id": null,
+    "is_active": true,
+    "created_at": "2026-02-26T16:55:12.446Z",
+    "groups": [
+      {
+        "group_id": 31,
+        "group_name": "Айкидо",
+        "club_id": 2,
+        "club_name": "SK Pobeditel",
+        "enrolled_at": "2026-02-26T16:55:13.005574"
+      }
+    ]
+  },
+  {
+    "id": 117,
+    "first_name": "Артем",
+    "last_name": "Филин",
+    "birth_date": "2011-04-15T00:00:00.000Z",
+    "photo_url": "https://res.cloudinary.com/dzxvshxvk/image/upload/v1772124940/mupqhkndcqjneix27st4.jpg",
+    "parent_id": null,
+    "is_active": true,
+    "created_at": "2026-02-26T16:55:41.465Z",
+    "groups": [
+      {
+        "group_id": 31,
+        "group_name": "Айкидо",
+        "club_id": 2,
+        "club_name": "SK Pobeditel",
+        "enrolled_at": "2026-02-26T16:55:41.513526"
+      }
+    ]
+  }
+]
