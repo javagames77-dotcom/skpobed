@@ -14,7 +14,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin-bottom:2rem}
 .stat-card{background:#fff;padding:1.5rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
 .stat-value{font-size:2.5rem;font-weight:700;color:var(--p);margin-bottom:0.5rem}
-.stat-label{color:#666;font-size:0.9rem}
+.stat-label{color:#667;font-size:0.9rem}
 .section{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
 .section-title{font-size:1.5rem;color:var(--p);margin-bottom:1.5rem;padding-bottom:0.5rem;border-bottom:2px solid var(--b)}
 .filters{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
@@ -137,7 +137,7 @@ const trainerGroups=(groups.merged||groups||[]);
 // Получить статистику посещаемости
 const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'statistics'})});
 const stats=await r2.json();
-allStats=stats.merged||stats||[];
+allStats = Array.isArray(stats) ? stats : (stats.merged || []);
 
 // Обновить карточки
 document.getElementById('totalGroups').textContent=trainerGroups.length;
