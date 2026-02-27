@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Статистика - InSkill</title>
+<style>
+:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
+.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.5rem;font-weight:700;color:var(--p)}
+.btn-back{padding:0.5rem 1rem;background:var(--p);color:#fff;border:none;border-radius:6px;cursor:pointer;text-decoration:none}
+.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin-bottom:2rem}
+.stat-card{background:#fff;padding:1.5rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.stat-value{font-size:2.5rem;font-weight:700;color:var(--p);margin-bottom:0.5rem}
+.stat-label{color:#666;font-size:0.9rem}
+.section{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.section-title{font-size:1.5rem;color:var(--p);margin-bottom:1.5rem;padding-bottom:0.5rem;border-bottom:2px solid var(--b)}
+.filters{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.filter-group{display:flex;flex-direction:column;gap:0.5rem}
+.filter-label{font-size:0.9rem;font-weight:600;color:#555}
+select,input[type="date"]{padding:0.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
+table{width:100%;border-collapse:collapse}
+th,td{padding:1rem;text-align:left;border-bottom:1px solid var(--b)}
+th{background:var(--l);font-weight:600;color:var(--d)}
+tr:hover{background:var(--l)}
+.attendance-bar{height:20px;background:var(--l);border-radius:10px;overflow:hidden;position:relative}
+.attendance-fill{height:100%;background:linear-gradient(90deg,#28a745,#20c997);transition:width 0.3s}
+.attendance-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:0.75rem;font-weight:600;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.badge{display:inline-block;padding:0.25rem 0.75rem;border-radius:12px;font-size:0.85rem;font-weight:600}
+.badge-present{background:#d4edda;color:#155724}
+.badge-absent{background:#f8d7da;color:#721c24}
+.btn{padding:0.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.btn-export{background:var(--s);color:#fff;margin-bottom:1rem}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="logo">📊 Статистика</div>
+<a href="/children-list.html" class="btn-back">← Назад</a>
+</div>
+
+<div class="container">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-value" id="totalGroups">-</div>
+<div class="stat-label">Всего групп</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="totalChildren">-</div>
+<div class="stat-label">Всего детей</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="avgAttendance">-%</div>
+<div class="stat-label">Средняя посещаемость</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="totalTrainings">-</div>
+<div class="stat-label">Тренировок проведено</div>
+</div>
+</div>
+
+<div class="section">
+<h2 class="section-title">Посещаемость по группам</h2>
+<div class="filters">
+<div class="filter-group">
+<label class="filter-label">Группа</label>
+<select id="groupFilter">
+<option value="">Все группы</option>
+</select>
+</div>
+<div class="filter-group">
+<label class="filter-label">Период с</label>
+<input type="date" id="dateFrom">
+</div>
+<div class="filter-group">
+<label class="filter-label">по</label>
+<input type="date" id="dateTo">
+</div>
+</div>
+<button class="btn btn-export" onclick="exportCSV()">📥 Экспорт в CSV</button>
+<table id="groupStatsTable">
+<thead>
+<tr>
+<th>Группа</th>
+<th>Всего детей</th>
+<th>Тренировок</th>
+<th>Посещаемость</th>
+</tr>
+</thead>
+<tbody id="groupStatsBody">
+<tr><td colspan="4" style="text-align:center;color:#999">Загрузка...</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="section">
+<h2 class="section-title">Посещаемость по детям</h2>
+<table id="childrenStatsTable">
+<thead>
+<tr>
+<th>Ребёнок</th>
+<th>Группа</th>
+<th>Последние 10 тренировок</th>
+<th>Посещаемость</th>
+</tr>
+</thead>
+<tbody id="childrenStatsBody">
+<tr><td colspan="4" style="text-align:center;color:#999">Загрузка...</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const token=localStorage.getItem('token');
+if(!token){location.href='/';throw new Error('No auth');}
+
+let allStats=[];
+
+// Установить даты по умолчанию (последние 30 дней)
+const today=new Date();
+const monthAgo=new Date(today);
+monthAgo.setDate(monthAgo.getDate()-30);
+document.getElementById('dateTo').valueAsDate=today;
+document.getElementById('dateFrom').valueAsDate=monthAgo;
+
+async function loadStatistics(){
+try{
+// Получить группы тренера
+const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:(JSON.parse(atob(token.split('.')[1]))).id}})});
+const groups=await r1.json();
+const trainerGroups=(groups.merged||groups||[]);
+
+// Получить статистику посещаемости
+const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'statistics'})});
+const stats=await r2.json();
+allStats=stats.merged||stats||[];
+
+// Обновить карточки
+document.getElementById('totalGroups').textContent=trainerGroups.length;
+const totalChildren=new Set(allStats.map(s=>s.child_id)).size;
+document.getElementById('totalChildren').textContent=totalChildren;
+
+const avgAtt=allStats.length>0?(allStats.reduce((acc,s)=>acc+(s.was_present?1:0),0)/allStats.length*100).toFixed(1):0;
+document.getElementById('avgAttendance').textContent=avgAtt+'%';
+
+const totalTrainings=new Set(allStats.map(s=>s.training_date)).size;
+document.getElementById('totalTrainings').textContent=totalTrainings;
+
+// Заполнить фильтр групп
+const groupFilter=document.getElementById('groupFilter');
+trainerGroups.forEach(g=>{
+const opt=document.createElement('option');
+opt.value=g.group_id;
+opt.textContent=g.group_name;
+groupFilter.appendChild(opt);
+});
+
+renderStats();
+}catch(e){
+console.error(e);
+alert('Ошибка загрузки статистики');
+}
+}
+
+function renderStats(){
+const groupId=document.getElementById('groupFilter').value;
+const dateFrom=document.getElementById('dateFrom').value;
+const dateTo=document.getElementById('dateTo').value;
+
+let filtered=allStats;
+if(groupId)filtered=filtered.filter(s=>s.group_id==groupId);
+if(dateFrom)filtered=filtered.filter(s=>s.training_date>=dateFrom);
+if(dateTo)filtered=filtered.filter(s=>s.training_date<=dateTo);
+
+// Статистика по группам
+const groupStats={};
+filtered.forEach(s=>{
+if(!groupStats[s.group_id]){
+groupStats[s.group_id]={group_name:s.group_name||'Неизвестная группа',children:new Set(),trainings:new Set(),present:0,total:0};
+}
+groupStats[s.group_id].children.add(s.child_id);
+groupStats[s.group_id].trainings.add(s.training_date);
+groupStats[s.group_id].total++;
+if(s.was_present)groupStats[s.group_id].present++;
+});
+
+const groupStatsBody=document.getElementById('groupStatsBody');
+groupStatsBody.innerHTML='';
+Object.entries(groupStats).forEach(([gid,stat])=>{
+const pct=(stat.present/stat.total*100).toFixed(1);
+const row=`<tr>
+<td>${stat.group_name}</td>
+<td>${stat.children.size}</td>
+<td>${stat.trainings.size}</td>
+<td><div class="attendance-bar"><div class="attendance-fill" style="width:${pct}%"></div><div class="attendance-text">${pct}%</div></div></td>
+</tr>`;
+groupStatsBody.innerHTML+=row;
+});
+
+// Статистика по детям
+const childStats={};
+filtered.forEach(s=>{
+const key=`${s.child_id}_${s.group_id}`;
+if(!childStats[key]){
+childStats[key]={name:s.child_name||'Без имени',group_name:s.group_name||'Неизвестная группа',history:[],present:0,total:0};
+}
+childStats[key].history.push(s.was_present);
+childStats[key].total++;
+if(s.was_present)childStats[key].present++;
+});
+
+const childStatsBody=document.getElementById('childrenStatsBody');
+childStatsBody.innerHTML='';
+Object.values(childStats).forEach(stat=>{
+const pct=(stat.present/stat.total*100).toFixed(1);
+const last10=stat.history.slice(-10).map(p=>p?'✅':'❌').join(' ');
+const row=`<tr>
+<td>${stat.name}</td>
+<td>${stat.group_name}</td>
+<td>${last10}</td>
+<td><div class="attendance-bar"><div class="attendance-fill" style="width:${pct}%"></div><div class="attendance-text">${pct}%</div></div></td>
+</tr>`;
+childStatsBody.innerHTML+=row;
+});
+
+if(Object.keys(groupStats).length===0){
+groupStatsBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:#999">Нет данных за выбранный период</td></tr>';
+}
+if(Object.keys(childStats).length===0){
+childStatsBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:#999">Нет данных за выбранный период</td></tr>';
+}
+}
+
+function exportCSV(){
+const rows=[['Дата','Группа','Ребёнок','Присутствовал']];
+allStats.forEach(s=>{
+rows.push([s.training_date,s.group_name||'-',s.child_name||'-',s.was_present?'Да':'Нет']);
+});
+const csv=rows.map(r=>r.join(',')).join('\n');
+const blob=new Blob([csv],{type:'text/csv'});
+const url=URL.createObjectURL(blob);
+const a=document.createElement('a');
+a.href=url;
+a.download='attendance_'+new Date().toISOString().slice(0,10)+'.csv';
+a.click();
+}
+
+document.getElementById('groupFilter').addEventListener('change',renderStats);
+document.getElementById('dateFrom').addEventListener('change',renderStats);
+document.getElementById('dateTo').addEventListener('change',renderStats);
+
+loadStatistics();
+</script>
+</body>
+</html>
