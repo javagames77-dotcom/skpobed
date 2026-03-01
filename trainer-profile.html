@@ -56,7 +56,7 @@ const res=await fetch('https://api.cloudinary.com/v1_1/dzxvshvok/image/upload',{
 const data=await res.json();
 const photoUrl=data.secure_url;
 document.getElementById('photo').src=photoUrl;
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data:{id:parseInt(id),email:trainer.email,first_name:trainer.first_name,last_name:trainer.last_name,photo_url:photoUrl}})});
+await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data:{id:parseInt(id),email:trainer.email,first_name:trainer.first_name,last_name:trainer.last_name,club_id:trainer.club_id,phone:trainer.phone,birth_date:trainer.birth_date,qualification:trainer.qualification,photo_url:photoUrl}})});
 uploadBtn.disabled=false;
 uploadBtn.textContent='📷';
 alert('✅ Фото обновлено!')
