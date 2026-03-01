@@ -6,14 +6,23 @@
 <body>
 <div class="header"><div class="header-content"><a href="/" class="logo">InSkill<span style="color:var(--s)">.online</span></a><a href="/director-dashboard.html#trainers" class="btn-back">← Назад</a></div></div>
 <div class="container">
-<div class="card"><div id="loading" class="loading">Загрузка...</div><div id="content" style="display:none"><div class="profile-header"><div style="position:relative"><img src="https://ui-avatars.com/api/?name=Trainer&background=0066CC&color=fff" class="profile-photo" id="photo"><input type="file" id="photoInput" accept="image/*" style="display:none"><button onclick="document.getElementById('photoInput').click()" style="position:absolute;bottom:0;right:0;background:var(--p);color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.2rem">📷</button></div><div class="profile-info"><h1 id="name"></h1><div id="email" style="color:#666;font-size:1.1rem"></div><div id="qualification" style="color:#666;font-size:1rem;margin-top:0.5rem;font-weight:600"></div><div class="profile-meta"><div class="meta-item"><span class="meta-label">Групп</span><span class="meta-value" id="groupsCount">0</span></div><div class="meta-item"><span class="meta-label">Спортсменов</span><span class="meta-value" id="childrenCount">0</span></div><div class="meta-item"><span class="meta-label">Дата рождения</span><span class="meta-value" id="bd">—</span></div></div></div></div><h2 class="section-title">Группы</h2><div class="groups-grid" id="groups"></div><h2 class="section-title" style="margin-top:2rem">Спортсмены</h2><div style="background:#fff;border-radius:12px;overflow:hidden"><table class="table"><thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th></tr></thead><tbody id="children"></tbody></table></div></div></div>
+<div class="card"><div id="loading" class="loading">Загрузка...</div><div id="content" style="display:none"><div class="profile-header"><div style="position:relative"><img src="https://ui-avatars.com/api/?name=Trainer&background=0066CC&color=fff" class="profile-photo" id="photo"><input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" style="display:none"><button id="photoBtn" onclick="document.getElementById('photoInput').click()" style="position:absolute;bottom:0;right:0;background:var(--p);color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.2rem;display:none" title="Изменить фото">📷</button></div><div class="profile-info"><h1 id="name"></h1><div id="email" style="color:#666;font-size:1.1rem"></div><div id="qualification" style="color:#666;font-size:1rem;margin-top:0.5rem;font-weight:600"></div><div class="profile-meta"><div class="meta-item"><span class="meta-label">Групп</span><span class="meta-value" id="groupsCount">0</span></div><div class="meta-item"><span class="meta-label">Спортсменов</span><span class="meta-value" id="childrenCount">0</span></div><div class="meta-item"><span class="meta-label">Дата рождения</span><span class="meta-value" id="bd">—</span></div></div></div></div><h2 class="section-title">Группы</h2><div class="groups-grid" id="groups"></div><h2 class="section-title" style="margin-top:2rem">Спортсмены</h2><div style="background:#fff;border-radius:12px;overflow:hidden"><table class="table"><thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th></tr></thead><tbody id="children"></tbody></table></div></div></div>
 </div>
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const UPLOAD_API='https://primary-production-4b93e.up.railway.app/webhook/upload-trainer-photo';
 const token=localStorage.getItem('token');
+const currentUserId=localStorage.getItem('user_id');
+const currentRole=localStorage.getItem('role');
 const id=new URLSearchParams(location.search).get('id');
 if(!token||!id){location.href='/'}
 let trainer,groups=[],children=[];
+
+function canEditPhoto(){
+  // Кнопка видна только самому тренеру или директору/суперадмину
+  return currentRole==='director'||currentRole==='superadmin'||(currentRole==='trainer'&&String(currentUserId)===String(id));
+}
+
 async function load(){
 try{
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
@@ -24,45 +33,65 @@ document.getElementById('name').textContent=`${trainer.first_name} ${trainer.las
 document.getElementById('email').textContent=trainer.email;
 if(trainer.qualification)document.getElementById('qualification').textContent=`🏆 ${trainer.qualification}`;
 if(trainer.birth_date)document.getElementById('bd').textContent=new Date(trainer.birth_date).toLocaleDateString('ru-RU');
-if(trainer.photo_url)document.getElementById('photo').src=trainer.photo_url;else document.getElementById('photo').src='https://ui-avatars.com/api/?name='+encodeURIComponent(trainer.first_name+' '+trainer.last_name)+'&background=0066CC&color=fff';
+const photoEl=document.getElementById('photo');
+photoEl.src=trainer.photo_url||'https://ui-avatars.com/api/?name='+encodeURIComponent((trainer.first_name||'')+' '+(trainer.last_name||''))+'&background=0066CC&color=fff&size=120';
+// Показываем кнопку только если есть права
+if(canEditPhoto()){
+  document.getElementById('photoBtn').style.display='flex';
+  document.getElementById('photoBtn').style.alignItems='center';
+  document.getElementById('photoBtn').style.justifyContent='center';
+}
 const rg=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:id}})});
 const dg=await rg.json();
 groups=dg.merged||dg||[];
-console.log('Groups:',groups);
 document.getElementById('groupsCount').textContent=groups.length;
 document.getElementById('groups').innerHTML=groups.length?groups.map(g=>`<div class="group-card"><h3>${g.group_name||g.name}</h3><div style="color:#666">Клуб: ${g.club_name||'—'}</div></div>`).join(''):'<div style="padding:2rem;text-align:center;color:#999">Группы не назначены</div>';
 const rc=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
 const dc=await rc.json();
 const all=dc.merged||dc||[];
 children=all.filter(c=>c.group_names&&c.group_names!=='Без группы'&&groups.some(g=>c.group_names.includes(g.group_name||g.name)));
-console.log('Children:',children);
 document.getElementById('childrenCount').textContent=children.length;
-document.getElementById('children').innerHTML=children.length?children.map(c=>`<tr><td><img src="${c.photo_url||'https://ui-avatars.com/api/?name='+encodeURIComponent(c.first_name+' '+c.last_name)+'&background=0066CC&color=fff'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${c.id}" style="color:var(--p);font-weight:600">${c.first_name} ${c.last_name}</a></td><td><span class="badge">${c.group_names}</span></td><td>${c.club_names||'—'}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;padding:2rem;color:#999">Спортсменов нет</td></tr>';
+document.getElementById('children').innerHTML=children.length?children.map(c=>`<tr><td><img src="${c.photo_url||'https://ui-avatars.com/api/?name='+encodeURIComponent((c.first_name||'')+' '+(c.last_name||''))+'&background=0066CC&color=fff'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${c.id}" style="color:var(--p);font-weight:600">${c.first_name} ${c.last_name}</a></td><td><span class="badge">${c.group_names}</span></td><td>${c.club_names||'—'}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;padding:2rem;color:#999">Спортсменов нет</td></tr>';
 document.getElementById('loading').style.display='none';
 document.getElementById('content').style.display='block';
-}catch(e){console.error(e);alert('Ошибка')}}
+}catch(e){console.error(e);alert('Ошибка загрузки профиля')}}
+
 document.getElementById('photoInput').addEventListener('change',async(e)=>{
 const file=e.target.files[0];
 if(!file)return;
+// Сброс input чтобы можно было выбрать тот же файл повторно
+e.target.value='';
 if(file.size>5*1024*1024){alert('Файл слишком большой (макс 5МБ)');return}
-const uploadBtn=document.querySelector('button[onclick*="photoInput"]');
-uploadBtn.disabled=true;
-uploadBtn.textContent='⏳';
+if(!file.type.startsWith('image/')){alert('Выберите изображение');return}
+const btn=document.getElementById('photoBtn');
+// Показываем превью сразу
+const reader=new FileReader();
+reader.onload=ev=>document.getElementById('photo').src=ev.target.result;
+reader.readAsDataURL(file);
+btn.disabled=true;
+btn.textContent='⏳';
 try{
 const formData=new FormData();
 formData.append('token',token);
 formData.append('photo',file);
-formData.append('trainer_data',JSON.stringify({id:parseInt(id),email:trainer.email,first_name:trainer.first_name,last_name:trainer.last_name,club_id:trainer.club_id,phone:trainer.phone,birth_date:trainer.birth_date,qualification:trainer.qualification}));
-const res=await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-trainer-photo',{method:'POST',body:formData});
+const res=await fetch(UPLOAD_API,{method:'POST',body:formData});
+if(!res.ok){throw new Error(`HTTP ${res.status}`)}
 const data=await res.json();
-if(!data.photo_url){throw new Error('Upload failed')}
+if(!data.success||!data.photo_url){throw new Error(data.error||'Upload failed')}
+// Обновляем src на финальный URL с Cloudinary
 document.getElementById('photo').src=data.photo_url;
 trainer.photo_url=data.photo_url;
-uploadBtn.disabled=false;
-uploadBtn.textContent='📷';
-alert('✅ Фото обновлено!')
-}catch(err){console.error(err);alert('Ошибка загрузки фото');uploadBtn.disabled=false;uploadBtn.textContent='📷'}
-});
+btn.disabled=false;
+btn.textContent='📷';
+// Тихое обновление без alert
+}catch(err){
+console.error('Photo upload error:',err);
+// Откатываем превью на старое фото
+document.getElementById('photo').src=trainer.photo_url||'https://ui-avatars.com/api/?name='+encodeURIComponent((trainer.first_name||'')+' '+(trainer.last_name||''))+'&background=0066CC&color=fff&size=120';
+alert('Ошибка загрузки: '+err.message);
+btn.disabled=false;
+btn.textContent='📷';
+}});
 load()
 </script>
 </body>
