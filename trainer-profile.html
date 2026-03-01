@@ -52,10 +52,11 @@ try{
 const formData=new FormData();
 formData.append('token',token);
 formData.append('photo',file);
+formData.append('trainer_id',id);
 formData.append('trainer_data',JSON.stringify({id:parseInt(id),email:trainer.email,first_name:trainer.first_name,last_name:trainer.last_name,club_id:trainer.club_id,phone:trainer.phone,birth_date:trainer.birth_date,qualification:trainer.qualification}));
 const res=await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-trainer-photo',{method:'POST',body:formData});
 const data=await res.json();
-if(!data.photo_url&&!data.success){throw new Error(data.error||'Upload failed')}
+if(!data.photo_url){throw new Error('Upload failed')}
 document.getElementById('photo').src=data.photo_url;
 trainer.photo_url=data.photo_url;
 uploadBtn.disabled=false;
