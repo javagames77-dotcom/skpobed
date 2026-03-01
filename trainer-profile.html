@@ -46,15 +46,15 @@ const file=e.target.files[0];
 if(!file)return;
 if(file.size>5*1024*1024){alert('Файл слишком большой (макс 5МБ)');return}
 const formData=new FormData();
-formData.append('file',file);
-formData.append('upload_preset','ml_default');
+formData.append('image',file);
 try{
 const uploadBtn=document.querySelector('button[onclick*="photoInput"]');
 uploadBtn.disabled=true;
 uploadBtn.textContent='⏳';
-const res=await fetch('https://api.cloudinary.com/v1_1/dzxvshvok/image/upload',{method:'POST',body:formData});
+const res=await fetch('https://api.imgbb.com/1/upload?key=d134aa2ab4da30307f6c2d61b3d3e929',{method:'POST',body:formData});
 const data=await res.json();
-const photoUrl=data.secure_url;
+if(!data.success){throw new Error('Upload failed')}
+const photoUrl=data.data.url;
 document.getElementById('photo').src=photoUrl;
 await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data:{id:parseInt(id),email:trainer.email,first_name:trainer.first_name,last_name:trainer.last_name,club_id:trainer.club_id,phone:trainer.phone,birth_date:trainer.birth_date,qualification:trainer.qualification,photo_url:photoUrl}})});
 uploadBtn.disabled=false;
