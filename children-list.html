@@ -76,7 +76,24 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .table td:first-child:before{display:none}
 .date-inputs{flex-direction:column}
 }
-  /* === ATTENDANCE SYSTEM STYLES === */
+  
+/* === CALENDAR STYLES === */
+.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.calendar-nav{width:36px;height:36px;border:none;background:var(--l);border-radius:50%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.calendar-day-name{font-size:.75rem;font-weight:600;color:#999;padding:.5rem 0}
+.calendar-day{width:100%;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;cursor:default;position:relative}
+.calendar-day.has-training{cursor:pointer}
+.calendar-day.today{font-weight:700}
+.calendar-day.scheduled{background:var(--l);border:2px solid #bbb;cursor:pointer}
+.calendar-day.has-stats{background:#d4edda;border:2px solid #28a745;color:#155724;cursor:pointer}
+.calendar-day.missing-stats{background:#f8d7da;border:2px solid #dc3545;color:#721c24;cursor:pointer}
+.calendar-day.other-month{opacity:.3;cursor:default}
+.calendar-legend{display:flex;gap:1rem;margin-top:1rem;font-size:.8rem;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:.4rem}
+.legend-dot{width:12px;height:12px;border-radius:50%;border:2px solid}
+
+/* === ATTENDANCE SYSTEM STYLES === */
 .btn-attendance {
   padding: 0.75rem 1.5rem;
   background: #2196F3;
@@ -261,6 +278,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
 <button class="btn-add" onclick="addChild()"><span>➕</span><span>Добавить</span></button>
 <button class="btn-attendance" onclick="openAttendanceModal()">📋 Посещение</button>
+<a href="/trainer-statistics.html" class="btn-add" style="background:#6c63ff;text-decoration:none">📊 Статистика</a>
 <button id="activeTrainingBtn" class="btn-active-training" style="display:none" onclick="openAttendanceForGroup(activeGroupId)">
 🟢 <span id="activeGroupName"></span>
 </button>
@@ -1004,12 +1022,13 @@ document.getElementById('attendanceModal').classList.remove('active');
 document.body.style.overflow = '';
 }
 
-async function openAttendanceForGroup(groupId) {
+async function openAttendanceForGroup(groupId, trainingDate) {
 try {
 currentGroupId = groupId;
-currentTrainingDate = new Date().toISOString().split('T')[0];
+currentTrainingDate = trainingDate || new Date().toISOString().split('T')[0];
 
 closeAttendanceModal();
+closeCalendarModal();
 
 console.log('Fetching group:', groupId);
 const r = await fetch(API, {
@@ -1047,13 +1066,22 @@ currentGroupChildren = allChildren.filter(c =>
 c.group_names && c.group_names.split(', ').includes(group.name)
 );
 
-// TODO: Enable when attendance API is ready
-// const r3 = await fetch(API, {...});
-const attendance = []; // Empty for now
-
-// TODO: Enable when limits API is ready
-// const r4 = await fetch(API, {...});
-const uploadsCount = 0; // Default for now
+// Load existing attendance for this date
+let attendance = [];
+try {
+const r3 = await fetch(API, {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({token, resource: 'attendance', action: 'list'})
+});
+const attData = await r3.json();
+const allAtt = attData.merged || attData || [];
+attendance = allAtt.filter(a => 
+a.group_id == groupId && 
+a.training_date && a.training_date.startsWith(currentTrainingDate)
+);
+} catch(e) { console.error('Attendance load error:', e); }
+const uploadsCount = 0;
 
 document.getElementById('markGroupName').textContent = group.name;
 document.getElementById('markDate').textContent = new Date().toLocaleDateString('ru-RU');
@@ -1062,7 +1090,7 @@ document.getElementById('totalCount').textContent = currentGroupChildren.length;
 
 const html = currentGroupChildren.map(child => {
 const marked = attendance.find(a => a.child_id === child.id);
-const isPresent = marked ? marked.is_present : false;
+const isPresent = marked ? marked.was_present : false;
 const confidence = marked && marked.confidence ? marked.confidence : null;
 
 return `
@@ -1217,13 +1245,160 @@ alert('Ошибка сохранения: ' + err.message);
 }
 }
 
-function openCalendarModal() {
+// === CALENDAR LOGIC ===
+let calendarYear, calendarMonth;
+let calendarAttendanceDates = new Set();
+let calendarTrainerGroups = [];
+
+async function openCalendarModal() {
 closeAttendanceModal();
 document.getElementById('calendarModal').classList.add('active');
+document.body.style.overflow = 'hidden';
+
+const now = new Date();
+calendarYear = now.getFullYear();
+calendarMonth = now.getMonth();
+
+// Load attendance dates and groups in parallel
+try {
+const [attRes, grpRes] = await Promise.all([
+fetch(API, {method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({token,resource:'attendance',action:'list'})}),
+fetch(API, {method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:user.id}})})
+]);
+const attData = await attRes.json();
+const grpData = await grpRes.json();
+const allAtt = attData.merged || attData || [];
+calendarAttendanceDates = new Set(allAtt.map(a => a.training_date ? a.training_date.split('T')[0] : '').filter(Boolean));
+calendarTrainerGroups = grpData.merged || grpData || [];
+} catch(e) { console.error('Calendar load error:', e); }
+
+renderCalendar();
 }
 
 function closeCalendarModal() {
 document.getElementById('calendarModal').classList.remove('active');
+document.body.style.overflow = '';
+}
+
+function calendarPrevMonth() {
+calendarMonth--;
+if(calendarMonth < 0) { calendarMonth = 11; calendarYear--; }
+renderCalendar();
+}
+
+function calendarNextMonth() {
+calendarMonth++;
+if(calendarMonth > 11) { calendarMonth = 0; calendarYear++; }
+renderCalendar();
+}
+
+function getScheduledDays(year, month) {
+// Returns set of "YYYY-MM-DD" strings that have trainings by schedule
+const scheduled = new Set();
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+for(let day = 1; day <= daysInMonth; day++) {
+const date = new Date(year, month, day);
+const jsDay = date.getDay();
+const schedDay = jsDay === 0 ? 6 : jsDay - 1; // 0=Mon..6=Sun
+for(const g of calendarTrainerGroups) {
+const sch = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
+if(sch.some(s => s.day === schedDay)) {
+const dateStr = date.toISOString().split('T')[0];
+scheduled.add(dateStr);
+break;
+}
+}
+}
+return scheduled;
+}
+
+function getGroupsForDay(dateStr) {
+const date = new Date(dateStr + 'T00:00:00');
+const jsDay = date.getDay();
+const schedDay = jsDay === 0 ? 6 : jsDay - 1;
+return calendarTrainerGroups.filter(g => {
+const sch = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
+return sch.some(s => s.day === schedDay);
+});
+}
+
+function renderCalendar() {
+document.getElementById('calendarDayGroups').style.display = 'none';
+const today = new Date();
+const todayStr = today.toISOString().split('T')[0];
+const now = new Date();
+
+const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+document.getElementById('calendarMonthLabel').textContent = monthNames[calendarMonth] + ' ' + calendarYear;
+
+// Day names
+const dayNamesEl = document.getElementById('calendarDayNames');
+dayNamesEl.innerHTML = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(d => 
+`<div class="calendar-day-name">${d}</div>`).join('');
+
+const scheduledDays = getScheduledDays(calendarYear, calendarMonth);
+const firstDay = new Date(calendarYear, calendarMonth, 1);
+const startOffset = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+
+let html = '';
+// Empty cells before first day
+for(let i = 0; i < startOffset; i++) html += '<div></div>';
+
+for(let day = 1; day <= daysInMonth; day++) {
+const date = new Date(calendarYear, calendarMonth, day);
+const dateStr = date.toISOString().split('T')[0];
+const isPast = date < now;
+const isToday = dateStr === todayStr;
+const isScheduled = scheduledDays.has(dateStr);
+const hasStats = calendarAttendanceDates.has(dateStr);
+
+let cls = 'calendar-day';
+let onclick = '';
+
+if(isScheduled || hasStats) {
+if(hasStats) {
+cls += ' has-stats';
+} else if(isScheduled && isPast) {
+cls += ' missing-stats';
+} else if(isScheduled) {
+cls += ' scheduled';
+}
+onclick = `onclick="calendarDayClick('${dateStr}')"`;
+}
+
+if(isToday) cls += ' today';
+
+html += `<div class="${cls}" ${onclick}>${day}</div>`;
+}
+
+document.getElementById('calendarDays').innerHTML = html;
+}
+
+function calendarDayClick(dateStr) {
+const groups = getGroupsForDay(dateStr);
+if(groups.length === 0) return;
+
+document.getElementById('calendarDayGroups').style.display = 'block';
+const d = new Date(dateStr + 'T00:00:00');
+document.getElementById('calendarSelectedDate').textContent = 
+d.toLocaleDateString('ru-RU', {day:'numeric', month:'long', weekday:'long'});
+
+if(groups.length === 1) {
+// Only one group - open directly
+openAttendanceForGroup(groups[0].group_id, dateStr);
+return;
+}
+
+// Multiple groups - show list
+document.getElementById('calendarGroupsList').innerHTML = groups.map(g => `
+<div class="training-card" onclick="openAttendanceForGroup(${g.group_id}, '${dateStr}')">
+<strong>${g.group_name}</strong>
+<span style="color:#666;font-size:.85rem">${g.club_name||''}</span>
+</div>
+`).join('');
 }
 
 // Initialize
@@ -1292,13 +1467,28 @@ setInterval(checkActiveTraining, 60000);
 </div>
 
 <div class="modal" id="calendarModal">
-<div class="modal-content">
+<div class="modal-content" style="max-width:420px">
 <div class="modal-header">
 <h2 class="modal-title">📅 История посещений</h2>
 <button class="modal-close" onclick="closeCalendarModal()">✕</button>
 </div>
 <div class="modal-body">
-<p style="text-align:center;padding:2rem;color:#999">Календарь будет доступен в следующей версии</p>
+<div class="calendar-header">
+<button class="calendar-nav" onclick="calendarPrevMonth()">‹</button>
+<span id="calendarMonthLabel" style="font-weight:700;font-size:1.1rem"></span>
+<button class="calendar-nav" onclick="calendarNextMonth()">›</button>
+</div>
+<div class="calendar-grid" id="calendarDayNames"></div>
+<div class="calendar-grid" id="calendarDays"></div>
+<div class="calendar-legend">
+<div class="legend-item"><div class="legend-dot" style="background:#bbb;border-color:#bbb"></div><span>Тренировка по расписанию</span></div>
+<div class="legend-item"><div class="legend-dot" style="background:#d4edda;border-color:#28a745"></div><span>Статистика сохранена</span></div>
+<div class="legend-item"><div class="legend-dot" style="background:#f8d7da;border-color:#dc3545"></div><span>Статистика не сохранена</span></div>
+</div>
+<div id="calendarDayGroups" style="margin-top:1rem;display:none">
+<p style="font-weight:600;margin-bottom:.75rem" id="calendarSelectedDate"></p>
+<div id="calendarGroupsList"></div>
+</div>
 </div>
 </div>
 </div>
