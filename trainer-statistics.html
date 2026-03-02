@@ -142,6 +142,7 @@ const trainerGroups=(groups.merged||groups||[]);
 const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'list'})});
 const stats=await r2.json();
 allStats = Array.isArray(stats) ? stats : (stats.merged || []);
+  allStats = allStats.map(s => ({...s, training_date: s.training_date ? s.training_date.split('T')[0] : s.training_date}));
 
 // Обновить карточки
 document.getElementById('totalGroups').textContent=trainerGroups.length;
