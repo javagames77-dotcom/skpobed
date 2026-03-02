@@ -38,14 +38,14 @@ tr:hover{background:var(--l)}
 <body>
 <div class="header">
 <div class="logo">📊 Статистика</div>
-<a href="/children-list.html" class="btn-back">← Назад</a>
+<a id="btnBack" href="/trainer-profile.html" class="btn-back">← Назад</a>
 </div>
 
 <div class="container">
 <div class="stats-grid">
 <div class="stat-card">
 <div class="stat-value" id="totalGroups">-</div>
-<div class="stat-label">Всего групп1</div>
+<div class="stat-label">Всего групп</div>
 </div>
 <div class="stat-card">
 <div class="stat-value" id="totalChildren">-</div>
@@ -116,7 +116,11 @@ tr:hover{background:var(--l)}
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const token=localStorage.getItem('token');
+const id=new URLSearchParams(location.search).get('id');
 if(!token){location.href='/';throw new Error('No auth');}
+
+// Кнопка назад с id тренера
+document.getElementById('btnBack').href='/trainer-profile.html?id='+id;
 
 let allStats=[];
 
@@ -130,17 +134,14 @@ document.getElementById('dateFrom').valueAsDate=monthAgo;
 async function loadStatistics(){
 try{
 // Получить группы тренера
-const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list'})});
+const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});
 const groups=await r1.json();
 const trainerGroups=(groups.merged||groups||[]);
 
-// Получить статистику посещаемости
+// Получить статистику посещаемости (action:'list' — единственный поддерживаемый)
 const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'list'})});
 const stats=await r2.json();
-allStats = (Array.isArray(stats) ? stats : (stats.merged || [])).map(s => ({
-  ...s,
-  training_date: s.training_date ? s.training_date.split('T')[0] : s.training_date
-}));
+allStats = Array.isArray(stats) ? stats : (stats.merged || []);
 
 // Обновить карточки
 document.getElementById('totalGroups').textContent=trainerGroups.length;
