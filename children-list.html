@@ -391,6 +391,7 @@ function loadUserInfo(){
 user=JSON.parse(localStorage.getItem('user')||'{}');
 document.getElementById('userName').textContent=user.first_name?`${user.first_name} ${user.last_name||''}`.trim():user.email||'Пользователь';
 console.log('User loaded:', user);
+  document.getElementById('statsBtn').href = '/trainer-statistics.html?id=' + user.id;
 }
 
 function switchTab(t){
