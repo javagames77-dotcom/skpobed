@@ -1100,7 +1100,7 @@ value="${child.id}"
 ${isPresent ? 'checked' : ''}
 onchange="updatePresentCount()">
 <span class="child-name">${child.first_name} ${child.last_name}</span>
-${confidence ? `<span class="confidence-badge">${confidence.toFixed(0)}%</span>` : ''}
+${confidence ? `<span class="confidence-badge">${parseFloat(confidence).toFixed(0)}%</span>` : ''}
 </div>
 `;
 }).join('');
@@ -1358,14 +1358,14 @@ const hasStats = calendarAttendanceDates.has(dateStr);
 let cls = 'calendar-day';
 let onclick = '';
 
-if(isScheduled || hasStats) {
 if(hasStats) {
 cls += ' has-stats';
+onclick = `onclick="calendarDayClick('${dateStr}')"`;
 } else if(isScheduled && isPast) {
 cls += ' missing-stats';
+onclick = `onclick="calendarDayClick('${dateStr}')"`;
 } else if(isScheduled) {
 cls += ' scheduled';
-}
 onclick = `onclick="calendarDayClick('${dateStr}')"`;
 }
 
