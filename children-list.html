@@ -1101,7 +1101,7 @@ value="${child.id}"
 ${isPresent ? 'checked' : ''}
 onchange="updatePresentCount()">
 <span class="child-name">${child.first_name} ${child.last_name}</span>
-${confidence ? `<span class="confidence-badge">${confidence.toFixed(0)}%</span>` : ''}
+${confidence ? `<span class="confidence-badge">${parseFloat(confidence).toFixed(0)}%</span>` : ''}
 </div>
 `;
 }).join('');
@@ -1179,7 +1179,7 @@ if (existing) existing.remove();
 
 const badge = document.createElement('span');
 badge.className = 'confidence-badge';
-badge.textContent = p.confidence.toFixed(0) + '%';
+badge.textContent = parseFloat(p.confidence).toFixed(0) + '%';
 item.appendChild(badge);
 }
 });
