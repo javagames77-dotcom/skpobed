@@ -63,6 +63,8 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .group-checkbox:last-child{border-bottom:none}
 .group-checkbox:hover{background:var(--l)}
 .group-checkbox input{margin-right:0.5rem}
+.tabs{flex-wrap:wrap}
+.color-dot{width:18px;height:18px;border-radius:50%;display:inline-block;border:2px solid rgba(0,0,0,.2);vertical-align:middle;margin-right:4px}
 </style>
 </head>
 <body>
@@ -87,6 +89,9 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
+<button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
+<button class="tab" onclick="switchTab('tournaments')">🏆 Турниры</button>
+<button class="tab" onclick="switchTab('events')">📅 Мероприятия</button>
 </div>
 
 <!-- CLUBS TAB -->
@@ -163,6 +168,60 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 </div>
 
+<!-- BELTS TAB -->
+<div class="tab-content" id="tab-belts">
+<div class="page-header">
+<h1 class="page-title">Пояса и степени</h1>
+<button class="btn-add" onclick="addBelt()"><span>➕</span><span>Добавить степень</span></button>
+</div>
+<div class="filters">
+<div class="filter-group">
+<label class="filter-label">Клуб</label>
+<select class="filter-select" id="beltClubFilter" onchange="filterBelts()"><option value="">Все клубы</option></select>
+</div>
+</div>
+<div class="table-container">
+<div id="loadingBelts" class="loading" style="display:none">Загрузка...</div>
+<div id="emptyBelts" class="loading" style="display:none">Нет степеней. Добавьте первую.</div>
+<table class="table" id="beltsTable" style="display:none">
+<thead><tr><th>#</th><th>Название</th><th>Цвет</th><th>Клуб</th><th>Действия</th></tr></thead>
+<tbody id="beltsTableBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- TOURNAMENTS TAB -->
+<div class="tab-content" id="tab-tournaments">
+<div class="page-header">
+<h1 class="page-title">Турниры</h1>
+<button class="btn-add" onclick="addTournament()"><span>➕</span><span>Добавить турнир</span></button>
+</div>
+<div class="table-container">
+<div id="loadingTournaments" class="loading" style="display:none">Загрузка...</div>
+<div id="emptyTournaments" class="loading" style="display:none">Нет турниров. Добавьте первый.</div>
+<table class="table" id="tournamentsTable" style="display:none">
+<thead><tr><th>Название</th><th>Дата</th><th>Место</th><th>Клуб</th><th>Действия</th></tr></thead>
+<tbody id="tournamentsTableBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- EVENTS TAB -->
+<div class="tab-content" id="tab-events">
+<div class="page-header">
+<h1 class="page-title">Мероприятия</h1>
+<button class="btn-add" onclick="addEvent()"><span>➕</span><span>Добавить мероприятие</span></button>
+</div>
+<div class="table-container">
+<div id="loadingEvents" class="loading" style="display:none">Загрузка...</div>
+<div id="emptyEvents" class="loading" style="display:none">Нет мероприятий. Добавьте первое.</div>
+<table class="table" id="eventsTable" style="display:none">
+<thead><tr><th>Название</th><th>Дата</th><th>Группы</th><th>Бюджет</th><th>Записалось</th><th>Действия</th></tr></thead>
+<tbody id="eventsTableBody"></tbody>
+</table>
+</div>
+</div>
+
 <!-- MODALS -->
 <div class="modal" id="clubModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2><button class="modal-close" onclick="closeClubModal()">✕</button></div><div class="modal-body"><form id="clubForm" onsubmit="saveClub(event)"><input type="hidden" id="clubId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="clubName" required></div><div class="form-group"><label class="form-label">Адрес</label><input type="text" class="form-input" id="clubAddress"></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeClubModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()">Сохранить</button></div></div></div>
 
@@ -229,16 +288,26 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 </div>
 
+<!-- Belt Modal -->
+<div class="modal" id="beltModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="beltModalTitle">Добавить степень</h2><button class="modal-close" onclick="closeBeltModal()">&#x2715;</button></div><div class="modal-body"><form id="beltForm" onsubmit="saveBelt(event)"><input type="hidden" id="beltId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="beltName" placeholder="Например: Белый пояс, 1-я кю..." required></div><div class="form-group"><label class="form-label">Клуб *</label><select class="form-input" id="beltClubId" required><option value="">Выберите клуб</option></select></div><div class="form-group"><label class="form-label">Цвет пояса</label><div style="display:flex;gap:.75rem;align-items:center"><input type="color" id="beltColor" value="#ffffff" style="width:60px;height:44px;border:2px solid var(--b);border-radius:8px;padding:2px;cursor:pointer"><span style="font-size:.9rem;color:#666">Цвет для отображения</span></div></div><div class="form-group"><label class="form-label">Порядковый номер *</label><input type="number" class="form-input" id="beltOrder" min="1" placeholder="1 — первый (начальный)" required></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeBeltModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('beltForm').requestSubmit()">Сохранить</button></div></div></div>
+
+<!-- Tournament Modal -->
+<div class="modal" id="tournamentModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="tournamentModalTitle">Добавить турнир</h2><button class="modal-close" onclick="closeTournamentModal()">&#x2715;</button></div><div class="modal-body"><form id="tournamentForm" onsubmit="saveTournament(event)"><input type="hidden" id="tournamentId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="tournamentName" required></div><div class="form-group"><label class="form-label">Дата *</label><input type="date" class="form-input" id="tournamentDate" required></div><div class="form-group"><label class="form-label">Место проведения</label><input type="text" class="form-input" id="tournamentLocation" placeholder="Город, зал..."></div><div class="form-group"><label class="form-label">Клуб *</label><select class="form-input" id="tournamentClubId" required><option value="">Выберите клуб</option></select></div><div class="form-group"><label class="form-label">Описание</label><textarea class="form-input" id="tournamentDesc" rows="3" style="resize:vertical"></textarea></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeTournamentModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('tournamentForm').requestSubmit()">Сохранить</button></div></div></div>
+
+<!-- Event Modal -->
+<div class="modal" id="eventModal"><div class="modal-content" style="max-width:600px"><div class="modal-header"><h2 class="modal-title" id="eventModalTitle">Добавить мероприятие</h2><button class="modal-close" onclick="closeEventModal()">&#x2715;</button></div><div class="modal-body"><form id="eventForm" onsubmit="saveEvent(event)"><input type="hidden" id="eventId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="eventName" required></div><div class="form-group"><label class="form-label">Дата *</label><input type="date" class="form-input" id="eventDate" required></div><div class="form-group"><label class="form-label">Описание</label><textarea class="form-input" id="eventDesc" rows="3" style="resize:vertical"></textarea></div><div class="form-group"><label class="form-label">Бюджет (грн)</label><input type="number" class="form-input" id="eventBudget" min="0" placeholder="0"></div><div class="form-group"><label class="form-label">Группы (видят мероприятие)</label><div id="eventGroupsCheckboxes" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);padding:1rem;border-radius:8px;background:#f9f9f9"></div></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeEventModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('eventForm').requestSubmit()">Сохранить</button></div></div></div>
+
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 let token=localStorage.getItem('token');
 let user,clubs=[],trainers=[],allAthletes=[],groups=[];
+let belts=[],allBelts=[],tournaments=[],events=[];
 if(!token){window.location.href='/';throw new Error('No auth');}
 
 function loadUserInfo(){user=JSON.parse(localStorage.getItem('user')||'{}');document.getElementById('userName').textContent=`${user.first_name||''} ${user.last_name||''}`;populateDateSelects()}
 function populateDateSelects(){const d=document.getElementById('trainerBirthDay'),m=document.getElementById('trainerBirthMonth'),y=document.getElementById('trainerBirthYear');for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i;d.appendChild(o)}['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'].forEach((n,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=n;m.appendChild(o)});const cy=new Date().getFullYear();for(let i=cy;i>=1940;i--){const o=document.createElement('option');o.value=i;o.textContent=i;y.appendChild(o)}}
-function switchTab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));event.target.classList.add('active');document.getElementById(`tab-${t}`).classList.add('active');if(t==='trainers'&&trainers.length===0)loadTrainers();if(t==='athletes'&&allAthletes.length===0)loadAthletes();if(t==='groups'&&groups.length===0)loadGroups()}
+function switchTab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));event.target.classList.add('active');document.getElementById(`tab-${t}`).classList.add('active');if(t==='trainers'&&trainers.length===0)loadTrainers();if(t==='athletes'&&allAthletes.length===0)loadAthletes();if(t==='groups'&&groups.length===0)loadGroups();if(t==='belts'&&allBelts.length===0)loadBelts();if(t==='tournaments'&&tournaments.length===0)loadTournaments();if(t==='events'&&events.length===0)loadEvents()}
 async function loadClubs(){try{document.getElementById('loadingClubs').style.display='block';document.getElementById('clubsTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list'})});let d=await r.json();clubs=d.merged||d||[];document.getElementById('loadingClubs').style.display='none';document.getElementById('clubsTable').style.display='table';renderClubsTable();const sel=document.getElementById('groupClubId');sel.innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}catch(e){console.error(e)}}
 function renderClubsTable(){const t=document.getElementById('clubsTableBody');t.innerHTML='';clubs.forEach(c=>{const r=document.createElement('tr');r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 function addClub(){document.getElementById('clubModalTitle').textContent='Добавить клуб';document.getElementById('clubId').value='';document.getElementById('clubName').value='';document.getElementById('clubAddress').value='';openClubModal()}
@@ -269,6 +338,40 @@ function openGroupModal(){document.getElementById('groupModal').classList.add('a
 function closeGroupModal(){document.getElementById('groupModal').classList.remove('active');document.body.style.overflow=''}
 function openTrainerModal(){document.getElementById('trainerModal').classList.add('active');document.body.style.overflow='hidden'}
 function closeTrainerModal(){document.getElementById('trainerModal').classList.remove('active');document.body.style.overflow='';document.getElementById('trainerPassword').required=true}
+
+// ===== BELTS =====
+async function loadBelts(){document.getElementById('loadingBelts').style.display='block';document.getElementById('beltsTable').style.display='none';document.getElementById('emptyBelts').style.display='none';try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:'list'})});const d=await r.json();allBelts=d.merged||d||[];const sel=document.getElementById('beltClubFilter');clubs.forEach(c=>{if(!Array.from(sel.options).find(o=>o.value==c.id)){const o=document.createElement('option');o.value=c.id;o.textContent=c.name;sel.appendChild(o)}});document.getElementById('loadingBelts').style.display='none';filterBelts();}catch(e){document.getElementById('loadingBelts').textContent='Ошибка загрузки'}}
+function filterBelts(){const clubId=document.getElementById('beltClubFilter').value;belts=clubId?allBelts.filter(b=>String(b.club_id)===String(clubId)):allBelts;if(belts.length===0){document.getElementById('emptyBelts').style.display='block';document.getElementById('beltsTable').style.display='none';}else{document.getElementById('emptyBelts').style.display='none';document.getElementById('beltsTable').style.display='table';renderBeltsTable();}}
+function renderBeltsTable(){const t=document.getElementById('beltsTableBody');t.innerHTML='';[...belts].sort((a,b)=>(a.order_index||0)-(b.order_index||0)).forEach(b=>{const clubName=clubs.find(c=>c.id===b.club_id)?.name||'—';const dot=b.color?`<span class="color-dot" style="background:${b.color}"></span>${b.color}`:'—';const r=document.createElement('tr');r.innerHTML=`<td>${b.order_index||'—'}</td><td><strong>${b.name}</strong></td><td>${dot}</td><td>${clubName}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editBelt(${b.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteBelt(${b.id})">🗑️</button></div></td>`;t.appendChild(r);})}
+function addBelt(){document.getElementById('beltModalTitle').textContent='Добавить степень';document.getElementById('beltId').value='';document.getElementById('beltName').value='';document.getElementById('beltColor').value='#ffffff';document.getElementById('beltOrder').value='';document.getElementById('beltClubId').innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');openBeltModal()}
+function editBelt(id){const b=allBelts.find(x=>x.id===id);if(!b)return;document.getElementById('beltModalTitle').textContent='Редактировать степень';document.getElementById('beltId').value=b.id;document.getElementById('beltName').value=b.name;document.getElementById('beltColor').value=b.color||'#ffffff';document.getElementById('beltOrder').value=b.order_index||'';document.getElementById('beltClubId').innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');document.getElementById('beltClubId').value=b.club_id||'';openBeltModal()}
+async function saveBelt(e){e.preventDefault();const id=document.getElementById('beltId').value;const name=document.getElementById('beltName').value.trim();const club_id=document.getElementById('beltClubId').value;const color=document.getElementById('beltColor').value;const order_index=parseInt(document.getElementById('beltOrder').value)||1;if(!name||!club_id){alert('Заполните обязательные поля');return}const data={name,club_id:parseInt(club_id),color,order_index};if(id)data.id=parseInt(id);try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:id?'update':'create',data})});const res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeBeltModal();alert(id?'Степень обновлена!':'Степень добавлена!');await loadBelts();}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)));}}catch(err){alert('Ошибка: '+err.message)}}
+async function deleteBelt(id){if(!confirm('Удалить степень?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Удалено!');await loadBelts();}else{alert('Ошибка удаления');}}catch(err){alert('Ошибка: '+err.message)}}
+
+// ===== TOURNAMENTS =====
+async function loadTournaments(){document.getElementById('loadingTournaments').style.display='block';document.getElementById('tournamentsTable').style.display='none';document.getElementById('emptyTournaments').style.display='none';try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'tournaments',action:'list'})});const d=await r.json();tournaments=d.merged||d||[];document.getElementById('loadingTournaments').style.display='none';if(tournaments.length===0){document.getElementById('emptyTournaments').style.display='block';}else{document.getElementById('tournamentsTable').style.display='table';renderTournamentsTable();}}catch(e){document.getElementById('loadingTournaments').textContent='Ошибка загрузки'}}
+function renderTournamentsTable(){const t=document.getElementById('tournamentsTableBody');t.innerHTML='';tournaments.forEach(tr=>{const clubName=clubs.find(c=>c.id===tr.club_id)?.name||tr.club_name||'—';const dateStr=tr.tournament_date?new Date(tr.tournament_date).toLocaleDateString('ru-RU'):'—';const r=document.createElement('tr');r.innerHTML=`<td><strong>${tr.name}</strong></td><td>${dateStr}</td><td>${tr.location||'—'}</td><td>${clubName}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTournament(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTournament(${tr.id})">🗑️</button></div></td>`;t.appendChild(r);})}
+function addTournament(){document.getElementById('tournamentModalTitle').textContent='Добавить турнир';document.getElementById('tournamentId').value='';document.getElementById('tournamentName').value='';document.getElementById('tournamentDate').value='';document.getElementById('tournamentLocation').value='';document.getElementById('tournamentDesc').value='';document.getElementById('tournamentClubId').innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');openTournamentModal()}
+function editTournament(id){const tr=tournaments.find(x=>x.id===id);if(!tr)return;document.getElementById('tournamentModalTitle').textContent='Редактировать турнир';document.getElementById('tournamentId').value=tr.id;document.getElementById('tournamentName').value=tr.name;document.getElementById('tournamentDate').value=tr.tournament_date?tr.tournament_date.split('T')[0]:'';document.getElementById('tournamentLocation').value=tr.location||'';document.getElementById('tournamentDesc').value=tr.description||'';document.getElementById('tournamentClubId').innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');document.getElementById('tournamentClubId').value=tr.club_id||'';openTournamentModal()}
+async function saveTournament(e){e.preventDefault();const id=document.getElementById('tournamentId').value;const name=document.getElementById('tournamentName').value.trim();const tournament_date=document.getElementById('tournamentDate').value;const location=document.getElementById('tournamentLocation').value.trim();const description=document.getElementById('tournamentDesc').value.trim();const club_id=document.getElementById('tournamentClubId').value;if(!name||!tournament_date||!club_id){alert('Заполните обязательные поля');return}const data={name,tournament_date,location,description,club_id:parseInt(club_id),created_by:user.id};if(id)data.id=parseInt(id);try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'tournaments',action:id?'update':'create',data})});const res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeTournamentModal();alert(id?'Турнир обновлен!':'Турнир создан!');await loadTournaments();}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)));}}catch(err){alert('Ошибка: '+err.message)}}
+async function deleteTournament(id){if(!confirm('Удалить турнир?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'tournaments',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Турнир удален!');await loadTournaments();}else{alert('Ошибка удаления');}}catch(err){alert('Ошибка: '+err.message)}}
+
+// ===== EVENTS =====
+async function loadEvents(){document.getElementById('loadingEvents').style.display='block';document.getElementById('eventsTable').style.display='none';document.getElementById('emptyEvents').style.display='none';try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'events',action:'list'})});const d=await r.json();events=d.merged||d||[];document.getElementById('loadingEvents').style.display='none';if(events.length===0){document.getElementById('emptyEvents').style.display='block';}else{document.getElementById('eventsTable').style.display='table';renderEventsTable();}}catch(e){document.getElementById('loadingEvents').textContent='Ошибка загрузки'}}
+function renderEventsTable(){const t=document.getElementById('eventsTableBody');t.innerHTML='';events.forEach(ev=>{const dateStr=ev.event_date?new Date(ev.event_date).toLocaleDateString('ru-RU'):'—';const groupNames=ev.group_names||'Все группы';const budget=ev.budget?ev.budget+' грн':'—';const reg=ev.registrations_count||0;const r=document.createElement('tr');r.innerHTML=`<td><strong>${ev.title||ev.name}</strong>${ev.description?`<br><small style="color:#666">${ev.description.substring(0,60)}${ev.description.length>60?'...':''}</small>`:''}</td><td>${dateStr}</td><td><span class="group-badge">${groupNames}</span></td><td>${budget}</td><td><span style="font-weight:600;color:${reg>0?'#28a745':'#666'}">${reg}</span></td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editEvent(${ev.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteEvent(${ev.id})">🗑️</button></div></td>`;t.appendChild(r);})}
+async function addEvent(){document.getElementById('eventModalTitle').textContent='Добавить мероприятие';document.getElementById('eventId').value='';document.getElementById('eventName').value='';document.getElementById('eventDate').value='';document.getElementById('eventDesc').value='';document.getElementById('eventBudget').value='';if(groups.length===0)await loadGroups();document.getElementById('eventGroupsCheckboxes').innerHTML=groups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}">${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');openEventModal()}
+async function editEvent(id){const ev=events.find(x=>x.id===id);if(!ev)return;document.getElementById('eventModalTitle').textContent='Редактировать мероприятие';document.getElementById('eventId').value=ev.id;document.getElementById('eventName').value=ev.title||ev.name||'';document.getElementById('eventDate').value=ev.event_date?ev.event_date.split('T')[0]:'';document.getElementById('eventDesc').value=ev.description||'';document.getElementById('eventBudget').value=ev.budget||'';if(groups.length===0)await loadGroups();const selIds=(ev.group_ids||[]).map(Number);document.getElementById('eventGroupsCheckboxes').innerHTML=groups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" ${selIds.includes(g.id)?'checked':''}>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');openEventModal()}
+async function saveEvent(e){e.preventDefault();const id=document.getElementById('eventId').value;const title=document.getElementById('eventName').value.trim();const event_date=document.getElementById('eventDate').value;const description=document.getElementById('eventDesc').value.trim();const budget=document.getElementById('eventBudget').value;const group_ids=Array.from(document.querySelectorAll('#eventGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));if(!title||!event_date){alert('Заполните обязательные поля');return}const data={title,event_date,description,budget:budget?parseInt(budget):null,group_ids,created_by:user.id};if(id)data.id=parseInt(id);try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'events',action:id?'update':'create',data})});const res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeEventModal();alert(id?'Мероприятие обновлено!':'Мероприятие создано!');await loadEvents();}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)));}}catch(err){alert('Ошибка: '+err.message)}}
+async function deleteEvent(id){if(!confirm('Удалить мероприятие?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'events',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Мероприятие удалено!');await loadEvents();}else{alert('Ошибка удаления');}}catch(err){alert('Ошибка: '+err.message)}}
+
+// ===== MODAL OPEN/CLOSE for new modals =====
+function openBeltModal(){document.getElementById('beltModal').classList.add('active');document.body.style.overflow='hidden'}
+function closeBeltModal(){document.getElementById('beltModal').classList.remove('active');document.body.style.overflow=''}
+function openTournamentModal(){document.getElementById('tournamentModal').classList.add('active');document.body.style.overflow='hidden'}
+function closeTournamentModal(){document.getElementById('tournamentModal').classList.remove('active');document.body.style.overflow=''}
+function openEventModal(){document.getElementById('eventModal').classList.add('active');document.body.style.overflow='hidden'}
+function closeEventModal(){document.getElementById('eventModal').classList.remove('active');document.body.style.overflow=''}
+
 function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/'}
 loadUserInfo();loadClubs();
 if(location.hash==='#groups'){setTimeout(()=>{document.querySelector('.tab:nth-child(2)').click()},100);}
