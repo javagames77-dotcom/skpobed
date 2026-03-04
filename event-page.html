@@ -97,6 +97,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* ── EMPTY ── */
 .empty-regs{padding:3rem;text-align:center;color:#aaa}
 .empty-regs .big{font-size:3rem;margin-bottom:.5rem}
+.athlete-avatar{width:40px;height:40px;border-radius:50%;background:var(--p);color:#fff;font-size:.85rem;font-weight:700;flex-shrink:0;align-items:center;justify-content:center;text-transform:uppercase;letter-spacing:-.5px}
 
 /* ── LOADING ── */
 .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;height:1.2em}
@@ -263,7 +264,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <script>
 const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
-const MAPS_KEY = 'AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU3s_o';
+// No API key - using OpenStreetMap
 let token = localStorage.getItem('token');
 let eventId = null;
 let eventData = null;
@@ -421,11 +422,23 @@ function renderEvent() {
 
   // Map
   if (eventData.location) {
-    const q = encodeURIComponent(eventData.location);
     const mapCard = document.getElementById('mapCard');
-    document.getElementById('mapIframe').src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_KEY}&q=${q}&language=ru`;
+    const q = encodeURIComponent(eventData.location);
     document.getElementById('mapLink').href = `https://www.google.com/maps/search/${q}`;
     mapCard.style.display = 'block';
+    // Geocode via Nominatim then show OSM embed
+    fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {headers:{'Accept-Language':'ru'}})
+      .then(r => r.json())
+      .then(data => {
+        if (data && data[0]) {
+          const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon), d = 0.012;
+          document.getElementById('mapIframe').src =
+            `https://www.openstreetmap.org/export/embed.html?bbox=${lon-d},${lat-d},${lon+d},${lat+d}&layer=mapnik&marker=${lat},${lon}`;
+        } else {
+          mapCard.style.display = 'none';
+        }
+      })
+      .catch(() => { mapCard.style.display = 'none'; });
   }
 }
 
@@ -471,14 +484,19 @@ function renderRegistrations() {
 
   registrations.forEach(reg => {
     const tr = document.createElement('tr');
-    const photo = reg.photo_url || 'https://via.placeholder.com/40';
+    const photo = reg.photo_url || null;
     const fee = reg.entry_fee !== null && reg.entry_fee !== undefined ? reg.entry_fee : defaultFee;
     const isPaid = !!reg.is_paid;
 
     tr.innerHTML = `
       <td>
         <div class="athlete-row">
-          <img src="${photo}" class="athlete-photo" onerror="this.src='https://via.placeholder.com/40'">
+          ${photo
+            ? `<img src="${photo}" class="athlete-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : ''}
+          <div class="athlete-avatar" style="display:${photo?'none':'flex'}">
+            ${(reg.first_name||'?')[0]}${(reg.last_name||'')[0]||''}
+          </div>
           <div>
             <div class="athlete-name">${reg.first_name || ''} ${reg.last_name || ''}</div>
             <div class="athlete-group">${reg.group_name || ''}</div>
