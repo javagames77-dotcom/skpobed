@@ -431,17 +431,27 @@ function renderEventsTable(){
   });
 }
 let mapTimer=null;
-function previewMap(){
+async function previewMap(){
   const loc=document.getElementById('eventLocation').value.trim();
   const preview=document.getElementById('mapPreview');
   const frame=document.getElementById('mapFrame');
   if(mapTimer)clearTimeout(mapTimer);
   if(!loc){preview.style.display='none';return;}
-  mapTimer=setTimeout(()=>{
-    const q=encodeURIComponent(loc);
-    frame.src=`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU3s_o&q=${q}&language=ru`;
-    preview.style.display='block';
-  },800);
+  mapTimer=setTimeout(async()=>{
+    try{
+      // Nominatim geocoding (бесплатно, без ключа)
+      const res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(loc)}&format=json&limit=1`,{headers:{'Accept-Language':'ru'}});
+      const data=await res.json();
+      if(data&&data[0]){
+        const lat=parseFloat(data[0].lat),lon=parseFloat(data[0].lon);
+        const d=0.01;
+        frame.src=`https://www.openstreetmap.org/export/embed.html?bbox=${lon-d},${lat-d},${lon+d},${lat+d}&layer=mapnik&marker=${lat},${lon}`;
+        preview.style.display='block';
+      }else{
+        preview.style.display='none';
+      }
+    }catch(e){preview.style.display='none';}
+  },900);
 }
 function filterEventGroups(){
   const clubId=document.getElementById('eventClubIdFilter').value;
