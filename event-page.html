@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Мероприятие — InSkill Online</title>
+<style>
+:root{
+  --p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0;
+  --green:#28a745;--red:#dc3545;--orange:#FF9933;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--l);color:var(--d)}
+
+/* ── HEADER ── */
+.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05);position:sticky;top:0;z-index:100}
+.header-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:.75rem;font-size:1.4rem;font-weight:700;color:var(--p);text-decoration:none}
+.logo-icon{width:36px;height:36px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-bars{display:flex;gap:3px;align-items:flex-end}
+.logo-bar{width:5px;background:#fff;border-radius:2px}
+.logo-bar:nth-child(1){height:10px}
+.logo-bar:nth-child(2){height:16px;background:var(--s)}
+.logo-bar:nth-child(3){height:22px;background:var(--s)}
+.back-btn{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--l);border:1px solid var(--b);border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600;color:var(--d);text-decoration:none}
+.back-btn:hover{background:#e9ecef}
+
+/* ── LAYOUT ── */
+.container{max-width:1200px;margin:2rem auto;padding:0 2rem;display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start}
+@media(max-width:900px){.container{grid-template-columns:1fr;padding:0 1rem}}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:hidden}
+.card-header{padding:1.25rem 1.5rem;border-bottom:2px solid var(--l);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:1.1rem;font-weight:700;color:var(--d)}
+.card-body{padding:1.5rem}
+
+/* ── EVENT HERO ── */
+.event-hero{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:2rem;margin-bottom:1.5rem}
+.event-title{font-size:2rem;font-weight:800;color:var(--d);margin-bottom:.5rem;line-height:1.2}
+.event-meta{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem}
+.meta-chip{display:flex;align-items:center;gap:.4rem;padding:.4rem .9rem;border-radius:20px;font-size:.9rem;font-weight:500}
+.meta-chip.date{background:#e3f2fd;color:var(--p)}
+.meta-chip.location{background:#f3e5f5;color:#7b1fa2;cursor:pointer}
+.meta-chip.location:hover{background:#e8d5f0}
+.meta-chip.groups{background:#e8f5e9;color:#2e7d32}
+.event-desc{margin-top:1.25rem;color:#444;line-height:1.7;font-size:.95rem}
+
+/* ── COUNTDOWN STRIP ── */
+.countdown-strip{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+@media(max-width:600px){.countdown-strip{grid-template-columns:1fr}}
+.countdown-card{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem}
+.countdown-icon{font-size:2rem;flex-shrink:0}
+.countdown-info{}
+.countdown-label{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:.25rem}
+.countdown-value{font-size:1.5rem;font-weight:800;color:var(--d);line-height:1}
+.countdown-sub{font-size:.8rem;color:#888;margin-top:.2rem}
+.countdown-value.urgent{color:var(--red)}
+.countdown-value.soon{color:var(--orange)}
+.countdown-value.ok{color:var(--green)}
+.countdown-value.closed{color:var(--red);font-size:1rem}
+
+/* ── MAP ── */
+.map-container{border-radius:12px;overflow:hidden;margin-top:1rem}
+.map-container iframe{display:block;width:100%;height:280px;border:0}
+.no-map{padding:2rem;text-align:center;color:#999;background:var(--l);border-radius:12px;font-size:.9rem}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.stat-box{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);padding:1.25rem;text-align:center}
+.stat-num{font-size:1.8rem;font-weight:800;color:var(--p)}
+.stat-label{font-size:.8rem;color:#888;font-weight:600;margin-top:.25rem;text-transform:uppercase}
+
+/* ── REGISTRATIONS TABLE ── */
+.reg-table{width:100%;border-collapse:collapse}
+.reg-table th{padding:.75rem 1rem;text-align:left;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;border-bottom:2px solid var(--b)}
+.reg-table td{padding:.75rem 1rem;border-bottom:1px solid var(--l);vertical-align:middle}
+.reg-table tr:last-child td{border-bottom:none}
+.reg-table tr:hover td{background:#fafbff}
+.athlete-row{display:flex;align-items:center;gap:.75rem}
+.athlete-photo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--b);flex-shrink:0}
+.athlete-name{font-weight:600;font-size:.95rem}
+.athlete-group{font-size:.8rem;color:#888}
+.fee-input{width:90px;padding:.4rem .6rem;border:2px solid var(--b);border-radius:6px;font-size:.9rem;text-align:center;transition:border-color .2s}
+.fee-input:focus{outline:none;border-color:var(--p)}
+.fee-input.changed{border-color:var(--s)}
+.fee-save-btn{padding:.35rem .6rem;background:var(--s);color:#fff;border:none;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;display:none}
+.fee-save-btn.visible{display:inline-block}
+.paid-checkbox{width:20px;height:20px;cursor:pointer;accent-color:var(--green)}
+.paid-label{display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.85rem}
+.paid-label.is-paid{color:var(--green);font-weight:600}
+.paid-label.not-paid{color:#aaa}
+.badge-paid{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:10px;font-size:.75rem;font-weight:600}
+.badge-paid.yes{background:#e8f5e9;color:var(--green)}
+.badge-paid.no{background:#fff3e0;color:#e65100}
+
+/* ── EMPTY ── */
+.empty-regs{padding:3rem;text-align:center;color:#aaa}
+.empty-regs .big{font-size:3rem;margin-bottom:.5rem}
+
+/* ── LOADING ── */
+.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;height:1.2em}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── SIDEBAR INFO ── */
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--l)}
+.info-row:last-child{border-bottom:none}
+.info-key{font-size:.85rem;color:#888;font-weight:500}
+.info-val{font-size:.9rem;font-weight:600;color:var(--d);text-align:right;max-width:60%}
+.deadline-closed{color:var(--red)}
+.deadline-soon{color:var(--orange)}
+.deadline-ok{color:var(--green)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:2rem;right:2rem;padding:.75rem 1.25rem;background:#333;color:#fff;border-radius:10px;font-size:.9rem;font-weight:500;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--red)}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-content">
+    <a href="/" class="logo">
+      <div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
+      <span>InSkill<span style="color:var(--s)">.online</span></span>
+    </a>
+    <a href="/director-dashboard.html" class="back-btn">← Назад к панели</a>
+  </div>
+</header>
+
+<div id="mainContent" style="max-width:1200px;margin:2rem auto;padding:0 2rem">
+  <!-- Loading state -->
+  <div id="loadingState">
+    <div style="background:#fff;border-radius:16px;padding:2rem;margin-bottom:1.5rem">
+      <div class="skeleton" style="width:60%;height:2.5rem;margin-bottom:1rem"></div>
+      <div class="skeleton" style="width:40%;height:1rem;margin-bottom:.5rem"></div>
+      <div class="skeleton" style="width:30%;height:1rem"></div>
+    </div>
+  </div>
+  <div id="errorState" style="display:none;text-align:center;padding:4rem;color:#aaa">
+    <div style="font-size:3rem">😕</div>
+    <div style="margin-top:1rem;font-size:1.2rem;font-weight:600">Мероприятие не найдено</div>
+    <a href="/director-dashboard.html" style="display:inline-block;margin-top:1.5rem;color:var(--p)">← Вернуться</a>
+  </div>
+</div>
+
+<div id="pageContent" style="display:none">
+
+<!-- EVENT HERO -->
+<div style="max-width:1200px;margin:2rem auto 0;padding:0 2rem">
+  <div class="event-hero">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+      <div style="flex:1">
+        <div id="heroTitle" class="event-title">—</div>
+        <div id="heroMeta" class="event-meta"></div>
+      </div>
+      <div id="deadlineStatus" style="flex-shrink:0"></div>
+    </div>
+    <div id="heroDesc" class="event-desc" style="display:none"></div>
+  </div>
+</div>
+
+<!-- COUNTDOWN + STATS -->
+<div style="max-width:1200px;margin:1rem auto 0;padding:0 2rem">
+  <div class="countdown-strip">
+    <div class="countdown-card">
+      <div class="countdown-icon">📅</div>
+      <div class="countdown-info">
+        <div class="countdown-label">До мероприятия</div>
+        <div id="cdEvent" class="countdown-value">—</div>
+        <div id="cdEventSub" class="countdown-sub"></div>
+      </div>
+    </div>
+    <div class="countdown-card">
+      <div class="countdown-icon">⏰</div>
+      <div class="countdown-info">
+        <div class="countdown-label">Срок регистрации</div>
+        <div id="cdDeadline" class="countdown-value">—</div>
+        <div id="cdDeadlineSub" class="countdown-sub"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box">
+      <div id="statReg" class="stat-num">—</div>
+      <div class="stat-label">Записалось</div>
+    </div>
+    <div class="stat-box">
+      <div id="statPaid" class="stat-num">—</div>
+      <div class="stat-label">Оплатили</div>
+    </div>
+    <div class="stat-box">
+      <div id="statTotal" class="stat-num">—</div>
+      <div class="stat-label">Сумма взносов</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="container">
+
+  <!-- LEFT: registrations -->
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Записавшиеся спортсмены</span>
+        <span id="regCountBadge" style="background:var(--p);color:#fff;padding:.2rem .7rem;border-radius:20px;font-size:.85rem;font-weight:600">0</span>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div id="loadingRegs" style="padding:2rem;text-align:center;color:var(--p)">Загрузка...</div>
+        <div id="emptyRegs" class="empty-regs" style="display:none">
+          <div class="big">🏃</div>
+          <div>Пока никто не записался</div>
+        </div>
+        <div id="regsTableWrap" style="display:none;overflow-x:auto">
+          <table class="reg-table">
+            <thead>
+              <tr>
+                <th>Спортсмен</th>
+                <th>Взнос (грн)</th>
+                <th>Оплатил</th>
+              </tr>
+            </thead>
+            <tbody id="regsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: sidebar -->
+  <div>
+
+    <!-- Info card -->
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-header"><span class="card-title">📋 Детали</span></div>
+      <div class="card-body">
+        <div id="infoRows"></div>
+      </div>
+    </div>
+
+    <!-- Map card -->
+    <div class="card" id="mapCard" style="display:none">
+      <div class="card-header">
+        <span class="card-title">📍 Место проведения</span>
+        <a id="mapLink" href="#" target="_blank" style="font-size:.8rem;color:var(--p);font-weight:600">Открыть в Maps</a>
+      </div>
+      <div class="card-body" style="padding:.5rem">
+        <div class="map-container">
+          <iframe id="mapIframe" src="" frameborder="0" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
+const MAPS_KEY = 'AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU3s_o';
+let token = localStorage.getItem('token');
+let eventId = null;
+let eventData = null;
+let registrations = [];
+
+if (!token) { window.location.href = '/'; throw new Error('No auth'); }
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ── Days remaining ────────────────────────────────────────────────────────────
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const target = new Date(dateStr);
+  target.setHours(23, 59, 59);
+  const now = new Date();
+  return Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  const params = new URLSearchParams(location.search);
+  eventId = params.get('id');
+  if (!eventId) { showError(); return; }
+
+  try {
+    const r = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'events', action: 'get', data: { id: parseInt(eventId) } })
+    });
+    const d = await r.json();
+    eventData = (d.merged && d.merged[0]) || (Array.isArray(d) ? d[0] : d);
+    if (!eventData || !eventData.id) { showError(); return; }
+    renderEvent();
+    await loadRegistrations();
+  } catch(e) {
+    console.error(e);
+    showError();
+  }
+}
+
+function showError() {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('errorState').style.display = 'block';
+}
+
+// ── Render event data ─────────────────────────────────────────────────────────
+function renderEvent() {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('pageContent').style.display = 'block';
+  document.title = (eventData.title || 'Мероприятие') + ' — InSkill Online';
+
+  // Hero
+  document.getElementById('heroTitle').textContent = eventData.title || '—';
+
+  const meta = document.getElementById('heroMeta');
+  meta.innerHTML = '';
+  if (eventData.event_date) {
+    meta.innerHTML += `<span class="meta-chip date">📅 ${formatDate(eventData.event_date)}</span>`;
+  }
+  if (eventData.location) {
+    const chip = document.createElement('span');
+    chip.className = 'meta-chip location';
+    chip.innerHTML = `📍 ${eventData.location}`;
+    chip.onclick = () => window.open(`https://www.google.com/maps/search/${encodeURIComponent(eventData.location)}`, '_blank');
+    meta.appendChild(chip);
+  }
+  if (eventData.group_names && eventData.group_names !== 'Все группы') {
+    meta.innerHTML += `<span class="meta-chip groups">👥 ${eventData.group_names}</span>`;
+  }
+
+  if (eventData.description) {
+    const desc = document.getElementById('heroDesc');
+    desc.textContent = eventData.description;
+    desc.style.display = 'block';
+  }
+
+  // Countdown — event
+  const dEvent = daysUntil(eventData.event_date);
+  const cdEvent = document.getElementById('cdEvent');
+  const cdEventSub = document.getElementById('cdEventSub');
+  if (dEvent === null) {
+    cdEvent.textContent = '—';
+  } else if (dEvent < 0) {
+    cdEvent.className = 'countdown-value closed';
+    cdEvent.textContent = 'Прошло';
+    cdEventSub.textContent = `${Math.abs(dEvent)} дн. назад`;
+  } else if (dEvent === 0) {
+    cdEvent.className = 'countdown-value urgent';
+    cdEvent.textContent = 'Сегодня!';
+  } else if (dEvent <= 7) {
+    cdEvent.className = 'countdown-value soon';
+    cdEvent.textContent = `${dEvent} дн.`;
+    cdEventSub.textContent = formatDate(eventData.event_date);
+  } else {
+    cdEvent.className = 'countdown-value ok';
+    cdEvent.textContent = `${dEvent} дн.`;
+    cdEventSub.textContent = formatDate(eventData.event_date);
+  }
+
+  // Countdown — deadline
+  const dl = eventData.registration_deadline;
+  const dDl = daysUntil(dl);
+  const cdDl = document.getElementById('cdDeadline');
+  const cdDlSub = document.getElementById('cdDeadlineSub');
+  const deadlineStatus = document.getElementById('deadlineStatus');
+
+  if (!dl) {
+    cdDl.textContent = 'Не задан';
+    cdDl.className = 'countdown-value';
+    cdDlSub.textContent = 'Открыта';
+  } else if (dDl < 0) {
+    cdDl.className = 'countdown-value closed';
+    cdDl.textContent = 'Закрыта';
+    cdDlSub.textContent = `Дедлайн: ${formatDate(dl)}`;
+    deadlineStatus.innerHTML = `<span style="padding:.4rem 1rem;background:#ffebee;color:var(--red);border-radius:20px;font-size:.85rem;font-weight:700">🔒 Регистрация закрыта</span>`;
+  } else if (dDl === 0) {
+    cdDl.className = 'countdown-value urgent';
+    cdDl.textContent = 'Сегодня!';
+    cdDlSub.textContent = 'Последний день';
+    deadlineStatus.innerHTML = `<span style="padding:.4rem 1rem;background:#fff3e0;color:var(--orange);border-radius:20px;font-size:.85rem;font-weight:700">⚡ Последний день!</span>`;
+  } else if (dDl <= 3) {
+    cdDl.className = 'countdown-value soon';
+    cdDl.textContent = `${dDl} дн.`;
+    cdDlSub.textContent = `До ${formatDate(dl)}`;
+    deadlineStatus.innerHTML = `<span style="padding:.4rem 1rem;background:#fff3e0;color:var(--orange);border-radius:20px;font-size:.85rem;font-weight:700">⏳ Скоро закрывается</span>`;
+  } else {
+    cdDl.className = 'countdown-value ok';
+    cdDl.textContent = `${dDl} дн.`;
+    cdDlSub.textContent = `До ${formatDate(dl)}`;
+  }
+
+  // Sidebar info rows
+  const rows = [
+    ['Дата', formatDate(eventData.event_date)],
+    ['Дедлайн регистрации', dl ? formatDate(dl) : '—'],
+    ['Место', eventData.location || '—'],
+    ['Бюджет', eventData.budget ? eventData.budget + ' грн' : '—'],
+    ['Сумма взноса', eventData.entry_fee ? eventData.entry_fee + ' грн' : '—'],
+  ];
+  document.getElementById('infoRows').innerHTML = rows.map(([k,v]) =>
+    `<div class="info-row"><span class="info-key">${k}</span><span class="info-val">${v}</span></div>`
+  ).join('');
+
+  // Map
+  if (eventData.location) {
+    const q = encodeURIComponent(eventData.location);
+    const mapCard = document.getElementById('mapCard');
+    document.getElementById('mapIframe').src = `https://www.google.com/maps/embed/v1/place?key=${MAPS_KEY}&q=${q}&language=ru`;
+    document.getElementById('mapLink').href = `https://www.google.com/maps/search/${q}`;
+    mapCard.style.display = 'block';
+  }
+}
+
+// ── Load registrations ────────────────────────────────────────────────────────
+async function loadRegistrations() {
+  try {
+    const r = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'event_registrations', action: 'list', data: { event_id: parseInt(eventId) } })
+    });
+    const d = await r.json();
+    registrations = d.merged || d || [];
+    renderRegistrations();
+  } catch(e) {
+    document.getElementById('loadingRegs').textContent = 'Ошибка загрузки';
+  }
+}
+
+function renderRegistrations() {
+  document.getElementById('loadingRegs').style.display = 'none';
+  const tbody = document.getElementById('regsTableBody');
+  tbody.innerHTML = '';
+
+  const totalPaid = registrations.filter(r => r.is_paid).length;
+  const totalFee = registrations.reduce((s, r) => s + (parseFloat(r.entry_fee) || 0), 0);
+
+  document.getElementById('statReg').textContent = registrations.length;
+  document.getElementById('statPaid').textContent = totalPaid;
+  document.getElementById('statTotal').textContent = totalFee > 0 ? totalFee + ' грн' : '0';
+  document.getElementById('regCountBadge').textContent = registrations.length;
+
+  if (registrations.length === 0) {
+    document.getElementById('emptyRegs').style.display = 'block';
+    document.getElementById('regsTableWrap').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('emptyRegs').style.display = 'none';
+  document.getElementById('regsTableWrap').style.display = 'block';
+
+  const defaultFee = eventData.entry_fee || 0;
+
+  registrations.forEach(reg => {
+    const tr = document.createElement('tr');
+    const photo = reg.photo_url || 'https://via.placeholder.com/40';
+    const fee = reg.entry_fee !== null && reg.entry_fee !== undefined ? reg.entry_fee : defaultFee;
+    const isPaid = !!reg.is_paid;
+
+    tr.innerHTML = `
+      <td>
+        <div class="athlete-row">
+          <img src="${photo}" class="athlete-photo" onerror="this.src='https://via.placeholder.com/40'">
+          <div>
+            <div class="athlete-name">${reg.first_name || ''} ${reg.last_name || ''}</div>
+            <div class="athlete-group">${reg.group_name || ''}</div>
+          </div>
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.4rem">
+          <input
+            type="number"
+            class="fee-input"
+            id="fee_${reg.id}"
+            value="${fee}"
+            min="0"
+            onchange="onFeeChange(${reg.id}, this)"
+            oninput="onFeeChange(${reg.id}, this)"
+          >
+          <button class="fee-save-btn" id="feebtn_${reg.id}" onclick="saveFee(${reg.id})">✓</button>
+        </div>
+      </td>
+      <td>
+        <label class="paid-label ${isPaid ? 'is-paid' : 'not-paid'}" id="paidlabel_${reg.id}">
+          <input
+            type="checkbox"
+            class="paid-checkbox"
+            id="paid_${reg.id}"
+            ${isPaid ? 'checked' : ''}
+            onchange="togglePaid(${reg.id}, this)"
+          >
+          ${isPaid ? '✅ Оплатил' : 'Не оплатил'}
+        </label>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ── Fee change ────────────────────────────────────────────────────────────────
+function onFeeChange(regId, input) {
+  input.classList.add('changed');
+  const btn = document.getElementById(`feebtn_${regId}`);
+  btn.classList.add('visible');
+}
+
+async function saveFee(regId) {
+  const input = document.getElementById(`fee_${regId}`);
+  const newFee = parseInt(input.value) || 0;
+  try {
+    const r = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token, resource: 'event_registrations', action: 'update',
+        data: { id: regId, entry_fee: newFee }
+      })
+    });
+    const d = await r.json();
+    const ok = (d.merged && d.merged[0]?.id) || d.id || d.success;
+    if (ok) {
+      input.classList.remove('changed');
+      document.getElementById(`feebtn_${regId}`).classList.remove('visible');
+      // update local data
+      const reg = registrations.find(r => r.id === regId);
+      if (reg) reg.entry_fee = newFee;
+      // recalc total
+      const totalFee = registrations.reduce((s, r) => s + (parseFloat(r.entry_fee) || 0), 0);
+      document.getElementById('statTotal').textContent = totalFee > 0 ? totalFee + ' грн' : '0';
+      showToast('Взнос сохранён');
+    } else {
+      showToast('Ошибка сохранения', 'error');
+    }
+  } catch(e) {
+    showToast('Ошибка: ' + e.message, 'error');
+  }
+}
+
+// ── Toggle paid ───────────────────────────────────────────────────────────────
+async function togglePaid(regId, checkbox) {
+  const isPaid = checkbox.checked;
+  const label = document.getElementById(`paidlabel_${regId}`);
+
+  try {
+    const r = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token, resource: 'event_registrations', action: 'update',
+        data: { id: regId, is_paid: isPaid }
+      })
+    });
+    const d = await r.json();
+    const ok = (d.merged && d.merged[0]?.id) || d.id || d.success;
+    if (ok) {
+      label.className = `paid-label ${isPaid ? 'is-paid' : 'not-paid'}`;
+      label.innerHTML = `<input type="checkbox" class="paid-checkbox" id="paid_${regId}" ${isPaid ? 'checked' : ''} onchange="togglePaid(${regId}, this)">${isPaid ? '✅ Оплатил' : 'Не оплатил'}`;
+      // update local
+      const reg = registrations.find(r => r.id === regId);
+      if (reg) reg.is_paid = isPaid;
+      const totalPaid = registrations.filter(r => r.is_paid).length;
+      document.getElementById('statPaid').textContent = totalPaid;
+      showToast(isPaid ? 'Отмечен как оплативший' : 'Отметка снята');
+    } else {
+      checkbox.checked = !isPaid;
+      showToast('Ошибка сохранения', 'error');
+    }
+  } catch(e) {
+    checkbox.checked = !isPaid;
+    showToast('Ошибка: ' + e.message, 'error');
+  }
+}
+
+init();
+</script>
+</body>
+</html>
