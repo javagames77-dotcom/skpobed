@@ -65,6 +65,59 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .group-checkbox input{margin-right:0.5rem}
 .tabs{flex-wrap:wrap}
 .color-dot{width:18px;height:18px;border-radius:50%;display:inline-block;border:2px solid rgba(0,0,0,.2);vertical-align:middle;margin-right:4px}
+
+.news-empty{padding:3rem;text-align:center;color:#aaa;background:#fff;border-radius:12px}
+.news-empty .big{font-size:3rem;margin-bottom:.5rem}
+.parse-log{background:#1a1a1a;color:#00ff88;border-radius:8px;padding:1rem;font-family:monospace;font-size:.8rem;max-height:200px;overflow-y:auto;margin-top:.75rem;display:none}
+
+/* ===== NEWS TAB STYLES ===== */
+.news-grid{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start}
+@media(max-width:960px){.news-grid{grid-template-columns:1fr}}
+.news-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:1.25rem 1.5rem;margin-bottom:.75rem;border-left:4px solid var(--p);transition:box-shadow .2s,transform .15s;position:relative}
+.news-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.1);transform:translateY(-1px)}
+.news-card.status-added{border-left-color:#28a745;opacity:.75}
+.news-card.status-dismissed{border-left-color:#ccc;opacity:.5}
+.news-card-title{font-size:1rem;font-weight:700;color:var(--d);line-height:1.35;margin-bottom:.5rem}
+.news-card-meta{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.6rem}
+.ntag{display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .6rem;border-radius:10px;font-size:.73rem;font-weight:600}
+.ntag-date{background:#e3f2fd;color:var(--p)}
+.ntag-loc{background:#e8f5e9;color:#2e7d32}
+.ntag-src{background:#f3e5f5;color:#7b1fa2}
+.ntag-fee{background:#fff8e1;color:#e65100}
+.ntag-type{background:#e0f2f1;color:#00695c}
+.ntag-status-new{background:#fff3e0;color:#e65100}
+.ntag-status-processed{background:#e8f5e9;color:#2e7d32}
+.ntag-status-added{background:#e3f2fd;color:var(--p)}
+.ntag-status-dismissed{background:#f5f5f5;color:#aaa}
+.news-card-desc{font-size:.88rem;color:#555;line-height:1.6;margin-bottom:.85rem}
+.news-card-actions{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.btn-make-event{padding:.45rem 1rem;background:var(--s);color:#fff;border:none;border-radius:7px;font-size:.83rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.3rem}
+.btn-make-event:hover{background:#e68900;transform:scale(1.02)}
+.btn-open-src{padding:.45rem .9rem;background:var(--l);border:1px solid var(--b);border-radius:7px;font-size:.83rem;font-weight:600;color:var(--p);text-decoration:none;display:inline-flex;align-items:center;gap:.3rem}
+.btn-open-src:hover{background:#e3ecf7}
+.btn-dismiss-news{padding:.45rem .75rem;background:#ffebee;border:none;border-radius:7px;font-size:.83rem;color:#dc3545;cursor:pointer;display:flex;align-items:center}
+.btn-dismiss-news:hover{background:#ffd0d0}
+.source-card{background:#fff;border-radius:10px;border:1px solid var(--b);padding:1rem 1.1rem;margin-bottom:.6rem;display:flex;align-items:flex-start;gap:.75rem;transition:border-color .2s}
+.source-card:hover{border-color:var(--p)}
+.source-card-body{flex:1;min-width:0}
+.source-card-url{font-size:.85rem;font-weight:700;color:var(--p);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.source-card-prompt{font-size:.78rem;color:#888;margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.source-card-meta{font-size:.75rem;color:#bbb;margin-top:.25rem}
+.source-icon{font-size:1.4rem;line-height:1;flex-shrink:0;margin-top:.1rem}
+.source-actions{display:flex;gap:.35rem;flex-shrink:0}
+.params-section{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:1.25rem}
+.parse-log{background:#111;color:#00e676;border-radius:8px;padding:.9rem;font-family:'Courier New',monospace;font-size:.77rem;max-height:160px;overflow-y:auto;margin-top:.75rem;display:none;line-height:1.5}
+.run-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.3rem;background:linear-gradient(135deg,var(--p),#0052a3);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.9rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,102,204,.3)}
+.run-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,102,204,.4)}
+.run-btn:disabled{background:#aaa;cursor:not-allowed;box-shadow:none;transform:none}
+.spinner{width:14px;height:14px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:newspin .65s linear infinite;display:none}
+.run-btn.running .spinner{display:block}
+@keyframes newspin{to{transform:rotate(360deg)}}
+.news-stats-bar{display:flex;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap}
+.news-stat{background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.06);padding:.75rem 1.1rem;text-align:center;flex:1;min-width:80px}
+.news-stat-n{font-size:1.6rem;font-weight:800;color:var(--p);line-height:1}
+.news-stat-l{font-size:.72rem;color:#aaa;text-transform:uppercase;font-weight:600;margin-top:.2rem}
+.news-src-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:8px;font-size:.72rem;font-weight:700}
 </style>
 </head>
 <body>
@@ -91,6 +144,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
 <button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
 <button class="tab" onclick="switchTab('events')">📅 Мероприятия</button>
+<button class="tab" onclick="switchTab('news')">🔍 AI-Новости</button>
 </div>
 
 <!-- CLUBS TAB -->
@@ -212,6 +266,103 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 </div>
 
+
+<!-- NEWS TAB -->
+<div class="tab-content" id="tab-news">
+
+<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+  <div>
+    <h1 class="page-title">🤖 AI-Поиск мероприятий</h1>
+    <p style="color:#666;margin-top:.3rem;font-size:.88rem">Автоматический мониторинг источников · Анализ через OpenAI · Одним кликом в план</p>
+  </div>
+  <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+    <button class="run-btn" id="runParseBtn" onclick="runParsing()">
+      <div class="spinner"></div>
+      <span id="runBtnText">▶ Запустить парсинг</span>
+    </button>
+    <a href="/news-page.html" style="padding:.6rem 1.1rem;background:#fff;border:1px solid var(--b);border-radius:8px;font-size:.85rem;font-weight:600;color:var(--d);text-decoration:none;display:flex;align-items:center;gap:.35rem">Открыть все →</a>
+  </div>
+</div>
+
+<!-- Stats bar -->
+<div class="news-stats-bar" id="newsStatsBar" style="display:none">
+  <div class="news-stat"><div class="news-stat-n" id="nsTotal">0</div><div class="news-stat-l">Всего</div></div>
+  <div class="news-stat"><div class="news-stat-n" id="nsNew" style="color:#e65100">0</div><div class="news-stat-l">Новых</div></div>
+  <div class="news-stat"><div class="news-stat-n" id="nsAdded" style="color:#28a745">0</div><div class="news-stat-l">Добавлено</div></div>
+  <div class="news-stat"><div class="news-stat-n" id="nsSources" style="color:#7b1fa2">0</div><div class="news-stat-l">Источников</div></div>
+</div>
+
+<div class="news-grid">
+
+  <!-- LEFT: news feed -->
+  <div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem">
+      <span style="font-size:.9rem;font-weight:700;color:#555">Найденные мероприятия</span>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <select class="filter-select" id="newsStatusFilter" onchange="filterNews()" style="padding:.4rem .75rem;font-size:.82rem;width:auto">
+          <option value="">Все статусы</option>
+          <option value="new">🆕 Новые</option>
+          <option value="processed">✅ Обработанные</option>
+          <option value="added">📅 Добавлены</option>
+          <option value="dismissed">🚫 Отклонённые</option>
+        </select>
+        <select class="filter-select" id="newsSourceFilter" onchange="filterNews()" style="padding:.4rem .75rem;font-size:.82rem;width:auto">
+          <option value="">Все источники</option>
+        </select>
+        <input type="text" class="filter-input" id="newsSearchInput" oninput="filterNews()" placeholder="Поиск..." style="padding:.4rem .75rem;font-size:.82rem;width:140px">
+      </div>
+    </div>
+    <div id="loadingNews" class="loading" style="display:none">Загрузка...</div>
+    <div id="newsCards"></div>
+    <div id="emptyNews" class="news-empty" style="display:none;padding:3rem;text-align:center;color:#aaa;background:#fff;border-radius:12px">
+      <div style="font-size:3rem;margin-bottom:.5rem">🤖</div>
+      <div style="font-weight:600;margin-bottom:.35rem;color:#666">Мероприятий пока не найдено</div>
+      <div style="font-size:.85rem">Добавьте источники и запустите парсинг</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: sources + params -->
+  <div style="display:flex;flex-direction:column;gap:1rem">
+
+    <!-- Sources card -->
+    <div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:1.25rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
+        <span style="font-weight:700;color:var(--d)">📡 Источники</span>
+        <button class="btn-add" style="padding:.4rem .9rem;font-size:.8rem" onclick="openSourceModal()">+ Добавить</button>
+      </div>
+      <div id="sourcesList"><div style="text-align:center;color:#bbb;padding:1.5rem;font-size:.85rem">Нет источников</div></div>
+    </div>
+
+    <!-- Search params card -->
+    <div class="params-section">
+      <div style="font-weight:700;color:var(--d);margin-bottom:.9rem">⚙️ Параметры поиска</div>
+      <div class="form-group">
+        <label class="form-label">Регион / Город</label>
+        <input type="text" class="form-input" id="searchRegion" placeholder="Полтава, Харків, Київ...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ключевые слова</label>
+        <input type="text" class="form-input" id="searchKeywords" placeholder="борьба, дзюдо, турнир...">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div class="form-group">
+          <label class="form-label">Дата от</label>
+          <input type="date" class="form-input" id="searchDateFrom">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Дата до</label>
+          <input type="date" class="form-input" id="searchDateTo">
+        </div>
+      </div>
+      <button class="btn btn-save" style="width:100%;margin-top:.25rem" onclick="saveSearchParams()">💾 Сохранить параметры</button>
+      <div class="parse-log" id="parseLog"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+
 <!-- MODALS -->
 <div class="modal" id="clubModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2><button class="modal-close" onclick="closeClubModal()">✕</button></div><div class="modal-body"><form id="clubForm" onsubmit="saveClub(event)"><input type="hidden" id="clubId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="clubName" required></div><div class="form-group"><label class="form-label">Адрес</label><input type="text" class="form-input" id="clubAddress"></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeClubModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()">Сохранить</button></div></div></div>
 
@@ -282,6 +433,61 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="modal" id="beltModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="beltModalTitle">Добавить степень</h2><button class="modal-close" onclick="closeBeltModal()">&#x2715;</button></div><div class="modal-body"><form id="beltForm" onsubmit="saveBelt(event)"><input type="hidden" id="beltId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="beltName" placeholder="Например: Белый пояс, 1-я кю..." required></div><div class="form-group"><label class="form-label">Клуб *</label><select class="form-input" id="beltClubId" required><option value="">Выберите клуб</option></select></div><div class="form-group"><label class="form-label">Цвет пояса</label><div style="display:flex;gap:.75rem;align-items:center"><input type="color" id="beltColor" value="#ffffff" style="width:60px;height:44px;border:2px solid var(--b);border-radius:8px;padding:2px;cursor:pointer"><span style="font-size:.9rem;color:#666">Цвет для отображения</span></div></div><div class="form-group"><label class="form-label">Порядковый номер *</label><input type="number" class="form-input" id="beltOrder" min="1" placeholder="1 — первый (начальный)" required></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeBeltModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('beltForm').requestSubmit()">Сохранить</button></div></div></div>
 
 
+
+<!-- Source Modal -->
+<div class="modal" id="sourceModal">
+<div class="modal-content" style="max-width:560px">
+<div class="modal-header">
+  <h2 class="modal-title" id="sourceModalTitle">Добавить источник</h2>
+  <button class="modal-close" onclick="closeSourceModal()">&#x2715;</button>
+</div>
+<div class="modal-body">
+<form id="sourceForm" onsubmit="saveSource(event)">
+<input type="hidden" id="sourceId">
+<div class="form-group">
+  <label class="form-label">URL источника *</label>
+  <input type="url" class="form-input" id="sourceUrl" placeholder="https://..." required>
+  <small style="color:#888;margin-top:.3rem;display:block">Сайт, RSS-лента или Telegram-канал (https://t.me/s/channelname)</small>
+</div>
+<div class="form-group">
+  <label class="form-label">Тип источника</label>
+  <select class="form-input" id="sourceType">
+    <option value="website">🌐 Веб-сайт</option>
+    <option value="rss">📡 RSS-лента</option>
+    <option value="telegram">✈️ Telegram-канал</option>
+  </select>
+</div>
+<div class="form-group">
+  <label class="form-label">Промпт для AI *</label>
+  <textarea class="form-input" id="sourcePrompt" rows="4" style="resize:vertical" required placeholder="Найди анонсы соревнований и турниров. Извлеки: название, дату, место, стоимость участия, описание. Верни только реальные мероприятия с датами."></textarea>
+  <small style="color:#888;margin-top:.3rem;display:block">Чем точнее промпт — тем лучше результат AI</small>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+  <div class="form-group">
+    <label class="form-label">Частота парсинга</label>
+    <select class="form-input" id="sourceFrequency">
+      <option value="daily">Ежедневно</option>
+      <option value="weekly">Еженедельно</option>
+      <option value="manual">Только вручную</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Статус</label>
+    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;padding:.75rem;border:2px solid var(--b);border-radius:8px;margin-top:.5rem">
+      <input type="checkbox" id="sourceActive" checked style="width:18px;height:18px;accent-color:var(--p)">
+      <span style="font-size:.9rem;font-weight:600">Активен</span>
+    </label>
+  </div>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-cancel" onclick="closeSourceModal()">Отмена</button>
+  <button class="btn btn-save" onclick="document.getElementById('sourceForm').requestSubmit()">Сохранить</button>
+</div>
+</div>
+</div>
+
 <!-- Event Modal -->
 <div class="modal" id="eventModal">
 <div class="modal-content" style="max-width:680px">
@@ -291,7 +497,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 <div class="modal-body">
 <form id="eventForm" onsubmit="saveEvent(event)">
-<input type="hidden" id="eventId">
+<input type="hidden" id="eventId"><input type="hidden" id="pendingNewsId">
 <div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="eventName" required></div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
 <div class="form-group"><label class="form-label">Дата мероприятия *</label><input type="date" class="form-input" id="eventDate" required></div>
@@ -320,6 +526,10 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </label>
 <div id="eventGroupsCheckboxes" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);padding:0.75rem;border-radius:8px;background:#f9f9f9"></div>
 </div>
+<div class="form-group" id="newsSourceRef" style="display:none">
+  <label class="form-label">📰 Источник (из новости)</label>
+  <a id="newsSourceRefLink" href="#" target="_blank" style="display:block;padding:.6rem .9rem;background:#f0f7ff;border:1px dashed var(--p);border-radius:8px;color:var(--p);font-size:.85rem;word-break:break-all;text-decoration:none">—</a>
+</div>
 </form>
 </div>
 <div class="modal-footer">
@@ -339,7 +549,7 @@ if(!token){window.location.href='/';throw new Error('No auth');}
 
 function loadUserInfo(){user=JSON.parse(localStorage.getItem('user')||'{}');document.getElementById('userName').textContent=`${user.first_name||''} ${user.last_name||''}`;populateDateSelects()}
 function populateDateSelects(){const d=document.getElementById('trainerBirthDay'),m=document.getElementById('trainerBirthMonth'),y=document.getElementById('trainerBirthYear');for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i;d.appendChild(o)}['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'].forEach((n,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=n;m.appendChild(o)});const cy=new Date().getFullYear();for(let i=cy;i>=1940;i--){const o=document.createElement('option');o.value=i;o.textContent=i;y.appendChild(o)}}
-function switchTab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));event.target.classList.add('active');document.getElementById(`tab-${t}`).classList.add('active');if(t==='trainers'&&trainers.length===0)loadTrainers();if(t==='athletes'&&allAthletes.length===0)loadAthletes();if(t==='groups'&&groups.length===0)loadGroups();if(t==='belts'&&allBelts.length===0)loadBelts();if(t==='events'&&allEvents.length===0)loadEvents()}
+function switchTab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));event.target.classList.add('active');document.getElementById(`tab-${t}`).classList.add('active');if(t==='trainers'&&trainers.length===0)loadTrainers();if(t==='athletes'&&allAthletes.length===0)loadAthletes();if(t==='groups'&&groups.length===0)loadGroups();if(t==='belts'&&allBelts.length===0)loadBelts();if(t==='events'&&allEvents.length===0)loadEvents();if(t==='news'&&!newsLoaded){loadSources();loadNews();loadSearchParams();} else if(t==='news'){loadSearchParams();}}
 async function loadClubs(){try{document.getElementById('loadingClubs').style.display='block';document.getElementById('clubsTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list'})});let d=await r.json();clubs=d.merged||d||[];document.getElementById('loadingClubs').style.display='none';document.getElementById('clubsTable').style.display='table';renderClubsTable();const sel=document.getElementById('groupClubId');sel.innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}catch(e){console.error(e)}}
 function renderClubsTable(){const t=document.getElementById('clubsTableBody');t.innerHTML='';clubs.forEach(c=>{const r=document.createElement('tr');r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 function addClub(){document.getElementById('clubModalTitle').textContent='Добавить клуб';document.getElementById('clubId').value='';document.getElementById('clubName').value='';document.getElementById('clubAddress').value='';openClubModal()}
@@ -360,7 +570,7 @@ async function loadGroupsForTrainer(trainerId){try{const allGroups=groups||[];le
 async function saveTrainer(e){e.preventDefault();const id=document.getElementById('trainerId').value;const email=document.getElementById('trainerEmail').value.trim();const password=document.getElementById('trainerPassword').value;const firstName=document.getElementById('trainerFirstName').value.trim();const lastName=document.getElementById('trainerLastName').value.trim();const club_id=document.getElementById('trainerClubId').value;const day=document.getElementById('trainerBirthDay').value;const month=document.getElementById('trainerBirthMonth').value;const year=document.getElementById('trainerBirthYear').value;const birthDate=(day&&month&&year)?`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`:'';const phone=document.getElementById('trainerPhone').value.trim();const qualification=document.getElementById('trainerQualification').value.trim();const selectedGroups=Array.from(document.querySelectorAll('#trainerGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));if(!club_id){alert('Выберите клуб!');return}if(id){const data={id:parseInt(id),email,first_name:firstName,last_name:lastName,phone,qualification,club_id:parseInt(club_id)};if(birthDate)data.birth_date=birthDate;if(password)data.password=password;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});const text2=await r2.text();let currentGroupIds=[];if(text2){const d2=JSON.parse(text2);const currentGroups=d2.merged||d2||[];currentGroupIds=currentGroups.map(g=>g.group_id).filter(Boolean)}const toRemove=currentGroupIds.filter(gid=>!selectedGroups.includes(gid));const toAdd=selectedGroups.filter(gid=>!currentGroupIds.includes(gid));for(let gid of toRemove){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'remove',data:{trainer_id:parseInt(id),group_id:gid}})})}for(let gid of toAdd){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(id),group_id:gid}})})}closeTrainerModal();alert('Тренер обновлен!');await loadTrainers()}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}else{try{const registerData={action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName,phone,qualification,club_id:parseInt(club_id)};if(birthDate)registerData.birth_date=birthDate;const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(registerData)});const res=await r.json();if(!r.ok){alert('Ошибка: '+(res.error||'Не удалось создать тренера'));return}let newTrainerId=res.user_id||res.id||res.userId;if(!newTrainerId&&(res.success||res.token)){await new Promise(resolve=>setTimeout(resolve,500));const listRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});const listData=await listRes.json();const allTrainers=listData.merged||listData||[];const newTrainer=allTrainers.find(t=>t.email===email);if(newTrainer){newTrainerId=newTrainer.id}}if(newTrainerId&&selectedGroups.length>0){for(let gid of selectedGroups){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(newTrainerId),group_id:gid}})})}}closeTrainerModal();alert('✅ Тренер создан!');await loadTrainers()}catch(err){console.error(err);alert('❌ Ошибка: '+err.message)}}}
 async function deleteTrainer(id){if(!confirm('Удалить тренера?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Тренер удален!');await loadTrainers()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
 async function loadAthletes(){try{document.getElementById('loadingAthletes').style.display='block';document.getElementById('athletesTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});let d=await r.json();allAthletes=Array.isArray(d)?d:(d.merged||[]);console.log('Athletes loaded:',allAthletes);const clubsSet=new Set(allAthletes.map(a=>a.club_names).filter(Boolean));document.getElementById('athleteClubFilter').innerHTML='<option value="">Все</option>'+Array.from(clubsSet).map(c=>`<option value="${c}">${c}</option>`).join('');const groupsSet=new Set();allAthletes.forEach(a=>{if(a.group_names&&a.group_names!=='Без группы'){a.group_names.split(', ').forEach(g=>groupsSet.add(g))}});document.getElementById('athleteGroupFilter').innerHTML='<option value="">Все</option>'+Array.from(groupsSet).map(g=>`<option value="${g}">${g}</option>`).join('');document.getElementById('loadingAthletes').style.display='none';document.getElementById('athletesTable').style.display='table';renderAthletesTable(allAthletes)}catch(e){console.error('loadAthletes error:',e);document.getElementById('loadingAthletes').textContent='Ошибка загрузки: '+e.message;allAthletes=[]}}
-function renderAthletesTable(data){const t=document.getElementById('athletesTableBody');t.innerHTML='';data.forEach(a=>{const r=document.createElement('tr');r.innerHTML=`<td><img src="${a.photo_url||'https://via.placeholder.com/50'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteAthlete(${a.id})">🗑️</button></div></td>`;t.appendChild(r)})}
+function renderAthletesTable(data){const t=document.getElementById('athletesTableBody');t.innerHTML='';data.forEach(a=>{const r=document.createElement('tr');r.innerHTML=`<td><img src="${a.photo_url||'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect width="50" height="50" rx="25" fill="%230066CC"%2F%3E%3Ctext x="50%25" y="55%25" text-anchor="middle" fill="white" font-size="18" font-family="sans-serif" dy=".1em"%3E%3F%3C%2Ftext%3E%3C%2Fsvg%3E'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteAthlete(${a.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 async function deleteAthlete(id){if(!confirm('Удалить спортсмена?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Спортсмен удален!');await loadAthletes()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
 function filterAthletes(){const search=(document.getElementById('athleteSearch')?.value||'').toLowerCase();const club=document.getElementById('athleteClubFilter')?.value||'';const group=document.getElementById('athleteGroupFilter')?.value||'';const filtered=allAthletes.filter(a=>{const name=`${a.first_name} ${a.last_name}`.toLowerCase();if(search&&!name.includes(search))return false;if(club&&a.club_names!==club)return false;if(group&&(!a.group_names||!a.group_names.includes(group)))return false;return true});renderAthletesTable(filtered)}
 document.getElementById('athleteSearch')?.addEventListener('input',filterAthletes);document.getElementById('athleteClubFilter')?.addEventListener('change',filterAthletes);document.getElementById('athleteGroupFilter')?.addEventListener('change',filterAthletes);
@@ -504,6 +714,7 @@ async function editEvent(id){
 async function saveEvent(e){
   e.preventDefault();
   const id=document.getElementById('eventId').value;
+  const newsId=document.getElementById('pendingNewsId')?document.getElementById('pendingNewsId').value:'';
   const title=document.getElementById('eventName').value.trim();
   const event_date=document.getElementById('eventDate').value;
   const registration_deadline=document.getElementById('eventDeadline').value||null;
@@ -522,8 +733,22 @@ async function saveEvent(e){
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'events',action:id?'update':'create',data})});
     const res=await r.json();
     const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-    if(result&&result.id){closeEventModal();alert(id?'Мероприятие обновлено!':'Мероприятие создано!');await loadEvents();}
-    else{alert('Ошибка: '+(result?.error||JSON.stringify(res)));}
+    if(result&&result.id){
+      closeEventModal();
+      // If created from news — mark it as added
+      if(newsId){
+        if(document.getElementById('pendingNewsId')) document.getElementById('pendingNewsId').value='';
+        if(document.getElementById('newsSourceRef')) document.getElementById('newsSourceRef').style.display='none';
+        try{
+          await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({token,resource:'news_items',action:'update',data:{id:parseInt(newsId),status:'added'}})});
+          const item=allNews.find(n=>n.id===parseInt(newsId));
+          if(item){item.status='added';updateNewsStats();filterNews();}
+        }catch(_){}
+      }
+      alert(id?'Мероприятие обновлено!':'Мероприятие создано!');
+      await loadEvents();
+    } else{alert('Ошибка: '+(result?.error||JSON.stringify(res)));}
   }catch(err){alert('Ошибка: '+err.message)}
 }
 async function deleteEvent(id){
@@ -541,6 +766,294 @@ function openBeltModal(){document.getElementById('beltModal').classList.add('act
 function closeBeltModal(){document.getElementById('beltModal').classList.remove('active');document.body.style.overflow=''}
 function openEventModal(){document.getElementById('eventModal').classList.add('active');document.body.style.overflow='hidden'}
 function closeEventModal(){document.getElementById('eventModal').classList.remove('active');document.body.style.overflow=''}
+
+// ===== AI NEWS =====
+let allNews=[], allSources=[], newsLoaded=false;
+
+function updateNewsStats(){
+  const total=allNews.length;
+  const nNew=allNews.filter(n=>n.status==='new'||!n.status).length;
+  const nAdded=allNews.filter(n=>n.status==='added').length;
+  document.getElementById('nsTotal').textContent=total;
+  document.getElementById('nsNew').textContent=nNew;
+  document.getElementById('nsAdded').textContent=nAdded;
+  document.getElementById('nsSources').textContent=allSources.length;
+  if(total>0) document.getElementById('newsStatsBar').style.display='flex';
+}
+
+async function loadNews(){
+  document.getElementById('loadingNews').style.display='block';
+  document.getElementById('emptyNews').style.display='none';
+  document.getElementById('newsCards').innerHTML='';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_items',action:'list',data:{director_id:user.id}})});
+    const d=await r.json();
+    allNews=(d.merged||d||[]);
+    // populate source filter
+    const srcSel=document.getElementById('newsSourceFilter');
+    const domains=new Set(allNews.map(n=>n.source_url).filter(Boolean));
+    srcSel.innerHTML='<option value="">Все источники</option>'+
+      [...domains].map(u=>`<option value="${u}">${u.replace(/^https?:\/\//,'').split('/')[0].substring(0,35)}</option>`).join('');
+    document.getElementById('loadingNews').style.display='none';
+    updateNewsStats();
+    filterNews();
+    newsLoaded=true;
+  }catch(e){
+    document.getElementById('loadingNews').style.display='none';
+    document.getElementById('loadingNews').textContent='Ошибка загрузки';
+  }
+}
+
+function filterNews(){
+  const status=document.getElementById('newsStatusFilter').value;
+  const src=document.getElementById('newsSourceFilter').value;
+  const q=(document.getElementById('newsSearchInput').value||'').toLowerCase();
+  let filtered=allNews;
+  if(status) filtered=filtered.filter(n=>(n.status||'new')===status);
+  if(src) filtered=filtered.filter(n=>n.source_url===src);
+  if(q) filtered=filtered.filter(n=>(n.title||'').toLowerCase().includes(q)||(n.description||'').toLowerCase().includes(q));
+  renderNewsCards(filtered);
+}
+
+function renderNewsCards(news){
+  const container=document.getElementById('newsCards');
+  container.innerHTML='';
+  if(!news.length){document.getElementById('emptyNews').style.display='block';return;}
+  document.getElementById('emptyNews').style.display='none';
+  const statusLabel={new:'🆕 Новое',processed:'✅ Обработано',added:'📅 Добавлено',dismissed:'🚫 Отклонено'};
+  const srcIconMap={website:'🌐',rss:'📡',telegram:'✈️'};
+  news.forEach(n=>{
+    const card=document.createElement('div');
+    const st=n.status||'new';
+    card.className=`news-card status-${st}`;
+    const dateStr=n.event_date?new Date(n.event_date).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'}):'';
+    const srcDomain=n.source_url?n.source_url.replace(/^https?:\/\//,'').split('/')[0]:'';
+    const src=allSources.find(s=>s.url===n.source_url);
+    const srcIcon=src?srcIconMap[src.type]||'🔗':'🔗';
+    card.innerHTML=`
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.5rem">
+        <div class="news-card-title">${n.title||'Без названия'}</div>
+        <span class="ntag ntag-status-${st}" style="flex-shrink:0">${statusLabel[st]||st}</span>
+      </div>
+      <div class="news-card-meta">
+        ${dateStr?`<span class="ntag ntag-date">📅 ${dateStr}</span>`:''}
+        ${n.location?`<span class="ntag ntag-loc">📍 ${n.location}</span>`:''}
+        ${srcDomain?`<span class="ntag ntag-src">${srcIcon} ${srcDomain}</span>`:''}
+        ${n.entry_fee?`<span class="ntag ntag-fee">💰 ${n.entry_fee} грн</span>`:''}
+        ${n.event_type?`<span class="ntag ntag-type">${n.event_type}</span>`:''}
+      </div>
+      ${n.description?`<div class="news-card-desc">${n.description.substring(0,240)}${n.description.length>240?'…':''}</div>`:''}
+      <div class="news-card-actions">
+        ${st!=='added'
+          ?`<button class="btn-make-event" onclick="createEventFromNews(${n.id})">📅 Создать мероприятие</button>`
+          :`<span style="color:#28a745;font-weight:600;font-size:.83rem">✅ Уже в плане</span>`}
+        ${n.original_url?`<a href="${n.original_url}" target="_blank" class="btn-open-src">Источник ↗</a>`:
+          n.source_url?`<a href="${n.source_url}" target="_blank" class="btn-open-src">Источник ↗</a>`:''}
+        ${st!=='added'&&st!=='dismissed'
+          ?`<button class="btn-dismiss-news" onclick="dismissNews(${n.id})" title="Отклонить">✕</button>`:''}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+async function dismissNews(newsId){
+  if(!confirm('Отклонить эту новость?'))return;
+  try{
+    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_items',action:'update',data:{id:newsId,status:'dismissed'}})});
+    const item=allNews.find(n=>n.id===newsId);
+    if(item) item.status='dismissed';
+    updateNewsStats();
+    filterNews();
+  }catch(e){alert('Ошибка: '+e.message);}
+}
+
+async function createEventFromNews(newsId){
+  const n=allNews.find(x=>x.id===newsId);
+  if(!n)return;
+  document.getElementById('eventModalTitle').textContent='📅 Создать мероприятие из новости';
+  document.getElementById('eventId').value='';
+  document.getElementById('pendingNewsId').value=newsId;
+  document.getElementById('eventName').value=n.title||'';
+  document.getElementById('eventDate').value=n.event_date?n.event_date.split('T')[0]:'';
+  document.getElementById('eventDeadline').value='';
+  document.getElementById('eventLocation').value=n.location||'';
+  document.getElementById('eventDesc').value=n.description||'';
+  document.getElementById('eventBudget').value='';
+  document.getElementById('eventEntryFee').value=n.entry_fee||'';
+  document.getElementById('mapPreview').style.display='none';
+  if(n.location) setTimeout(previewMap,100);
+  if(groups.length===0) await loadGroups();
+  const sel=document.getElementById('eventClubIdFilter');
+  sel.innerHTML='<option value="">Все клубы</option>'+clubs.map(cl=>`<option value="${cl.id}">${cl.name}</option>`).join('');
+  document.getElementById('eventGroupsCheckboxes').innerHTML=groups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" checked>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');
+  // Show source reference
+  const srcUrl=n.original_url||n.source_url;
+  const refRow=document.getElementById('newsSourceRef');
+  const refLink=document.getElementById('newsSourceRefLink');
+  if(srcUrl){refRow.style.display='block';refLink.href=srcUrl;refLink.textContent=srcUrl;}
+  else refRow.style.display='none';
+  openEventModal();
+}
+
+
+// ── Sources ───────────────────────────────────────────────────────────────────
+async function loadSources(){
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_sources',action:'list',data:{director_id:user.id}})});
+    const d=await r.json();
+    allSources=(d.merged||d||[]);
+    renderSources();
+    document.getElementById('nsSources').textContent=allSources.length;
+  }catch(e){console.error('loadSources',e);}
+}
+
+function renderSources(){
+  const container=document.getElementById('sourcesList');
+  if(!allSources.length){
+    container.innerHTML='<div style="text-align:center;color:#bbb;padding:1.5rem;font-size:.85rem">Нет источников. Добавьте первый.</div>';
+    return;
+  }
+  const icons={website:'🌐',rss:'📡',telegram:'✈️'};
+  const freqLabel={daily:'Ежедневно',weekly:'Еженедельно',manual:'Вручную'};
+  container.innerHTML=allSources.map(s=>`
+    <div class="source-card">
+      <div class="source-icon">${icons[s.type]||'🌐'}</div>
+      <div class="source-card-body">
+        <div class="source-card-url" title="${s.url}">${s.url.replace(/^https?:\/\//,'').substring(0,45)}</div>
+        <div class="source-card-prompt" title="${s.prompt||''}">${s.prompt?s.prompt.substring(0,70)+'…':'Промпт не задан'}</div>
+        <div class="source-card-meta">${freqLabel[s.frequency]||''} · ${s.is_active?'<span style="color:#28a745">✅ Активен</span>':'<span style="color:#aaa">⏸ Неактивен</span>'}</div>
+      </div>
+      <div class="source-actions">
+        <button class="btn-icon btn-edit" onclick="editSource(${s.id})" title="Редактировать">✏️</button>
+        <button class="btn-icon btn-delete" onclick="deleteSource(${s.id})" title="Удалить">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openSourceModal(){
+  document.getElementById('sourceModalTitle').textContent='Добавить источник';
+  document.getElementById('sourceId').value='';
+  document.getElementById('sourceUrl').value='';
+  document.getElementById('sourceType').value='website';
+  document.getElementById('sourcePrompt').value='';
+  document.getElementById('sourceFrequency').value='daily';
+  document.getElementById('sourceActive').checked=true;
+  document.getElementById('sourceModal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeSourceModal(){
+  document.getElementById('sourceModal').classList.remove('active');
+  document.body.style.overflow='';
+}
+function editSource(id){
+  const s=allSources.find(x=>x.id===id);if(!s)return;
+  document.getElementById('sourceModalTitle').textContent='Редактировать источник';
+  document.getElementById('sourceId').value=s.id;
+  document.getElementById('sourceUrl').value=s.url||'';
+  document.getElementById('sourceType').value=s.type||'website';
+  document.getElementById('sourcePrompt').value=s.prompt||'';
+  document.getElementById('sourceFrequency').value=s.frequency||'daily';
+  document.getElementById('sourceActive').checked=!!s.is_active;
+  document.getElementById('sourceModal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+async function saveSource(e){
+  e.preventDefault();
+  const id=document.getElementById('sourceId').value;
+  const url=document.getElementById('sourceUrl').value.trim();
+  const type=document.getElementById('sourceType').value;
+  const prompt=document.getElementById('sourcePrompt').value.trim();
+  const frequency=document.getElementById('sourceFrequency').value;
+  const is_active=document.getElementById('sourceActive').checked;
+  if(!url||!prompt){alert('Заполните URL и промпт');return;}
+  const data={url,type,prompt,frequency,is_active,director_id:user.id};
+  if(id)data.id=parseInt(id);
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_sources',action:id?'update':'create',data})});
+    const res=await r.json();
+    const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+    if(result&&result.id){closeSourceModal();await loadSources();}
+    else alert('Ошибка: '+JSON.stringify(res));
+  }catch(err){alert('Ошибка: '+err.message);}
+}
+async function deleteSource(id){
+  if(!confirm('Удалить источник?'))return;
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_sources',action:'delete',data:{id}})});
+    const res=await r.json();
+    if(res.success||res.id) await loadSources();
+    else alert('Ошибка удаления');
+  }catch(err){alert('Ошибка: '+err.message);}
+}
+
+// ── Search params ─────────────────────────────────────────────────────────────
+function loadSearchParams(){
+  try{
+    const p=JSON.parse(localStorage.getItem('newsSearchParams')||'{}');
+    if(p.region) document.getElementById('searchRegion').value=p.region;
+    if(p.keywords) document.getElementById('searchKeywords').value=p.keywords;
+    if(p.date_from) document.getElementById('searchDateFrom').value=p.date_from;
+    if(p.date_to) document.getElementById('searchDateTo').value=p.date_to;
+  }catch(_){}
+}
+function saveSearchParams(){
+  const p={
+    region:document.getElementById('searchRegion').value,
+    keywords:document.getElementById('searchKeywords').value,
+    date_from:document.getElementById('searchDateFrom').value,
+    date_to:document.getElementById('searchDateTo').value
+  };
+  localStorage.setItem('newsSearchParams',JSON.stringify(p));
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({token,resource:'news_search_params',action:'upsert',data:{...p,director_id:user.id}})})
+    .catch(()=>{});
+  const btn=document.querySelector('#tab-news .btn-save');
+  if(btn){const o=btn.textContent;btn.textContent='✅ Сохранено';setTimeout(()=>btn.textContent=o,1500);}
+}
+
+// ── Run parsing ───────────────────────────────────────────────────────────────
+async function runParsing(){
+  const btn=document.getElementById('runParseBtn');
+  const txt=document.getElementById('runBtnText');
+  const log=document.getElementById('parseLog');
+  btn.disabled=true; btn.classList.add('running');
+  txt.textContent='Парсинг...';
+  log.style.display='block'; log.innerHTML='';
+  const addLog=(msg,color='#00e676')=>{
+    log.innerHTML+=`<div style="color:${color}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+    log.scrollTop=log.scrollHeight;
+  };
+  addLog('🚀 Запуск парсинга...');
+  const active=allSources.filter(s=>s.is_active);
+  addLog(`📡 Активных источников: ${active.length}`,'#aaa');
+  try{
+    const params=JSON.parse(localStorage.getItem('newsSearchParams')||'{}');
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_parse',action:'run',
+        data:{director_id:user.id,sources:active,...params}})});
+    const d=await r.json();
+    if(d.success||d.found_count!==undefined){
+      addLog(`✅ Найдено: ${d.found_count||0} новых мероприятий`,'#00e676');
+      addLog(`📊 Источников обработано: ${d.sources_processed||0}`,'#aaa');
+      if(d.errors&&d.errors.length) d.errors.forEach(e=>addLog('⚠️ '+e,'#ffb300'));
+      await loadNews();
+    }else{
+      addLog('❌ Ошибка: '+(d.error||JSON.stringify(d)),'#ff5252');
+    }
+  }catch(e){
+    addLog('❌ '+e.message,'#ff5252');
+  }finally{
+    btn.disabled=false; btn.classList.remove('running');
+    txt.textContent='▶ Запустить парсинг';
+  }
+}
 
 function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/'}
 loadUserInfo();loadClubs();
