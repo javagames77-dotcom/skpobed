@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI-Поиск мероприятий — InSkill</title>
+<style>
+:root{
+  --p:#0066CC; --s:#FF9933; --d:#0f172a; --l:#f1f5f9; --b:#e2e8f0;
+  --ok:#16a34a; --err:#dc2626; --warn:#d97706; --purple:#7c3aed;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--l);color:var(--d);min-height:100vh}
+
+/* HEADER */
+.hdr{background:var(--d);padding:.85rem 2rem;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.25)}
+.hdr-in{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:.6rem;font-size:1.2rem;font-weight:800;color:#fff;text-decoration:none;letter-spacing:-.02em}
+.logo-mark{width:30px;height:30px;background:var(--s);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.lbars{display:flex;gap:2px;align-items:flex-end}
+.lbar{width:4px;background:var(--d);border-radius:2px}
+.lbar:nth-child(1){height:8px}.lbar:nth-child(2){height:13px}.lbar:nth-child(3){height:18px}
+.logo span{color:var(--s)}
+.hdr-actions{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+.btn-back{display:flex;align-items:center;gap:.35rem;padding:.42rem .9rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:7px;color:rgba(255,255,255,.8);font-size:.84rem;font-weight:600;text-decoration:none;transition:all .18s}
+.btn-back:hover{background:rgba(255,255,255,.15);color:#fff}
+.btn-run{display:flex;align-items:center;gap:.4rem;padding:.44rem 1.05rem;background:var(--s);color:#fff;border:none;border-radius:7px;font-size:.84rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s}
+.btn-run:hover{background:#e68900;transform:translateY(-1px)}
+.btn-run:disabled{background:#555;cursor:not-allowed;transform:none}
+.spin{width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;display:none}
+.btn-run.busy .spin{display:block}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1a3354 60%,#0f172a 100%);padding:2.25rem 2rem 1.75rem;overflow:hidden;position:relative}
+.hero::before{content:'';position:absolute;top:-80px;right:5%;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,153,51,.12),transparent 65%);pointer-events:none}
+.hero-in{max-width:1400px;margin:0 auto;position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.hero-text h1{font-size:1.7rem;font-weight:800;color:#fff;letter-spacing:-.03em;margin-bottom:.3rem}
+.hero-text p{color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.55;max-width:520px}
+.stats-row{display:flex;gap:.85rem;flex-wrap:wrap;margin-top:1.1rem}
+.stat-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.65rem 1.1rem;text-align:center;min-width:80px}
+.stat-n{font-size:1.65rem;font-weight:800;color:#fff;line-height:1}
+.stat-l{font-size:.7rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-top:.15rem}
+
+/* TOOLBAR */
+.toolbar{background:#fff;border-bottom:1px solid var(--b);padding:.75rem 2rem;position:sticky;top:57px;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.tb-in{max-width:1400px;margin:0 auto;display:flex;gap:.65rem;align-items:center;flex-wrap:wrap}
+.tf{display:flex;align-items:center;gap:.35rem}
+.tf-lbl{font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;white-space:nowrap}
+.tf select,.tf input[type=text],.tf input[type=date]{padding:.4rem .7rem;border:1.5px solid var(--b);border-radius:6px;font-size:.82rem;font-family:inherit;color:var(--d);background:#fff;transition:border-color .15s}
+.tf select:focus,.tf input:focus{outline:none;border-color:var(--p)}
+.tf-search{flex:1;min-width:160px}
+.tf-search input{width:100%}
+.tb-count{margin-left:auto;font-size:.8rem;color:#94a3b8;font-weight:600;white-space:nowrap}
+
+/* LAYOUT */
+.wrap{max-width:1400px;margin:0 auto;padding:1.4rem 2rem;display:grid;grid-template-columns:1fr 316px;gap:1.4rem;align-items:start}
+@media(max-width:1024px){.wrap{grid-template-columns:1fr;padding:1rem}}
+
+/* NEWS CARD */
+.nc{background:#fff;border-radius:11px;padding:1.25rem 1.4rem;margin-bottom:.7rem;border-left:3px solid var(--p);box-shadow:0 1px 4px rgba(0,0,0,.05);transition:box-shadow .18s,transform .14s}
+.nc:hover{box-shadow:0 5px 20px rgba(0,0,0,.09);transform:translateY(-1px)}
+.nc.s-added{border-left-color:var(--ok);opacity:.72}
+.nc.s-dismissed{border-left-color:#cbd5e1;opacity:.48}
+.nc.s-new{border-left-color:var(--s)}
+.nc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.45rem}
+.nc-title{font-size:.98rem;font-weight:700;color:var(--d);line-height:1.35;flex:1}
+.nc-tags{display:flex;flex-wrap:wrap;gap:.28rem;margin-bottom:.55rem}
+.tg{display:inline-flex;align-items:center;gap:.18rem;padding:.13rem .52rem;border-radius:8px;font-size:.7rem;font-weight:700}
+.tg-date{background:#eff6ff;color:#1d4ed8}
+.tg-loc{background:#f0fdf4;color:#15803d}
+.tg-src{background:#faf5ff;color:var(--purple)}
+.tg-fee{background:#fffbeb;color:#92400e}
+.tg-type{background:#f0fdfa;color:#0f766e}
+.tg-st{padding:.15rem .6rem;border-radius:9px;font-size:.7rem;font-weight:700;flex-shrink:0}
+.tg-st.new{background:#fff7ed;color:#c2410c}
+.tg-st.processed{background:#f0fdf4;color:#15803d}
+.tg-st.added{background:#eff6ff;color:#1d4ed8}
+.tg-st.dismissed{background:#f8fafc;color:#94a3b8}
+.nc-desc{font-size:.86rem;color:#64748b;line-height:1.62;margin-bottom:.85rem}
+.nc-actions{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.btn-mkevent{display:flex;align-items:center;gap:.32rem;padding:.44rem 1rem;background:var(--s);color:#fff;border:none;border-radius:6px;font-size:.81rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-mkevent:hover{background:#d97706;transform:scale(1.02)}
+.btn-srclink{display:inline-flex;align-items:center;gap:.28rem;padding:.42rem .8rem;background:var(--l);border:1px solid var(--b);border-radius:6px;font-size:.81rem;font-weight:600;color:var(--p);text-decoration:none;transition:background .15s}
+.btn-srclink:hover{background:#dbeafe}
+.btn-dismiss{padding:.42rem .7rem;background:#fef2f2;border:none;border-radius:6px;color:var(--err);cursor:pointer;font-size:.81rem;transition:background .15s;line-height:1}
+.btn-dismiss:hover{background:#fee2e2}
+.added-ok{display:flex;align-items:center;gap:.32rem;font-size:.81rem;font-weight:700;color:var(--ok)}
+
+/* SKELETON */
+.sk-card{background:#fff;border-radius:11px;padding:1.25rem 1.4rem;margin-bottom:.7rem;border-left:3px solid #e2e8f0}
+.sk{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200%;animation:shim 1.3s infinite;border-radius:5px}
+@keyframes shim{0%{background-position:200%}100%{background-position:-200%}}
+
+/* EMPTY */
+.empty{background:#fff;border-radius:11px;padding:3.5rem 2rem;text-align:center}
+.empty-ico{font-size:3.5rem;margin-bottom:.9rem}
+.empty h3{font-size:1.05rem;font-weight:700;color:#475569;margin-bottom:.35rem}
+.empty p{font-size:.85rem;color:#94a3b8;line-height:1.6}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:1rem}
+.sc{background:#fff;border-radius:11px;box-shadow:0 1px 4px rgba(0,0,0,.05);overflow:hidden}
+.sc-hdr{padding:.85rem 1.1rem;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between}
+.sc-title{font-size:.86rem;font-weight:800;color:var(--d)}
+.sc-body{padding:.9rem 1rem}
+.btn-addsrc{padding:.3rem .75rem;background:var(--s);color:#fff;border:none;border-radius:6px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-addsrc:hover{background:#d97706}
+
+/* SOURCE ITEM */
+.src-item{display:flex;align-items:flex-start;gap:.6rem;padding:.65rem .75rem;border:1.5px solid var(--b);border-radius:8px;margin-bottom:.45rem;transition:border-color .15s}
+.src-item:hover,.src-item.on{border-color:var(--p);background:#f7fbff}
+.src-item:last-child{margin-bottom:0}
+.src-ico{font-size:1.25rem;flex-shrink:0;line-height:1;padding-top:.05rem}
+.src-body{flex:1;min-width:0}
+.src-url{font-size:.8rem;font-weight:700;color:var(--p);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.src-prompt{font-size:.73rem;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.15rem}
+.src-meta{font-size:.7rem;color:#cbd5e1;margin-top:.18rem}
+.src-btns{display:flex;gap:.25rem;flex-shrink:0;align-items:center}
+.sbtn{width:25px;height:25px;border:none;border-radius:5px;cursor:pointer;font-size:.73rem;display:flex;align-items:center;justify-content:center}
+.sbtn-e{background:#eff6ff;color:var(--p)}.sbtn-d{background:#fef2f2;color:var(--err)}
+.sbtn:hover{opacity:.75}
+
+/* PARAMS FORM */
+.pf{margin-bottom:.85rem}
+.pf label{display:block;font-size:.74rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.04em;margin-bottom:.32rem}
+.pf input,.pf select{width:100%;padding:.58rem .78rem;border:1.5px solid var(--b);border-radius:7px;font-size:.86rem;font-family:inherit;color:var(--d);background:#fff;transition:border-color .15s}
+.pf input:focus,.pf select:focus{outline:none;border-color:var(--p)}
+.pf-2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.btn-savep{width:100%;padding:.6rem;background:var(--p);color:#fff;border:none;border-radius:7px;font-weight:700;font-size:.86rem;cursor:pointer;font-family:inherit;margin-top:.2rem;transition:background .15s}
+.btn-savep:hover{background:#0052a3}
+
+/* PARSE LOG */
+.plog{background:#0f172a;color:#4ade80;border-radius:7px;padding:.8rem;font-family:'Courier New',monospace;font-size:.74rem;max-height:145px;overflow-y:auto;margin-top:.7rem;display:none;line-height:1.55}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:1000;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px)}
+.modal.on{display:flex}
+.mc{background:#fff;border-radius:14px;width:100%;max-width:640px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.22)}
+.mh{padding:1.25rem 1.4rem;border-bottom:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1}
+.mh-title{font-size:1.15rem;font-weight:800;color:var(--d)}
+.mclose{width:28px;height:28px;border:none;background:var(--l);border-radius:50%;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center}
+.mb{padding:1.25rem 1.4rem}
+.mf{padding:1rem 1.4rem;border-top:1px solid var(--b);display:flex;gap:.65rem;justify-content:flex-end;position:sticky;bottom:0;background:#fff}
+.fg{margin-bottom:.95rem}
+.fg label{display:block;font-size:.8rem;font-weight:700;color:#64748b;margin-bottom:.3rem}
+.fi{width:100%;padding:.62rem .82rem;border:1.5px solid var(--b);border-radius:7px;font-size:.88rem;font-family:inherit;transition:border-color .15s}
+.fi:focus{outline:none;border-color:var(--p)}
+.fg-2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.gbox{max-height:170px;overflow-y:auto;border:1.5px solid var(--b);padding:.6rem;border-radius:7px;background:#f9fbff}
+.gchk{display:block;padding:.38rem .45rem;cursor:pointer;border-radius:5px;font-size:.84rem}
+.gchk:hover{background:#eff6ff}
+.gchk input{margin-right:.38rem;accent-color:var(--p)}
+.map-prev{margin-top:.45rem;border-radius:7px;overflow:hidden;display:none}
+.map-prev iframe{display:block;width:100%;height:175px;border:0}
+.src-ref-box{display:block;padding:.5rem .75rem;background:#f0f9ff;border:1.5px dashed var(--p);border-radius:7px;color:var(--p);font-size:.78rem;word-break:break-all;text-decoration:none;margin-top:.2rem}
+.mc-src{max-width:520px}
+.btn-cancel{padding:.58rem 1.1rem;background:var(--l);border:none;border-radius:7px;font-weight:700;font-size:.86rem;cursor:pointer;font-family:inherit}
+.btn-save{padding:.58rem 1.3rem;background:var(--s);color:#fff;border:none;border-radius:7px;font-weight:700;font-size:.86rem;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn-save:hover{background:#d97706}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.4rem;right:1.4rem;padding:.65rem 1.1rem;background:#1e293b;color:#fff;border-radius:9px;font-size:.85rem;font-weight:600;z-index:9999;opacity:0;transform:translateY(7px);transition:all .22s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--ok)}.toast.err{background:var(--err)}
+
+@media(max-width:640px){
+  .hero{padding:1.4rem 1rem}.hero-text h1{font-size:1.35rem}
+  .toolbar{padding:.65rem 1rem}.wrap{padding:.9rem 1rem}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a href="/" class="logo">
+      <div class="logo-mark"><div class="lbars"><div class="lbar"></div><div class="lbar"></div><div class="lbar"></div></div></div>
+      InSkill<span>.online</span>
+    </a>
+    <div class="hdr-actions">
+      <button class="btn-run" id="runBtn" onclick="runParsing()">
+        <div class="spin"></div>
+        <span id="runTxt">▶ Запустить парсинг</span>
+      </button>
+      <a href="/director-dashboard.html" class="btn-back">← Панель директора</a>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-in">
+    <div class="hero-text">
+      <h1>🤖 AI-Поиск мероприятий</h1>
+      <p>Автоматический мониторинг сайтов и Telegram-каналов · OpenAI анализирует контент · Одним кликом создать мероприятие в плане</p>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-n" id="stAll">—</div><div class="stat-l">Всего</div></div>
+        <div class="stat-box"><div class="stat-n" id="stNew" style="color:#fb923c">—</div><div class="stat-l">Новых</div></div>
+        <div class="stat-box"><div class="stat-n" id="stAdded" style="color:#4ade80">—</div><div class="stat-l">Добавлено</div></div>
+        <div class="stat-box"><div class="stat-n" id="stSrc" style="color:#a78bfa">—</div><div class="stat-l">Источников</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="tb-in">
+    <div class="tf"><span class="tf-lbl">Статус</span>
+      <select id="fStatus" onchange="filter()">
+        <option value="">Все</option>
+        <option value="new">🆕 Новые</option>
+        <option value="processed">✅ Обработанные</option>
+        <option value="added">📅 Добавлены в план</option>
+        <option value="dismissed">🚫 Отклонённые</option>
+      </select>
+    </div>
+    <div class="tf"><span class="tf-lbl">Источник</span>
+      <select id="fSrc" onchange="filter()"><option value="">Все</option></select>
+    </div>
+    <div class="tf tf-search"><span class="tf-lbl">Поиск</span>
+      <input type="text" id="fQ" placeholder="Название или описание..." oninput="filter()">
+    </div>
+    <div class="tf"><span class="tf-lbl">От</span>
+      <input type="date" id="fD1" onchange="filter()" style="width:138px">
+    </div>
+    <div class="tf"><span class="tf-lbl">До</span>
+      <input type="date" id="fD2" onchange="filter()" style="width:138px">
+    </div>
+    <span class="tb-count" id="fCnt"></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- FEED -->
+  <div>
+    <div id="skelEl">
+      <div class="sk-card"><div class="sk" style="height:1.25rem;width:62%;margin-bottom:.65rem"></div><div class="sk" style="height:.82rem;width:38%;margin-bottom:.45rem"></div><div class="sk" style="height:.78rem;width:88%"></div></div>
+      <div class="sk-card"><div class="sk" style="height:1.25rem;width:50%;margin-bottom:.65rem"></div><div class="sk" style="height:.82rem;width:30%;margin-bottom:.45rem"></div><div class="sk" style="height:.78rem;width:80%"></div></div>
+      <div class="sk-card"><div class="sk" style="height:1.25rem;width:70%;margin-bottom:.65rem"></div><div class="sk" style="height:.82rem;width:44%;margin-bottom:.45rem"></div><div class="sk" style="height:.78rem;width:84%"></div></div>
+    </div>
+    <div id="feed" style="display:none"></div>
+    <div id="emptyEl" class="empty" style="display:none">
+      <div class="empty-ico">🤖</div>
+      <h3>Мероприятий пока не найдено</h3>
+      <p>Добавьте источники в правой панели,<br>настройте параметры и нажмите «Запустить парсинг»</p>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <!-- Sources -->
+    <div class="sc">
+      <div class="sc-hdr">
+        <span class="sc-title">📡 Источники мониторинга</span>
+        <button class="btn-addsrc" onclick="openSM()">+ Добавить</button>
+      </div>
+      <div class="sc-body" id="srcList">
+        <div style="text-align:center;color:#cbd5e1;padding:1.5rem;font-size:.82rem">Загрузка источников...</div>
+      </div>
+    </div>
+
+    <!-- Search params -->
+    <div class="sc">
+      <div class="sc-hdr"><span class="sc-title">⚙️ Параметры поиска</span></div>
+      <div class="sc-body">
+        <div class="pf"><label>Регион / Город</label><input type="text" id="pReg" placeholder="Полтава, Харків, Київ..."></div>
+        <div class="pf"><label>Ключевые слова</label><input type="text" id="pKw" placeholder="борьба, дзюдо, турнир..."></div>
+        <div class="pf-2">
+          <div class="pf"><label>Дата от</label><input type="date" id="pD1"></div>
+          <div class="pf"><label>Дата до</label><input type="date" id="pD2"></div>
+        </div>
+        <button class="btn-savep" onclick="saveParams()">💾 Сохранить параметры</button>
+        <div class="plog" id="pLog"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="modal" id="evModal">
+<div class="mc">
+  <div class="mh">
+    <span class="mh-title" id="evMTitle">📅 Создать мероприятие</span>
+    <button class="mclose" onclick="closeEM()">✕</button>
+  </div>
+  <div class="mb">
+    <form id="evForm" onsubmit="saveEvent(event)">
+      <input type="hidden" id="evNewsId">
+      <div class="fg"><label>Название *</label><input type="text" class="fi" id="evName" required></div>
+      <div class="fg-2">
+        <div class="fg"><label>Дата мероприятия *</label><input type="date" class="fi" id="evDate" required></div>
+        <div class="fg"><label>Дедлайн регистрации</label><input type="date" class="fi" id="evDl"></div>
+      </div>
+      <div class="fg">
+        <label>Место проведения</label>
+        <input type="text" class="fi" id="evLoc" placeholder="Адрес, зал, город..." oninput="doMap()">
+        <div class="map-prev" id="mapPrev"><iframe id="mapFr" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+      </div>
+      <div class="fg"><label>Описание</label><textarea class="fi" id="evDesc" rows="4" style="resize:vertical"></textarea></div>
+      <div class="fg-2">
+        <div class="fg"><label>Бюджет (грн)</label><input type="number" class="fi" id="evBudget" min="0"></div>
+        <div class="fg"><label>Сумма взноса (грн)</label><input type="number" class="fi" id="evFee" min="0"></div>
+      </div>
+      <div class="fg">
+        <label style="display:flex;justify-content:space-between;align-items:center">
+          <span>Группы (видят мероприятие)</span>
+          <span style="font-size:.76rem;color:var(--p);cursor:pointer" onclick="setAllG(true)">Выбрать все</span>
+        </label>
+        <div class="gbox" id="evGroups"><div style="color:#94a3b8;font-size:.82rem;padding:.5rem">Загрузка групп...</div></div>
+      </div>
+      <div class="fg" id="srcRefRow" style="display:none">
+        <label>📰 Источник новости</label>
+        <a class="src-ref-box" id="srcRefA" href="#" target="_blank">—</a>
+      </div>
+    </form>
+  </div>
+  <div class="mf">
+    <button class="btn-cancel" onclick="closeEM()">Отмена</button>
+    <button class="btn-save" onclick="document.getElementById('evForm').requestSubmit()">📅 Создать мероприятие</button>
+  </div>
+</div>
+</div>
+
+<!-- SOURCE MODAL -->
+<div class="modal" id="srcModal">
+<div class="mc mc-src">
+  <div class="mh">
+    <span class="mh-title" id="srcMTitle">Добавить источник</span>
+    <button class="mclose" onclick="closeSM()">✕</button>
+  </div>
+  <div class="mb">
+    <form id="srcForm" onsubmit="saveSource(event)">
+      <input type="hidden" id="srcId">
+      <div class="fg">
+        <label>URL источника *</label>
+        <input type="url" class="fi" id="srcUrl" placeholder="https://..." required>
+        <small style="color:#94a3b8;margin-top:.28rem;display:block">Сайт, RSS-лента или Telegram (https://t.me/s/channel)</small>
+      </div>
+      <div class="fg-2">
+        <div class="fg">
+          <label>Тип источника</label>
+          <select class="fi" id="srcType">
+            <option value="website">🌐 Веб-сайт</option>
+            <option value="rss">📡 RSS-лента</option>
+            <option value="telegram">✈️ Telegram</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Частота парсинга</label>
+          <select class="fi" id="srcFreq">
+            <option value="daily">Ежедневно</option>
+            <option value="weekly">Еженедельно</option>
+            <option value="manual">Только вручную</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Промпт для AI *</label>
+        <textarea class="fi" id="srcPrompt" rows="4" style="resize:vertical" required
+          placeholder="Найди анонсы соревнований и турниров по борьбе. Извлеки: название, дату, место, стоимость участия, краткое описание. Верни только мероприятия с точными датами. Игнорируй отчёты о прошедших."></textarea>
+        <small style="color:#94a3b8;margin-top:.28rem;display:block">Чем конкретнее — тем лучше результат AI</small>
+      </div>
+      <div class="fg">
+        <label style="display:flex;align-items:center;gap:.45rem;cursor:pointer;font-size:.9rem;font-weight:600;text-transform:none;letter-spacing:0">
+          <input type="checkbox" id="srcActive" checked style="width:16px;height:16px;accent-color:var(--p)">
+          Активен (включить в автопарсинг)
+        </label>
+      </div>
+    </form>
+  </div>
+  <div class="mf">
+    <button class="btn-cancel" onclick="closeSM()">Отмена</button>
+    <button class="btn-save" onclick="document.getElementById('srcForm').requestSubmit()">Сохранить</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
+let token = localStorage.getItem('token');
+let user  = JSON.parse(localStorage.getItem('user') || '{}');
+if (!token) { window.location.href = '/'; throw 0; }
+
+let news = [], sources = [], groups = [];
+
+// ─── toast ────────────────────────────────────────────────────────────────────
+const t = document.getElementById('toast');
+function toast(msg, type = '') {
+  t.textContent = msg; t.className = `toast show ${type}`;
+  setTimeout(() => t.className = 'toast', 2600);
+}
+
+// ─── stats ────────────────────────────────────────────────────────────────────
+function stats() {
+  document.getElementById('stAll').textContent   = news.length;
+  document.getElementById('stNew').textContent   = news.filter(n => (n.status||'new') === 'new').length;
+  document.getElementById('stAdded').textContent = news.filter(n => n.status === 'added').length;
+  document.getElementById('stSrc').textContent   = sources.length;
+}
+
+// ─── init ─────────────────────────────────────────────────────────────────────
+async function init() {
+  loadParams();
+  await Promise.all([loadSources(), loadGroups()]);
+  await loadNews();
+}
+
+// ─── load ─────────────────────────────────────────────────────────────────────
+async function loadNews() {
+  try {
+    const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, resource:'news_items', action:'list', data:{ director_id: user.id } }) });
+    const d = await r.json();
+    news = d.merged || d || [];
+    // source filter
+    const sel = document.getElementById('fSrc');
+    const doms = new Set(news.map(n => n.source_url).filter(Boolean));
+    sel.innerHTML = '<option value="">Все</option>' +
+      [...doms].map(u => `<option value="${u}">${u.replace(/^https?:\/\//,'').split('/')[0].slice(0,38)}</option>`).join('');
+  } catch(e) { news = []; }
+  document.getElementById('skelEl').style.display = 'none';
+  document.getElementById('feed').style.display = 'block';
+  stats(); filter();
+}
+
+async function loadSources() {
+  try {
+    const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, resource:'news_sources', action:'list', data:{ director_id: user.id } }) });
+    const d = await r.json();
+    sources = d.merged || d || [];
+    renderSources();
+  } catch(e) { console.error(e); }
+}
+
+async function loadGroups() {
+  try {
+    const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, resource:'groups', action:'list', data:{} }) });
+    const d = await r.json();
+    groups = d.merged || d || [];
+  } catch(e) {}
+}
+
+// ─── filter & render ──────────────────────────────────────────────────────────
+function filter() {
+  const st = document.getElementById('fStatus').value;
+  const src = document.getElementById('fSrc').value;
+  const q = document.getElementById('fQ').value.toLowerCase();
+  const d1 = document.getElementById('fD1').value;
+  const d2 = document.getElementById('fD2').value;
+  let list = news.filter(n => {
+    if (st  && (n.status||'new') !== st) return false;
+    if (src && n.source_url !== src) return false;
+    if (q   && !(n.title||'').toLowerCase().includes(q) && !(n.description||'').toLowerCase().includes(q)) return false;
+    if (d1  && n.event_date && n.event_date < d1) return false;
+    if (d2  && n.event_date && n.event_date > d2) return false;
+    return true;
+  });
+  document.getElementById('fCnt').textContent = `Показано: ${list.length} из ${news.length}`;
+  renderNews(list);
+}
+
+function renderNews(list) {
+  const feed = document.getElementById('feed');
+  if (!list.length) {
+    document.getElementById('emptyEl').style.display = 'block';
+    feed.innerHTML = ''; return;
+  }
+  document.getElementById('emptyEl').style.display = 'none';
+  const stL = { new:'🆕 Новое', processed:'✅ Обработано', added:'📅 Добавлено', dismissed:'🚫 Отклонено' };
+  const sico = { website:'🌐', rss:'📡', telegram:'✈️' };
+  feed.innerHTML = list.map(n => {
+    const st = n.status || 'new';
+    const ds = n.event_date ? new Date(n.event_date).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'}) : '';
+    const dom = n.source_url ? n.source_url.replace(/^https?:\/\//,'').split('/')[0] : '';
+    const src = sources.find(s => s.url === n.source_url);
+    const ico = src ? sico[src.type]||'🔗' : '🔗';
+    const link = n.original_url || n.source_url || '';
+    return `<div class="nc s-${st}">
+      <div class="nc-top">
+        <div class="nc-title">${n.title||'Без названия'}</div>
+        <span class="tg-st ${st}">${stL[st]||st}</span>
+      </div>
+      <div class="nc-tags">
+        ${ds ? `<span class="tg tg-date">📅 ${ds}</span>` : ''}
+        ${n.location ? `<span class="tg tg-loc">📍 ${n.location}</span>` : ''}
+        ${dom ? `<span class="tg tg-src">${ico} ${dom}</span>` : ''}
+        ${n.entry_fee ? `<span class="tg tg-fee">💰 ${n.entry_fee} грн</span>` : ''}
+        ${n.event_type ? `<span class="tg tg-type">${n.event_type}</span>` : ''}
+      </div>
+      ${n.description ? `<div class="nc-desc">${n.description.slice(0,270)}${n.description.length>270?'…':''}</div>` : ''}
+      <div class="nc-actions">
+        ${st !== 'added'
+          ? `<button class="btn-mkevent" onclick="openEM(${n.id})">📅 Создать мероприятие</button>`
+          : `<span class="added-ok">✅ Уже добавлено в план</span>`}
+        ${link ? `<a href="${link}" target="_blank" class="btn-srclink">Источник ↗</a>` : ''}
+        ${st !== 'added' && st !== 'dismissed'
+          ? `<button class="btn-dismiss" onclick="dismiss(${n.id})" title="Отклонить">✕</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── dismiss ──────────────────────────────────────────────────────────────────
+async function dismiss(id) {
+  if (!confirm('Отклонить эту новость?')) return;
+  try {
+    await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, resource:'news_items', action:'update', data:{ id, status:'dismissed' } }) });
+    const item = news.find(n => n.id === id);
+    if (item) item.status = 'dismissed';
+    stats(); filter(); toast('Отклонено');
+  } catch(e) { toast('Ошибка','err'); }
+}
+
+// ─── event modal ──────────────────────────────────────────────────────────────
+async function openEM(newsId) {
+  const n = news.find(x => x.id === newsId);
+  if (!n) return;
+  document.getElementById('evMTitle').textContent = '📅 Создать мероприятие из новости';
+  document.getElementById('evNewsId').value = newsId;
+  document.getElementById('evName').value   = n.title || '';
+  document.getElementById('evDate').value   = n.event_date ? n.event_date.split('T')[0] : '';
+  document.getElementById('evDl').value     = '';
+  document.getElementById('evLoc').value    = n.location || '';
+  document.getElementById('evDesc').value   = n.description || '';
+  document.getElementById('evBudget').value = '';
+  document.getElementById('evFee').value    = n.entry_fee || '';
+  document.getElementById('mapPrev').style.display = 'none';
+  if (n.location) setTimeout(doMap, 120);
+  // Groups
+  if (!groups.length) await loadGroups();
+  document.getElementById('evGroups').innerHTML = groups.map(g =>
+    `<label class="gchk"><input type="checkbox" value="${g.id}" checked>${g.name}${g.club_name?` <span style="color:#94a3b8">(${g.club_name})</span>`:''}</label>`
+  ).join('');
+  // Source ref
+  const ref = n.original_url || n.source_url;
+  if (ref) {
+    document.getElementById('srcRefRow').style.display = 'block';
+    const a = document.getElementById('srcRefA');
+    a.href = ref; a.textContent = ref.replace(/^https?:\/\//,'').slice(0,75) + (ref.length > 80 ? '…' : '');
+  } else document.getElementById('srcRefRow').style.display = 'none';
+  document.getElementById('evModal').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function closeEM() {
+  document.getElementById('evModal').classList.remove('on');
+  document.body.style.overflow = '';
+}
+function setAllG(v) { document.querySelectorAll('#evGroups input').forEach(cb => cb.checked = v); }
+
+async function saveEvent(e) {
+  e.preventDefault();
+  const newsId  = document.getElementById('evNewsId').value;
+  const title   = document.getElementById('evName').value.trim();
+  const ev_date = document.getElementById('evDate').value;
+  const dl      = document.getElementById('evDl').value || null;
+  const loc     = document.getElementById('evLoc').value.trim();
+  const desc    = document.getElementById('evDesc').value.trim();
+  const budget  = document.getElementById('evBudget').value;
+  const fee     = document.getElementById('evFee').value;
+  const gids    = Array.from(document.querySelectorAll('#evGroups input:checked')).map(cb => parseInt(cb.value));
+  if (!title || !ev_date) { alert('Заполните название и дату'); return; }
+  const data = { title, event_date: ev_date, registration_deadline: dl, location: loc,
+    description: desc, budget: budget ? parseInt(budget) : null,
+    entry_fee: fee ? parseInt(fee) : null, group_ids: gids, created_by: user.id };
+  try {
+    const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, resource:'events', action:'create', data }) });
+    const res = await r.json();
+    const result = (res.merged && res.merged[0]) || (Array.isArray(res) ? res[0] : res);
+    if (result && result.id) {
+      if (newsId) {
+        await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ token, resource:'news_items', action:'update',
+            data:{ id: parseInt(newsId), status:'added' } }) });
+        const item = news.find(n => n.id === parseInt(newsId));
+        if (item) item.status = 'added';
+      }
+      closeEM();
+      toast('✅ Мероприятие создано!','ok');
+      stats(); filter();
+    } else alert('Ошибка: ' + JSON.stringify(res));
+  } catch(err) { alert('Ошибка: ' + err.message); }
+}
+
+// ─── map ──────────────────────────────────────────────────────────────────────
+let _mt = null;
+async function doMap() {
+  const loc = document.getElementById('evLoc').value.trim();
+  const pre = document.getElementById('mapPrev'), fr = document.getElementById('mapFr');
+  if (_mt) clearTimeout(_mt);
+  if (!loc) { pre.style.display = 'none'; return; }
+  _mt = setTimeout(async () => {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(loc)}&format=json&limit=1`,
+        { headers:{'Accept-Language':'ru'} });
+      const data = await res.json();
+      if (data && data[0]) {
+        const lat = +data[0].lat, lon = +data[0].lon, d = 0.012;
+        fr.src = `https://www.openstreetmap.org/export/embed.html?bbox=${lon-d},${lat-d},${lon+d},${lat+d}&layer=mapnik&marker=${lat},${lon}`;
+        pre.style.display = 'block';
+      } else pre.style.display = 'none';
+    } catch { pre.style.display = 'none'; }
+  }, 900);
+}
+
+// ─── sources ──────────────────────────────────────────────────────────────────
+function renderSources() {
+  const el = document.getElementById('srcList');
+  if (!sources.length) {
+    el.innerHTML = '<div style="text-align:center;color:#cbd5e1;padding:1.5rem;font-size:.82rem">Нет источников</div>';
+    return;
+  }
+  const ico = { website:'🌐', rss:'📡', telegram:'✈️' };
+  const frq = { daily:'Ежедневно', weekly:'Еженедельно', manual:'Вручную' };
+  el.innerHTML = sources.map(s => `
+    <div class="src-item ${s.is_active ? 'on' : ''}">
+      <div class="src-ico">${ico[s.type]||'🌐'}</div>
+      <div class="src-body">
+        <div class="src-url" title="${s.url}">${s.url.replace(/^https?:\/\//,'').slice(0,44)}</div>
+        <div class="src-prompt" title="${s.prompt||''}">${s.prompt ? s.prompt.slice(0,68)+'…' : '—'}</div>
+        <div class="src-meta">${frq[s.frequency]||''} · ${s.is_active ? '<span style="color:var(--ok)">✅</span>' : '<span style="color:#94a3b8">⏸</span>'}</div>
+      </div>
+      <div class="src-btns">
+        <button class="sbtn sbtn-e" onclick="editSrc(${s.id})">✏️</button>
+        <button class="sbtn sbtn-d" onclick="delSrc(${s.id})">🗑️</button>
+      </div>
+    </div>`).join('');
+  stats();
+}
+
+function openSM() {
+  document.getElementById('srcMTitle').textContent = 'Добавить источник';
+  document.getElementById('srcId').value = '';
+  document.getElementById('srcUrl').value = '';
+  document.getElementById('srcType').value = 'website';
+  document.getElementById('srcPrompt').value = '';
+  document.getElementById('srcFreq').value = 'daily';
+  document.getElementById('srcActive').checked = true;
+  document.getElementById('srcModal').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function closeSM() {
+  document.getElementById('srcModal').classList.remove('on');
+  document.body.style.overflow = '';
+}
+function editSrc(id) {
+  const s = sources.find(x => x.id === id); if (!s) return;
+  document.getElementById('srcMTitle').textContent = 'Редактировать источник';
+  document.getElementById('srcId').value = s.id;
+  document.getElementById('srcUrl').value = s.url || '';
+  document.getElementById('srcType').value = s.type || 'website';
+  document.getElementById('srcPrompt').value = s.prompt || '';
+  document.getElementById('srcFreq').value = s.frequency || 'daily';
+  document.getElementById('srcActive').checked = !!s.is_active;
+  document.getElementById('srcModal').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+async function saveSource(e) {
+  e.preventDefault();
+  const id = document.getElementById('srcId').value;
+  const url = document.getElementById('srcUrl').value.trim();
+  const type = document.getElementById('srcType').value;
+  const prompt = document.getElementById('srcPrompt').value.trim();
+  const frequency = document.getElementById('srcFreq').value;
+  const is_active = document.getElementById('srcActive').checked;
+  if (!url || !prompt) { alert('Заполните URL и промпт'); return; }
+  const data = { url, type, prompt, frequency, is_active, director_id: user.id };
+  if (id) data.id = parseInt(id);
+  try {
+    const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, resource:'news_sources', action: id ? 'update' : 'create', data }) });
+    const res = await r.json();
+    const result = (res.merged && res.merged[0]) || (Array.isArray(res) ? res[0] : res);
+    if (result && result.id) { closeSM(); await loadSources(); toast('Источник сохранён','ok'); }
+    else alert('Ошибка: ' + JSON.stringify(res));
+  } catch(err) { alert('Ошибка: ' + err.message); }
+}
+async function delSrc(id) {
+  if (!confirm('Удалить источник?')) return;
+  try {
+    const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, resource:'news_sources', action:'delete', data:{ id } }) });
+    const res = await r.json();
+    if (res.success || res.id) { await loadSources(); toast('Удалено'); }
+    else alert('Ошибка');
+  } catch(err) { alert('Ошибка: ' + err.message); }
+}
+
+// ─── params ───────────────────────────────────────────────────────────────────
+function loadParams() {
+  try {
+    const p = JSON.parse(localStorage.getItem('newsSearchParams') || '{}');
+    if (p.region)    document.getElementById('pReg').value = p.region;
+    if (p.keywords)  document.getElementById('pKw').value  = p.keywords;
+    if (p.date_from) document.getElementById('pD1').value  = p.date_from;
+    if (p.date_to)   document.getElementById('pD2').value  = p.date_to;
+  } catch {}
+}
+async function saveParams() {
+  const p = {
+    region:    document.getElementById('pReg').value,
+    keywords:  document.getElementById('pKw').value,
+    date_from: document.getElementById('pD1').value,
+    date_to:   document.getElementById('pD2').value,
+  };
+  localStorage.setItem('newsSearchParams', JSON.stringify(p));
+  try {
+    await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, resource:'news_search_params', action:'upsert', data:{...p, director_id: user.id} }) });
+  } catch {}
+  toast('Параметры сохранены','ok');
+}
+
+// ─── run parsing ──────────────────────────────────────────────────────────────
+async function runParsing() {
+  const btn = document.getElementById('runBtn');
+  const txt = document.getElementById('runTxt');
+  const log = document.getElementById('pLog');
+  btn.disabled = true; btn.classList.add('busy');
+  txt.textContent = 'Парсинг...';
+  log.style.display = 'block'; log.innerHTML = '';
+  const addLog = (msg, c = '#4ade80') =>
+    log.innerHTML += `<div style="color:${c}">[${new Date().toLocaleTimeString()}] ${msg}</div>`,
+    log.scrollTop = log.scrollHeight;
+  addLog('🚀 Запуск парсинга...');
+  const active = sources.filter(s => s.is_active);
+  addLog(`📡 Активных источников: ${active.length}`, '#94a3b8');
+  try {
+    const params = JSON.parse(localStorage.getItem('newsSearchParams') || '{}');
+    const r = await fetch(API, { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token, resource:'news_parse', action:'run',
+        data:{ director_id: user.id, sources: active, ...params } }) });
+    const d = await r.json();
+    if (d.success || d.found_count !== undefined) {
+      addLog(`✅ Найдено: ${d.found_count||0} новых мероприятий`);
+      addLog(`📊 Обработано: ${d.sources_processed||0} источников`, '#94a3b8');
+      if (d.errors?.length) d.errors.forEach(e => addLog('⚠️ '+e,'#fb923c'));
+      await loadNews();
+      toast(`Найдено: ${d.found_count||0} новых мероприятий`, 'ok');
+    } else {
+      addLog('❌ Ошибка: ' + (d.error || JSON.stringify(d)), '#f87171');
+    }
+  } catch(e) {
+    addLog('❌ ' + e.message, '#f87171');
+    toast('Ошибка парсинга', 'err');
+  } finally {
+    btn.disabled = false; btn.classList.remove('busy');
+    txt.textContent = '▶ Запустить парсинг';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
