@@ -280,7 +280,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <div class="spinner"></div>
       <span id="runBtnText">▶ Запустить парсинг</span>
     </button>
-    <a href="/news-page.html" style="padding:.6rem 1.1rem;background:#fff;border:1px solid var(--b);border-radius:8px;font-size:.85rem;font-weight:600;color:var(--d);text-decoration:none;display:flex;align-items:center;gap:.35rem">Открыть все →</a>
   </div>
 </div>
 
@@ -905,7 +904,7 @@ async function loadSources(){
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token,resource:'news_sources',action:'list',data:{director_id:user.id}})});
     const d=await r.json();
-    allSources=(d.merged||d||[]);
+    allSources=(d.merged||d||[]).filter(s=>s&&s.id);
     renderSources();
     document.getElementById('nsSources').textContent=allSources.length;
   }catch(e){console.error('loadSources',e);}
@@ -919,11 +918,13 @@ function renderSources(){
   }
   const icons={website:'🌐',rss:'📡',telegram:'✈️'};
   const freqLabel={daily:'Ежедневно',weekly:'Еженедельно',manual:'Вручную'};
-  container.innerHTML=allSources.map(s=>`
-    <div class="source-card">
+  container.innerHTML=allSources.map(s=>{
+    const url=s.url||'';
+    const displayUrl=url?url.replace(/^https?:\/\//,'').substring(0,45):'(нет URL)';
+    return `<div class="source-card">
       <div class="source-icon">${icons[s.type]||'🌐'}</div>
       <div class="source-card-body">
-        <div class="source-card-url" title="${s.url}">${s.url.replace(/^https?:\/\//,'').substring(0,45)}</div>
+        <div class="source-card-url" title="${url}">${displayUrl}</div>
         <div class="source-card-prompt" title="${s.prompt||''}">${s.prompt?s.prompt.substring(0,70)+'…':'Промпт не задан'}</div>
         <div class="source-card-meta">${freqLabel[s.frequency]||''} · ${s.is_active?'<span style="color:#28a745">✅ Активен</span>':'<span style="color:#aaa">⏸ Неактивен</span>'}</div>
       </div>
@@ -932,7 +933,7 @@ function renderSources(){
         <button class="btn-icon btn-delete" onclick="deleteSource(${s.id})" title="Удалить">🗑️</button>
       </div>
     </div>
-  `).join('');
+  `; }).join('');
 }
 
 function openSourceModal(){
