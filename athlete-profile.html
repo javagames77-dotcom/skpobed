@@ -308,7 +308,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 
   <!-- TABS -->
   <div class="tabs-bar">
-    <button class="tab-btn active" onclick="switchTab('info')">👤 Данные1</button>
+    <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
     <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
     <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
@@ -365,7 +365,10 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
         </div>
       </div>
       <div class="card">
-        <div class="card-title"><div class="card-title-left">🏟️ Группы</div><span id="groupsEditNote" style="font-size:.75rem;color:var(--muted)">Редактирует тренер</span></div>
+        <div class="card-title">
+          <div class="card-title-left">🏟️ Группы</div>
+          <button id="groupsEditBtn" class="btn btn-sm btn-outline" onclick="openModal('editGroupsModal')" style="display:none">✏️ Изменить</button>
+        </div>
         <div id="infoGroups"></div>
       </div>
     </div>
@@ -863,14 +866,72 @@ async function loadAthlete() {
 // GROUPS
 // ============================
 async function loadGroups() {
+  // Load all groups for club (for edit modal + calendar schedule)
   const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'groups', action:'list'})});
   const d = await r.json();
   allGroups = d.merged || d || [];
-  const groupNames = athlete.group_names && athlete.group_names !== 'Без группы' ? athlete.group_names.split(', ') : [];
-  athleteGroupIds = allGroups.filter(g => groupNames.includes(g.name)).map(g => g.id);
-  const html = groupNames.length ? groupNames.map(g => `<span style="display:inline-block;padding:.4rem .9rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:600;margin:.2rem">${g}</span>`).join('') : '<p style="color:var(--muted)">Нет групп</p>';
+
+  // athlete.groups comes from children_profile as array [{id, name, schedule, club_id}]
+  let athleteGroups = [];
+  let rawGroups = athlete.groups;
+  console.log('[loadGroups] athlete.groups raw:', rawGroups, typeof rawGroups);
+  if (typeof rawGroups === 'string') {
+    try { rawGroups = JSON.parse(rawGroups); } catch(e) { rawGroups = []; }
+  }
+  if (Array.isArray(rawGroups)) {
+    athleteGroups = rawGroups.filter(g => g && g.id && g.name);
+  }
+  console.log('[loadGroups] athleteGroups after filter:', athleteGroups);
+  athleteGroupIds = athleteGroups.map(g => g.id);
+
+  // Render group chips
+  const html = athleteGroups.length
+    ? athleteGroups.map(g => `<span style="display:inline-block;padding:.4rem .9rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:600;margin:.2rem">${g.name}</span>`).join('')
+    : '<p style="color:var(--muted);font-size:.9rem">Нет групп</p>';
   document.getElementById('infoGroups').innerHTML = html;
+
+  // Show edit button for director and trainer
+  if (userRole === 'director' || userRole === 'trainer') {
+    document.getElementById('groupsEditBtn').style.display = 'inline-flex';
+    // Populate edit modal checkboxes
+    renderGroupsEditModal(athleteGroups);
+  }
+}
+
+function renderGroupsEditModal(currentGroups) {
+  const currentIds = new Set(currentGroups.map(g => g.id));
+  const el = document.getElementById('editGroupsCheckboxes');
+  if (!el) return;
+  el.innerHTML = allGroups.map(g => `
+    <label style="display:flex;align-items:center;gap:.6rem;padding:.5rem 0;cursor:pointer">
+      <input type="checkbox" value="${g.id}" ${currentIds.has(g.id) ? 'checked' : ''}
+        style="width:16px;height:16px;accent-color:var(--p)">
+      <span>${g.name}</span>
+    </label>`).join('');
+}
+
+async function saveGroups() {
+  const checks = document.querySelectorAll('#editGroupsCheckboxes input[type=checkbox]');
+  const newGroupIds = Array.from(checks).filter(c => c.checked).map(c => parseInt(c.value));
+  const oldGroupIds = athleteGroupIds;
+
+  // Remove from unchecked groups
+  for (const gid of oldGroupIds) {
+    if (!newGroupIds.includes(gid)) {
+      await apiFetch('children_groups', 'remove', {child_id: athleteId, group_id: gid});
+    }
+  }
+  // Add to new groups
+  for (const gid of newGroupIds) {
+    if (!oldGroupIds.includes(gid)) {
+      await apiFetch('children_groups', 'assign', {child_id: athleteId, group_id: gid});
+    }
+  }
+
+  closeModal('editGroupsModal');
+  await loadAthlete();
+  await loadGroups();
 }
 
 // ============================
@@ -1811,5 +1872,20 @@ document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e =
 
 init();
 </script>
+
+<!-- Edit Groups Modal -->
+<div class="modal" id="editGroupsModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">🏟️ Группы спортсмена</div>
+      <button class="modal-close" onclick="closeModal('editGroupsModal')">✕</button>
+    </div>
+    <div id="editGroupsCheckboxes" style="max-height:300px;overflow-y:auto;padding:.5rem 0;border:1px solid var(--border);border-radius:8px;padding:.75rem"></div>
+    <div style="display:flex;gap:.75rem;margin-top:1.5rem">
+      <button class="btn btn-primary" style="flex:1" onclick="saveGroups()">💾 Сохранить</button>
+      <button class="btn btn-outline" onclick="closeModal('editGroupsModal')">Отмена</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
