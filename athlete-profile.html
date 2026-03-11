@@ -755,6 +755,8 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 
 <script>
 const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
+const API2 = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
+const ATHLETE_RESOURCES = new Set(['absence_notifications','athlete_belts','athlete_documents','athlete_injuries','athlete_goals','athlete_competitions','messages','notifications','notification_reads','club_rating','children_profile','children_extended']);
 const token = localStorage.getItem('token');
 const athleteId = parseInt(new URLSearchParams(location.search).get('id'));
 const userRole = localStorage.getItem('role') || 'director';
@@ -1782,10 +1784,16 @@ async function setFreeze(state) {
 // HELPERS
 // ============================
 async function apiFetch(resource, action, data={}) {
-  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+  const endpoint = ATHLETE_RESOURCES.has(resource) ? API2 : API;
+  const r = await fetch(endpoint, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource, action, data})});
   return await r.json();
 }
+
+
+
+
+
 
 function switchTab(name) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
