@@ -100,14 +100,30 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 .btn-red { background:#fee2e2; color:var(--red); }
 .btn-green { background:#dcfce7; color:#16a34a; }
 
-/* ATTENDANCE HEATMAP */
-.heatmap { display:grid; grid-template-columns:repeat(26,1fr); gap:3px; }
-.hm-cell { aspect-ratio:1; border-radius:2px; background:var(--border); }
-.hm-cell.lvl1 { background:#93c5fd; }
-.hm-cell.lvl2 { background:#3b82f6; }
-.hm-cell.lvl3 { background:#1d4ed8; }
-.hm-legend { display:flex; align-items:center; gap:.5rem; margin-top:.75rem; font-size:.75rem; color:var(--muted); }
-.hm-legend-cell { width:14px; height:14px; border-radius:2px; }
+/* ATTENDANCE CALENDAR */
+.cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+.cal-nav-btn { background:none; border:1px solid var(--border); border-radius:8px; width:34px; height:34px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; }
+.cal-nav-btn:hover { background:var(--l); }
+.cal-month-label { font-family:'Unbounded',sans-serif; font-size:.95rem; color:var(--d); }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.cal-dow { text-align:center; font-size:.7rem; font-weight:700; text-transform:uppercase; color:var(--muted); padding:.3rem 0; }
+.cal-day { aspect-ratio:1; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:.82rem; font-weight:500; cursor:default; position:relative; transition:transform .15s; }
+.cal-day:hover { transform:scale(1.08); z-index:1; }
+.cal-day.empty { background:transparent; }
+.cal-day.present { background:#dcfce7; color:#15803d; border:1px solid #86efac; }
+.cal-day.absent { background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; }
+.cal-day.absent.explained { background:#fef9c3; color:#92400e; border:1px solid #fde047; }
+.cal-day.upcoming { background:#f1f5f9; color:var(--muted); border:1px dashed var(--border); }
+.cal-day.notif { background:#fef9c3; color:#92400e; border:1px solid #fde047; }
+.cal-day.today { box-shadow:0 0 0 2px var(--p); }
+.cal-legend { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:1rem; font-size:.78rem; }
+.cal-legend-item { display:flex; align-items:center; gap:.4rem; }
+.cal-legend-dot { width:14px; height:14px; border-radius:4px; }
+.cal-tooltip { position:absolute; bottom:110%; left:50%; transform:translateX(-50%); background:var(--d); color:#fff; font-size:.72rem; padding:.35rem .6rem; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:10; display:none; }
+.cal-day:hover .cal-tooltip { display:block; }
+.cal-group-select { display:flex; gap:.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+.cal-group-btn { padding:.35rem .9rem; border-radius:20px; border:1px solid var(--border); background:#fff; font-size:.82rem; cursor:pointer; transition:all .2s; }
+.cal-group-btn.active { background:var(--p); color:#fff; border-color:var(--p); }
 
 /* BELT TIMELINE */
 .belt-timeline { display:flex; flex-direction:column; gap:.75rem; }
@@ -385,24 +401,72 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 
   <!-- TAB: ATTENDANCE -->
   <div class="tab-pane" id="tab-attendance">
-    <div class="card">
-      <div class="card-title"><div class="card-title-left">📅 Тепловая карта посещений</div></div>
-      <div class="heatmap" id="heatmap"></div>
-      <div class="hm-legend">
-        <span>Нет</span>
-        <div class="hm-legend-cell" style="background:var(--border)"></div>
-        <div class="hm-legend-cell" style="background:#93c5fd"></div>
-        <div class="hm-legend-cell" style="background:#3b82f6"></div>
-        <div class="hm-legend-cell" style="background:#1d4ed8"></div>
-        <span>Часто</span>
-      </div>
+
+    <!-- Alert: unexplained absences -->
+    <div id="absenceAlert" style="display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:1.2rem;margin-bottom:1.5rem">
+      <div style="font-weight:700;color:#856404;margin-bottom:.4rem">⚠️ Внимание!</div>
+      <div id="absenceAlertText" style="color:#856404;font-size:.9rem;margin-bottom:.75rem"></div>
+      <button class="btn btn-sm btn-orange" onclick="openAbsenceExplain()">📝 Указать причину</button>
     </div>
-    <div class="stats-grid">
+
+    <!-- Stats -->
+    <div class="stats-grid" style="margin-bottom:1.5rem">
       <div class="stat-box"><div class="val" id="attTotal">0</div><div class="lbl">Всего тренировок</div></div>
       <div class="stat-box win-box"><div class="val" id="attPresent">0</div><div class="lbl">Присутствовал</div></div>
       <div class="stat-box loss-box"><div class="val" id="attAbsent">0</div><div class="lbl">Пропустил</div></div>
       <div class="stat-box"><div class="val" id="attStreak">0</div><div class="lbl">Серия подряд</div></div>
     </div>
+
+    <!-- Calendar card -->
+    <div class="card">
+      <!-- Group selector -->
+      <div class="cal-group-select" id="calGroupSelect"></div>
+
+      <!-- Month nav -->
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calPrevMonth()">←</button>
+        <div class="cal-month-label" id="calMonthLabel"></div>
+        <button class="cal-nav-btn" onclick="calNextMonth()">→</button>
+      </div>
+
+      <!-- Days of week -->
+      <div class="cal-grid" id="calDowRow">
+        <div class="cal-dow">Пн</div><div class="cal-dow">Вт</div><div class="cal-dow">Ср</div>
+        <div class="cal-dow">Чт</div><div class="cal-dow">Пт</div><div class="cal-dow">Сб</div>
+        <div class="cal-dow">Вс</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+
+      <!-- Legend -->
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#dcfce7;border:1px solid #86efac"></div> Присутствовал</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fee2e2;border:1px solid #fca5a5"></div> Пропустил</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fef9c3;border:1px solid #fde047"></div> Предупреждён / объяснено</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#f1f5f9;border:1px dashed #cbd5e1"></div> Предстоящая тренировка</div>
+      </div>
+    </div>
+
+    <!-- Notify absence -->
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🔔 Предупредить об отсутствии</div></div>
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Укажите даты когда спортсмена не будет — тренер будет оповещён заранее</p>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">С</label><input type="date" id="absFrom" class="form-input"></div>
+        <div class="form-group"><label class="form-label">По</label><input type="date" id="absTo" class="form-input"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Причина</label>
+        <select id="absReason" class="form-input">
+          <option value="">— выбрать —</option>
+          <option>Болезнь</option><option>Учёба / экзамены</option><option>Семейные обстоятельства</option>
+          <option>Соревнования (другой клуб)</option><option>Отпуск / поездка</option><option>Другое</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Комментарий (необязательно)</label>
+        <input id="absComment" class="form-input" placeholder="Дополнительная информация...">
+      </div>
+      <button class="btn btn-primary" onclick="submitAbsenceNotif()">📤 Отправить тренеру</button>
+    </div>
+
   </div>
 
   <!-- TAB: COMPETITIONS -->
@@ -855,13 +919,34 @@ async function saveBelt() {
 // ============================
 // ATTENDANCE
 // ============================
+// ============================
+// CALENDAR STATE
+// ============================
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-based
+let calAttendanceRecords = [];   // {training_date, was_present, group_id, reason}
+let calAbsenceNotifs = [];       // {date_from, date_to, reason, comment}
+let calScheduleDays = [];        // upcoming training dates from group schedule
+let calSelectedGroup = 'all';    // 'all' or group_id
+
 async function loadAttendance() {
   try {
+    // Load attendance records
     const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'attendance', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    const records = d.merged || d || [];
+    calAttendanceRecords = d.merged || d || [];
 
+    // Load absence notifications
+    try {
+      const r2 = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token, resource:'absence_notifications', action:'list', data:{child_id:athleteId}})});
+      const d2 = await r2.json();
+      calAbsenceNotifs = d2.merged || d2 || [];
+    } catch(e) { calAbsenceNotifs = []; }
+
+    // Stats
+    const records = calAttendanceRecords;
     const present = records.filter(r => r.was_present).length;
     const total = records.length;
     const pct = total > 0 ? Math.round(present/total*100) : 0;
@@ -870,27 +955,221 @@ async function loadAttendance() {
     document.getElementById('attPresent').textContent = present;
     document.getElementById('attAbsent').textContent = total - present;
 
-    // Streak
-    let streak = 0, maxStreak = 0, cur = 0;
-    const sorted = [...records].sort((a,b) => new Date(b.training_date)-new Date(a.training_date));
-    for (const rec of sorted) { if (rec.was_present) { cur++; streak = Math.max(streak,cur); } else cur = 0; }
+    // Streak (consecutive present)
+    const sorted = [...records].filter(r=>r.was_present).sort((a,b)=>new Date(b.training_date)-new Date(a.training_date));
+    let streak = 0;
+    let prev = null;
+    for (const rec of sorted) {
+      const d = new Date(rec.training_date);
+      if (!prev) { streak = 1; prev = d; continue; }
+      const diff = Math.round((prev - d) / 86400000);
+      if (diff <= 7) { streak++; prev = d; } else break;
+    }
     document.getElementById('attStreak').textContent = streak;
 
-    // Heatmap (26 weeks = ~6 months)
-    const hm = document.getElementById('heatmap');
-    hm.innerHTML = '';
-    const dateMap = {};
-    records.forEach(r => { if (r.was_present) { const k = r.training_date?.split('T')[0]; if(k) dateMap[k] = (dateMap[k]||0)+1; } });
-    for (let i = 181; i >= 0; i--) {
-      const d = new Date(); d.setDate(d.getDate()-i);
-      const k = d.toISOString().split('T')[0];
-      const v = dateMap[k] || 0;
-      const cell = document.createElement('div');
-      cell.className = 'hm-cell' + (v===0?'':v===1?' lvl1':v===2?' lvl2':' lvl3');
-      cell.title = k + (v ? ` (${v} тр.)` : '');
-      hm.appendChild(cell);
-    }
+    // Group selector
+    renderCalGroupSelect();
+
+    // Check unexplained absences (last 30 days, no notification)
+    checkUnexplainedAbsences();
+
+    // Render calendar
+    renderCalendar();
+
   } catch(e) { console.warn('Attendance:', e); }
+}
+
+function renderCalGroupSelect() {
+  const groups = athleteGroupIds.map(gid => allGroups.find(g=>g.id===gid)).filter(Boolean);
+  if (groups.length <= 1) { document.getElementById('calGroupSelect').innerHTML = ''; return; }
+  const btns = `<button class="cal-group-btn ${calSelectedGroup==='all'?'active':''}" onclick="calSelectGroup('all')">Все группы</button>`
+    + groups.map(g=>`<button class="cal-group-btn ${calSelectedGroup==g.id?'active':''}" onclick="calSelectGroup(${g.id})">${g.name}</button>`).join('');
+  document.getElementById('calGroupSelect').innerHTML = btns;
+}
+
+function calSelectGroup(gid) {
+  calSelectedGroup = gid;
+  renderCalGroupSelect();
+  renderCalendar();
+}
+
+function calPrevMonth() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calNextMonth() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+
+function renderCalendar() {
+  const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  document.getElementById('calMonthLabel').textContent = `${months[calMonth]} ${calYear}`;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(calYear, calMonth, 1);
+  const lastDay = new Date(calYear, calMonth+1, 0);
+  const startDow = (firstDay.getDay()+6)%7; // Mon=0
+  const daysInMonth = lastDay.getDate();
+
+  // Build lookup maps
+  const attMap = {}; // date => {present, reason, group_id}
+  calAttendanceRecords
+    .filter(r => calSelectedGroup === 'all' || r.group_id == calSelectedGroup)
+    .forEach(r => {
+      const k = r.training_date?.split('T')[0];
+      if (k) attMap[k] = {present: r.was_present, reason: r.reason || null, group_id: r.group_id};
+    });
+
+  // Absence notification ranges
+  const notifDates = new Set();
+  const notifInfo = {};
+  calAbsenceNotifs.forEach(n => {
+    const from = new Date(n.date_from), to = new Date(n.date_to);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate()+1)) {
+      const k = d.toISOString().split('T')[0];
+      notifDates.add(k);
+      notifInfo[k] = (n.reason || '') + (n.comment ? ': ' + n.comment : '');
+    }
+  });
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  // Empty cells before first day
+  for (let i = 0; i < startDow; i++) {
+    const el = document.createElement('div'); el.className = 'cal-day empty'; grid.appendChild(el);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(calYear, calMonth, day);
+    date.setHours(0,0,0,0);
+    const k = date.toISOString().split('T')[0];
+    const isToday = date.getTime() === today.getTime();
+    const isFuture = date > today;
+    const att = attMap[k];
+    const isNotif = notifDates.has(k);
+
+    const el = document.createElement('div');
+    let cls = 'cal-day';
+    let tooltip = '';
+
+    if (isFuture) {
+      // Check if it's a scheduled training day based on group schedule
+      const isTrainingDay = isScheduledDay(date);
+      if (isTrainingDay) { cls += ' upcoming'; tooltip = 'Тренировка'; }
+      if (isNotif) { cls = 'cal-day notif'; tooltip = '🟡 ' + (notifInfo[k] || 'Предупреждение об отсутствии'); }
+    } else if (att) {
+      if (att.present) {
+        cls += ' present'; tooltip = '✅ Присутствовал';
+      } else {
+        cls += isNotif ? ' absent explained' : ' absent';
+        tooltip = isNotif ? ('🟡 Объяснено: ' + (notifInfo[k] || att.reason || '')) : ('❌ Пропустил' + (att.reason ? ': ' + att.reason : ''));
+      }
+    } else if (isNotif) {
+      cls += ' notif'; tooltip = '🟡 ' + (notifInfo[k] || 'Предупреждение об отсутствии');
+    }
+
+    if (isToday) cls += ' today';
+    el.className = cls;
+    el.innerHTML = `<span>${day}</span>${tooltip ? `<div class="cal-tooltip">${tooltip}</div>` : ''}`;
+
+    // Click on absent day — show reason input
+    if (!isFuture && att && !att.present && !isNotif) {
+      el.style.cursor = 'pointer';
+      el.onclick = () => openExplainDay(k, day);
+    }
+
+    grid.appendChild(el);
+  }
+}
+
+function isScheduledDay(date) {
+  // Check group schedule (days of week from allGroups)
+  const dow = date.getDay(); // 0=Sun
+  for (const gid of (calSelectedGroup === 'all' ? athleteGroupIds : [calSelectedGroup])) {
+    const group = allGroups.find(g => g.id == gid);
+    if (!group || !group.schedule) continue;
+    try {
+      const sched = typeof group.schedule === 'string' ? JSON.parse(group.schedule) : group.schedule;
+      const days = sched.days || sched.weekdays || [];
+      // days can be array of numbers [1,3,5] or strings ['mon','wed','fri']
+      if (Array.isArray(days)) {
+        for (const day of days) {
+          const n = typeof day === 'number' ? day : {mon:1,tue:2,wed:3,thu:4,fri:5,sat:6,sun:0}[day?.toLowerCase()];
+          if (n === dow) return true;
+        }
+      }
+    } catch(e) {}
+  }
+  return false;
+}
+
+function checkUnexplainedAbsences() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const thirtyDaysAgo = new Date(today); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()-30);
+
+  const notifDates = new Set();
+  calAbsenceNotifs.forEach(n => {
+    const from = new Date(n.date_from), to = new Date(n.date_to);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate()+1)) notifDates.add(d.toISOString().split('T')[0]);
+  });
+
+  const unexplained = calAttendanceRecords.filter(r => {
+    if (r.was_present) return false;
+    const k = r.training_date?.split('T')[0];
+    if (!k) return false;
+    const d = new Date(k);
+    return d >= thirtyDaysAgo && d < today && !notifDates.has(k);
+  });
+
+  if (unexplained.length > 0) {
+    // Group consecutive dates
+    const sorted = unexplained.sort((a,b)=>new Date(a.training_date)-new Date(b.training_date));
+    const first = new Date(sorted[0].training_date).toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+    const last = new Date(sorted[sorted.length-1].training_date).toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+    const name = athlete.first_name;
+    const txt = sorted.length === 1
+      ? `${name} не был(а) на тренировке ${first}. Пожалуйста, проинформируйте тренера о причине — тренер переживает за каждого ученика! 🙏`
+      : `${name} не был(а) на тренировках с ${first} по ${last} (${sorted.length} занятий). Пожалуйста, проинформируйте тренера о причине — тренер переживает за каждого ученика! 🙏`;
+
+    document.getElementById('absenceAlertText').textContent = txt;
+    document.getElementById('absenceAlert').style.display = 'block';
+  }
+}
+
+function openAbsenceExplain() {
+  // Scroll to notification form
+  document.getElementById('absFrom').focus();
+  document.querySelector('[onclick="submitAbsenceNotif()"]').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function openExplainDay(dateKey, day) {
+  document.getElementById('absFrom').value = dateKey;
+  document.getElementById('absTo').value = dateKey;
+  openAbsenceExplain();
+}
+
+async function submitAbsenceNotif() {
+  const from = document.getElementById('absFrom').value;
+  const to = document.getElementById('absTo').value || from;
+  const reason = document.getElementById('absReason').value;
+  const comment = document.getElementById('absComment').value;
+  if (!from) { alert('Укажите дату начала'); return; }
+  if (!reason) { alert('Укажите причину'); return; }
+  try {
+    await apiFetch('absence_notifications','create',{
+      child_id: athleteId, date_from: from, date_to: to, reason, comment
+    });
+    // Reset
+    document.getElementById('absFrom').value = '';
+    document.getElementById('absTo').value = '';
+    document.getElementById('absReason').value = '';
+    document.getElementById('absComment').value = '';
+    document.getElementById('absenceAlert').style.display = 'none';
+    alert('✅ Тренер получил уведомление!');
+    // Reload
+    const r2 = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'absence_notifications', action:'list', data:{child_id:athleteId}})});
+    const d2 = await r2.json();
+    calAbsenceNotifs = d2.merged || d2 || [];
+    renderCalendar();
+    checkUnexplainedAbsences();
+  } catch(e) { alert('Ошибка: ' + e.message); }
 }
 
 // ============================
