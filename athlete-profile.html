@@ -2,272 +2,1525 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Профиль спортсмена - InSkill</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Профиль спортсмена — InSkill</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem}
-.btn-back{padding:0.5rem 1rem;background:var(--p);color:#fff;border:none;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
-.container{max-width:1200px;margin:2rem auto;padding:0 2rem}
-.profile-card{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.profile-header{display:flex;gap:2rem;align-items:start}
-.profile-photo{width:150px;height:150px;border-radius:50%;object-fit:cover;border:3px solid var(--p)}
-.profile-info h1{font-size:2rem;color:var(--p);margin-bottom:0.5rem}
-.profile-info p{color:#666;margin-bottom:0.25rem}
-.section{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.section-title{font-size:1.5rem;color:var(--p);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:2px solid var(--b)}
-.group-badge{display:inline-block;padding:0.5rem 1rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:0.9rem;font-weight:600;margin:0.25rem}
-.btn-edit{padding:0.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
-.modal.active{display:flex}
-.modal-content{background:#fff;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:2rem}
-.modal-title{font-size:1.5rem;color:var(--p);margin-bottom:1.5rem}
-.form-group{margin-bottom:1rem}
-.form-label{display:block;margin-bottom:0.5rem;font-weight:600;color:#555}
-.form-input{width:100%;padding:0.75rem;border:2px solid var(--b);border-radius:8px}
-.group-checkbox{display:block;padding:0.75rem;border:1px solid var(--b);border-radius:8px;margin-bottom:0.5rem;cursor:pointer;transition:all 0.2s}
-.group-checkbox:hover{background:var(--l)}
-.group-checkbox input{margin-right:0.5rem}
-.btn-row{display:flex;gap:1rem;margin-top:1.5rem}
-.btn{padding:0.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer}
-.btn-cancel{background:var(--l);color:var(--d)}
-.btn-save{background:var(--s);color:#fff}
+:root {
+  --p: #0066CC;
+  --p2: #0052a3;
+  --s: #FF9933;
+  --s2: #e6851a;
+  --d: #0f1923;
+  --l: #f0f4f8;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --green: #22c55e;
+  --red: #ef4444;
+  --purple: #8b5cf6;
+  --text: #334155;
+  --muted: #94a3b8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); min-height:100vh; }
+
+/* HEADER */
+.header { background:var(--d); padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px rgba(0,0,0,.3); }
+.logo { font-family:'Unbounded',sans-serif; font-size:1.2rem; color:#fff; text-decoration:none; }
+.logo span { color:var(--s); }
+.btn-back { padding:.5rem 1.2rem; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:8px; color:#fff; text-decoration:none; font-size:.9rem; transition:all .2s; }
+.btn-back:hover { background:rgba(255,255,255,.2); }
+
+/* HERO */
+.hero { background:linear-gradient(135deg, var(--d) 0%, #1a2942 60%, #0d3060 100%); padding:2.5rem 2rem; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; top:-50%; right:-10%; width:500px; height:500px; background:radial-gradient(circle, rgba(0,102,204,.3) 0%, transparent 70%); }
+.hero-inner { max-width:1200px; margin:0 auto; display:flex; gap:2rem; align-items:flex-start; position:relative; }
+.photo-wrap { position:relative; flex-shrink:0; }
+.athlete-photo { width:140px; height:140px; border-radius:50%; object-fit:cover; border:4px solid var(--s); display:block; }
+.photo-btn { position:absolute; bottom:4px; right:4px; width:36px; height:36px; background:var(--s); border:none; border-radius:50%; color:#fff; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .2s; }
+.photo-btn:hover { transform:scale(1.1); }
+.frozen-badge { position:absolute; top:0; left:50%; transform:translateX(-50%); background:#3b82f6; color:#fff; font-size:.65rem; font-weight:700; padding:.2rem .6rem; border-radius:20px; white-space:nowrap; }
+.hero-info { flex:1; }
+.athlete-name { font-family:'Unbounded',sans-serif; font-size:2rem; color:#fff; line-height:1.2; margin-bottom:.5rem; }
+.athlete-meta { display:flex; flex-wrap:wrap; gap:.75rem; margin-bottom:1rem; }
+.meta-chip { display:flex; align-items:center; gap:.4rem; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:.35rem .8rem; font-size:.85rem; color:rgba(255,255,255,.85); }
+.meta-chip .ic { font-size:1rem; }
+.belt-display { display:flex; align-items:center; gap:.75rem; }
+.belt-color { width:60px; height:14px; border-radius:4px; border:2px solid rgba(255,255,255,.3); }
+.belt-name { color:#fff; font-weight:600; font-size:.95rem; }
+.hero-badges { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1rem; }
+.badge-chip { display:flex; align-items:center; gap:.3rem; padding:.3rem .7rem; border-radius:20px; font-size:.75rem; font-weight:600; }
+.badge-chip.gold { background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; }
+.badge-chip.silver { background:linear-gradient(135deg,#94a3b8,#64748b); color:#fff; }
+.badge-chip.blue { background:linear-gradient(135deg,var(--p),var(--p2)); color:#fff; }
+.badge-chip.green { background:linear-gradient(135deg,#22c55e,#16a34a); color:#fff; }
+.badge-chip.purple { background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:#fff; }
+
+.hero-stats { display:flex; gap:1.5rem; margin-top:1.5rem; }
+.hstat { text-align:center; }
+.hstat-val { font-family:'Unbounded',sans-serif; font-size:1.6rem; font-weight:700; color:#fff; }
+.hstat-lbl { font-size:.7rem; color:rgba(255,255,255,.6); text-transform:uppercase; letter-spacing:.05em; margin-top:.2rem; }
+
+/* MAIN CONTENT */
+.main { max-width:1200px; margin:0 auto; padding:2rem; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+@media(max-width:768px) { .grid-2 { grid-template-columns:1fr; } .hero-inner { flex-direction:column; } .athlete-name { font-size:1.4rem; } }
+
+/* TABS */
+.tabs-bar { display:flex; gap:.25rem; background:var(--card); border-radius:12px; padding:.4rem; margin-bottom:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,.06); overflow-x:auto; }
+.tab-btn { padding:.6rem 1.1rem; border:none; border-radius:8px; background:transparent; color:var(--muted); font-weight:500; font-size:.85rem; cursor:pointer; white-space:nowrap; transition:all .2s; }
+.tab-btn.active { background:var(--p); color:#fff; }
+.tab-btn:hover:not(.active) { background:var(--l); color:var(--text); }
+.tab-pane { display:none; }
+.tab-pane.active { display:block; }
+
+/* CARDS */
+.card { background:var(--card); border-radius:14px; padding:1.5rem; box-shadow:0 2px 12px rgba(0,0,0,.06); margin-bottom:1.5rem; }
+.card-title { font-family:'Unbounded',sans-serif; font-size:.9rem; color:var(--p); margin-bottom:1.2rem; display:flex; align-items:center; justify-content:space-between; }
+.card-title-left { display:flex; align-items:center; gap:.5rem; }
+
+/* FORM */
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+.form-row.single { grid-template-columns:1fr; }
+.form-group { margin-bottom:.75rem; }
+.form-label { display:block; font-size:.8rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.35rem; }
+.form-input { width:100%; padding:.7rem 1rem; border:2px solid var(--border); border-radius:8px; font-size:.95rem; font-family:'Inter',sans-serif; transition:border .2s; }
+.form-input:focus { outline:none; border-color:var(--p); }
+.form-input:disabled { background:#f8fafc; color:var(--muted); }
+
+/* BUTTONS */
+.btn { padding:.65rem 1.3rem; border:none; border-radius:8px; font-weight:600; font-size:.9rem; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.4rem; }
+.btn-primary { background:var(--p); color:#fff; }
+.btn-primary:hover { background:var(--p2); }
+.btn-orange { background:var(--s); color:#fff; }
+.btn-orange:hover { background:var(--s2); }
+.btn-ghost { background:var(--l); color:var(--text); }
+.btn-ghost:hover { background:var(--border); }
+.btn-sm { padding:.4rem .8rem; font-size:.8rem; }
+.btn-red { background:#fee2e2; color:var(--red); }
+.btn-green { background:#dcfce7; color:#16a34a; }
+
+/* ATTENDANCE HEATMAP */
+.heatmap { display:grid; grid-template-columns:repeat(26,1fr); gap:3px; }
+.hm-cell { aspect-ratio:1; border-radius:2px; background:var(--border); }
+.hm-cell.lvl1 { background:#93c5fd; }
+.hm-cell.lvl2 { background:#3b82f6; }
+.hm-cell.lvl3 { background:#1d4ed8; }
+.hm-legend { display:flex; align-items:center; gap:.5rem; margin-top:.75rem; font-size:.75rem; color:var(--muted); }
+.hm-legend-cell { width:14px; height:14px; border-radius:2px; }
+
+/* BELT TIMELINE */
+.belt-timeline { display:flex; flex-direction:column; gap:.75rem; }
+.belt-item { display:flex; align-items:center; gap:1rem; padding:.75rem; background:var(--l); border-radius:10px; }
+.belt-dot { width:36px; height:36px; border-radius:50%; flex-shrink:0; border:2px solid rgba(0,0,0,.1); }
+.belt-info { flex:1; }
+.belt-info-name { font-weight:600; font-size:.95rem; }
+.belt-info-date { font-size:.8rem; color:var(--muted); }
+
+/* COMPETITION CARDS */
+.comp-card { border:1px solid var(--border); border-radius:10px; padding:1rem; margin-bottom:.75rem; transition:all .2s; }
+.comp-card:hover { border-color:var(--p); box-shadow:0 2px 12px rgba(0,102,204,.1); }
+.comp-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.5rem; }
+.comp-title { font-weight:600; font-size:.95rem; color:var(--d); }
+.comp-date { font-size:.8rem; color:var(--muted); }
+.comp-meta { display:flex; flex-wrap:wrap; gap:.5rem; }
+.comp-tag { font-size:.75rem; padding:.2rem .6rem; border-radius:6px; font-weight:500; }
+.comp-tag.win { background:#dcfce7; color:#16a34a; }
+.comp-tag.loss { background:#fee2e2; color:var(--red); }
+.comp-tag.cat { background:#ede9fe; color:#7c3aed; }
+.comp-tag.place { background:#fef3c7; color:#d97706; }
+
+/* UPCOMING events */
+.upcoming-card { border:2px solid var(--s); border-radius:12px; padding:1.2rem; margin-bottom:.75rem; background:linear-gradient(135deg,#fff 0%,#fff9f0 100%); }
+.upcoming-title { font-weight:700; font-size:1rem; color:var(--d); margin-bottom:.4rem; }
+.upcoming-meta { font-size:.82rem; color:var(--muted); margin-bottom:.75rem; }
+.upcoming-actions { display:flex; gap:.5rem; }
+
+/* CHAT */
+.chat-wrap { display:flex; flex-direction:column; height:400px; }
+.chat-messages { flex:1; overflow-y:auto; padding:.5rem; display:flex; flex-direction:column; gap:.75rem; }
+.msg { max-width:75%; }
+.msg.mine { align-self:flex-end; }
+.msg.theirs { align-self:flex-start; }
+.msg-bubble { padding:.75rem 1rem; border-radius:16px; font-size:.9rem; line-height:1.5; }
+.msg.mine .msg-bubble { background:var(--p); color:#fff; border-bottom-right-radius:4px; }
+.msg.theirs .msg-bubble { background:var(--l); color:var(--d); border-bottom-left-radius:4px; }
+.msg-time { font-size:.7rem; color:var(--muted); margin-top:.25rem; text-align:right; }
+.chat-input-row { display:flex; gap:.75rem; padding:.75rem 0 0; border-top:1px solid var(--border); }
+.chat-input { flex:1; padding:.7rem 1rem; border:2px solid var(--border); border-radius:10px; font-size:.9rem; font-family:'Inter',sans-serif; }
+.chat-input:focus { outline:none; border-color:var(--p); }
+
+/* DOCUMENTS */
+.doc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1rem; }
+.doc-card { border:2px dashed var(--border); border-radius:12px; padding:1.2rem; text-align:center; cursor:pointer; transition:all .2s; }
+.doc-card:hover { border-color:var(--p); background:#f0f7ff; }
+.doc-card.filled { border-style:solid; border-color:var(--border); }
+.doc-icon { font-size:2rem; margin-bottom:.5rem; }
+.doc-name { font-size:.8rem; font-weight:600; color:var(--text); }
+.doc-date { font-size:.7rem; color:var(--muted); margin-top:.2rem; }
+
+/* INJURY */
+.injury-item { border-left:3px solid var(--red); padding:.75rem 1rem; background:#fff5f5; border-radius:0 10px 10px 0; margin-bottom:.75rem; }
+.injury-title { font-weight:600; font-size:.95rem; color:var(--d); }
+.injury-dates { font-size:.8rem; color:var(--muted); margin:.25rem 0; }
+.injury-desc { font-size:.85rem; color:var(--text); }
+
+/* GOALS */
+.goal-item { display:flex; align-items:flex-start; gap:.75rem; padding:.75rem; border:1px solid var(--border); border-radius:10px; margin-bottom:.6rem; }
+.goal-check { width:22px; height:22px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; margin-top:.1rem; }
+.goal-check.done { background:var(--green); border-color:var(--green); color:#fff; }
+.goal-text { flex:1; }
+.goal-name { font-size:.9rem; font-weight:500; }
+.goal-date { font-size:.75rem; color:var(--muted); }
+
+/* MEDICAL */
+.med-status { display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .9rem; border-radius:20px; font-weight:600; font-size:.85rem; }
+.med-status.ok { background:#dcfce7; color:#16a34a; }
+.med-status.warn { background:#fef9c3; color:#ca8a04; }
+.med-status.expired { background:#fee2e2; color:var(--red); }
+
+/* ADDRESS */
+.address-block { background:var(--l); border-radius:10px; padding:1rem; }
+.address-text { font-size:.95rem; margin-bottom:.5rem; }
+.travel-info { display:flex; gap:1rem; flex-wrap:wrap; }
+.travel-chip { display:flex; align-items:center; gap:.4rem; font-size:.85rem; font-weight:500; padding:.35rem .8rem; background:#fff; border:1px solid var(--border); border-radius:8px; }
+
+/* MODAL */
+.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:200; align-items:center; justify-content:center; }
+.modal.active { display:flex; }
+.modal-box { background:#fff; border-radius:16px; max-width:560px; width:94%; max-height:90vh; overflow-y:auto; padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,.25); }
+.modal-title { font-family:'Unbounded',sans-serif; font-size:1.1rem; color:var(--p); margin-bottom:1.5rem; }
+.modal-close { float:right; background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--muted); }
+
+/* PHOTO MODAL */
+.photo-modal-img { width:100%; max-height:70vh; object-fit:contain; border-radius:12px; margin-bottom:1rem; }
+
+/* NOTIFY banner */
+.notify-banner { background:linear-gradient(135deg,#1e3a5f,#0d3060); border:1px solid rgba(255,200,50,.3); border-radius:14px; padding:1.5rem; margin-bottom:1.5rem; color:#fff; display:none; }
+.notify-banner h3 { font-family:'Unbounded',sans-serif; font-size:1rem; color:var(--s); margin-bottom:.5rem; }
+.notify-banner p { font-size:.9rem; opacity:.9; margin-bottom:1rem; }
+
+.pagination { display:flex; gap:.5rem; justify-content:center; margin-top:1rem; }
+.page-btn { width:36px; height:36px; border-radius:8px; border:1px solid var(--border); background:#fff; cursor:pointer; font-size:.85rem; font-weight:500; }
+.page-btn.active { background:var(--p); color:#fff; border-color:var(--p); }
+
+.search-row { display:flex; gap:.75rem; margin-bottom:1rem; }
+.search-input { flex:1; padding:.65rem 1rem; border:2px solid var(--border); border-radius:8px; font-size:.9rem; }
+.search-input:focus { outline:none; border-color:var(--p); }
+
+.smoothcomp-block { background:linear-gradient(135deg,#1a1a2e,#16213e); border-radius:12px; padding:1.2rem; color:#fff; }
+.smoothcomp-block h4 { font-weight:600; margin-bottom:.5rem; color:#a78bfa; }
+.platform-row { display:flex; gap:.75rem; align-items:center; margin-bottom:.75rem; }
+.platform-input { flex:1; padding:.6rem .9rem; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:8px; color:#fff; font-size:.85rem; }
+.platform-input::placeholder { color:rgba(255,255,255,.4); }
+.platform-tag { font-size:.75rem; font-weight:700; padding:.2rem .6rem; border-radius:6px; }
+.platform-tag.sc { background:#7c3aed; }
+.platform-tag.ajp { background:#0369a1; }
+
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
+.stat-box { background:var(--l); border-radius:12px; padding:1rem; text-align:center; }
+.stat-box .val { font-family:'Unbounded',sans-serif; font-size:1.6rem; font-weight:700; color:var(--p); }
+.stat-box .lbl { font-size:.72rem; color:var(--muted); text-transform:uppercase; margin-top:.25rem; }
+.stat-box.win-box .val { color:var(--green); }
+.stat-box.loss-box .val { color:var(--red); }
+
+.section-divider { font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:.5rem 0; }
+
+.frozen-overlay { opacity:.6; pointer-events:none; }
+.frozen-notice { background:#dbeafe; border:1px solid #93c5fd; border-radius:10px; padding:1rem; margin-bottom:1rem; color:#1d4ed8; font-size:.9rem; }
+
+.qr-wrap { display:flex; flex-direction:column; align-items:center; gap:1rem; padding:1rem; }
+.qr-code { width:180px; height:180px; background:var(--l); border-radius:12px; display:flex; align-items:center; justify-content:center; border:2px solid var(--border); }
+
+.rating-bar { background:var(--l); border-radius:8px; height:10px; overflow:hidden; margin-top:.4rem; }
+.rating-fill { height:100%; background:linear-gradient(90deg,var(--p),var(--s)); border-radius:8px; transition:width .8s ease; }
+
+/* LOADING */
+.loading-state { text-align:center; padding:4rem; }
+.spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--p); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 1rem; }
+@keyframes spin { to { transform:rotate(360deg); } }
 </style>
 </head>
 <body>
+
 <div class="header">
-<a href="javascript:history.back()" class="btn-back">← Назад</a>
+  <a href="/" class="logo">InSkill<span>.online</span></a>
+  <a href="javascript:history.back()" class="btn-back">← Назад</a>
 </div>
 
-<div class="container">
-<div class="profile-card">
-<div class="profile-header">
-<img id="athletePhoto" src="https://via.placeholder.com/150" class="profile-photo">
-<div class="profile-info">
-<h1 id="athleteName">—</h1>
-<p>🎂 <span id="athleteBirthDate">—</span></p>
-<p>👤 <span id="athleteParent">—</span></p>
-</div>
-</div>
+<!-- NOTIFICATIONS BANNER -->
+<div id="notifyBanner" class="notify-banner" style="max-width:1200px;margin:1rem auto 0;padding:1.5rem">
+  <h3 id="notifyTitle">📢 Новое уведомление</h3>
+  <p id="notifyText"></p>
+  <button class="btn btn-orange btn-sm" onclick="markNotificationRead()">✅ Ознакомился</button>
 </div>
 
-<div class="section">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-<h2 class="section-title" style="margin:0;border:none">Информация</h2>
-<button class="btn-edit" onclick="openEditModal()">Редактировать</button>
-</div>
-<div id="groupsList"></div>
-</div>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="photo-wrap">
+      <img id="athletePhoto" src="https://ui-avatars.com/api/?name=A&background=0066CC&color=fff" class="athlete-photo">
+      <button class="photo-btn" onclick="document.getElementById('photoInput').click()" title="Обновить фото">📷</button>
+      <input type="file" id="photoInput" accept="image/*" style="display:none">
+      <div id="frozenBadge" class="frozen-badge" style="display:none">🧊 Заморожен</div>
+    </div>
+    <div class="hero-info">
+      <div class="athlete-name" id="athleteName">—</div>
+      <div class="athlete-meta">
+        <div class="meta-chip"><span class="ic">🎂</span><span id="heroBirth">—</span></div>
+        <div class="meta-chip"><span class="ic">👤</span><span id="heroContact">—</span></div>
+        <div class="meta-chip"><span class="ic">⚖️</span><span id="heroWeight">—</span></div>
+        <div class="meta-chip"><span class="ic">📏</span><span id="heroHeight">—</span></div>
+      </div>
+      <div class="belt-display">
+        <div class="belt-color" id="heroBeltColor"></div>
+        <div class="belt-name" id="heroBeltName">Без пояса</div>
+      </div>
+      <div class="hero-badges" id="heroBadges"></div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
+        <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
+        <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
+        <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="modal" id="editModal">
-<div class="modal-content">
-<h2 class="modal-title">Редактировать спортсмена</h2>
-<form onsubmit="saveAthlete(event)">
-<div class="form-group">
-<label class="form-label">Имя *</label>
-<input type="text" id="editFirstName" class="form-input" required>
+<!-- MAIN -->
+<div class="main" id="mainContent" style="display:none">
+
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
+    <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
+    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
+    <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
+    <button class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
+    <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
+    <button class="tab-btn" onclick="switchTab('medical')">🏥 Медицина</button>
+    <button class="tab-btn" onclick="switchTab('injuries')">🩹 Травмы</button>
+    <button class="tab-btn" onclick="switchTab('goals')">🎯 Цели</button>
+  </div>
+
+  <!-- TAB: INFO -->
+  <div class="tab-pane active" id="tab-info">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><div class="card-title-left">👤 Личные данные</div><button class="btn btn-sm btn-ghost" onclick="openModal('editInfoModal')">✏️ Редактировать</button></div>
+        <div class="form-group">
+          <div class="form-label">Имя и фамилия</div>
+          <div id="infoName" style="font-size:1rem;font-weight:600"></div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Дата рождения / Возраст</div>
+          <div id="infoBirth"></div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Контактное лицо</div>
+          <div id="infoContact"></div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Телефон контакта</div>
+          <div id="infoContactPhone"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><div class="card-title-left">📍 Адрес и маршрут</div><button class="btn btn-sm btn-ghost" onclick="openModal('editAddressModal')">✏️ Редактировать</button></div>
+        <div id="addressBlock">
+          <p style="color:var(--muted);font-size:.9rem">Адрес не указан</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><div class="card-title-left">⚖️ Физические данные</div><button class="btn btn-sm btn-ghost" onclick="openModal('editPhysModal')">✏️ Редактировать</button></div>
+        <div class="form-row">
+          <div class="form-group">
+            <div class="form-label">Вес (кг)</div>
+            <div id="infoWeight" style="font-size:1rem;font-weight:600">—</div>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Рост (см)</div>
+            <div id="infoHeight" style="font-size:1rem;font-weight:600">—</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Весовая категория</div>
+          <div id="infoWeightCat" style="font-size:1rem;font-weight:600">—</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><div class="card-title-left">🏟️ Группы</div><span id="groupsEditNote" style="font-size:.75rem;color:var(--muted)">Редактирует тренер</span></div>
+        <div id="infoGroups"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">⭐ Рейтинг в клубе</div></div>
+      <div id="ratingBlock"></div>
+    </div>
+    <!-- QR -->
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">📲 QR-код для отметки</div></div>
+      <div class="qr-wrap">
+        <div class="qr-code" id="qrCode">
+          <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg" id="qrSvg"></svg>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted);text-align:center">Тренер сканирует QR для отметки посещения</p>
+        <button class="btn btn-ghost btn-sm" onclick="downloadQR()">⬇️ Скачать QR</button>
+      </div>
+    </div>
+    <!-- Freeze -->
+    <div class="card" id="freezeCard">
+      <div class="card-title"><div class="card-title-left">🧊 Статус спортсмена</div></div>
+      <div id="freezeStatus"></div>
+    </div>
+  </div>
+
+  <!-- TAB: BELTS -->
+  <div class="tab-pane" id="tab-belts">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🥋 История поясов</div><button class="btn btn-sm btn-orange" id="addBeltBtn" onclick="openModal('addBeltModal')" style="display:none">+ Добавить</button></div>
+      <div id="beltTimeline" class="belt-timeline"></div>
+    </div>
+  </div>
+
+  <!-- TAB: ATTENDANCE -->
+  <div class="tab-pane" id="tab-attendance">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">📅 Тепловая карта посещений</div></div>
+      <div class="heatmap" id="heatmap"></div>
+      <div class="hm-legend">
+        <span>Нет</span>
+        <div class="hm-legend-cell" style="background:var(--border)"></div>
+        <div class="hm-legend-cell" style="background:#93c5fd"></div>
+        <div class="hm-legend-cell" style="background:#3b82f6"></div>
+        <div class="hm-legend-cell" style="background:#1d4ed8"></div>
+        <span>Часто</span>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="val" id="attTotal">0</div><div class="lbl">Всего тренировок</div></div>
+      <div class="stat-box win-box"><div class="val" id="attPresent">0</div><div class="lbl">Присутствовал</div></div>
+      <div class="stat-box loss-box"><div class="val" id="attAbsent">0</div><div class="lbl">Пропустил</div></div>
+      <div class="stat-box"><div class="val" id="attStreak">0</div><div class="lbl">Серия подряд</div></div>
+    </div>
+  </div>
+
+  <!-- TAB: COMPETITIONS -->
+  <div class="tab-pane" id="tab-competitions">
+    <!-- Stats summary -->
+    <div class="stats-grid">
+      <div class="stat-box"><div class="val" id="cTotal">0</div><div class="lbl">Турниров</div></div>
+      <div class="stat-box win-box"><div class="val" id="cWins">0</div><div class="lbl">Побед</div></div>
+      <div class="stat-box loss-box"><div class="val" id="cLosses">0</div><div class="lbl">Поражений</div></div>
+      <div class="stat-box"><div class="val" id="cWinRate">0%</div><div class="lbl">% побед</div></div>
+    </div>
+
+    <!-- Smoothcomp / AJP sync -->
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🔗 Внешние профили</div></div>
+      <div class="smoothcomp-block">
+        <h4>Smoothcomp & AJP — синхронизация</h4>
+        <div class="platform-row">
+          <span class="platform-tag sc">SC</span>
+          <input class="platform-input" id="scUrl" placeholder="https://smoothcomp.com/en/profile/XXXXX" oninput="detectPlatformId(this,'sc')">
+          <button class="btn btn-sm btn-primary" onclick="syncProfile('smoothcomp')">Подтянуть</button>
+        </div>
+        <div class="platform-row">
+          <span class="platform-tag ajp">AJP</span>
+          <input class="platform-input" id="ajpUrl" placeholder="https://ajptour.com/ru/profile/XXXXX" oninput="detectPlatformId(this,'ajp')">
+          <button class="btn btn-sm btn-primary" onclick="syncProfile('ajp')">Подтянуть</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-tabs -->
+    <div class="tabs-bar" style="margin-bottom:1rem">
+      <button class="tab-btn active" onclick="switchCompTab('past')" id="compTab-past">📋 Прошедшие</button>
+      <button class="tab-btn" onclick="switchCompTab('upcoming')" id="compTab-upcoming">⚡ Предстоящие</button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-row" id="compSearchRow">
+      <input class="search-input" id="compSearch" placeholder="🔍 Поиск по названию, сопернику..." oninput="filterComps()">
+      <input type="date" class="search-input" id="compDateFrom" style="max-width:160px" onchange="filterComps()">
+      <input type="date" class="search-input" id="compDateTo" style="max-width:160px" onchange="filterComps()">
+    </div>
+
+    <div id="compList"></div>
+    <div class="pagination" id="compPagination"></div>
+
+    <button class="btn btn-orange" onclick="openModal('addCompModal')" style="margin-top:1rem">+ Добавить соревнование</button>
+  </div>
+
+  <!-- TAB: CHAT -->
+  <div class="tab-pane" id="tab-chat">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">💬 Личный чат с тренером</div></div>
+      <div class="chat-wrap">
+        <div class="chat-messages" id="chatMessages">
+          <p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-input" id="chatInput" placeholder="Написать сообщение..." onkeydown="if(event.key==='Enter')sendMessage()">
+          <button class="btn btn-primary" onclick="sendMessage()">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: DOCUMENTS -->
+  <div class="tab-pane" id="tab-documents">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">📄 Документы</div></div>
+      <div class="doc-grid" id="docGrid"></div>
+      <label class="doc-card" style="cursor:pointer;margin-top:.75rem;border-style:dashed">
+        <input type="file" accept="image/*,application/pdf" style="display:none" onchange="uploadDocument(this)">
+        <div class="doc-icon">➕</div>
+        <div class="doc-name">Добавить документ</div>
+      </label>
+    </div>
+  </div>
+
+  <!-- TAB: MEDICAL -->
+  <div class="tab-pane" id="tab-medical">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🏥 Медицинский допуск</div></div>
+      <div id="medBlock">
+        <p style="color:var(--muted)">Данные не загружены</p>
+      </div>
+      <div style="margin-top:1.5rem">
+        <label class="btn btn-ghost" style="cursor:pointer">
+          <input type="file" accept="image/*,application/pdf" style="display:none" onchange="uploadMedical(this)">
+          📎 Загрузить медсправку (AI распознает данные)
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: INJURIES -->
+  <div class="tab-pane" id="tab-injuries">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🩹 История травм</div><button class="btn btn-sm btn-red" id="addInjuryBtn" style="display:none" onclick="openModal('addInjuryModal')">+ Добавить</button></div>
+      <div id="injuryList"></div>
+    </div>
+  </div>
+
+  <!-- TAB: GOALS -->
+  <div class="tab-pane" id="tab-goals">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🎯 Цели тренера</div><button class="btn btn-sm btn-primary" id="addGoalBtn" style="display:none" onclick="openModal('addGoalModal')">+ Добавить цель</button></div>
+      <div id="goalsList"></div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- LOADING -->
+<div id="loadingState" class="loading-state" style="display:none">
+  <div class="spinner"></div>
+  <p style="color:var(--muted)">Загрузка профиля...</p>
 </div>
-<div class="form-group">
-<label class="form-label">Фамилия *</label>
-<input type="text" id="editLastName" class="form-input" required>
+
+<!-- ============================
+     MODALS
+     ============================ -->
+
+<!-- Edit Info -->
+<div class="modal" id="editInfoModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('editInfoModal')">×</button>
+    <h2 class="modal-title">Личные данные</h2>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Имя *</label><input id="ei_firstName" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Фамилия *</label><input id="ei_lastName" class="form-input"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Дата рождения</label><input type="date" id="ei_birthDate" class="form-input"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Контактное лицо</label><input id="ei_contactName" class="form-input" placeholder="ФИО родителя"></div>
+      <div class="form-group"><label class="form-label">Телефон</label><input id="ei_contactPhone" class="form-input" placeholder="+380..."></div>
+    </div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('editInfoModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveInfo()">Сохранить</button>
+    </div>
+  </div>
 </div>
-<div class="form-group">
-<label class="form-label">Дата рождения</label>
-<div style="display:flex;gap:0.5rem">
-<select id="editBirthDay" class="form-input" style="flex:1">
-<option value="">День</option>
-</select>
-<select id="editBirthMonth" class="form-input" style="flex:1">
-<option value="">Месяц</option>
-</select>
-<select id="editBirthYear" class="form-input" style="flex:1">
-<option value="">Год</option>
-</select>
+
+<!-- Edit Address -->
+<div class="modal" id="editAddressModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('editAddressModal')">×</button>
+    <h2 class="modal-title">📍 Адрес и маршрут</h2>
+    <div class="form-group"><label class="form-label">Домашний адрес</label><input id="ea_address" class="form-input" placeholder="г. Полтава, ул. Примерная, 1"></div>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">После сохранения система автоматически рассчитает время до зала через OpenStreetMap</p>
+    <div style="display:flex;gap:.75rem">
+      <button class="btn btn-ghost" onclick="closeModal('editAddressModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveAddress()">Сохранить и рассчитать</button>
+    </div>
+  </div>
 </div>
+
+<!-- Edit Physical -->
+<div class="modal" id="editPhysModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('editPhysModal')">×</button>
+    <h2 class="modal-title">⚖️ Физические данные</h2>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Вес (кг)</label><input type="number" id="ep_weight" class="form-input" step="0.1" min="10" max="200"></div>
+      <div class="form-group"><label class="form-label">Рост (см)</label><input type="number" id="ep_height" class="form-input" min="50" max="250"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Весовая категория</label>
+      <select id="ep_weightCat" class="form-input">
+        <option value="">— выбрать —</option>
+        <option>До 40 кг</option><option>До 46 кг</option><option>До 50 кг</option>
+        <option>До 55 кг</option><option>До 60 кг</option><option>До 66 кг</option>
+        <option>До 73 кг</option><option>До 82 кг</option><option>До 91 кг</option>
+        <option>До 100 кг</option><option>Свыше 100 кг</option><option>Абсолют</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('editPhysModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="savePhysical()">Сохранить</button>
+    </div>
+  </div>
 </div>
-<div class="form-group">
-<label class="form-label">Группы *</label>
-<div id="editGroupsCheckboxes"></div>
+
+<!-- Add Belt -->
+<div class="modal" id="addBeltModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('addBeltModal')">×</button>
+    <h2 class="modal-title">🥋 Добавить пояс</h2>
+    <div class="form-group"><label class="form-label">Пояс</label><select id="ab_belt" class="form-input"><option value="">Загрузка...</option></select></div>
+    <div class="form-group"><label class="form-label">Дата присвоения</label><input type="date" id="ab_date" class="form-input"></div>
+    <div class="form-group"><label class="form-label">Заметка</label><textarea id="ab_note" class="form-input" rows="2" placeholder="Результаты аттестации..."></textarea></div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('addBeltModal')">Отмена</button>
+      <button class="btn btn-orange" onclick="saveBelt()">Сохранить</button>
+    </div>
+  </div>
 </div>
-<div class="btn-row">
-<button type="button" class="btn btn-cancel" onclick="closeEditModal()">Отмена</button>
-<button type="submit" class="btn btn-save">Сохранить</button>
+
+<!-- Add Competition -->
+<div class="modal" id="addCompModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('addCompModal')">×</button>
+    <h2 class="modal-title">🏆 Добавить соревнование</h2>
+    <div class="form-group"><label class="form-label">Название</label><input id="ac_title" class="form-input" placeholder="Кубок Украины по BJJ"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Дата</label><input type="date" id="ac_date" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Место</label><input id="ac_location" class="form-input" placeholder="Киев"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Категория</label><input id="ac_category" class="form-input" placeholder="до 66 кг, синий пояс"></div>
+      <div class="form-group"><label class="form-label">Место в турнире</label><input id="ac_placement" class="form-input" placeholder="1 место"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Соперник (финал)</label><input id="ac_opponent" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Результат</label><select id="ac_result" class="form-input"><option value="">—</option><option value="win">Победа</option><option value="loss">Поражение</option></select></div>
+    </div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('addCompModal')">Отмена</button>
+      <button class="btn btn-orange" onclick="saveComp()">Сохранить</button>
+    </div>
+  </div>
 </div>
-</form>
+
+<!-- Sync Profile Confirm -->
+<div class="modal" id="syncConfirmModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('syncConfirmModal')">×</button>
+    <h2 class="modal-title">Подтвердите профиль</h2>
+    <div style="background:var(--l);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem">
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:.25rem" id="syncName">—</div>
+      <div style="font-size:.85rem;color:var(--muted)" id="syncPlatform">—</div>
+      <div style="margin-top:.5rem;font-size:.9rem" id="syncStats">—</div>
+    </div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Это верный спортсмен? Данные о соревнованиях будут добавлены в профиль.</p>
+    <div style="display:flex;gap:.75rem">
+      <button class="btn btn-ghost" onclick="closeModal('syncConfirmModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="confirmSync()">✅ Подтвердить и импортировать</button>
+    </div>
+  </div>
 </div>
+
+<!-- Add Injury -->
+<div class="modal" id="addInjuryModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('addInjuryModal')">×</button>
+    <h2 class="modal-title">🩹 Добавить травму</h2>
+    <div class="form-group"><label class="form-label">Название</label><input id="ai_title" class="form-input" placeholder="Растяжение связок колена"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Дата травмы</label><input type="date" id="ai_date" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Дата восстановления</label><input type="date" id="ai_recovery" class="form-input"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Описание</label><textarea id="ai_desc" class="form-input" rows="3"></textarea></div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('addInjuryModal')">Отмена</button>
+      <button class="btn btn-red" onclick="saveInjury()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Goal -->
+<div class="modal" id="addGoalModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('addGoalModal')">×</button>
+    <h2 class="modal-title">🎯 Новая цель</h2>
+    <div class="form-group"><label class="form-label">Цель</label><textarea id="ag_text" class="form-input" rows="3" placeholder="Сдать аттестацию на синий пояс к маю..."></textarea></div>
+    <div class="form-group"><label class="form-label">Срок</label><input type="date" id="ag_date" class="form-input"></div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('addGoalModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveGoal()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Photo Viewer -->
+<div class="modal" id="photoModal">
+  <div class="modal-box" style="max-width:640px">
+    <button class="modal-close" onclick="closeModal('photoModal')">×</button>
+    <img id="photoModalImg" class="photo-modal-img" src="">
+    <div style="display:flex;gap:.75rem;justify-content:center">
+      <button class="btn btn-ghost" onclick="closeModal('photoModal')">Закрыть</button>
+      <label class="btn btn-orange" style="cursor:pointer">
+        <input type="file" accept="image/*" style="display:none" onchange="uploadAthletePhoto(this)">📷 Обновить фото
+      </label>
+    </div>
+  </div>
 </div>
 
 <script>
-const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-const token=localStorage.getItem('token');
-const athleteId=new URLSearchParams(location.search).get('id');
-let athlete=null,allGroups=[],athleteGroupIds=[];
+const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
+const token = localStorage.getItem('token');
+const athleteId = parseInt(new URLSearchParams(location.search).get('id'));
+const userRole = localStorage.getItem('role') || 'director';
+const userId = parseInt(localStorage.getItem('user_id')) || 0;
 
-if(!token||!athleteId){location.href='/';throw new Error('No auth');}
+if (!token || !athleteId) { location.href = '/'; }
 
-async function loadAthlete(){
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-const d=await r.json();
-const children=d.merged||d||[];
-athlete=children.find(c=>c.id==athleteId);
-if(!athlete){alert('Спортсмен не найден');history.back();return;}
+let athlete = null, allGroups = [], athleteGroupIds = [], allBelts = [];
+let competitions = [], filteredComps = [], compPage = 1;
+let pendingSync = null, pendingSyncPlatform = null;
+let chatInterval = null;
 
-document.getElementById('athleteName').textContent=`${athlete.first_name} ${athlete.last_name}`;
-const birthDate=athlete.birth_date?new Date(athlete.birth_date).toLocaleDateString('ru-RU'):'—';
-document.getElementById('athleteBirthDate').textContent=birthDate;
-document.getElementById('athleteParent').textContent=athlete.parent_email||'—';
-if(athlete.photo_url)document.getElementById('athletePhoto').src=athlete.photo_url;
-
-const groupNames=athlete.group_names&&athlete.group_names!=='Без группы'?athlete.group_names.split(', '):[];
-document.getElementById('groupsList').innerHTML=groupNames.length>0?groupNames.map(g=>`<span class="group-badge">${g}</span>`).join(''):'<p style="color:#999">Нет групп</p>';
-
-await loadGroups();
-}catch(e){console.error(e);alert('Ошибка загрузки')}
+// ============================
+// INIT
+// ============================
+async function init() {
+  document.getElementById('loadingState').style.display = 'block';
+  try {
+    await loadAthlete();
+    await loadGroups();
+    await loadBelts();
+    await loadAttendance();
+    await loadCompetitions();
+    await loadBeltHistory();
+    await loadDocuments();
+    await loadInjuries();
+    await loadGoals();
+    await loadMedical();
+    await loadRating();
+    await loadNotifications();
+    renderQR();
+    startChatPolling();
+    document.getElementById('mainContent').style.display = 'block';
+  } catch(e) {
+    console.error(e);
+  } finally {
+    document.getElementById('loadingState').style.display = 'none';
+  }
 }
 
-async function loadGroups(){
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});
-const d=await r.json();
-allGroups=d.merged||d||[];
+// ============================
+// LOAD ATHLETE
+// ============================
+async function loadAthlete() {
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'children', action:'list'})});
+  const d = await r.json();
+  const children = d.merged || d || [];
+  athlete = children.find(c => c.id == athleteId);
+  if (!athlete) { alert('Спортсмен не найден'); history.back(); return; }
 
-const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-const d2=await r2.json();
-const children=d2.merged||d2||[];
-const child=children.find(c=>c.id==athleteId);
+  // Hero
+  document.getElementById('athleteName').textContent = `${athlete.first_name} ${athlete.last_name}`;
+  if (athlete.photo_url) document.getElementById('athletePhoto').src = athlete.photo_url;
+  else document.getElementById('athletePhoto').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(athlete.first_name+' '+athlete.last_name)}&background=0066CC&color=fff&size=140`;
 
-athleteGroupIds=[];
-if(child&&child.group_names&&child.group_names!=='Без группы'){
-const groupNames=child.group_names.split(', ');
-athleteGroupIds=allGroups.filter(g=>groupNames.includes(g.name)).map(g=>g.id);
-}
-}catch(e){console.error(e)}
-}
+  const birthDate = athlete.birth_date ? new Date(athlete.birth_date) : null;
+  const age = birthDate ? Math.floor((Date.now() - birthDate) / 31557600000) : null;
+  document.getElementById('heroBirth').textContent = birthDate ? `${birthDate.toLocaleDateString('ru-RU')} (${age} лет)` : '—';
+  document.getElementById('heroContact').textContent = athlete.contact_name || '—';
+  document.getElementById('heroWeight').textContent = athlete.weight_kg ? `${athlete.weight_kg} кг` : '—';
+  document.getElementById('heroHeight').textContent = athlete.height_cm ? `${athlete.height_cm} см` : '—';
 
-function openEditModal(){
-// Populate birth date selects
-const daySelect=document.getElementById('editBirthDay');
-const monthSelect=document.getElementById('editBirthMonth');
-const yearSelect=document.getElementById('editBirthYear');
+  // Info tab
+  document.getElementById('infoName').textContent = `${athlete.first_name} ${athlete.last_name}`;
+  document.getElementById('infoBirth').textContent = birthDate ? `${birthDate.toLocaleDateString('ru-RU')} — ${age} лет` : '—';
+  document.getElementById('infoContact').textContent = athlete.contact_name || '—';
+  document.getElementById('infoContactPhone').textContent = athlete.contact_phone || '—';
+  document.getElementById('infoWeight').textContent = athlete.weight_kg ? `${athlete.weight_kg} кг` : '—';
+  document.getElementById('infoHeight').textContent = athlete.height_cm ? `${athlete.height_cm} см` : '—';
+  document.getElementById('infoWeightCat').textContent = athlete.weight_category || '—';
 
-daySelect.innerHTML='<option value="">День</option>'+Array.from({length:31},(_, i)=>`<option value="${i+1}">${i+1}</option>`).join('');
-monthSelect.innerHTML='<option value="">Месяц</option>'+['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'].map((m,i)=>`<option value="${i+1}">${m}</option>`).join('');
-yearSelect.innerHTML='<option value="">Год</option>'+Array.from({length:50},(_, i)=>`<option value="${new Date().getFullYear()-i}">${new Date().getFullYear()-i}</option>`).join('');
+  // Frozen
+  if (athlete.is_frozen) {
+    document.getElementById('frozenBadge').style.display = 'block';
+  }
+  renderFreezeStatus();
+  renderAddress();
 
-// Fill current values
-document.getElementById('editFirstName').value=athlete.first_name||'';
-document.getElementById('editLastName').value=athlete.last_name||'';
+  // Fill edit modals
+  document.getElementById('ei_firstName').value = athlete.first_name || '';
+  document.getElementById('ei_lastName').value = athlete.last_name || '';
+  document.getElementById('ei_birthDate').value = athlete.birth_date ? athlete.birth_date.split('T')[0] : '';
+  document.getElementById('ei_contactName').value = athlete.contact_name || '';
+  document.getElementById('ei_contactPhone').value = athlete.contact_phone || '';
+  document.getElementById('ep_weight').value = athlete.weight_kg || '';
+  document.getElementById('ep_height').value = athlete.height_cm || '';
+  document.getElementById('ep_weightCat').value = athlete.weight_category || '';
+  document.getElementById('ea_address').value = athlete.home_address || '';
+  if (athlete.smoothcomp_id) document.getElementById('scUrl').value = `https://smoothcomp.com/en/profile/${athlete.smoothcomp_id}`;
+  if (athlete.ajp_id) document.getElementById('ajpUrl').value = `https://ajptour.com/ru/profile/${athlete.ajp_id}`;
 
-if(athlete.birth_date){
-const bd=new Date(athlete.birth_date);
-daySelect.value=bd.getDate();
-monthSelect.value=bd.getMonth()+1;
-yearSelect.value=bd.getFullYear();
-}
-
-// Groups checkboxes
-const html=allGroups.map(g=>`
-<label class="group-checkbox">
-<input type="checkbox" value="${g.id}" ${athleteGroupIds.includes(g.id)?'checked':''}>
-${g.name} <span style="color:#666">(${g.club_name||'—'})</span>
-</label>
-`).join('');
-document.getElementById('editGroupsCheckboxes').innerHTML=html||'<p style="color:#999">Нет доступных групп</p>';
-
-document.getElementById('editModal').classList.add('active');
-document.body.style.overflow='hidden';
-}
-
-function closeEditModal(){
-document.getElementById('editModal').classList.remove('active');
-document.body.style.overflow='auto';
-}
-
-async function saveAthlete(event){
-event.preventDefault();
-
-const fn=document.getElementById('editFirstName').value.trim();
-const ln=document.getElementById('editLastName').value.trim();
-const d=document.getElementById('editBirthDay').value;
-const m=document.getElementById('editBirthMonth').value;
-const y=document.getElementById('editBirthYear').value;
-const selectedGroups=Array.from(document.querySelectorAll('#editGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
-
-if(!fn||!ln){alert('Заполните имя и фамилию');return;}
-if(selectedGroups.length===0){alert('Выберите хотя бы одну группу');return;}
-
-const data={id:parseInt(athleteId),first_name:fn,last_name:ln};
-if(d&&m&&y)data.birth_date=`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
-
-try{
-// Update basic info
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'update',data})});
-let res=await r.json();
-const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-
-if(result&&result.id){
-// Get face token
-const r3=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'face_tokens',action:'list',data:{child_id:parseInt(athleteId)}})});
-const d3=await r3.json();
-const faceTokensData=(d3.merged||d3||[]).filter(ft=>ft.child_id==parseInt(athleteId));
-const childFaceToken=faceTokensData.length>0?faceTokensData[0].face_token:null;
-
-const removedGroups=[];
-const addedGroups=[];
-
-// Determine changes
-for(let gid of athleteGroupIds){
-if(!selectedGroups.includes(gid)){
-removedGroups.push(gid);
-}
+  // Role-based visibility
+  if (userRole === 'trainer' || userRole === 'director') {
+    document.getElementById('addBeltBtn').style.display = 'inline-flex';
+    document.getElementById('addInjuryBtn').style.display = 'inline-flex';
+    document.getElementById('addGoalBtn').style.display = 'inline-flex';
+  }
 }
 
-for(let gid of selectedGroups){
-if(!athleteGroupIds.includes(gid)){
-addedGroups.push(gid);
-}
-}
-
-// Sync Face++ FIRST
-if(childFaceToken && (removedGroups.length > 0 || addedGroups.length > 0)){
-await fetch('https://primary-production-4b93e.up.railway.app/webhook/sync-child-facesets', {
-method: 'POST',
-headers: {'Content-Type': 'application/json'},
-body: JSON.stringify({
-token,
-child_id: parseInt(athleteId),
-action: 'update',
-removed_groups: removedGroups,
-added_groups: addedGroups
-})
-});
+// ============================
+// GROUPS
+// ============================
+async function loadGroups() {
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'groups', action:'list'})});
+  const d = await r.json();
+  allGroups = d.merged || d || [];
+  const groupNames = athlete.group_names && athlete.group_names !== 'Без группы' ? athlete.group_names.split(', ') : [];
+  athleteGroupIds = allGroups.filter(g => groupNames.includes(g.name)).map(g => g.id);
+  const html = groupNames.length ? groupNames.map(g => `<span style="display:inline-block;padding:.4rem .9rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:600;margin:.2rem">${g}</span>`).join('') : '<p style="color:var(--muted)">Нет групп</p>';
+  document.getElementById('infoGroups').innerHTML = html;
 }
 
-// THEN update DB
-for(let gid of removedGroups){
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(athleteId),group_id:gid}})});
+// ============================
+// BELT HISTORY
+// ============================
+async function loadBelts() {
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'belt_grades', action:'list'})});
+  const d = await r.json();
+  allBelts = d.merged || d || [];
+  // Populate select
+  document.getElementById('ab_belt').innerHTML = allBelts.map(b => `<option value="${b.id}" data-color="${b.color}">${b.name}</option>`).join('');
 }
 
-for(let gid of addedGroups){
-await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(athleteId),group_id:gid}})});
+async function loadBeltHistory() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_belts', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const belts = d.merged || d || [];
+
+    if (belts.length > 0) {
+      const latest = belts[belts.length-1];
+      document.getElementById('heroBeltColor').style.background = latest.color || '#888';
+      document.getElementById('heroBeltName').textContent = latest.belt_name || latest.name || 'Пояс';
+    }
+
+    document.getElementById('beltTimeline').innerHTML = belts.length ? belts.reverse().map(b => `
+      <div class="belt-item">
+        <div class="belt-dot" style="background:${b.color||'#888'}"></div>
+        <div class="belt-info">
+          <div class="belt-info-name">${b.belt_name || b.name || '—'}</div>
+          <div class="belt-info-date">${b.awarded_at ? new Date(b.awarded_at).toLocaleDateString('ru-RU') : '—'} ${b.notes ? '· ' + b.notes : ''}</div>
+        </div>
+      </div>
+    `).join('') : '<p style="color:var(--muted)">История поясов пуста</p>';
+  } catch(e) { console.warn('Belt history:', e); }
 }
 
-closeEditModal();
-alert('Сохранено!');
-await loadAthlete();
-}else{
-alert('Ошибка: '+(result?.error||JSON.stringify(res)));
-}
-}catch(err){
-console.error(err);
-alert('Ошибка: '+err.message);
-}
+async function saveBelt() {
+  const beltId = document.getElementById('ab_belt').value;
+  const date = document.getElementById('ab_date').value;
+  const notes = document.getElementById('ab_note').value;
+  if (!beltId || !date) { alert('Выберите пояс и дату'); return; }
+  await apiFetch('athlete_belts', 'create', {child_id:athleteId, belt_id:parseInt(beltId), awarded_at:date, notes, awarded_by:userId});
+  closeModal('addBeltModal');
+  await loadBeltHistory();
 }
 
-loadAthlete();
+// ============================
+// ATTENDANCE
+// ============================
+async function loadAttendance() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'attendance', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const records = d.merged || d || [];
+
+    const present = records.filter(r => r.was_present).length;
+    const total = records.length;
+    const pct = total > 0 ? Math.round(present/total*100) : 0;
+    document.getElementById('statAttendance').textContent = pct + '%';
+    document.getElementById('attTotal').textContent = total;
+    document.getElementById('attPresent').textContent = present;
+    document.getElementById('attAbsent').textContent = total - present;
+
+    // Streak
+    let streak = 0, maxStreak = 0, cur = 0;
+    const sorted = [...records].sort((a,b) => new Date(b.training_date)-new Date(a.training_date));
+    for (const rec of sorted) { if (rec.was_present) { cur++; streak = Math.max(streak,cur); } else cur = 0; }
+    document.getElementById('attStreak').textContent = streak;
+
+    // Heatmap (26 weeks = ~6 months)
+    const hm = document.getElementById('heatmap');
+    hm.innerHTML = '';
+    const dateMap = {};
+    records.forEach(r => { if (r.was_present) { const k = r.training_date?.split('T')[0]; if(k) dateMap[k] = (dateMap[k]||0)+1; } });
+    for (let i = 181; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate()-i);
+      const k = d.toISOString().split('T')[0];
+      const v = dateMap[k] || 0;
+      const cell = document.createElement('div');
+      cell.className = 'hm-cell' + (v===0?'':v===1?' lvl1':v===2?' lvl2':' lvl3');
+      cell.title = k + (v ? ` (${v} тр.)` : '');
+      hm.appendChild(cell);
+    }
+  } catch(e) { console.warn('Attendance:', e); }
+}
+
+// ============================
+// COMPETITIONS
+// ============================
+async function loadCompetitions() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_competitions', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    competitions = d.merged || d || [];
+
+    const past = competitions.filter(c => !c.event_date || new Date(c.event_date) <= new Date());
+    const wins = past.filter(c => c.is_win === true).length;
+    const losses = past.filter(c => c.is_win === false).length;
+    const wr = past.length > 0 ? Math.round(wins/past.length*100) : 0;
+
+    document.getElementById('statWins').textContent = wins;
+    document.getElementById('statLosses').textContent = losses;
+    document.getElementById('cTotal').textContent = past.length;
+    document.getElementById('cWins').textContent = wins;
+    document.getElementById('cLosses').textContent = losses;
+    document.getElementById('cWinRate').textContent = wr + '%';
+
+    filteredComps = [...competitions];
+    renderComps('past');
+
+    // Load upcoming from events
+    await loadUpcomingEvents();
+  } catch(e) { console.warn('Competitions:', e); }
+}
+
+async function loadUpcomingEvents() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'events', action:'list'})});
+    const d = await r.json();
+    const events = (d.merged||d||[]).filter(e => e.event_date && new Date(e.event_date) > new Date() && e.is_active);
+    if (events.length > 0) {
+      document.getElementById('compList').dataset.upcomingEvents = JSON.stringify(events);
+    }
+  } catch(e) {}
+}
+
+function switchCompTab(tab) {
+  document.getElementById('compTab-past').classList.toggle('active', tab==='past');
+  document.getElementById('compTab-upcoming').classList.toggle('active', tab==='upcoming');
+  document.getElementById('compSearchRow').style.display = tab==='past' ? 'flex' : 'none';
+  renderComps(tab);
+}
+
+function filterComps() {
+  const q = document.getElementById('compSearch').value.toLowerCase();
+  const df = document.getElementById('compDateFrom').value;
+  const dt = document.getElementById('compDateTo').value;
+  filteredComps = competitions.filter(c => {
+    const matchQ = !q || (c.title||'').toLowerCase().includes(q) || (c.opponent||'').toLowerCase().includes(q);
+    const matchDf = !df || (c.event_date && c.event_date >= df);
+    const matchDt = !dt || (c.event_date && c.event_date <= dt);
+    return matchQ && matchDf && matchDt;
+  });
+  compPage = 1;
+  renderComps('past');
+}
+
+function renderComps(tab) {
+  const list = document.getElementById('compList');
+  const pagination = document.getElementById('compPagination');
+
+  if (tab === 'upcoming') {
+    const stored = list.dataset.upcomingEvents;
+    const events = stored ? JSON.parse(stored) : [];
+    if (!events.length) { list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">Предстоящих мероприятий нет</p>'; pagination.innerHTML=''; return; }
+    list.innerHTML = events.map(e => `
+      <div class="upcoming-card">
+        <div class="upcoming-title">⚡ ${e.title}</div>
+        <div class="upcoming-meta">📅 ${new Date(e.event_date).toLocaleDateString('ru-RU')} ${e.location ? '· 📍 ' + e.location : ''} ${e.entry_fee ? '· 💰 ' + e.entry_fee + ' грн' : ''}</div>
+        <div class="upcoming-actions">
+          <button class="btn btn-sm btn-orange" onclick="registerForEvent(${e.id})">📝 Подать заявку</button>
+          ${e.description ? `<button class="btn btn-sm btn-ghost" onclick="alert('${(e.description||'').replace(/'/g,"\\'")}')">ℹ️ Подробнее</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+    pagination.innerHTML = '';
+    return;
+  }
+
+  const past = filteredComps.filter(c => !c.event_date || new Date(c.event_date) <= new Date()).sort((a,b) => new Date(b.event_date)-new Date(a.event_date));
+  const perPage = 10;
+  const totalPages = Math.ceil(past.length / perPage);
+  const page = past.slice((compPage-1)*perPage, compPage*perPage);
+
+  list.innerHTML = page.length ? page.map(c => `
+    <div class="comp-card">
+      <div class="comp-header">
+        <div class="comp-title">${c.title}</div>
+        <div class="comp-date">${c.event_date ? new Date(c.event_date).toLocaleDateString('ru-RU') : '—'} ${c.source && c.source!=='manual' ? `<span style="font-size:.7rem;background:#ede9fe;color:#7c3aed;padding:.1rem .4rem;border-radius:4px">${c.source}</span>` : ''}</div>
+      </div>
+      <div class="comp-meta">
+        ${c.category ? `<span class="comp-tag cat">🏷️ ${c.category}</span>` : ''}
+        ${c.placement ? `<span class="comp-tag place">🥇 ${c.placement}</span>` : ''}
+        ${c.is_win === true ? '<span class="comp-tag win">✅ Победа</span>' : ''}
+        ${c.is_win === false ? '<span class="comp-tag loss">❌ Поражение</span>' : ''}
+        ${c.opponent ? `<span class="comp-tag" style="background:#f1f5f9">⚔️ ${c.opponent}</span>` : ''}
+        ${c.location ? `<span class="comp-tag" style="background:#f0fdf4;color:#16a34a">📍 ${c.location}</span>` : ''}
+      </div>
+    </div>
+  `).join('') : '<p style="color:var(--muted);text-align:center;padding:2rem">Нет соревнований</p>';
+
+  pagination.innerHTML = totalPages > 1 ? Array.from({length:totalPages},(_,i)=>`<button class="page-btn ${i+1===compPage?'active':''}" onclick="compPage=${i+1};renderComps('past')">${i+1}</button>`).join('') : '';
+}
+
+async function saveComp() {
+  const title = document.getElementById('ac_title').value.trim();
+  const date = document.getElementById('ac_date').value;
+  if (!title) { alert('Введите название'); return; }
+  const res = document.getElementById('ac_result').value;
+  await apiFetch('athlete_competitions','create',{
+    child_id: athleteId, title, event_date: date||null,
+    location: document.getElementById('ac_location').value,
+    category: document.getElementById('ac_category').value,
+    placement: document.getElementById('ac_placement').value,
+    opponent: document.getElementById('ac_opponent').value,
+    is_win: res==='win'?true:res==='loss'?false:null,
+    source:'manual'
+  });
+  closeModal('addCompModal');
+  await loadCompetitions();
+}
+
+async function registerForEvent(eventId) {
+  await apiFetch('event_registrations','create',{event_id:eventId, child_id:athleteId, status:'pending'});
+  alert('✅ Заявка подана!');
+}
+
+// ============================
+// SYNC SMOOTHCOMP / AJP
+// ============================
+function detectPlatformId(input, platform) {}
+
+async function syncProfile(platform) {
+  const url = platform === 'smoothcomp'
+    ? document.getElementById('scUrl').value.trim()
+    : document.getElementById('ajpUrl').value.trim();
+  if (!url) { alert('Введите ссылку на профиль'); return; }
+
+  const idMatch = url.match(/\/profile\/(\d+)/);
+  if (!idMatch) { alert('Неверная ссылка. Пример: https://smoothcomp.com/en/profile/12345'); return; }
+  const profileId = idMatch[1];
+
+  // Show loading
+  pendingSyncPlatform = platform;
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'external_profile_preview', action:'get', data:{platform, profile_id:profileId}})});
+    const d = await r.json();
+    const preview = d.merged || d;
+
+    document.getElementById('syncName').textContent = preview.name || `Профиль #${profileId}`;
+    document.getElementById('syncPlatform').textContent = `${platform === 'smoothcomp' ? 'Smoothcomp' : 'AJP Tour'} · ID ${profileId}`;
+    document.getElementById('syncStats').textContent = preview.total_events ? `${preview.total_events} турниров · ${preview.wins||0} побед` : 'Данные загружены';
+    pendingSync = {platform, profileId, url};
+    openModal('syncConfirmModal');
+  } catch(e) {
+    alert('Ошибка получения данных: ' + e.message);
+  }
+}
+
+async function confirmSync() {
+  if (!pendingSync) return;
+  closeModal('syncConfirmModal');
+  try {
+    await apiFetch('athlete_competitions','sync_external',{
+      child_id:athleteId, platform:pendingSync.platform, profile_id:pendingSync.profileId, profile_url:pendingSync.url
+    });
+    alert('✅ Данные импортированы!');
+    await loadCompetitions();
+  } catch(e) { alert('Ошибка: '+e.message); }
+}
+
+// ============================
+// CHAT
+// ============================
+async function loadMessages() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'messages', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const msgs = d.merged || d || [];
+    const container = document.getElementById('chatMessages');
+    if (!msgs.length) { container.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет</p>'; return; }
+    container.innerHTML = msgs.map(m => {
+      const isMine = (userRole==='director'||userRole==='trainer') ? m.from_user_id===userId : m.to_child_id===athleteId;
+      const time = new Date(m.created_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+      return `<div class="msg ${isMine?'mine':'theirs'}"><div class="msg-bubble">${m.text}</div><div class="msg-time">${time}</div></div>`;
+    }).join('');
+    container.scrollTop = container.scrollHeight;
+  } catch(e) {}
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  await apiFetch('messages','create',{child_id:athleteId, text, from_user_id:userId});
+  await loadMessages();
+}
+
+function startChatPolling() {
+  loadMessages();
+  chatInterval = setInterval(loadMessages, 15000);
+}
+
+// ============================
+// DOCUMENTS
+// ============================
+async function loadDocuments() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_documents', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const docs = d.merged || d || [];
+    const icons = {birth_cert:'📜', medical:'🏥', other:'📎'};
+    document.getElementById('docGrid').innerHTML = docs.map(doc => `
+      <div class="doc-card filled" onclick="window.open('${doc.file_url}','_blank')">
+        <div class="doc-icon">${icons[doc.doc_type]||'📎'}</div>
+        <div class="doc-name">${doc.title}</div>
+        <div class="doc-date">${doc.created_at ? new Date(doc.created_at).toLocaleDateString('ru-RU') : ''}</div>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
+
+async function uploadDocument(input) {
+  const file = input.files[0]; if (!file) return;
+  const type = prompt('Тип документа: birth_cert / medical / other', 'other');
+  const title = prompt('Название документа:', file.name.replace(/\.[^.]+$/,''));
+  if (!title) return;
+  const formData = new FormData();
+  formData.append('token', token);
+  formData.append('file', file);
+  formData.append('doc_data', JSON.stringify({child_id:athleteId, doc_type:type||'other', title}));
+  try {
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-athlete-doc', {method:'POST', body:formData});
+    const d = await r.json();
+    if (d.url) { await loadDocuments(); alert('✅ Документ загружен!'); }
+  } catch(e) { alert('Ошибка загрузки'); }
+}
+
+// ============================
+// MEDICAL
+// ============================
+async function loadMedical() {
+  const el = document.getElementById('medBlock');
+  if (!athlete.medical_cert_expires) {
+    el.innerHTML = '<p style="color:var(--muted)">Медсправка не добавлена</p>';
+    return;
+  }
+  const exp = new Date(athlete.medical_cert_expires);
+  const now = new Date();
+  const diff = Math.ceil((exp-now)/86400000);
+  const status = diff < 0 ? 'expired' : diff < 30 ? 'warn' : 'ok';
+  const labels = {ok:'✅ Действует', warn:'⚠️ Истекает', expired:'❌ Истекла'};
+  el.innerHTML = `
+    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+      <span class="med-status ${status}">${labels[status]}</span>
+      <span>До <b>${exp.toLocaleDateString('ru-RU')}</b></span>
+      ${diff > 0 ? `<span style="color:var(--muted);font-size:.85rem">осталось ${diff} дн.</span>` : `<span style="color:var(--red);font-size:.85rem">просрочена ${Math.abs(diff)} дн. назад</span>`}
+      ${athlete.medical_cert_url ? `<a href="${athlete.medical_cert_url}" target="_blank" class="btn btn-sm btn-ghost">👁️ Просмотр</a>` : ''}
+    </div>
+  `;
+}
+
+async function uploadMedical(input) {
+  const file = input.files[0]; if (!file) return;
+  const formData = new FormData();
+  formData.append('token', token);
+  formData.append('file', file);
+  formData.append('child_id', athleteId);
+  try {
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-medical-cert', {method:'POST', body:formData});
+    const d = await r.json();
+    if (d.expires_date) {
+      athlete.medical_cert_expires = d.expires_date;
+      athlete.medical_cert_url = d.file_url;
+      await loadMedical();
+      alert(`✅ Медсправка загружена!\nAI определил дату окончания: ${new Date(d.expires_date).toLocaleDateString('ru-RU')}\nПроверьте и скорректируйте при необходимости.`);
+    }
+  } catch(e) { alert('Ошибка: '+e.message); }
+}
+
+// ============================
+// INJURIES
+// ============================
+async function loadInjuries() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_injuries', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const injuries = d.merged || d || [];
+    document.getElementById('injuryList').innerHTML = injuries.length ? injuries.map(i => `
+      <div class="injury-item">
+        <div class="injury-title">🩹 ${i.title}</div>
+        <div class="injury-dates">${i.injury_date ? '📅 ' + new Date(i.injury_date).toLocaleDateString('ru-RU') : ''} ${i.recovery_date ? '→ ' + new Date(i.recovery_date).toLocaleDateString('ru-RU') : ''}</div>
+        ${i.description ? `<div class="injury-desc">${i.description}</div>` : ''}
+      </div>
+    `).join('') : '<p style="color:var(--muted)">Травм не зафиксировано</p>';
+  } catch(e) {}
+}
+
+async function saveInjury() {
+  const title = document.getElementById('ai_title').value.trim();
+  if (!title) { alert('Введите название'); return; }
+  await apiFetch('athlete_injuries','create',{
+    child_id:athleteId, title,
+    injury_date: document.getElementById('ai_date').value||null,
+    recovery_date: document.getElementById('ai_recovery').value||null,
+    description: document.getElementById('ai_desc').value,
+    created_by: userId
+  });
+  closeModal('addInjuryModal');
+  await loadInjuries();
+}
+
+// ============================
+// GOALS
+// ============================
+async function loadGoals() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_goals', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const goals = d.merged || d || [];
+    document.getElementById('goalsList').innerHTML = goals.length ? goals.map(g => `
+      <div class="goal-item">
+        <div class="goal-check ${g.is_done?'done':''}" onclick="toggleGoal(${g.id},${!g.is_done})">${g.is_done?'✓':''}</div>
+        <div class="goal-text">
+          <div class="goal-name" style="${g.is_done?'text-decoration:line-through;color:var(--muted)':''}">🎯 ${g.text}</div>
+          ${g.target_date ? `<div class="goal-date">Срок: ${new Date(g.target_date).toLocaleDateString('ru-RU')}</div>` : ''}
+        </div>
+      </div>
+    `).join('') : '<p style="color:var(--muted)">Целей нет. Тренер может добавить цели для спортсмена.</p>';
+  } catch(e) {}
+}
+
+async function saveGoal() {
+  const text = document.getElementById('ag_text').value.trim();
+  if (!text) { alert('Введите цель'); return; }
+  await apiFetch('athlete_goals','create',{child_id:athleteId, text, trainer_id:userId, target_date:document.getElementById('ag_date').value||null});
+  closeModal('addGoalModal');
+  await loadGoals();
+}
+
+async function toggleGoal(goalId, isDone) {
+  await apiFetch('athlete_goals','update',{id:goalId, is_done:isDone});
+  await loadGoals();
+}
+
+// ============================
+// NOTIFICATIONS
+// ============================
+async function loadNotifications() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'notifications', action:'unread', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const notifs = d.merged || d || [];
+    if (notifs.length > 0) {
+      const n = notifs[0];
+      document.getElementById('notifyTitle').textContent = '📢 ' + n.title;
+      document.getElementById('notifyText').textContent = n.text;
+      document.getElementById('notifyBanner').style.display = 'block';
+      document.getElementById('notifyBanner')._notifId = n.id;
+    }
+  } catch(e) {}
+}
+
+async function markNotificationRead() {
+  const id = document.getElementById('notifyBanner')._notifId;
+  if (id) await apiFetch('notification_reads','create',{notification_id:id, child_id:athleteId});
+  document.getElementById('notifyBanner').style.display = 'none';
+}
+
+// ============================
+// RATING
+// ============================
+async function loadRating() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'club_rating', action:'get', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const rating = d.merged || d;
+    if (rating && rating.position) {
+      document.getElementById('statRating').textContent = '#' + rating.position;
+      document.getElementById('ratingBlock').innerHTML = `
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.75rem">
+          <div style="font-size:2rem;font-weight:700;color:var(--p)">#${rating.position}</div>
+          <div>
+            <div style="font-size:.9rem;font-weight:600">из ${rating.total || '?'} спортсменов клуба</div>
+            <div style="font-size:.8rem;color:var(--muted)">Рейтинг рассчитан: посещаемость + результаты + пояс</div>
+          </div>
+        </div>
+        <div class="rating-bar"><div class="rating-fill" style="width:${rating.score||0}%"></div></div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:.35rem">Очков: ${rating.score || 0}</div>
+      `;
+      renderBadges(rating.badges || []);
+    } else {
+      document.getElementById('ratingBlock').innerHTML = '<p style="color:var(--muted)">Рейтинг рассчитывается...</p>';
+    }
+  } catch(e) {}
+}
+
+function renderBadges(badges) {
+  const defs = {
+    attendance_star:   {icon:'⭐', label:'Звезда посещений', cls:'gold'},
+    top_competitor:    {icon:'🥇', label:'Топ-турнирный', cls:'gold'},
+    iron_athlete:      {icon:'🔩', label:'Железный атлет', cls:'silver'},
+    first_win:         {icon:'🏅', label:'Первая победа', cls:'blue'},
+    unbeaten:          {icon:'🛡️', label:'Непобедимый', cls:'purple'},
+    club_champion:     {icon:'👑', label:'Чемпион клуба', cls:'gold'},
+    '10_trainings':    {icon:'🔟', label:'10 тренировок', cls:'green'},
+    '50_trainings':    {icon:'💪', label:'50 тренировок', cls:'blue'},
+    '100_trainings':   {icon:'🌟', label:'100 тренировок', cls:'gold'},
+    birthday_warrior:  {icon:'🎂', label:'Именинник', cls:'orange'},
+  };
+  const html = badges.map(b => {
+    const def = defs[b] || {icon:'🏷️', label:b, cls:'silver'};
+    return `<div class="badge-chip ${def.cls}">${def.icon} ${def.label}</div>`;
+  }).join('');
+  document.getElementById('heroBadges').innerHTML = html;
+}
+
+// ============================
+// ADDRESS & ROUTE
+// ============================
+function renderAddress() {
+  const el = document.getElementById('addressBlock');
+  if (!athlete.home_address) { el.innerHTML = '<p style="color:var(--muted);font-size:.9rem">Адрес не указан</p>'; return; }
+  el.innerHTML = `
+    <div class="address-block">
+      <div class="address-text">📍 ${athlete.home_address}</div>
+      <div class="travel-info" id="travelInfo">
+        <div style="color:var(--muted);font-size:.85rem">⏳ Рассчитываем маршрут...</div>
+      </div>
+      <a id="mapLink" href="#" target="_blank" class="btn btn-sm btn-ghost" style="margin-top:.75rem">🗺️ Открыть карту</a>
+    </div>
+  `;
+  calculateRoute();
+}
+
+async function calculateRoute() {
+  if (!athlete.home_lat || !athlete.home_lng) return;
+  try {
+    // Get club coordinates from API
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'clubs', action:'list'})});
+    const d = await r.json();
+    const clubs = d.merged || d || [];
+    const clubCoords = clubs[0]; // simplified - use first club
+    if (!clubCoords?.lat || !clubCoords?.lng) return;
+
+    // OSRM routing
+    const url = `https://router.project-osrm.org/route/v1/driving/${athlete.home_lng},${athlete.home_lat};${clubCoords.lng},${clubCoords.lat}?overview=false`;
+    const rr = await fetch(url);
+    const dd = await rr.json();
+    if (dd.routes?.[0]) {
+      const mins = Math.round(dd.routes[0].duration / 60);
+      document.getElementById('travelInfo').innerHTML = `
+        <div class="travel-chip">🚗 ~${mins} мин</div>
+        <div class="travel-chip">🚶 ~${Math.round(mins*4.5)} мин</div>
+      `;
+      const mapLink = `https://www.openstreetmap.org/directions?from=${athlete.home_lat},${athlete.home_lng}&to=${clubCoords.lat},${clubCoords.lng}`;
+      document.getElementById('mapLink').href = mapLink;
+    }
+  } catch(e) {}
+}
+
+// ============================
+// SAVE FUNCTIONS
+// ============================
+async function saveInfo() {
+  const fn = document.getElementById('ei_firstName').value.trim();
+  const ln = document.getElementById('ei_lastName').value.trim();
+  if (!fn || !ln) { alert('Заполните имя и фамилию'); return; }
+  await apiFetch('children','update',{
+    id:athleteId, first_name:fn, last_name:ln,
+    birth_date: document.getElementById('ei_birthDate').value || null,
+    contact_name: document.getElementById('ei_contactName').value,
+    contact_phone: document.getElementById('ei_contactPhone').value
+  });
+  closeModal('editInfoModal');
+  await loadAthlete();
+}
+
+async function saveAddress() {
+  const addr = document.getElementById('ea_address').value.trim();
+  if (!addr) { closeModal('editAddressModal'); return; }
+
+  // Geocode via Nominatim
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addr)}&format=json&limit=1`, {headers:{'Accept-Language':'ru'}});
+    const d = await r.json();
+    const coords = d[0] ? {lat:parseFloat(d[0].lat), lng:parseFloat(d[0].lon)} : {};
+    await apiFetch('children','update',{id:athleteId, home_address:addr, home_lat:coords.lat||null, home_lng:coords.lng||null});
+    athlete.home_address = addr; athlete.home_lat = coords.lat; athlete.home_lng = coords.lng;
+  } catch(e) {
+    await apiFetch('children','update',{id:athleteId, home_address:addr});
+    athlete.home_address = addr;
+  }
+  closeModal('editAddressModal');
+  renderAddress();
+}
+
+async function savePhysical() {
+  await apiFetch('children','update',{
+    id:athleteId,
+    weight_kg: parseFloat(document.getElementById('ep_weight').value)||null,
+    height_cm: parseInt(document.getElementById('ep_height').value)||null,
+    weight_category: document.getElementById('ep_weightCat').value||null
+  });
+  closeModal('editPhysModal');
+  await loadAthlete();
+}
+
+// ============================
+// PHOTO
+// ============================
+document.getElementById('athletePhoto').onclick = () => {
+  document.getElementById('photoModalImg').src = document.getElementById('athletePhoto').src;
+  openModal('photoModal');
+};
+
+async function uploadAthletePhoto(input) {
+  const file = input.files[0]; if (!file) return;
+  if (file.size > 5*1024*1024) { alert('Макс 5МБ'); return; }
+  const formData = new FormData();
+  formData.append('token', token);
+  formData.append('photo', file);
+  formData.append('child_id', athleteId);
+  try {
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-child-photo-update', {method:'POST', body:formData});
+    const d = await r.json();
+    if (d.photo_url) { document.getElementById('athletePhoto').src = d.photo_url; closeModal('photoModal'); alert('✅ Фото обновлено!'); }
+  } catch(e) { alert('Ошибка загрузки'); }
+}
+
+// ============================
+// QR CODE (simple SVG)
+// ============================
+function renderQR() {
+  // Simple QR placeholder using SVG pattern
+  const svg = document.getElementById('qrSvg');
+  const data = `inskill:athlete:${athleteId}`;
+  // Generate a simple visual pattern based on id
+  let cells = '';
+  const grid = 10;
+  const size = 14;
+  for (let i = 0; i < grid; i++) {
+    for (let j = 0; j < grid; j++) {
+      const val = (athleteId * (i+1) * (j+1) * 7) % 17;
+      if (val > 8 || (i<2&&j<2) || (i<2&&j>grid-3) || (i>grid-3&&j<2)) {
+        cells += `<rect x="${j*size+7}" y="${i*size+7}" width="${size-1}" height="${size-1}" fill="#0f1923" rx="1"/>`;
+      }
+    }
+  }
+  svg.innerHTML = `<rect width="140" height="140" fill="white" rx="8"/>${cells}`;
+}
+
+function downloadQR() {
+  const svg = document.getElementById('qrSvg');
+  const blob = new Blob([svg.outerHTML], {type:'image/svg+xml'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `qr-athlete-${athleteId}.svg`; a.click();
+}
+
+// ============================
+// FREEZE
+// ============================
+function renderFreezeStatus() {
+  const el = document.getElementById('freezeStatus');
+  if (athlete.is_frozen) {
+    el.innerHTML = `
+      <div class="frozen-notice">🧊 Спортсмен заморожен${athlete.frozen_reason ? ': ' + athlete.frozen_reason : ''}</div>
+      <button class="btn btn-green" onclick="setFreeze(false)">▶️ Разморозить</button>
+    `;
+  } else {
+    el.innerHTML = `
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:1rem">Спортсмен активен. Заморозка — временное отключение без потери данных.</p>
+      <button class="btn btn-ghost" onclick="promptFreeze()">🧊 Заморозить</button>
+    `;
+  }
+}
+
+async function promptFreeze() {
+  const reason = prompt('Причина заморозки (необязательно):', 'Травма / Отпуск');
+  await apiFetch('children','update',{id:athleteId, is_frozen:true, frozen_reason:reason||null, frozen_at:new Date().toISOString()});
+  athlete.is_frozen = true; athlete.frozen_reason = reason;
+  document.getElementById('frozenBadge').style.display = 'block';
+  renderFreezeStatus();
+}
+
+async function setFreeze(state) {
+  await apiFetch('children','update',{id:athleteId, is_frozen:state});
+  athlete.is_frozen = state;
+  document.getElementById('frozenBadge').style.display = state ? 'block' : 'none';
+  renderFreezeStatus();
+}
+
+// ============================
+// HELPERS
+// ============================
+async function apiFetch(resource, action, data={}) {
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource, action, data})});
+  return await r.json();
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'chat') loadMessages();
+}
+
+function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow='auto'; }
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if(e.target===m) closeModal(m.id); }));
+
+init();
 </script>
 </body>
 </html>
