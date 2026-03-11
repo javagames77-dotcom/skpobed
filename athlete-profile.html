@@ -801,12 +801,14 @@ async function init() {
 // LOAD ATHLETE
 // ============================
 async function loadAthlete() {
-  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({token, resource:'children', action:'list'})});
+  const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'children_profile', action:'get', data:{child_id: athleteId}})});
   const d = await r.json();
-  const children = d.merged || d || [];
-  athlete = children.find(c => c.id == athleteId);
+  const list = d.merged || [];
+  athlete = list[0] || null;
   if (!athlete) { alert('Спортсмен не найден'); history.back(); return; }
+  if (typeof athlete.groups === 'string') { try { athlete.groups = JSON.parse(athlete.groups); } catch(e) { athlete.groups = []; } }
+  athleteGroupIds = (athlete.groups || []).map(g => g.id).filter(Boolean);
 
   // Hero
   document.getElementById('athleteName').textContent = `${athlete.first_name} ${athlete.last_name}`;
