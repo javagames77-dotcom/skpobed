@@ -1450,30 +1450,29 @@ function renderMethodPills(obj, color) {
     .map(([m,n]) => `<span style="display:inline-flex;align-items:center;gap:.25rem;margin:.15rem .15rem;font-size:.75rem;background:${color}18;color:${color};padding:.15rem .5rem;border-radius:20px;font-weight:600">${n} ${m}</span>`).join('');
 }
 
-function getEventLink(c) {
+function getBracketLink(c) {
+  // Returns direct link to bracket: /event/{event_id}/bracket/{bracket_id}
   const raw = c.raw_data || {};
-  // Try event_id from raw_data, fallback: first numeric segment of external_id
-  let eid = raw.event_id;
-  if (!eid && c.external_id) {
-    const m = String(c.external_id).match(/^(\d+)/);
-    if (m) eid = m[1];
-  }
+  const eid = raw.event_id;
+  const bid = raw.bracket_id;
+  if (!eid || !bid) return null;
+  if (c.source === 'smoothcomp') return 'https://smoothcomp.com/ru/event/' + eid + '/bracket/' + bid;
+  if (c.source === 'ajp') return 'https://ajptour.com/ru/event/' + eid + '/bracket/' + bid;
+  return null;
+}
+
+function getEventLink(c) {
+  // Fallback — just event page without bracket
+  const raw = c.raw_data || {};
+  const eid = raw.event_id;
   if (!eid) return null;
+  if (c.source === 'smoothcomp') return 'https://smoothcomp.com/ru/event/' + eid;
   if (c.source === 'ajp') return 'https://ajptour.com/ru/event/' + eid;
-  if (c.source === 'smoothcomp') return 'https://smoothcomp.com/en/event/' + eid;
   return null;
 }
 
 function getCatLink(c) {
-  const raw = c.raw_data || {};
-  const bid = raw.bracket_id || raw._reg_bracket_id || raw._reg_bracket;
-  if (!bid) return null;
-  if (c.source === 'smoothcomp') return 'https://smoothcomp.com/en/event-category/' + bid;
-  if (c.source === 'ajp') {
-    const eid = raw.event_id;
-    return eid ? 'https://ajptour.com/ru/event/' + eid + '/bracket/' + bid : null;
-  }
-  return null;
+  return getBracketLink(c);
 }
 
 function renderComps(tab) {
@@ -1551,8 +1550,8 @@ function renderComps(tab) {
         ${c.result ? `<span class="comp-tag" style="background:#f8fafc;color:#475569;font-size:.75rem">⚡ ${c.result}</span>` : ''}
         ${c.opponent ? `<span class="comp-tag" style="background:#f1f5f9">⚔️ ${c.opponent}</span>` : ''}
         ${c.location ? `<span class="comp-tag" style="background:#f0fdf4;color:#16a34a">📍 ${c.location}</span>` : ''}
-        ${(eventLink || catLink)
-          ? `<a href="${eventLink || catLink}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#eff6ff;color:#2563eb;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #bfdbfe;font-weight:500;margin:.15rem">🔗 Перейти на сетку ↗</a>`
+        ${catLink
+          ? `<a href="${catLink}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#eff6ff;color:#2563eb;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #bfdbfe;font-weight:500;margin:.15rem">🔗 Перейти на сетку ↗</a>`
           : ''
         }
       </div>
