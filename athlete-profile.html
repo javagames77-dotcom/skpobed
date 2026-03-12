@@ -1450,10 +1450,21 @@ function renderMethodPills(obj, color) {
     .map(([m,n]) => `<span style="display:inline-flex;align-items:center;gap:.25rem;margin:.15rem .15rem;font-size:.75rem;background:${color}18;color:${color};padding:.15rem .5rem;border-radius:20px;font-weight:600">${n} ${m}</span>`).join('');
 }
 
-function getCatLink(c) {
+function getEventLink(c) {
+  // Link to tournament main page
   const raw = c.raw_data || {};
   const eid = raw.event_id;
-  const bid = raw.bracket_id;
+  if (!eid) return null;
+  if (c.source === 'ajp') return `https://ajptour.com/ru/event/${eid}`;
+  if (c.source === 'smoothcomp') return `https://smoothcomp.com/en/event/${eid}`;
+  return null;
+}
+
+function getCatLink(c) {
+  // Link to specific category bracket
+  const raw = c.raw_data || {};
+  const eid = raw.event_id;
+  const bid = raw.bracket_id || raw._reg_bracket_id || raw._reg_id || raw._reg_bracket;
   if (!eid) return null;
   if (c.source === 'ajp') {
     return bid ? `https://ajptour.com/ru/event/${eid}/bracket/${bid}` : `https://ajptour.com/ru/event/${eid}`;
@@ -1518,10 +1529,14 @@ function renderComps(tab) {
     const srcBadge = c.source && c.source!=='manual'
       ? `<span style="font-size:.65rem;background:#ede9fe;color:#7c3aed;padding:.1rem .35rem;border-radius:4px;font-weight:600;margin-left:.3rem">${c.source.toUpperCase()}</span>`
       : '';
+    const eventLink = getEventLink(c);
+    const titleHtml = eventLink
+      ? `<a href="${eventLink}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1.5px dashed var(--primary);cursor:pointer" title="Открыть страницу турнира">${c.title||'—'}</a>`
+      : (c.title||'—');
     return `
     <div class="comp-card">
       <div class="comp-header">
-        <div class="comp-title">${c.title||'—'}${srcBadge}</div>
+        <div class="comp-title">${titleHtml}${srcBadge}</div>
         <div style="display:flex;align-items:center;gap:.4rem;flex-shrink:0">
           <span class="comp-date">${c.event_date ? new Date(c.event_date).toLocaleDateString('ru-RU') : '—'}</span>
           <button onclick="deleteComp(${c.id})" title="Удалить" style="background:none;border:1px solid #fca5a5;color:#dc2626;cursor:pointer;font-size:.8rem;padding:.15rem .4rem;border-radius:4px;line-height:1;transition:all .15s" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">🗑 Удалить</button>
@@ -1535,6 +1550,7 @@ function renderComps(tab) {
         ${c.result ? `<span class="comp-tag" style="background:#f8fafc;color:#475569;font-size:.75rem">⚡ ${c.result}</span>` : ''}
         ${c.opponent ? `<span class="comp-tag" style="background:#f1f5f9">⚔️ ${c.opponent}</span>` : ''}
         ${c.location ? `<span class="comp-tag" style="background:#f0fdf4;color:#16a34a">📍 ${c.location}</span>` : ''}
+        ${eventLink ? `<a href="${eventLink}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#eff6ff;color:#2563eb;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #bfdbfe;font-weight:500;margin:.15rem" title="Перейти на страницу турнира">🔗 Турнир ↗</a>` : ''}
       </div>
     </div>`;
   }).join('') : '<p style="color:var(--muted);text-align:center;padding:2rem">Нет соревнований</p>';
