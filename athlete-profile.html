@@ -1551,13 +1551,9 @@ function renderComps(tab) {
         ${c.result ? `<span class="comp-tag" style="background:#f8fafc;color:#475569;font-size:.75rem">⚡ ${c.result}</span>` : ''}
         ${c.opponent ? `<span class="comp-tag" style="background:#f1f5f9">⚔️ ${c.opponent}</span>` : ''}
         ${c.location ? `<span class="comp-tag" style="background:#f0fdf4;color:#16a34a">📍 ${c.location}</span>` : ''}
-        ${eventLink
-          ? `<a href="${eventLink}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#eff6ff;color:#2563eb;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #bfdbfe;font-weight:500;margin:.15rem">🔗 Перейти на турнир ↗</a>`
-          : c.source === 'smoothcomp'
-            ? `<a href="https://smoothcomp.com/en/events" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#f5f3ff;color:#7c3aed;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #ddd6fe;font-weight:500;margin:.15rem">🔍 Smoothcomp ↗</a>`
-            : c.source === 'ajp'
-              ? `<a href="https://ajptour.com/ru/events/past" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#f5f3ff;color:#7c3aed;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #ddd6fe;font-weight:500;margin:.15rem">🔍 AJP Tour ↗</a>`
-              : ''
+        ${(eventLink || catLink)
+          ? `<a href="${eventLink || catLink}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#eff6ff;color:#2563eb;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #bfdbfe;font-weight:500;margin:.15rem">🔗 Перейти на сетку ↗</a>`
+          : ''
         }
       </div>
     </div>`;
