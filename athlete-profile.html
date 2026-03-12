@@ -952,7 +952,7 @@ async function loadBelts() {
 
 async function loadBeltHistory() {
   try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'athlete_belts', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     const belts = d.merged || d || [];
@@ -1008,7 +1008,7 @@ async function loadAttendance() {
 
     // Load absence notifications
     try {
-      const r2 = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      const r2 = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({token, resource:'absence_notifications', action:'list', data:{child_id:athleteId}})});
       const d2 = await r2.json();
       calAbsenceNotifs = d2.merged || d2 || [];
@@ -1232,7 +1232,7 @@ async function submitAbsenceNotif() {
     document.getElementById('absenceAlert').style.display = 'none';
     alert('✅ Тренер получил уведомление!');
     // Reload
-    const r2 = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r2 = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'absence_notifications', action:'list', data:{child_id:athleteId}})});
     const d2 = await r2.json();
     calAbsenceNotifs = d2.merged || d2 || [];
@@ -1246,7 +1246,7 @@ async function submitAbsenceNotif() {
 // ============================
 async function loadCompetitions() {
   try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'athlete_competitions', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     competitions = d.merged || d || [];
@@ -1424,7 +1424,7 @@ async function confirmSync() {
 // ============================
 async function loadMessages() {
   try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'messages', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     const msgs = d.merged || d || [];
@@ -1458,7 +1458,7 @@ function startChatPolling() {
 // ============================
 async function loadDocuments() {
   try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'athlete_documents', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     const docs = d.merged || d || [];
@@ -1536,7 +1536,7 @@ async function uploadMedical(input) {
 // ============================
 async function loadInjuries() {
   try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'athlete_injuries', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     const injuries = d.merged || d || [];
@@ -1569,7 +1569,7 @@ async function saveInjury() {
 // ============================
 async function loadGoals() {
   try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'athlete_goals', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     const goals = d.merged || d || [];
@@ -1603,7 +1603,7 @@ async function toggleGoal(goalId, isDone) {
 // ============================
 async function loadNotifications() {
   try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'notifications', action:'unread', data:{child_id:athleteId}})});
     const d = await r.json();
     const notifs = d.merged || d || [];
@@ -1628,7 +1628,7 @@ async function markNotificationRead() {
 // ============================
 async function loadRating() {
   try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'club_rating', action:'get', data:{child_id:athleteId}})});
     const d = await r.json();
     const rating = d.merged || d;
