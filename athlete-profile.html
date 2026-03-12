@@ -112,6 +112,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 .cal-day.empty { background:transparent; }
 .cal-day.present { background:#dcfce7; color:#15803d; border:1px solid #86efac; }
 .cal-day.absent { background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; }
+.cal-day.missing { background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1; }
 .cal-day.absent.explained { background:#fef9c3; color:#92400e; border:1px solid #fde047; }
 .cal-day.upcoming { background:#f1f5f9; color:var(--muted); border:1px dashed var(--border); }
 .cal-day.notif { background:#fef9c3; color:#92400e; border:1px solid #fde047; }
@@ -443,8 +444,9 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <!-- Legend -->
       <div class="cal-legend">
         <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#dcfce7;border:1px solid #86efac"></div> Присутствовал</div>
-        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fee2e2;border:1px solid #fca5a5"></div> Пропустил</div>
-        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fef9c3;border:1px solid #fde047"></div> Предупреждён / объяснено</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fee2e2;border:1px solid #fca5a5"></div> Пропустил (нажми для объяснения)</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fef9c3;border:1px solid #fde047"></div> Причина указана</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#f1f5f9;border:1px solid #cbd5e1"></div> Нет данных</div>
         <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#f1f5f9;border:1px dashed #cbd5e1"></div> Предстоящая тренировка</div>
       </div>
     </div>
@@ -1113,107 +1115,131 @@ function calSelectGroup(gid) {
 function calPrevMonth() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
 function calNextMonth() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
 
+function getScheduledDaysSet(year, month) {
+  // Returns Set of dateStr for days that have training per group schedule
+  // Schedule format: [{day: 0, time: "..."}, ...] where day 0=Mon ... 6=Sun
+  const groupsToCheck = calSelectedGroup === 'all'
+    ? athleteGroupIds.map(gid => allGroups.find(g => g.id == gid)).filter(Boolean)
+    : [allGroups.find(g => g.id == calSelectedGroup)].filter(Boolean);
+
+  const scheduled = new Set();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    const jsDay = date.getDay();
+    const schedDay = jsDay === 0 ? 6 : jsDay - 1; // Mon=0 ... Sun=6
+    for (const g of groupsToCheck) {
+      const sch = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
+      if (sch.some(s => s.day === schedDay)) {
+        const dateStr = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+        scheduled.add(dateStr);
+        break;
+      }
+    }
+  }
+  return scheduled;
+}
+
 function renderCalendar() {
   const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   document.getElementById('calMonthLabel').textContent = `${months[calMonth]} ${calYear}`;
 
-  const today = new Date(); today.setHours(0,0,0,0);
-  const firstDay = new Date(calYear, calMonth, 1);
-  const lastDay = new Date(calYear, calMonth+1, 0);
-  const startDow = (firstDay.getDay()+6)%7; // Mon=0
-  const daysInMonth = lastDay.getDate();
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
 
-  // Build lookup maps
-  const attMap = {}; // date => {present, reason, group_id}
+  // --- Scheduled training days from group schedule ---
+  const scheduledDays = getScheduledDaysSet(calYear, calMonth);
+
+  // --- Attendance records map: dateStr → {present, reason} ---
+  const attMap = {};
   calAttendanceRecords
     .filter(r => calSelectedGroup === 'all' || r.group_id == calSelectedGroup)
     .forEach(r => {
       const k = r.training_date?.split('T')[0];
-      if (k) attMap[k] = {present: r.was_present, reason: r.reason || null, group_id: r.group_id};
+      if (k) attMap[k] = { present: r.was_present, reason: r.reason || null };
     });
 
-  // Absence notification ranges
+  // --- Absence notification dates ---
   const notifDates = new Set();
-  const notifInfo = {};
   calAbsenceNotifs.forEach(n => {
     const from = new Date(n.date_from), to = new Date(n.date_to);
     for (let d = new Date(from); d <= to; d.setDate(d.getDate()+1)) {
-      const k = d.toISOString().split('T')[0];
-      notifDates.add(k);
-      notifInfo[k] = (n.reason || '') + (n.comment ? ': ' + n.comment : '');
+      notifDates.add(d.toISOString().split('T')[0]);
     }
   });
+
+  // --- Build grid ---
+  const firstDay = new Date(calYear, calMonth, 1);
+  const startOffset = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
 
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
 
-  // Empty cells before first day
-  for (let i = 0; i < startDow; i++) {
-    const el = document.createElement('div'); el.className = 'cal-day empty'; grid.appendChild(el);
+  // Empty cells
+  for (let i = 0; i < startOffset; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    grid.appendChild(el);
   }
 
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(calYear, calMonth, day);
     date.setHours(0,0,0,0);
-    const k = date.toISOString().split('T')[0];
-    const isToday = date.getTime() === today.getTime();
-    const isFuture = date > today;
-    const att = attMap[k];
-    const isNotif = notifDates.has(k);
+    const dateStr = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+    const isPast = date < today;
+    const isToday = dateStr === todayStr;
+    const isScheduled = scheduledDays.has(dateStr);
+    const att = attMap[dateStr];
+    const isNotif = notifDates.has(dateStr);
 
     const el = document.createElement('div');
     let cls = 'cal-day';
     let tooltip = '';
 
-    if (isFuture) {
-      // Check if it's a scheduled training day based on group schedule
-      const isTrainingDay = isScheduledDay(date);
-      if (isTrainingDay) { cls += ' upcoming'; tooltip = 'Тренировка'; }
-      if (isNotif) { cls = 'cal-day notif'; tooltip = '🟡 ' + (notifInfo[k] || 'Предупреждение об отсутствии'); }
-    } else if (att) {
-      if (att.present) {
-        cls += ' present'; tooltip = '✅ Присутствовал';
-      } else {
-        cls += isNotif ? ' absent explained' : ' absent';
-        tooltip = isNotif ? ('🟡 Объяснено: ' + (notifInfo[k] || att.reason || '')) : ('❌ Пропустил' + (att.reason ? ': ' + att.reason : ''));
+    // Only style training days (scheduled) or days with attendance records
+    if (isScheduled || att) {
+      if (att) {
+        if (att.present) {
+          cls += ' present';
+          tooltip = '✅ Присутствовал';
+        } else if (isNotif) {
+          cls += ' absent explained';
+          tooltip = '🟡 Причина указана';
+        } else {
+          cls += ' absent';
+          tooltip = '❌ Пропустил' + (att.reason ? ': ' + att.reason : '');
+          // Clickable — add reason
+          el.style.cursor = 'pointer';
+          el.onclick = () => openExplainDay(dateStr, day);
+        }
+      } else if (isScheduled) {
+        if (isPast) {
+          // Scheduled in past, no attendance record = missing stats
+          cls += ' missing';
+          tooltip = '❓ Нет данных о посещении';
+        } else {
+          // Future scheduled training
+          cls += ' upcoming';
+          tooltip = '📅 Тренировка';
+        }
       }
-    } else if (isNotif) {
-      cls += ' notif'; tooltip = '🟡 ' + (notifInfo[k] || 'Предупреждение об отсутствии');
+      // Notif on scheduled day without absence record = yellow
+      if (isNotif && !att) {
+        cls = 'cal-day notif';
+        tooltip = '🟡 Предупреждение об отсутствии';
+      }
     }
+    // Non-training days: no class, just show number
 
     if (isToday) cls += ' today';
     el.className = cls;
     el.innerHTML = `<span>${day}</span>${tooltip ? `<div class="cal-tooltip">${tooltip}</div>` : ''}`;
-
-    // Click on absent day — show reason input
-    if (!isFuture && att && !att.present && !isNotif) {
-      el.style.cursor = 'pointer';
-      el.onclick = () => openExplainDay(k, day);
-    }
-
     grid.appendChild(el);
   }
 }
-
-function isScheduledDay(date) {
-  // Schedule format: [{day: 0, time: "10:00"}, ...] where day 0=Mon, 1=Tue, ... 6=Sun
-  const jsDay = date.getDay(); // JS: 0=Sun, 1=Mon ... 6=Sat
-  const schedDay = jsDay === 0 ? 6 : jsDay - 1; // Convert to Mon=0 ... Sun=6
-  for (const gid of (calSelectedGroup === 'all' ? athleteGroupIds : [calSelectedGroup])) {
-    const group = allGroups.find(g => g.id == gid);
-    if (!group || !group.schedule) continue;
-    try {
-      const sched = typeof group.schedule === 'string' ? JSON.parse(group.schedule || '[]') : (group.schedule || []);
-      if (Array.isArray(sched) && sched.some(s => s.day === schedDay)) return true;
-    } catch(e) {}
-  }
-  return false;
-}
-
-// Store absence alert dates for pre-filling form
-let _absenceAlertDateFrom = null;
-let _absenceAlertDateTo = null;
-
 function checkUnexplainedAbsences() {
   const today = new Date(); today.setHours(0,0,0,0);
   const thirtyDaysAgo = new Date(today); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()-30);
