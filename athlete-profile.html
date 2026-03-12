@@ -618,11 +618,15 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('editAddressModal')">×</button>
     <h2 class="modal-title">📍 Адрес и маршрут</h2>
-    <div class="form-group"><label class="form-label">Домашний адрес</label><input id="ea_address" class="form-input" placeholder="г. Полтава, ул. Примерная, 1"></div>
-    <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">После сохранения система автоматически рассчитает время до зала через OpenStreetMap</p>
+    <div class="form-group" style="position:relative">
+      <label class="form-label">Домашний адрес</label>
+      <input id="ea_address" class="form-input" placeholder="Начните вводить адрес..." autocomplete="off" oninput="addressAutocomplete(this.value)">
+      <div id="addressSuggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:999;max-height:220px;overflow-y:auto"></div>
+    </div>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">После сохранения система рассчитает время до зала</p>
     <div style="display:flex;gap:.75rem">
       <button class="btn btn-ghost" onclick="closeModal('editAddressModal')">Отмена</button>
-      <button class="btn btn-primary" onclick="saveAddress()">Сохранить и рассчитать</button>
+      <button class="btn btn-primary" onclick="saveAddress()">💾 Сохранить</button>
     </div>
   </div>
 </div>
@@ -1673,44 +1677,122 @@ function renderBadges(badges) {
 // ============================
 function renderAddress() {
   const el = document.getElementById('addressBlock');
-  if (!athlete.home_address) { el.innerHTML = '<p style="color:var(--muted);font-size:.9rem">Адрес не указан</p>'; return; }
+  if (!athlete.home_address) {
+    el.innerHTML = '<p style="color:var(--muted);font-size:.9rem">Адрес не указан</p>';
+    return;
+  }
   el.innerHTML = `
-    <div class="address-block">
-      <div class="address-text">📍 ${athlete.home_address}</div>
-      <div class="travel-info" id="travelInfo">
-        <div style="color:var(--muted);font-size:.85rem">⏳ Рассчитываем маршрут...</div>
-      </div>
-      <a id="mapLink" href="#" target="_blank" class="btn btn-sm btn-ghost" style="margin-top:.75rem">🗺️ Открыть карту</a>
+    <div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.75rem">
+      <span style="font-size:1.1rem">📍</span>
+      <span style="font-weight:500">${athlete.home_address}</span>
+    </div>
+    <div id="travelInfo" style="display:flex;flex-direction:column;gap:.6rem">
+      <div style="color:var(--muted);font-size:.85rem">⏳ Рассчитываем маршрут...</div>
     </div>
   `;
-  calculateRoute();
+  calculateRoutes();
 }
 
-async function calculateRoute() {
-  if (!athlete.home_lat || !athlete.home_lng) return;
+async function geocodeAddress(address) {
+  const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`, {headers:{'Accept-Language':'ru'}});
+  const d = await r.json();
+  if (d[0]) return {lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon), display: d[0].display_name};
+  return null;
+}
+
+async function calculateRoutes() {
+  if (!athlete.home_lat || !athlete.home_lng) {
+    document.getElementById('travelInfo').innerHTML = '<div style="color:var(--muted);font-size:.85rem">📍 Координаты не определены — сохраните адрес заново</div>';
+    return;
+  }
+
   try {
-    // Get club coordinates from API
+    // Load clubs
     const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'clubs', action:'list'})});
     const d = await r.json();
-    const clubs = d.merged || d || [];
-    const clubCoords = clubs[0]; // simplified - use first club
-    if (!clubCoords?.lat || !clubCoords?.lng) return;
+    const clubs = (d.merged || d || []).filter(c => c.address);
 
-    // OSRM routing
-    const url = `https://router.project-osrm.org/route/v1/driving/${athlete.home_lng},${athlete.home_lat};${clubCoords.lng},${clubCoords.lat}?overview=false`;
-    const rr = await fetch(url);
-    const dd = await rr.json();
-    if (dd.routes?.[0]) {
-      const mins = Math.round(dd.routes[0].duration / 60);
-      document.getElementById('travelInfo').innerHTML = `
-        <div class="travel-chip">🚗 ~${mins} мин</div>
-        <div class="travel-chip">🚶 ~${Math.round(mins*4.5)} мин</div>
-      `;
-      const mapLink = `https://www.openstreetmap.org/directions?from=${athlete.home_lat},${athlete.home_lng}&to=${clubCoords.lat},${clubCoords.lng}`;
-      document.getElementById('mapLink').href = mapLink;
+    if (!clubs.length) {
+      document.getElementById('travelInfo').innerHTML = '<div style="color:var(--muted);font-size:.85rem">Адрес клуба не указан</div>';
+      return;
     }
-  } catch(e) {}
+
+    const travelEl = document.getElementById('travelInfo');
+    travelEl.innerHTML = '';
+
+    for (const club of clubs) {
+      // Create placeholder for this club
+      const clubEl = document.createElement('div');
+      clubEl.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.65rem .9rem';
+      clubEl.innerHTML = `<div style="font-weight:600;font-size:.85rem;margin-bottom:.3rem">🏟️ ${club.name}</div><div style="color:var(--muted);font-size:.8rem">⏳ Считаем...</div>`;
+      travelEl.appendChild(clubEl);
+
+      // Geocode club address then calculate route
+      (async () => {
+        const coords = await geocodeAddress(club.address);
+        if (!coords) {
+          clubEl.querySelector('div:last-child').textContent = '❌ Не удалось определить адрес клуба';
+          return;
+        }
+
+        try {
+          const url = `https://router.project-osrm.org/route/v1/driving/${athlete.home_lng},${athlete.home_lat};${coords.lng},${coords.lat}?overview=false`;
+          const rr = await fetch(url);
+          const dd = await rr.json();
+          if (dd.routes?.[0]) {
+            const secs = dd.routes[0].duration;
+            const dist = (dd.routes[0].distance / 1000).toFixed(1);
+            const carMins = Math.round(secs / 60);
+            const walkMins = Math.round(dist / 5 * 60);
+            const mapUrl = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${athlete.home_lat},${athlete.home_lng};${coords.lat},${coords.lng}`;
+            clubEl.innerHTML = `
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+                <div style="font-weight:600;font-size:.85rem">🏟️ ${club.name}</div>
+                <a href="${mapUrl}" target="_blank" style="font-size:.75rem;color:var(--p);text-decoration:none">🗺️ Карта</a>
+              </div>
+              <div style="color:var(--muted);font-size:.75rem;margin-bottom:.4rem">📌 ${club.address}</div>
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                <span style="background:#e3f2fd;color:var(--p);border-radius:20px;padding:.2rem .7rem;font-size:.8rem;font-weight:600">🚗 ${carMins} мин · ${dist} км</span>
+                <span style="background:#f3e5f5;color:#7b1fa2;border-radius:20px;padding:.2rem .7rem;font-size:.8rem;font-weight:600">🚶 ~${walkMins} мин</span>
+              </div>`;
+          }
+        } catch(e) {
+          clubEl.querySelector('div:last-child').textContent = '❌ Ошибка маршрута';
+        }
+      })();
+    }
+  } catch(e) {
+    document.getElementById('travelInfo').innerHTML = '<div style="color:var(--muted);font-size:.85rem">❌ Ошибка загрузки клубов</div>';
+  }
+}
+
+// Address autocomplete using Nominatim
+let _acTimer = null;
+async function addressAutocomplete(val) {
+  const box = document.getElementById('addressSuggestions');
+  if (!val || val.length < 3) { box.style.display='none'; return; }
+  clearTimeout(_acTimer);
+  _acTimer = setTimeout(async () => {
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&format=json&limit=5&addressdetails=1&accept-language=ru`, {headers:{'Accept-Language':'ru'}});
+      const results = await r.json();
+      if (!results.length) { box.style.display='none'; return; }
+      box.style.display = 'block';
+      box.innerHTML = results.map((res, i) => `
+        <div onclick="selectAddress('${res.display_name.replace(/'/g,"\'")}', ${res.lat}, ${res.lon})"
+          style="padding:.6rem .9rem;cursor:pointer;font-size:.85rem;border-bottom:1px solid var(--border);transition:background .15s"
+          onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''"
+        >📍 ${res.display_name}</div>`).join('');
+    } catch(e) { box.style.display='none'; }
+  }, 350);
+}
+
+function selectAddress(displayName, lat, lng) {
+  document.getElementById('ea_address').value = displayName;
+  document.getElementById('ea_address')._selectedLat = lat;
+  document.getElementById('ea_address')._selectedLng = lng;
+  document.getElementById('addressSuggestions').style.display = 'none';
 }
 
 // ============================
@@ -1731,20 +1813,26 @@ async function saveInfo() {
 }
 
 async function saveAddress() {
-  const addr = document.getElementById('ea_address').value.trim();
+  const input = document.getElementById('ea_address');
+  const addr = input.value.trim();
   if (!addr) { closeModal('editAddressModal'); return; }
 
-  // Geocode via Nominatim
-  try {
-    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addr)}&format=json&limit=1`, {headers:{'Accept-Language':'ru'}});
-    const d = await r.json();
-    const coords = d[0] ? {lat:parseFloat(d[0].lat), lng:parseFloat(d[0].lon)} : {};
-    await apiFetch('children','update',{id:athleteId, home_address:addr, home_lat:coords.lat||null, home_lng:coords.lng||null});
-    athlete.home_address = addr; athlete.home_lat = coords.lat; athlete.home_lng = coords.lng;
-  } catch(e) {
-    await apiFetch('children','update',{id:athleteId, home_address:addr});
-    athlete.home_address = addr;
+  // Use pre-selected coords from autocomplete, or geocode fresh
+  let lat = input._selectedLat ? parseFloat(input._selectedLat) : null;
+  let lng = input._selectedLng ? parseFloat(input._selectedLng) : null;
+
+  if (!lat || !lng) {
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addr)}&format=json&limit=1`, {headers:{'Accept-Language':'ru'}});
+      const d = await r.json();
+      if (d[0]) { lat = parseFloat(d[0].lat); lng = parseFloat(d[0].lon); }
+    } catch(e) {}
   }
+
+  await apiFetch('children','update',{id:athleteId, home_address:addr, home_lat:lat, home_lng:lng});
+  athlete.home_address = addr; athlete.home_lat = lat; athlete.home_lng = lng;
+  // Clear cached coords
+  input._selectedLat = null; input._selectedLng = null;
   closeModal('editAddressModal');
   renderAddress();
 }
