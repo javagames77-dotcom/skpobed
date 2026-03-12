@@ -876,7 +876,7 @@ async function loadGroups() {
   const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'groups', action:'list'})});
   const d = await r.json();
-  allGroups = d.merged || d || [];
+  allGroups = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
 
   // athlete.groups comes from children_profile as array [{id, name, schedule, club_id}]
   let athleteGroups = [];
@@ -947,7 +947,7 @@ async function loadBelts() {
   const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'belt_grades', action:'list'})});
   const d = await r.json();
-  allBelts = d.merged || d || [];
+  allBelts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
   // Populate select
   document.getElementById('ab_belt').innerHTML = allBelts.map(b => `<option value="${b.id}" data-color="${b.color}">${b.name}</option>`).join('');
 }
@@ -957,7 +957,7 @@ async function loadBeltHistory() {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'athlete_belts', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    const belts = d.merged || d || [];
+    const belts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
 
     // SQL returns ORDER BY awarded_at DESC — belts[0] is the most recent
     if (belts.length > 0) {
@@ -1054,7 +1054,7 @@ async function loadAttendance() {
     const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'attendance', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    const allRecords = d.merged || d || [];
+    const allRecords = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     // Filter by this athlete's child_id (API returns all group members)
     calAttendanceRecords = allRecords.filter(r => r.child_id == athleteId);
     console.log('[ATT] total:', allRecords.length, '→ filtered for child', athleteId, ':', calAttendanceRecords.length);
@@ -1367,7 +1367,7 @@ async function loadCompetitions() {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'athlete_competitions', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    competitions = d.merged || d || [];
+    competitions = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
 
     const past = competitions.filter(c => !c.event_date || new Date(c.event_date) <= new Date());
     const wins = past.filter(c => c.is_win === true).length;
@@ -1545,7 +1545,7 @@ async function loadMessages() {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'messages', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    const msgs = d.merged || d || [];
+    const msgs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     const container = document.getElementById('chatMessages');
     if (!msgs.length) { container.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет</p>'; return; }
     container.innerHTML = msgs.map(m => {
@@ -1579,7 +1579,7 @@ async function loadDocuments() {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'athlete_documents', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    const docs = d.merged || d || [];
+    const docs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     const icons = {birth_cert:'📜', medical:'🏥', other:'📎'};
     document.getElementById('docGrid').innerHTML = docs.map(doc => `
       <div class="doc-card filled" onclick="window.open('${doc.file_url}','_blank')">
@@ -1657,7 +1657,7 @@ async function loadInjuries() {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'athlete_injuries', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    const injuries = d.merged || d || [];
+    const injuries = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     document.getElementById('injuryList').innerHTML = injuries.length ? injuries.map(i => `
       <div class="injury-item">
         <div class="injury-title">🩹 ${i.title}</div>
@@ -1690,7 +1690,7 @@ async function loadGoals() {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'athlete_goals', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    const goals = d.merged || d || [];
+    const goals = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     document.getElementById('goalsList').innerHTML = goals.length ? goals.map(g => `
       <div class="goal-item">
         <div class="goal-check ${g.is_done?'done':''}" onclick="toggleGoal(${g.id},${!g.is_done})">${g.is_done?'✓':''}</div>
@@ -1724,7 +1724,7 @@ async function loadNotifications() {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'notifications', action:'unread', data:{child_id:athleteId}})});
     const d = await r.json();
-    const notifs = d.merged || d || [];
+    const notifs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     if (notifs.length > 0) {
       const n = notifs[0];
       document.getElementById('notifyTitle').textContent = '📢 ' + n.title;
@@ -1829,7 +1829,7 @@ async function calculateRoutes() {
     const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'clubs', action:'list'})});
     const d = await r.json();
-    const clubs = (d.merged || d || []).filter(c => c.address);
+    const clubs = ((Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []))).filter(c => c.address);
 
     if (!clubs.length) {
       document.getElementById('travelInfo').innerHTML = '<div style="color:var(--muted);font-size:.85rem">Адрес клуба не указан</div>';
