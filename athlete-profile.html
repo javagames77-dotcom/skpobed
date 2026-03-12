@@ -295,7 +295,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед2</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -1058,6 +1058,12 @@ async function loadAttendance() {
     // Filter by this athlete's child_id (API returns all group members)
     calAttendanceRecords = allRecords.filter(r => r.child_id == athleteId);
     console.log('[ATT] total:', allRecords.length, '→ filtered for child', athleteId, ':', calAttendanceRecords.length);
+    console.log('[ATT] raw[0]:', JSON.stringify(allRecords[0]));
+    console.log('[ATT] athleteId typeof:', typeof athleteId, athleteId);
+    const uniqIds = [...new Set(allRecords.map(r=>r.child_id))];
+    console.log('[ATT] unique child_ids in response:', JSON.stringify(uniqIds.slice(0,15)));
+    console.log('[ATT] present sample:', JSON.stringify(calAttendanceRecords.filter(r=>r.was_present).slice(0,2)));
+    console.log('[ATT] absent sample:', JSON.stringify(calAttendanceRecords.filter(r=>!r.was_present).slice(0,2)));
 
     // Load absence notifications
     try {
@@ -1492,6 +1498,26 @@ async function registerForEvent(eventId) {
   alert('✅ Заявка подана!');
 }
 
+
+// ============================
+// TOAST NOTIFICATIONS
+// ============================
+function showToast(msg, type='info', duration=4000) {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;';
+    document.body.appendChild(container);
+  }
+  const t = document.createElement('div');
+  const colors = {info:'#3b82f6', success:'#22c55e', error:'#ef4444', warning:'#f59e0b'};
+  t.style.cssText = `background:${colors[type]||'#3b82f6'};color:#fff;padding:.75rem 1.2rem;border-radius:8px;font-size:.9rem;box-shadow:0 4px 12px rgba(0,0,0,.3);max-width:320px;word-break:break-word;`;
+  t.textContent = msg;
+  container.appendChild(t);
+  setTimeout(() => t.remove(), duration);
+}
+
 // ============================
 // SYNC SMOOTHCOMP / AJP
 // ============================
@@ -1507,34 +1533,56 @@ async function syncProfile(platform) {
   if (!idMatch) { alert('Неверная ссылка. Пример: https://smoothcomp.com/en/profile/12345'); return; }
   const profileId = idMatch[1];
 
-  // Show loading
-  pendingSyncPlatform = platform;
-  try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'external_profile_preview', action:'get', data:{platform, profile_id:profileId}})});
-    const d = await r.json();
-    const preview = d.merged || d;
-
-    document.getElementById('syncName').textContent = preview.name || `Профиль #${profileId}`;
-    document.getElementById('syncPlatform').textContent = `${platform === 'smoothcomp' ? 'Smoothcomp' : 'AJP Tour'} · ID ${profileId}`;
-    document.getElementById('syncStats').textContent = preview.total_events ? `${preview.total_events} турниров · ${preview.wins||0} побед` : 'Данные загружены';
-    pendingSync = {platform, profileId, url};
-    openModal('syncConfirmModal');
-  } catch(e) {
-    alert('Ошибка получения данных: ' + e.message);
-  }
+  // Show confirm modal immediately (no preview API call — sync takes time)
+  pendingSync = {platform, profileId, url};
+  const platformName = platform === 'smoothcomp' ? 'Smoothcomp' : 'AJP Tour';
+  document.getElementById('syncName').textContent = `Профиль #${profileId}`;
+  document.getElementById('syncPlatform').textContent = `${platformName} · ID ${profileId}`;
+  document.getElementById('syncStats').textContent = 'Нажмите "Импортировать" для загрузки данных';
+  openModal('syncConfirmModal');
 }
 
 async function confirmSync() {
   if (!pendingSync) return;
   closeModal('syncConfirmModal');
+  const btn = document.querySelector('[onclick="confirmSync()"]');
+  if (btn) btn.disabled = true;
+
+  // Show loading toast
+  showToast('Синхронизация... может занять до 30 сек', 'info', 30000);
+
   try {
-    await apiFetch('athlete_competitions','sync_external',{
-      child_id:athleteId, platform:pendingSync.platform, profile_id:pendingSync.profileId, profile_url:pendingSync.url
+    // Call sync-external webhook directly
+    const SYNC_API = 'https://primary-production-4b93e.up.railway.app/webhook/sync-external';
+    const r = await fetch(SYNC_API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        token,
+        type: pendingSync.platform,
+        profile_id: pendingSync.profileId,
+        child_id: athleteId
+      })
     });
-    alert('✅ Данные импортированы!');
-    await loadCompetitions();
-  } catch(e) { alert('Ошибка: '+e.message); }
+
+    if (!r.ok) {
+      const txt = await r.text();
+      throw new Error(`HTTP ${r.status}: ${txt.slice(0,200)}`);
+    }
+
+    const d = await r.json();
+    if (d.success) {
+      showToast(`✅ Импортировано ${d.inserted || 0} турниров. Побед: ${d.stats?.wins || 0}`, 'success');
+      await loadCompetitions();
+    } else {
+      throw new Error(d.error || 'Ошибка синхронизации');
+    }
+  } catch(e) {
+    showToast('Ошибка: ' + e.message, 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+    pendingSync = null;
+  }
 }
 
 // ============================
