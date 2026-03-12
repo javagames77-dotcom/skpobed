@@ -1055,6 +1055,11 @@ async function loadAttendance() {
       body: JSON.stringify({token, resource:'attendance', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     calAttendanceRecords = d.merged || d || [];
+    // DEBUG - remove after fix
+    console.log('[ATT] total records:', calAttendanceRecords.length);
+    if (calAttendanceRecords.length > 0) console.log('[ATT] sample record:', JSON.stringify(calAttendanceRecords[0]));
+    const absent = calAttendanceRecords.filter(r => !r.was_present);
+    console.log('[ATT] absent count:', absent.length, absent.slice(0,3).map(r=>JSON.stringify(r)));
 
     // Load absence notifications
     try {
