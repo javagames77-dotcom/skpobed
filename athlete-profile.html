@@ -515,6 +515,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <input type="date" class="search-input" id="compDateTo" style="max-width:160px" onchange="filterComps()">
     </div>
 
+    <div id="compMethodStats"></div>
     <div id="compList"></div>
     <div class="pagination" id="compPagination"></div>
 
@@ -1428,6 +1429,41 @@ function filterComps() {
   renderComps('past');
 }
 
+function getMethodStats(comps) {
+  const wins = {}, losses = {};
+  for (const c of comps) {
+    const r = (c.result || '').toLowerCase();
+    let method = 'Other';
+    if (r.includes('walkover') || r.includes('w/o')) method = 'By Walkover';
+    else if (r.includes('submission') || r.includes('sub')) method = 'By Submission';
+    else if (r.includes('decision') || r.includes('referee')) method = 'By Decision';
+    else if (r.includes('point') || r.includes('pts') || /\d[–\-]\d/.test(c.result||'')) method = 'By Points';
+    else if (r.includes('dq') || r.includes('disqualif')) method = 'By DQ';
+    if (c.is_win === true) wins[method] = (wins[method]||0)+1;
+    else if (c.is_win === false) losses[method] = (losses[method]||0)+1;
+  }
+  return {wins, losses};
+}
+
+function renderMethodPills(obj, color) {
+  return Object.entries(obj).sort((a,b)=>b[1]-a[1])
+    .map(([m,n]) => `<span style="display:inline-flex;align-items:center;gap:.25rem;margin:.15rem .15rem;font-size:.75rem;background:${color}18;color:${color};padding:.15rem .5rem;border-radius:20px;font-weight:600">${n} ${m}</span>`).join('');
+}
+
+function getCatLink(c) {
+  const raw = c.raw_data || {};
+  const eid = raw.event_id;
+  const bid = raw.bracket_id;
+  if (!eid) return null;
+  if (c.source === 'ajp') {
+    return bid ? `https://ajptour.com/ru/event/${eid}/bracket/${bid}` : `https://ajptour.com/ru/event/${eid}`;
+  }
+  if (c.source === 'smoothcomp') {
+    return `https://smoothcomp.com/en/event/${eid}`;
+  }
+  return null;
+}
+
 function renderComps(tab) {
   const list = document.getElementById('compList');
   const pagination = document.getElementById('compPagination');
@@ -1444,35 +1480,75 @@ function renderComps(tab) {
           <button class="btn btn-sm btn-orange" onclick="registerForEvent(${e.id})">📝 Подать заявку</button>
           ${e.description ? `<button class="btn btn-sm btn-ghost" onclick="alert('${(e.description||'').replace(/'/g,"\\'")}')">ℹ️ Подробнее</button>` : ''}
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
     pagination.innerHTML = '';
     return;
   }
 
-  const past = filteredComps.filter(c => !c.event_date || new Date(c.event_date) <= new Date()).sort((a,b) => new Date(b.event_date)-new Date(a.event_date));
+  const past = filteredComps
+    .filter(c => !c.event_date || new Date(c.event_date) <= new Date())
+    .sort((a,b) => new Date(b.event_date)-new Date(a.event_date));
+
+  // Method stats
+  const {wins: wStats, losses: lStats} = getMethodStats(past);
+  const statsEl = document.getElementById('compMethodStats');
+  if (statsEl) {
+    const wHtml = renderMethodPills(wStats, '#16a34a');
+    const lHtml = renderMethodPills(lStats, '#dc2626');
+    statsEl.innerHTML = (wHtml||lHtml) ? `
+      <div style="padding:.5rem 0;border-top:1px solid var(--border);margin-top:.5rem">
+        ${wHtml ? `<div style="margin-bottom:.25rem"><span style="font-size:.7rem;font-weight:700;color:#16a34a;margin-right:.3rem;text-transform:uppercase">✅ Победы:</span>${wHtml}</div>` : ''}
+        ${lHtml ? `<div><span style="font-size:.7rem;font-weight:700;color:#dc2626;margin-right:.3rem;text-transform:uppercase">❌ Поражения:</span>${lHtml}</div>` : ''}
+      </div>` : '';
+  }
+
   const perPage = 10;
   const totalPages = Math.ceil(past.length / perPage);
   const page = past.slice((compPage-1)*perPage, compPage*perPage);
 
-  list.innerHTML = page.length ? page.map(c => `
+  list.innerHTML = page.length ? page.map(c => {
+    const raw = (() => { try { return typeof c.raw_data === 'string' ? JSON.parse(c.raw_data) : (c.raw_data||{}); } catch(e){ return {}; } })();
+    c.raw_data = raw;
+    const catLink = getCatLink(c);
+    const catHtml = c.category
+      ? catLink
+        ? `<a href="${catLink}" target="_blank" rel="noopener" class="comp-tag cat" style="text-decoration:none;cursor:pointer" title="Открыть сетку">🏷️ ${c.category} <span style="opacity:.6;font-size:.8em">↗</span></a>`
+        : `<span class="comp-tag cat">🏷️ ${c.category}</span>`
+      : '';
+    const srcBadge = c.source && c.source!=='manual'
+      ? `<span style="font-size:.65rem;background:#ede9fe;color:#7c3aed;padding:.1rem .35rem;border-radius:4px;font-weight:600;margin-left:.3rem">${c.source.toUpperCase()}</span>`
+      : '';
+    return `
     <div class="comp-card">
       <div class="comp-header">
-        <div class="comp-title">${c.title}</div>
-        <div class="comp-date">${c.event_date ? new Date(c.event_date).toLocaleDateString('ru-RU') : '—'} ${c.source && c.source!=='manual' ? `<span style="font-size:.7rem;background:#ede9fe;color:#7c3aed;padding:.1rem .4rem;border-radius:4px">${c.source}</span>` : ''}</div>
+        <div class="comp-title">${c.title||'—'}${srcBadge}</div>
+        <div style="display:flex;align-items:center;gap:.4rem;flex-shrink:0">
+          <span class="comp-date">${c.event_date ? new Date(c.event_date).toLocaleDateString('ru-RU') : '—'}</span>
+          <button onclick="deleteComp(${c.id})" title="Удалить" style="background:none;border:1px solid #fca5a5;color:#dc2626;cursor:pointer;font-size:.8rem;padding:.15rem .4rem;border-radius:4px;line-height:1;transition:all .15s" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">🗑 Удалить</button>
+        </div>
       </div>
       <div class="comp-meta">
-        ${c.category ? `<span class="comp-tag cat">🏷️ ${c.category}</span>` : ''}
-        ${c.placement ? `<span class="comp-tag place">🥇 ${c.placement}</span>` : ''}
+        ${catHtml}
+        ${c.placement ? `<span class="comp-tag place">🥇 Место: ${c.placement}</span>` : ''}
         ${c.is_win === true ? '<span class="comp-tag win">✅ Победа</span>' : ''}
         ${c.is_win === false ? '<span class="comp-tag loss">❌ Поражение</span>' : ''}
+        ${c.result ? `<span class="comp-tag" style="background:#f8fafc;color:#475569;font-size:.75rem">⚡ ${c.result}</span>` : ''}
         ${c.opponent ? `<span class="comp-tag" style="background:#f1f5f9">⚔️ ${c.opponent}</span>` : ''}
         ${c.location ? `<span class="comp-tag" style="background:#f0fdf4;color:#16a34a">📍 ${c.location}</span>` : ''}
       </div>
-    </div>
-  `).join('') : '<p style="color:var(--muted);text-align:center;padding:2rem">Нет соревнований</p>';
+    </div>`;
+  }).join('') : '<p style="color:var(--muted);text-align:center;padding:2rem">Нет соревнований</p>';
 
   pagination.innerHTML = totalPages > 1 ? Array.from({length:totalPages},(_,i)=>`<button class="page-btn ${i+1===compPage?'active':''}" onclick="compPage=${i+1};renderComps('past')">${i+1}</button>`).join('') : '';
+}
+
+async function deleteComp(id) {
+  if (!confirm('Удалить этот результат?')) return;
+  try {
+    await apiFetch('athlete_competitions','delete',{id, child_id:athleteId});
+    await loadCompetitions();
+    showToast('Удалено','success');
+  } catch(e) { showToast('Ошибка удаления','error'); }
 }
 
 async function saveComp() {
