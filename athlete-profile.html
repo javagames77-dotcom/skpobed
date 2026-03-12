@@ -311,7 +311,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <div class="tabs-bar">
     <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
-    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения1</button>
+    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
     <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
     <button class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
     <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
@@ -1466,14 +1466,13 @@ function getEventLink(c) {
 
 function getCatLink(c) {
   const raw = c.raw_data || {};
-  let eid = raw.event_id;
-  if (!eid && c.external_id) {
-    const m = String(c.external_id).match(/^(\d+)/);
-    if (m) eid = m[1];
+  const bid = raw.bracket_id || raw._reg_bracket_id || raw._reg_bracket;
+  if (!bid) return null;
+  if (c.source === 'smoothcomp') return 'https://smoothcomp.com/en/event-category/' + bid;
+  if (c.source === 'ajp') {
+    const eid = raw.event_id;
+    return eid ? 'https://ajptour.com/ru/event/' + eid + '/bracket/' + bid : null;
   }
-  const bid = raw.bracket_id || raw._reg_bracket_id || raw._reg_id || raw._reg_bracket;
-  if (!eid || !bid) return null;
-  if (c.source === 'ajp') return 'https://ajptour.com/ru/event/' + eid + '/bracket/' + bid;
   return null;
 }
 
@@ -1555,9 +1554,9 @@ function renderComps(tab) {
         ${eventLink
           ? `<a href="${eventLink}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#eff6ff;color:#2563eb;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #bfdbfe;font-weight:500;margin:.15rem">🔗 Перейти на турнир ↗</a>`
           : c.source === 'smoothcomp'
-            ? `<a href="https://smoothcomp.com/en/search?q=${encodeURIComponent(c.title)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#f5f3ff;color:#7c3aed;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #ddd6fe;font-weight:500;margin:.15rem">🔍 Найти на Smoothcomp ↗</a>`
+            ? `<a href="https://smoothcomp.com/en/events" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#f5f3ff;color:#7c3aed;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #ddd6fe;font-weight:500;margin:.15rem">🔍 Smoothcomp ↗</a>`
             : c.source === 'ajp'
-              ? `<a href="https://ajptour.com/ru/events?search=${encodeURIComponent(c.title)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#f5f3ff;color:#7c3aed;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #ddd6fe;font-weight:500;margin:.15rem">🔍 Найти на AJP ↗</a>`
+              ? `<a href="https://ajptour.com/ru/events/past" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#f5f3ff;color:#7c3aed;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #ddd6fe;font-weight:500;margin:.15rem">🔍 AJP Tour ↗</a>`
               : ''
         }
       </div>
