@@ -397,7 +397,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <!-- TAB: BELTS -->
   <div class="tab-pane" id="tab-belts">
     <div class="card">
-      <div class="card-title"><div class="card-title-left">🥋 История поясов</div><button class="btn btn-sm btn-orange" id="addBeltBtn" onclick="openModal('addBeltModal')" style="display:none">+ Добавить</button></div>
+      <div class="card-title"><div class="card-title-left">🥋 История поясов</div><button class="btn btn-sm btn-orange" id="addBeltBtn" onclick="resetBeltModal(); openModal('addBeltModal')" style="display:none">+ Добавить</button></div>
       <div id="beltTimeline" class="belt-timeline"></div>
     </div>
   </div>
@@ -660,13 +660,13 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 <div class="modal" id="addBeltModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal('addBeltModal')">×</button>
-    <h2 class="modal-title">🥋 Добавить пояс</h2>
+    <h2 class="modal-title" id="addBeltTitle">🥋 Добавить пояс</h2>
     <div class="form-group"><label class="form-label">Пояс</label><select id="ab_belt" class="form-input"><option value="">Загрузка...</option></select></div>
     <div class="form-group"><label class="form-label">Дата присвоения</label><input type="date" id="ab_date" class="form-input"></div>
     <div class="form-group"><label class="form-label">Заметка</label><textarea id="ab_note" class="form-input" rows="2" placeholder="Результаты аттестации..."></textarea></div>
     <div style="display:flex;gap:.75rem;margin-top:1rem">
       <button class="btn btn-ghost" onclick="closeModal('addBeltModal')">Отмена</button>
-      <button class="btn btn-orange" onclick="saveBelt()">Сохранить</button>
+      <button class="btn btn-orange" id="ab_save_btn" onclick="saveBelt()">💾 Сохранить</button>
     </div>
   </div>
 </div>
@@ -957,22 +957,61 @@ async function loadBeltHistory() {
     const d = await r.json();
     const belts = d.merged || d || [];
 
+    // SQL returns ORDER BY awarded_at DESC — belts[0] is the most recent
     if (belts.length > 0) {
-      const latest = belts[belts.length-1];
+      const latest = belts[0];
       document.getElementById('heroBeltColor').style.background = latest.color || '#888';
       document.getElementById('heroBeltName').textContent = latest.belt_name || latest.name || 'Пояс';
+    } else {
+      document.getElementById('heroBeltColor').style.background = '#888';
+      document.getElementById('heroBeltName').textContent = 'Без пояса';
     }
 
-    document.getElementById('beltTimeline').innerHTML = belts.length ? belts.reverse().map(b => `
-      <div class="belt-item">
-        <div class="belt-dot" style="background:${b.color||'#888'}"></div>
-        <div class="belt-info">
-          <div class="belt-info-name">${b.belt_name || b.name || '—'}</div>
-          <div class="belt-info-date">${b.awarded_at ? new Date(b.awarded_at).toLocaleDateString('ru-RU') : '—'} ${b.notes ? '· ' + b.notes : ''}</div>
+    const canEdit = userRole === 'director' || userRole === 'trainer';
+    document.getElementById('beltTimeline').innerHTML = belts.length ? belts.map(b => `
+      <div class="belt-item" style="display:flex;align-items:flex-start;gap:.75rem;padding:.65rem 0;border-bottom:1px solid var(--border)">
+        <div style="width:14px;height:14px;border-radius:50%;background:${b.color||'#888'};flex-shrink:0;margin-top:.2rem"></div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:.9rem">${b.belt_name || b.name || '—'}</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:.15rem">
+            📅 ${b.awarded_at ? new Date(b.awarded_at).toLocaleDateString('ru-RU') : '—'}
+            ${b.awarded_by_name ? '· 👤 ' + b.awarded_by_name : ''}
+            ${b.notes ? '· <em>' + b.notes + '</em>' : ''}
+          </div>
         </div>
+        ${canEdit ? `<div style="display:flex;gap:.4rem;flex-shrink:0">
+          <button onclick="editBelt(${b.id}, ${b.belt_id}, '${b.awarded_at ? b.awarded_at.split('T')[0] : ''}', '${(b.notes||'').replace(/'/g,"\'")}')"
+            style="background:none;border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem" title="Редактировать">✏️</button>
+          <button onclick="deleteBelt(${b.id})"
+            style="background:none;border:1px solid #ffcdd2;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;color:#c62828" title="Удалить">🗑️</button>
+        </div>` : ''}
       </div>
     `).join('') : '<p style="color:var(--muted)">История поясов пуста</p>';
   } catch(e) { console.warn('Belt history:', e); }
+}
+
+function resetBeltModal() {
+  delete document.getElementById('addBeltModal').dataset.editId;
+  document.getElementById('addBeltTitle').textContent = '🥋 Добавить пояс';
+  document.getElementById('ab_save_btn').textContent = '💾 Сохранить';
+  document.getElementById('ab_belt').value = '';
+  document.getElementById('ab_date').value = '';
+  document.getElementById('ab_note').value = '';
+}
+
+function editBelt(id, beltId, date, notes) {
+  document.getElementById('ab_belt').value = beltId;
+  document.getElementById('ab_date').value = date;
+  document.getElementById('ab_note').value = notes;
+  document.getElementById('ab_save_btn').textContent = '💾 Сохранить изменения';
+  document.getElementById('addBeltModal').dataset.editId = id;
+  openModal('addBeltModal');
+}
+
+async function deleteBelt(id) {
+  if (!confirm('Удалить запись о поясе?')) return;
+  await apiFetch('athlete_belts', 'delete', {id, child_id: athleteId});
+  await loadBeltHistory();
 }
 
 async function saveBelt() {
@@ -980,7 +1019,16 @@ async function saveBelt() {
   const date = document.getElementById('ab_date').value;
   const notes = document.getElementById('ab_note').value;
   if (!beltId || !date) { alert('Выберите пояс и дату'); return; }
-  await apiFetch('athlete_belts', 'create', {child_id:athleteId, belt_id:parseInt(beltId), awarded_at:date, notes, awarded_by:userId});
+  const editId = document.getElementById('addBeltModal').dataset.editId;
+  if (editId) {
+    await apiFetch('athlete_belts', 'update', {id:parseInt(editId), child_id:athleteId, belt_id:parseInt(beltId), awarded_at:date, notes});
+  } else {
+    await apiFetch('athlete_belts', 'create', {child_id:athleteId, belt_id:parseInt(beltId), awarded_at:date, notes});
+  }
+  // Reset modal to "add" mode
+  delete document.getElementById('addBeltModal').dataset.editId;
+  document.getElementById('addBeltTitle').textContent = '🥋 Добавить пояс';
+  document.getElementById('ab_save_btn').textContent = '💾 Сохранить';
   closeModal('addBeltModal');
   await loadBeltHistory();
 }
