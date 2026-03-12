@@ -295,7 +295,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед1</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -1054,12 +1054,10 @@ async function loadAttendance() {
     const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'attendance', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    calAttendanceRecords = d.merged || d || [];
-    // DEBUG - remove after fix
-    console.log('[ATT] total records:', calAttendanceRecords.length);
-    if (calAttendanceRecords.length > 0) console.log('[ATT] sample record:', JSON.stringify(calAttendanceRecords[0]));
-    const absent = calAttendanceRecords.filter(r => !r.was_present);
-    console.log('[ATT] absent count:', absent.length, absent.slice(0,3).map(r=>JSON.stringify(r)));
+    const allRecords = d.merged || d || [];
+    // Filter by this athlete's child_id (API returns all group members)
+    calAttendanceRecords = allRecords.filter(r => r.child_id == athleteId);
+    console.log('[ATT] total:', allRecords.length, '→ filtered for child', athleteId, ':', calAttendanceRecords.length);
 
     // Load absence notifications
     try {
@@ -1212,7 +1210,13 @@ function renderCalendar() {
           tooltip = '✅ Присутствовал';
         } else if (isNotif) {
           cls += ' absent explained';
-          tooltip = '🟡 Причина указана';
+          const notif = calAbsenceNotifs.find(n => {
+            const from = n.date_from?.split('T')[0];
+            const to = n.date_to?.split('T')[0];
+            return dateStr >= from && dateStr <= to;
+          });
+          const reasonText = notif ? (notif.reason || '') + (notif.comment ? ': ' + notif.comment : '') : '';
+          tooltip = '🟡 ' + (reasonText || 'Причина указана');
         } else {
           cls += ' absent';
           tooltip = '❌ Пропустил' + (att.reason ? ': ' + att.reason : '');
@@ -1234,7 +1238,14 @@ function renderCalendar() {
       // Notif on scheduled day without absence record = yellow
       if (isNotif && !att) {
         cls = 'cal-day notif';
-        tooltip = '🟡 Предупреждение об отсутствии';
+        // Find the actual notification for this date and show real reason
+        const notif = calAbsenceNotifs.find(n => {
+          const from = n.date_from?.split('T')[0];
+          const to = n.date_to?.split('T')[0];
+          return dateStr >= from && dateStr <= to;
+        });
+        const reasonText = notif ? (notif.reason || '') + (notif.comment ? ': ' + notif.comment : '') : '';
+        tooltip = '🟡 ' + (reasonText || 'Предупреждение об отсутствии');
       }
     }
     // Non-training days: no class, just show number
