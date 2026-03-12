@@ -312,7 +312,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
     <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
     <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
-    <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования1</button>
+    <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
     <button class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
     <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
     <button class="tab-btn" onclick="switchTab('medical')">🏥 Медицина</button>
@@ -1451,27 +1451,29 @@ function renderMethodPills(obj, color) {
 }
 
 function getEventLink(c) {
-  // Link to tournament main page
   const raw = c.raw_data || {};
-  const eid = raw.event_id;
+  // Try event_id from raw_data, fallback: first numeric segment of external_id
+  let eid = raw.event_id;
+  if (!eid && c.external_id) {
+    const m = String(c.external_id).match(/^(\d+)/);
+    if (m) eid = m[1];
+  }
   if (!eid) return null;
-  if (c.source === 'ajp') return `https://ajptour.com/ru/event/${eid}`;
-  if (c.source === 'smoothcomp') return `https://smoothcomp.com/en/event/${eid}`;
+  if (c.source === 'ajp') return 'https://ajptour.com/ru/event/' + eid;
+  if (c.source === 'smoothcomp') return 'https://smoothcomp.com/en/event/' + eid;
   return null;
 }
 
 function getCatLink(c) {
-  // Link to specific category bracket
   const raw = c.raw_data || {};
-  const eid = raw.event_id;
+  let eid = raw.event_id;
+  if (!eid && c.external_id) {
+    const m = String(c.external_id).match(/^(\d+)/);
+    if (m) eid = m[1];
+  }
   const bid = raw.bracket_id || raw._reg_bracket_id || raw._reg_id || raw._reg_bracket;
-  if (!eid) return null;
-  if (c.source === 'ajp') {
-    return bid ? `https://ajptour.com/ru/event/${eid}/bracket/${bid}` : `https://ajptour.com/ru/event/${eid}`;
-  }
-  if (c.source === 'smoothcomp') {
-    return `https://smoothcomp.com/en/event/${eid}`;
-  }
+  if (!eid || !bid) return null;
+  if (c.source === 'ajp') return 'https://ajptour.com/ru/event/' + eid + '/bracket/' + bid;
   return null;
 }
 
