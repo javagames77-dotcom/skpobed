@@ -118,7 +118,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .news-stat-n{font-size:1.6rem;font-weight:800;color:var(--p);line-height:1}
 .news-stat-l{font-size:.72rem;color:#aaa;text-transform:uppercase;font-weight:600;margin-top:.2rem}
 .news-src-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:8px;font-size:.72rem;font-weight:700}
-.chat-layout{display:flex;height:580px;max-width:980px;margin:0 auto;border:1px solid var(--b,#e5e7eb);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.chat-layout{display:flex;height:580px;border:1px solid var(--b,#e5e7eb);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.06)}
 .chat-sidebar{width:260px;flex-shrink:0;border-right:1px solid var(--b,#e5e7eb);display:flex;flex-direction:column;background:#f7f8fc}
 .chat-sidebar-header{padding:.75rem 1rem;font-weight:700;font-size:.88rem;border-bottom:1px solid var(--b,#e5e7eb);display:flex;align-items:center;justify-content:space-between}
 .chat-search-box{padding:.5rem .75rem;border-bottom:1px solid var(--b,#e5e7eb)}
@@ -189,7 +189,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
-<button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
+<button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени2</button>
 <button class="tab" onclick="switchTab('events')">📅 Мероприятия</button>
 <button class="tab" onclick="switchTab('news')">🔍 AI-Новости</button>
 <button class="tab" onclick="switchTab('chat')" id="tabBtnChat">💬 Чат<span class="unread-badge" id="dirChatUnread" style="display:none"></span></button>
@@ -586,7 +586,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
   <h2 style="margin:0;font-size:1.1rem;font-weight:700">💬 Чат</h2>
   <button class="broadcast-btn" onclick="openBroadcast()">📢 Написать всем</button>
 </div>
-<div class="chat-layout">
+<div class="chat-layout" style="margin-bottom:2rem">
   <div class="chat-sidebar">
     <div class="chat-sidebar-header">
       <span>Контакты</span>
