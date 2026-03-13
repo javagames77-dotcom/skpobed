@@ -1703,9 +1703,10 @@ function renderPhysChart() {
   
   // Collect data points from physHistory (loaded separately) or fallback to single point
   const history = window._physHistory || [];
+  const _pd = str => { const s=String(str||'').split('T')[0]; const [y,m,d]=s.split('-').map(Number); return (y&&m&&d)?new Date(y,m-1,d):new Date(NaN); };
   const dataPoints = history.filter(h => physChartMode === 'weight' ? h.weight_kg : h.height_cm)
-    .map(h => ({ x: h.recorded_at ? h.recorded_at.split('T')[0] : h.date, y: physChartMode === 'weight' ? parseFloat(h.weight_kg) : parseInt(h.height_cm) }))
-    .sort((a,b) => new Date(a.x) - new Date(b.x));
+    .map(h => ({ x: h.recorded_at ? String(h.recorded_at).split('T')[0] : h.date, y: physChartMode === 'weight' ? parseFloat(h.weight_kg) : parseInt(h.height_cm) }))
+    .sort((a,b) => _pd(a.x) - _pd(b.x));
 
   // Add current value as latest point if not in history
   if (athlete) {
@@ -1731,12 +1732,20 @@ function renderPhysChart() {
   const label = physChartMode === 'weight' ? 'Вес (кг)' : 'Рост (см)';
   const color = physChartMode === 'weight' ? '#f97316' : '#2563eb';
 
+  // Safe parser: 'YYYY-MM-DD' → local Date (без UTC-сдвига / Invalid Date)
+  const parseLocalDate = str => {
+    if (!str) return new Date(NaN);
+    const s = String(str).split('T')[0];
+    const [y, m, d] = s.split('-').map(Number);
+    return (y && m && d) ? new Date(y, m - 1, d) : new Date(str);
+  };
+
   physChartInstance = new Chart(canvas.getContext('2d'), {
     type: 'line',
     data: {
       labels: dataPoints.map(p => {
-        const d = new Date(p.x);
-        return d.toLocaleDateString('ru-RU', {day:'2-digit', month:'short', year:'2-digit'});
+        const d = parseLocalDate(p.x);
+        return isNaN(d) ? p.x : d.toLocaleDateString('ru-RU', {day:'2-digit', month:'short', year:'2-digit'});
       }),
       datasets: [{
         label,
@@ -1745,14 +1754,17 @@ function renderPhysChart() {
         backgroundColor: color + '22',
         fill: true,
         tension: 0.3,
-        pointRadius: 5,
+        pointRadius: dataPoints.length > 20 ? 3 : 5,
         pointBackgroundColor: color,
       }]
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: false } },
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: ctx => ctx.parsed.y + (physChartMode === 'weight' ? ' кг' : ' см') }
+      }},
       scales: {
+        x: { ticks: { maxTicksLimit: 12, maxRotation: 45 } },
         y: {
           beginAtZero: false,
           ticks: { callback: v => v + (physChartMode === 'weight' ? ' кг' : ' см') }
