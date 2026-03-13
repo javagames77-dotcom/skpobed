@@ -299,7 +299,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед2</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -2015,24 +2015,32 @@ async function uploadDocument(input) {
 // ============================
 async function loadMedical() {
   const el = document.getElementById('medBlock');
-  if (!athlete.medical_cert_expires) {
+  if (!athlete.medical_cert_url && !athlete.medical_cert_expires) {
     el.innerHTML = '<p style="color:var(--muted)">Медсправка не добавлена</p>';
     return;
   }
-  const exp = new Date(athlete.medical_cert_expires);
-  const now = new Date();
-  const diff = Math.ceil((exp-now)/86400000);
-  const status = diff < 0 ? 'expired' : diff < 30 ? 'warn' : 'ok';
-  const labels = {ok:'✅ Действует', warn:'⚠️ Истекает', expired:'❌ Истекла'};
   const ai = athlete._medical_ai || {};
-  el.innerHTML = `
-    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+  let statusHtml = '';
+  if (athlete.medical_cert_expires) {
+    const exp = new Date(athlete.medical_cert_expires);
+    const now = new Date();
+    const diff = Math.ceil((exp-now)/86400000);
+    const status = diff < 0 ? 'expired' : diff < 30 ? 'warn' : 'ok';
+    const labels = {ok:'✅ Действует', warn:'⚠️ Истекает', expired:'❌ Истекла'};
+    statusHtml = `
       <span class="med-status ${status}">${labels[status]}</span>
       <span>До <b>${exp.toLocaleDateString('ru-RU')}</b></span>
-      ${diff > 0 ? `<span style="color:var(--muted);font-size:.85rem">осталось ${diff} дн.</span>` : `<span style="color:var(--red);font-size:.85rem">просрочена ${Math.abs(diff)} дн. назад</span>`}
+      ${diff > 0 ? `<span style="color:var(--muted);font-size:.85rem">осталось ${diff} дн.</span>` : `<span style="color:var(--red);font-size:.85rem">просрочена ${Math.abs(diff)} дн. назад</span>`}`;
+  } else {
+    statusHtml = `<span class="med-status warn">⚠️ Дата не определена</span>`;
+  }
+  el.innerHTML = `
+    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+      ${statusHtml}
       ${athlete.medical_cert_url ? `<a href="${athlete.medical_cert_url}" target="_blank" class="btn btn-sm btn-ghost">👁️ Просмотр</a>` : ''}
+      <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="deleteMedical()">🗑 Удалить</button>
     </div>
-    ${ai.diagnosis || ai.sport_clearance || ai.clinic_name ? `
+    ${ai.diagnosis || ai.sport_clearance || ai.clinic_name || ai.doctor_name ? `
     <div style="margin-top:.75rem;padding:.75rem;background:#f8fafc;border-radius:8px;font-size:.85rem;display:flex;flex-direction:column;gap:.3rem">
       ${ai.diagnosis       ? `<div>🩺 <b>Заключение:</b> ${ai.diagnosis}</div>` : ''}
       ${ai.sport_clearance ? `<div>✅ <b>Допуск:</b> ${ai.sport_clearance}</div>` : ''}
@@ -2042,6 +2050,19 @@ async function loadMedical() {
       ${ai.issued_date     ? `<div>📅 <b>Выдана:</b> ${ai.issued_date}</div>` : ''}
     </div>` : ''}
   `;
+}
+
+async function deleteMedical() {
+  if (!confirm('Удалить медсправку?')) return;
+  try {
+    await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'children_profile', action:'update', data:{child_id: athleteId, medical_cert_url: null, medical_cert_expires: null}})});
+    athlete.medical_cert_url = null;
+    athlete.medical_cert_expires = null;
+    athlete._medical_ai = {};
+    await loadMedical();
+    showToast('Медсправка удалена', 'success');
+  } catch(e) { showToast('Ошибка удаления', 'error'); }
 }
 
 async function uploadMedical(input) {
