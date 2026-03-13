@@ -137,22 +137,21 @@ img{border:none;outline:none}
 .chat-main{flex:1;display:flex;flex-direction:column;min-width:0;background:#fff;overflow:hidden}
 .chat-main-hdr{padding:.75rem 1rem;border-bottom:1px solid var(--b,#e5e7eb);font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:.6rem;background:#fff}
 .chat-messages{flex:1;min-height:0;overflow-y:auto;padding:1rem .75rem;display:flex;flex-direction:column;gap:.35rem;background:#f9fafb}
-.msg{max-width:72%;display:flex;flex-direction:column}
+.msg{max-width:78%;display:flex;flex-direction:column}
 .msg.mine{align-self:flex-end;align-items:flex-end}
 .msg.theirs{align-self:flex-start;align-items:flex-start}
-.msg-sender{font-size:.69rem;color:#9a9eb5;margin-bottom:.15rem;padding:0 .3rem}
-.msg-bubble{padding:.6rem .9rem;border-radius:18px;font-size:.88rem;line-height:1.5;word-break:break-word}
-.msg.mine .msg-bubble{background:linear-gradient(135deg,var(--p,#4361ee),#5a72f0);color:#fff;border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(67,97,238,.3)}
-.msg.theirs .msg-bubble{background:#fff;color:#1a1a2e;border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.08);border:1px solid #eff0f6}
-.msg-bubble img{max-width:220px;width:100%;border-radius:10px;display:block;cursor:pointer;margin-top:.25rem}
-.msg-file-link{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .55rem;background:rgba(255,255,255,.2);border-radius:6px;font-size:.78rem;text-decoration:none;color:inherit;margin-top:.2rem}
-.msg.theirs .msg-file-link{background:rgba(67,97,238,.08);color:var(--p,#4361ee)}
-.msg-meta{display:flex;align-items:center;gap:.3rem;margin-top:.15rem;padding:0 .25rem}
-.msg-time{font-size:.66rem;color:#b0b4cc}
-.msg.mine .msg-time{color:rgba(255,255,255,.7)}
-.msg-read{font-size:.68rem;color:rgba(255,255,255,.85)}
-.msg-date-sep{text-align:center;font-size:.72rem;color:#b0b4cc;padding:.4rem 0;position:relative;margin:.25rem 0;align-self:center}
-.msg-date-sep span{background:#f9fafb;padding:0 .75rem;position:relative;z-index:1}
+.msg-sender{font-size:.72rem;color:#888;margin-bottom:.2rem;padding:0 .25rem}
+.msg-bubble{padding:.65rem 1rem;border-radius:18px;font-size:.9rem;line-height:1.5;word-break:break-word}
+.msg.mine .msg-bubble{background:#4361ee;color:#fff;border-bottom-right-radius:4px}
+.msg.theirs .msg-bubble{background:#f0f2f5;color:#1a1a2e;border-bottom-left-radius:4px}
+.msg-bubble img{max-width:220px;border-radius:10px;display:block;cursor:pointer;margin-top:.25rem;border:none;outline:none}
+.msg-file-link{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:rgba(255,255,255,.25);border-radius:8px;font-size:.82rem;text-decoration:none;color:inherit;margin-top:.25rem}
+.msg.theirs .msg-file-link{background:rgba(0,0,0,.07)}
+.msg-meta{display:flex;align-items:center;gap:.4rem;margin-top:.2rem;padding:0 .25rem}
+.msg-time{font-size:.68rem;color:#aaa}
+.msg-read{font-size:.7rem;color:#4361ee}
+.msg-date-sep{text-align:center;font-size:.75rem;color:#aaa;padding:.5rem 0;position:relative;margin:.25rem 0;align-self:center;width:100%}
+.msg-date-sep span{background:#fff;padding:0 .75rem;position:relative;z-index:1}
 .msg-date-sep::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#e5e7eb}
 .chat-input-area{padding:.6rem .75rem;border-top:1px solid var(--b,#e5e7eb);display:flex;gap:.45rem;align-items:flex-end;background:#fff;flex-shrink:0}
 .chat-textarea{flex:1;padding:.6rem .9rem;border:1.5px solid var(--b,#e5e7eb);border-radius:10px;font-size:.87rem;font-family:inherit;resize:none;max-height:90px;overflow-y:auto;line-height:1.4;background:#f9fafb}
@@ -191,7 +190,7 @@ img{border:none;outline:none}
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
 <button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
-<button class="tab" onclick="switchTab('events')">📅 Мероприятия1</button>
+<button class="tab" onclick="switchTab('events')">📅 Мероприятия</button>
 <button class="tab" onclick="switchTab('news')">🔍 AI-Новости</button>
 <button class="tab" onclick="switchTab('chat')" id="tabBtnChat">💬 Чат<span class="unread-badge" id="dirChatUnread" style="display:none"></span></button>
 </div>
@@ -1288,6 +1287,13 @@ let _chatAttachFile = null;
 let _chatLastCount = 0;
 let _chatInited = false;
 
+function updateDirChatBadge(count) {
+  const badge = document.getElementById('dirChatUnread');
+  if (!badge) return;
+  if (count > 0) { badge.textContent = count > 99 ? '99+' : count; badge.style.display = ''; }
+  else { badge.style.display = 'none'; }
+}
+
 async function initChat() {
   if (_chatInited) return;
   _chatInited = true;
@@ -1324,6 +1330,8 @@ async function refreshChatContacts() {
     if (tot) tot.textContent = totalUnread ? `${totalUnread} непрочитанных` : '';
 
     _chatFilteredContacts = [..._chatContacts];
+    const totalUnread = _chatContacts.reduce((s, c) => s + (c._unread || 0), 0);
+    updateDirChatBadge(totalUnread);
     renderChatContacts();
     if (_chatActiveId) loadChatMessages(_chatActiveId, false);
   } catch(e) { console.error('refreshChatContacts', e); }
@@ -1399,35 +1407,30 @@ async function loadChatMessages(childId, scrollDown) {
       const dt = new Date(m.created_at);
       const dateKey = dt.toLocaleDateString('ru-RU');
       const time = dt.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
-      let sep = '';
+      let dateSep = '';
       if (dateKey !== lastDate) {
         lastDate = dateKey;
         const today = new Date().toLocaleDateString('ru-RU');
-        const yest = new Date(Date.now()-86400000).toLocaleDateString('ru-RU');
-        const lbl = dateKey === today ? 'Сегодня' : dateKey === yest ? 'Вчера' : dateKey;
-        sep = `<div style="text-align:center;font-size:.72rem;color:#aaa;padding:.35rem 0;margin:.15rem 0">${lbl}</div>`;
+        const yesterday = new Date(Date.now()-86400000).toLocaleDateString('ru-RU');
+        const label = dateKey === today ? 'Сегодня' : dateKey === yesterday ? 'Вчера' : dateKey;
+        dateSep = `<div class="msg-date-sep"><span>${label}</span></div>`;
       }
-      let bubble = '';
+      let bubbleContent = '';
       if (m.file_url) {
         const isImg = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(m.file_url);
-        bubble = isImg
-          ? `${m.text ? `<div style="margin-bottom:.3rem">${m.text}</div>` : ''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy" style="max-width:220px;border-radius:10px;display:block;cursor:pointer;border:none;outline:none;box-shadow:none">`
-          : `${m.text ? `<div style="margin-bottom:.3rem">${m.text}</div>` : ''}<a href="${m.file_url}" target="_blank" style="color:inherit;font-size:.82rem">📎 ${m.file_url.split('/').pop().split('?')[0]}</a>`;
-      } else { bubble = m.text || ''; }
-      const bubbleStyle = isMine
-        ? 'background:#4361ee;color:#fff;border-radius:18px 18px 4px 18px;border:none;padding:.6rem .9rem;font-size:.88rem;line-height:1.5;word-break:break-word'
-        : 'background:#fff;color:#1a1a2e;border-radius:18px 18px 18px 4px;border:1px solid #e5e7eb;padding:.6rem .9rem;font-size:.88rem;line-height:1.5;word-break:break-word';
-      const wrapStyle = isMine
-        ? 'align-self:flex-end;align-items:flex-end;max-width:72%'
-        : 'align-self:flex-start;align-items:flex-start;max-width:72%';
-      const sender = !isMine ? `<div style="font-size:.69rem;color:#999;margin-bottom:.15rem">${m.sender_name || 'Спортсмен'}</div>` : '';
-      const readMark = isMine ? `<span style="font-size:.66rem;color:rgba(255,255,255,.8)">${m.is_read ? '✓✓' : '✓'}</span>` : '';
-      return `${sep}<div style="display:flex;flex-direction:column;${wrapStyle}">
-        ${sender}
-        <div style="${bubbleStyle}">${bubble}</div>
-        <div style="display:flex;align-items:center;gap:.3rem;margin-top:.12rem;padding:0 .2rem">
-          <span style="font-size:.66rem;color:#aaa">${time}</span>${readMark}
-        </div>
+        if (isImg) {
+          bubbleContent = `${m.text ? `<div>${m.text}</div>` : ''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy">`;
+        } else {
+          const fname = m.file_url.split('/').pop().split('?')[0];
+          bubbleContent = `${m.text ? `<div style="margin-bottom:.35rem">${m.text}</div>` : ''}<a href="${m.file_url}" target="_blank" class="msg-file-link">📎 ${fname}</a>`;
+        }
+      } else { bubbleContent = m.text || ''; }
+      const senderName = !isMine ? `<div class="msg-sender">${m.sender_name || 'Спортсмен'}</div>` : '';
+      const readMark = isMine ? `<span class="msg-read">${m.is_read ? '✓✓' : '✓'}</span>` : '';
+      return `${dateSep}<div class="msg ${isMine?'mine':'theirs'}">
+        ${senderName}
+        <div class="msg-bubble">${bubbleContent}</div>
+        <div class="msg-meta"><span class="msg-time">${time}</span>${readMark}</div>
       </div>`;
     }).join('');
 
