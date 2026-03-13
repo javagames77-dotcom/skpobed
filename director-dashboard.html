@@ -187,7 +187,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="container">
 <div class="tabs">
 <button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
-<button class="tab" onclick="switchTab('groups')">👥 Группы</button>
+<button class="tab" onclick="switchTab('groups')">👥 Группы1</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
 <button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
@@ -641,6 +641,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const API2='https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
 const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 let token=localStorage.getItem('token');
 let user,clubs=[],trainers=[],allAthletes=[],groups=[];
@@ -1283,7 +1284,7 @@ async function initChat() {
 
 async function refreshChatContacts() {
   try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'children', action:'list'})});
     const d = await r.json();
     const athletes = Array.isArray(d) ? d : (d.merged || []);
@@ -1358,7 +1359,7 @@ function openChat(childId, name) {
 
 async function loadChatMessages(childId, scrollDown) {
   try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'messages', action:'list', data:{child_id: childId}})});
     const text = await r.text();
     const d = text ? JSON.parse(text) : [];
@@ -1404,7 +1405,7 @@ async function loadChatMessages(childId, scrollDown) {
     // Помечаем прочитанными
     const unread = msgs.filter(m => !m.is_read && m.from_user_id !== user.id).length;
     if (unread > 0) {
-      fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({token, resource:'messages', action:'read', data:{child_id: childId}})});
     }
   } catch(e) { console.error('loadChatMessages', e); }
@@ -1451,7 +1452,7 @@ async function sendChatMsg() {
     } catch(e) { alert('Ошибка загрузки файла'); return; }
   }
 
-  await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+  await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'messages', action:'create',
       data:{child_id: _chatActiveId, text: text || '', file_url, from_user_id: user.id}})});
   await loadChatMessages(_chatActiveId, true);
@@ -1471,7 +1472,7 @@ async function sendBroadcast() {
     const athletes = allAthletes.length ? allAthletes : _chatContacts;
     let sent = 0;
     for (const a of athletes) {
-      await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({token, resource:'messages', action:'create',
           data:{child_id: a.id, text, from_user_id: user.id}})});
       sent++;
