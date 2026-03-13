@@ -189,7 +189,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
-<button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
+<button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены1</button>
 <button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
 <button class="tab" onclick="switchTab('events')">📅 Мероприятия</button>
 <button class="tab" onclick="switchTab('news')">🔍 AI-Новости</button>
@@ -1287,18 +1287,16 @@ async function refreshChatContacts() {
       body: JSON.stringify({token, resource:'children', action:'list'})});
     const d = await r.json();
     const athletes = Array.isArray(d) ? d : (d.merged || []);
-    // Загружаем последние сообщения для каждого
-    const msgR = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'messages', action:'list_all', data:{limit:1000}})});
-    const msgD = await msgR.json();
-    const allMsgs = Array.isArray(msgD) ? msgD : (msgD.merged || []);
 
-    _chatContacts = athletes.map(a => {
-      const childMsgs = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
-      const last = childMsgs[childMsgs.length - 1];
-      const unread = childMsgs.filter(m => !m.is_read && m.from_user_id !== user.id).length;
-      return { ...a, _lastMsg: last, _unread: unread };
-    });
+    // Сохраняем _lastMsg и _unread из предыдущего состояния если есть
+    const prevMap = {};
+    _chatContacts.forEach(c => { prevMap[c.id] = {_lastMsg: c._lastMsg, _unread: c._unread}; });
+
+    _chatContacts = athletes.map(a => ({
+      ...a,
+      _lastMsg: prevMap[a.id]?._lastMsg || null,
+      _unread:  prevMap[a.id]?._unread  || 0
+    }));
 
     const totalUnread = _chatContacts.reduce((s, c) => s + (c._unread || 0), 0);
     const badge = document.getElementById('dirChatUnread');
