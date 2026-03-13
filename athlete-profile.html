@@ -154,18 +154,33 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 .upcoming-actions { display:flex; gap:.5rem; }
 
 /* CHAT */
-.chat-wrap { display:flex; flex-direction:column; height:400px; }
-.chat-messages { flex:1; overflow-y:auto; padding:.5rem; display:flex; flex-direction:column; gap:.75rem; }
-.msg { max-width:75%; }
-.msg.mine { align-self:flex-end; }
-.msg.theirs { align-self:flex-start; }
-.msg-bubble { padding:.75rem 1rem; border-radius:16px; font-size:.9rem; line-height:1.5; }
+.chat-wrap { display:flex; flex-direction:column; height:500px; }
+.chat-messages { flex:1; overflow-y:auto; padding:.75rem; display:flex; flex-direction:column; gap:.5rem; }
+.msg { max-width:78%; display:flex; flex-direction:column; }
+.msg.mine { align-self:flex-end; align-items:flex-end; }
+.msg.theirs { align-self:flex-start; align-items:flex-start; }
+.msg-sender { font-size:.72rem; color:var(--muted); margin-bottom:.2rem; padding:0 .25rem; }
+.msg-bubble { padding:.65rem 1rem; border-radius:18px; font-size:.9rem; line-height:1.5; word-break:break-word; }
 .msg.mine .msg-bubble { background:var(--p); color:#fff; border-bottom-right-radius:4px; }
-.msg.theirs .msg-bubble { background:var(--l); color:var(--d); border-bottom-left-radius:4px; }
-.msg-time { font-size:.7rem; color:var(--muted); margin-top:.25rem; text-align:right; }
-.chat-input-row { display:flex; gap:.75rem; padding:.75rem 0 0; border-top:1px solid var(--border); }
+.msg.theirs .msg-bubble { background:#f0f2f5; color:var(--d); border-bottom-left-radius:4px; }
+.msg-bubble img { max-width:220px; border-radius:10px; display:block; cursor:pointer; margin-top:.25rem; }
+.msg-file-link { display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .6rem; background:rgba(255,255,255,.25); border-radius:8px; font-size:.82rem; text-decoration:none; color:inherit; margin-top:.25rem; }
+.msg.theirs .msg-file-link { background:rgba(0,0,0,.07); }
+.msg-meta { display:flex; align-items:center; gap:.4rem; margin-top:.2rem; padding:0 .25rem; }
+.msg-time { font-size:.68rem; color:var(--muted); }
+.msg-read { font-size:.7rem; color:var(--p); }
+.msg-date-sep { text-align:center; font-size:.75rem; color:var(--muted); padding:.5rem 0; position:relative; margin:.25rem 0; }
+.msg-date-sep span { background:#fff; padding:0 .75rem; position:relative; z-index:1; }
+.msg-date-sep::before { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background:var(--border); }
+.chat-input-row { display:flex; gap:.5rem; padding:.75rem 0 0; border-top:1px solid var(--border); align-items:flex-end; }
 .chat-input { flex:1; padding:.7rem 1rem; border:2px solid var(--border); border-radius:10px; font-size:.9rem; font-family:'Inter',sans-serif; }
 .chat-input:focus { outline:none; border-color:var(--p); }
+.chat-attach-btn { padding:.65rem .8rem; border:2px solid var(--border); border-radius:10px; background:#fff; cursor:pointer; font-size:1.1rem; flex-shrink:0; transition:border-color .2s; line-height:1; }
+.chat-attach-btn:hover { border-color:var(--p); }
+.chat-preview-bar { padding:.5rem .75rem; background:#f8fafc; border-top:1px solid var(--border); display:flex; align-items:center; gap:.75rem; font-size:.82rem; display:none; }
+.chat-preview-bar.visible { display:flex; }
+.chat-preview-thumb { width:40px; height:40px; object-fit:cover; border-radius:6px; }
+.unread-badge { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; background:var(--red,#ef4444); color:#fff; border-radius:9px; font-size:.7rem; font-weight:700; padding:0 5px; margin-left:.35rem; vertical-align:middle; }
 
 /* DOCUMENTS */
 .doc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1rem; }
@@ -317,7 +332,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
     <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
     <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
-    <button class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
+    <button class="tab-btn" onclick="switchTab('chat')" id="tabBtnChat">💬 Чат<span class="unread-badge" id="chatUnreadBadge" style="display:none"></span></button>
     <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
     <button class="tab-btn" onclick="switchTab('medical')">🏥 Медицина</button>
     <button class="tab-btn" onclick="switchTab('injuries')">🩹 Травмы</button>
@@ -539,14 +554,22 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <!-- TAB: CHAT -->
   <div class="tab-pane" id="tab-chat">
     <div class="card">
-      <div class="card-title"><div class="card-title-left">💬 Личный чат с тренером</div></div>
+      <div class="card-title"><div class="card-title-left">💬 Чат с тренером</div></div>
       <div class="chat-wrap">
         <div class="chat-messages" id="chatMessages">
           <p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>
         </div>
+        <div class="chat-preview-bar" id="chatPreviewBar">
+          <img id="chatPreviewThumb" class="chat-preview-thumb" src="" style="display:none">
+          <span id="chatPreviewName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+          <button onclick="clearAttachment()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--muted)">✕</button>
+        </div>
         <div class="chat-input-row">
-          <input class="chat-input" id="chatInput" placeholder="Написать сообщение..." onkeydown="if(event.key==='Enter')sendMessage()">
-          <button class="btn btn-primary" onclick="sendMessage()">➤</button>
+          <label class="chat-attach-btn" title="Прикрепить файл">
+            📎<input type="file" id="chatFileInput" accept="image/*,application/pdf,.doc,.docx" style="display:none" onchange="handleAttachment(this)">
+          </label>
+          <input class="chat-input" id="chatInput" placeholder="Написать сообщение..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}">
+          <button class="btn btn-primary chat-send-btn" onclick="sendMessage()">➤</button>
         </div>
       </div>
     </div>
@@ -1893,6 +1916,9 @@ async function confirmSync() {
 // ============================
 // CHAT
 // ============================
+let _chatAttachFile = null;
+let _lastMsgCount = 0;
+
 async function loadMessages() {
   try {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
@@ -1900,28 +1926,145 @@ async function loadMessages() {
     const d = await r.json();
     const msgs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     const container = document.getElementById('chatMessages');
-    if (!msgs.length) { container.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет</p>'; return; }
-    container.innerHTML = msgs.map(m => {
-      const isMine = (userRole==='director'||userRole==='trainer') ? m.from_user_id===userId : m.to_child_id===athleteId;
-      const time = new Date(m.created_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
-      return `<div class="msg ${isMine?'mine':'theirs'}"><div class="msg-bubble">${m.text}</div><div class="msg-time">${time}</div></div>`;
+    const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 60;
+
+    if (!msgs.length) {
+      container.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>';
+      updateUnreadBadge(0); return;
+    }
+
+    // Считаем непрочитанные (чужие и не прочитанные)
+    const isTrainer = userRole === 'director' || userRole === 'trainer';
+    const unread = msgs.filter(m => !m.is_read && (isTrainer ? !m.from_user_id || m.from_user_id !== userId : m.from_user_id)).length;
+    updateUnreadBadge(unread);
+
+    // Рендерим с разделителями по датам
+    let lastDate = '';
+    const html = msgs.map(m => {
+      const isMine = isTrainer ? m.from_user_id === userId : !m.from_user_id;
+      const dt = new Date(m.created_at);
+      const dateKey = dt.toLocaleDateString('ru-RU');
+      const time = dt.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+
+      let dateSep = '';
+      if (dateKey !== lastDate) {
+        lastDate = dateKey;
+        const today = new Date().toLocaleDateString('ru-RU');
+        const yesterday = new Date(Date.now()-86400000).toLocaleDateString('ru-RU');
+        const label = dateKey === today ? 'Сегодня' : dateKey === yesterday ? 'Вчера' : dateKey;
+        dateSep = `<div class="msg-date-sep"><span>${label}</span></div>`;
+      }
+
+      // Контент пузыря
+      let bubbleContent = '';
+      if (m.file_url) {
+        const isImg = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(m.file_url);
+        if (isImg) {
+          bubbleContent = `${m.text ? `<div>${m.text}</div>` : ''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy">`;
+        } else {
+          const fname = m.file_url.split('/').pop().split('?')[0];
+          bubbleContent = `${m.text ? `<div style="margin-bottom:.35rem">${m.text}</div>` : ''}<a href="${m.file_url}" target="_blank" class="msg-file-link">📎 ${fname}</a>`;
+        }
+      } else {
+        bubbleContent = m.text || '';
+      }
+
+      const senderName = isMine ? '' : `<div class="msg-sender">${m.sender_name || 'Тренер'}</div>`;
+      const readMark = isMine ? `<span class="msg-read">${m.is_read ? '✓✓' : '✓'}</span>` : '';
+
+      return `${dateSep}<div class="msg ${isMine?'mine':'theirs'}">
+        ${!isMine ? senderName : ''}
+        <div class="msg-bubble">${bubbleContent}</div>
+        <div class="msg-meta"><span class="msg-time">${time}</span>${readMark}</div>
+      </div>`;
     }).join('');
-    container.scrollTop = container.scrollHeight;
+
+    container.innerHTML = html;
+    if (isAtBottom || msgs.length !== _lastMsgCount) container.scrollTop = container.scrollHeight;
+    _lastMsgCount = msgs.length;
+
+    // Помечаем прочитанными если вкладка открыта
+    if (document.getElementById('tab-chat').classList.contains('active') && unread > 0) {
+      markMessagesRead();
+    }
   } catch(e) {}
+}
+
+async function markMessagesRead() {
+  try {
+    await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'messages', action:'read', data:{child_id:athleteId}})});
+    updateUnreadBadge(0);
+  } catch(e) {}
+}
+
+function updateUnreadBadge(count) {
+  const badge = document.getElementById('chatUnreadBadge');
+  if (!badge) return;
+  if (count > 0) { badge.textContent = count > 99 ? '99+' : count; badge.style.display = ''; }
+  else { badge.style.display = 'none'; }
+}
+
+function handleAttachment(input) {
+  const file = input.files[0]; if (!file) return;
+  _chatAttachFile = file;
+  const bar = document.getElementById('chatPreviewBar');
+  const thumb = document.getElementById('chatPreviewThumb');
+  const name = document.getElementById('chatPreviewName');
+  bar.classList.add('visible');
+  name.textContent = file.name;
+  if (file.type.startsWith('image/')) {
+    thumb.src = URL.createObjectURL(file);
+    thumb.style.display = 'block';
+  } else {
+    thumb.style.display = 'none';
+  }
+}
+
+function clearAttachment() {
+  _chatAttachFile = null;
+  document.getElementById('chatFileInput').value = '';
+  document.getElementById('chatPreviewBar').classList.remove('visible');
 }
 
 async function sendMessage() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
-  if (!text) return;
+  if (!text && !_chatAttachFile) return;
   input.value = '';
-  await apiFetch('messages','create',{child_id:athleteId, text, from_user_id:userId});
+
+  if (_chatAttachFile) {
+    // Загружаем файл через upload-athlete-doc
+    showToast('⏳ Отправка файла...', 'info', 8000);
+    try {
+      const dataUrl = await new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = () => res(reader.result);
+        reader.onerror = rej;
+        reader.readAsDataURL(_chatAttachFile);
+      });
+      const file_mime = _chatAttachFile.type || 'application/octet-stream';
+      const file_base64 = dataUrl.split(',')[1];
+      const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-athlete-doc', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token, child_id:athleteId, doc_type:'chat_file', title:_chatAttachFile.name, file_base64, file_mime})
+      });
+      const rd = await r.json();
+      const file_url = rd.doc?.file_url || rd.url || null;
+      clearAttachment();
+      await apiFetch('messages','create',{child_id:athleteId, text: text || '', file_url, from_user_id:userId});
+    } catch(e) {
+      showToast('Ошибка отправки файла', 'error'); return;
+    }
+  } else {
+    await apiFetch('messages','create',{child_id:athleteId, text, from_user_id:userId});
+  }
   await loadMessages();
 }
 
 function startChatPolling() {
   loadMessages();
-  chatInterval = setInterval(loadMessages, 15000);
+  chatInterval = setInterval(loadMessages, 10000);
 }
 
 // ============================
