@@ -2024,6 +2024,7 @@ async function loadMedical() {
   const diff = Math.ceil((exp-now)/86400000);
   const status = diff < 0 ? 'expired' : diff < 30 ? 'warn' : 'ok';
   const labels = {ok:'✅ Действует', warn:'⚠️ Истекает', expired:'❌ Истекла'};
+  const ai = athlete._medical_ai || {};
   el.innerHTML = `
     <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
       <span class="med-status ${status}">${labels[status]}</span>
@@ -2031,6 +2032,15 @@ async function loadMedical() {
       ${diff > 0 ? `<span style="color:var(--muted);font-size:.85rem">осталось ${diff} дн.</span>` : `<span style="color:var(--red);font-size:.85rem">просрочена ${Math.abs(diff)} дн. назад</span>`}
       ${athlete.medical_cert_url ? `<a href="${athlete.medical_cert_url}" target="_blank" class="btn btn-sm btn-ghost">👁️ Просмотр</a>` : ''}
     </div>
+    ${ai.diagnosis || ai.sport_clearance || ai.clinic_name ? `
+    <div style="margin-top:.75rem;padding:.75rem;background:#f8fafc;border-radius:8px;font-size:.85rem;display:flex;flex-direction:column;gap:.3rem">
+      ${ai.diagnosis       ? `<div>🩺 <b>Заключение:</b> ${ai.diagnosis}</div>` : ''}
+      ${ai.sport_clearance ? `<div>✅ <b>Допуск:</b> ${ai.sport_clearance}</div>` : ''}
+      ${ai.clinic_name     ? `<div>🏥 <b>Учреждение:</b> ${ai.clinic_name}</div>` : ''}
+      ${ai.doctor_name     ? `<div>👨‍⚕️ <b>Врач:</b> ${ai.doctor_name}</div>` : ''}
+      ${ai.sport_type      ? `<div>🥋 <b>Вид спорта:</b> ${ai.sport_type}</div>` : ''}
+      ${ai.issued_date     ? `<div>📅 <b>Выдана:</b> ${ai.issued_date}</div>` : ''}
+    </div>` : ''}
   `;
 }
 
@@ -2056,12 +2066,26 @@ async function uploadMedical(input) {
       body: JSON.stringify({token, child_id: athleteId, file_base64, file_mime})
     });
     const d = await r.json();
-    if (d.expires_date || d.file_url) {
+    if (d.success || d.file_url) {
       if (d.expires_date) athlete.medical_cert_expires = d.expires_date;
       if (d.file_url) athlete.medical_cert_url = d.file_url;
+      // Сохраняем все AI данные
+      if (d.ai_data) athlete._medical_ai = d.ai_data;
       await loadMedical();
+      const ai = d.ai_data || {};
       const dateStr = d.expires_date ? new Date(d.expires_date).toLocaleDateString('ru-RU') : 'не определена';
-      showToast(`✅ Медсправка загружена! AI определил дату: ${dateStr}`, 'success', 6000);
+      let msg = `✅ Медсправка загружена!\n\nAI распознал:\n`;
+      if (ai.issued_date)     msg += `📅 Выдана: ${ai.issued_date}\n`;
+      if (ai.expires_date)    msg += `📅 Действует до: ${dateStr}\n`;
+      if (ai.athlete_name)    msg += `👤 Спортсмен: ${ai.athlete_name}\n`;
+      if (ai.birth_date)      msg += `🎂 Дата рождения: ${ai.birth_date}\n`;
+      if (ai.diagnosis)       msg += `🩺 Заключение: ${ai.diagnosis}\n`;
+      if (ai.sport_clearance) msg += `✅ Допуск: ${ai.sport_clearance}\n`;
+      if (ai.clinic_name)     msg += `🏥 Учреждение: ${ai.clinic_name}\n`;
+      if (ai.doctor_name)     msg += `👨‍⚕️ Врач: ${ai.doctor_name}\n`;
+      if (ai.sport_type)      msg += `🥋 Вид спорта: ${ai.sport_type}\n`;
+      showToast('✅ Медсправка загружена и распознана AI', 'success', 5000);
+      alert(msg);
     } else {
       showToast('Ошибка: ' + (d.error || 'Неизвестная ошибка'), 'error');
     }
