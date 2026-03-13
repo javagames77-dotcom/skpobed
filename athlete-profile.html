@@ -301,7 +301,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <div class="hero-stats">
         <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
-        <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость1</div></div>
+        <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
       </div>
     </div>
@@ -2036,20 +2036,40 @@ async function loadMedical() {
 
 async function uploadMedical(input) {
   const file = input.files[0]; if (!file) return;
-  const formData = new FormData();
-  formData.append('token', token);
-  formData.append('file', file);
-  formData.append('child_id', athleteId);
+
+  showToast('⏳ Загрузка и AI-распознавание...', 'info', 20000);
+
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const file_mime = file.type || dataUrl.split(';')[0].replace('data:', '') || 'image/jpeg';
+  const file_base64 = dataUrl.split(',')[1];
+
   try {
-    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-medical-cert', {method:'POST', body:formData});
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-medical-cert', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({token, child_id: athleteId, file_base64, file_mime})
+    });
     const d = await r.json();
-    if (d.expires_date) {
-      athlete.medical_cert_expires = d.expires_date;
-      athlete.medical_cert_url = d.file_url;
+    if (d.expires_date || d.file_url) {
+      if (d.expires_date) athlete.medical_cert_expires = d.expires_date;
+      if (d.file_url) athlete.medical_cert_url = d.file_url;
       await loadMedical();
-      alert(`✅ Медсправка загружена!\nAI определил дату окончания: ${new Date(d.expires_date).toLocaleDateString('ru-RU')}\nПроверьте и скорректируйте при необходимости.`);
+      const dateStr = d.expires_date ? new Date(d.expires_date).toLocaleDateString('ru-RU') : 'не определена';
+      showToast(`✅ Медсправка загружена! AI определил дату: ${dateStr}`, 'success', 6000);
+    } else {
+      showToast('Ошибка: ' + (d.error || 'Неизвестная ошибка'), 'error');
     }
-  } catch(e) { alert('Ошибка: '+e.message); }
+  } catch(e) {
+    console.error('uploadMedical error:', e);
+    showToast('Ошибка загрузки медсправки', 'error');
+  }
+  input.value = '';
 }
 
 // ============================
