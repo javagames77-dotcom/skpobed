@@ -299,7 +299,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
         <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
-        <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг1</div></div>
+        <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
       </div>
     </div>
   </div>
@@ -312,7 +312,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <div class="tabs-bar">
     <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
-    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
+    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения1</button>
     <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
     <button class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
     <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
@@ -1948,23 +1948,41 @@ async function loadDocuments() {
 async function uploadDocument(input) {
   const file = input.files[0]; if (!file) return;
 
-  // Тип документа
   const typeMap = {'1':'birth_cert','2':'medical','3':'other'};
   const typeChoice = prompt('Тип документа:\n1 - Свидетельство о рождении\n2 - Медсправка\n3 - Другое\n\nВведите номер:', '3');
   const doc_type = typeMap[typeChoice] || 'other';
   const title = prompt('Название документа:', file.name.replace(/\.[^.]+$/,''));
   if (!title) return;
 
-  const formData = new FormData();
-  formData.append('token', token);
-  formData.append('file', file);
-  formData.append('doc_data', JSON.stringify({child_id: athleteId, doc_type, title}));
-
   showToast('⏳ Загрузка документа...', 'info', 10000);
+
+  // Конвертируем файл в base64
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  // mime — из file.type или из dataUrl
+  const file_mime = file.type || dataUrl.split(';')[0].replace('data:', '') || 'application/octet-stream';
+  // base64 — часть после запятой
+  const file_base64 = dataUrl.split(',')[1];
+
+  console.log('uploadDocument:', {file_mime, b64len: file_base64?.length, title, doc_type});
+
   try {
     const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-athlete-doc', {
       method: 'POST',
-      body: formData
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        token,
+        child_id: athleteId,
+        doc_type,
+        title,
+        file_base64,
+        file_mime
+      })
     });
     const d = await r.json();
     if (d.success || d.url || (d.doc && d.doc.id)) {
