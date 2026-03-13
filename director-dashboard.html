@@ -214,7 +214,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="table-container">
 <div id="loadingAthletes" class="loading">Загрузка...</div>
 <table class="table" id="athletesTable" style="display:none">
-<thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th><th>Действия</th></tr></thead>
+<thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th><th>🥋 Пояс / Экзамен</th><th>Действия</th></tr></thead>
 <tbody id="athletesTableBody"></tbody>
 </table>
 </div>
@@ -227,17 +227,11 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <h1 class="page-title">Пояса и степени</h1>
 <button class="btn-add" onclick="addBelt()"><span>➕</span><span>Добавить степень</span></button>
 </div>
-<div class="filters">
-<div class="filter-group">
-<label class="filter-label">Клуб</label>
-<select class="filter-select" id="beltClubFilter" onchange="filterBelts()"><option value="">Все клубы</option></select>
-</div>
-</div>
 <div class="table-container">
 <div id="loadingBelts" class="loading" style="display:none">Загрузка...</div>
 <div id="emptyBelts" class="loading" style="display:none">Нет степеней. Добавьте первую.</div>
 <table class="table" id="beltsTable" style="display:none">
-<thead><tr><th>#</th><th>Название</th><th>Цвет</th><th>Клуб</th><th>Действия</th></tr></thead>
+<thead><tr><th>#</th><th>Название</th><th>Цвет</th><th>Мин. срок</th><th>Действия</th></tr></thead>
 <tbody id="beltsTableBody"></tbody>
 </table>
 </div>
@@ -429,7 +423,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 
 <!-- Belt Modal -->
-<div class="modal" id="beltModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="beltModalTitle">Добавить степень</h2><button class="modal-close" onclick="closeBeltModal()">&#x2715;</button></div><div class="modal-body"><form id="beltForm" onsubmit="saveBelt(event)"><input type="hidden" id="beltId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="beltName" placeholder="Например: Белый пояс, 1-я кю..." required></div><div class="form-group"><label class="form-label">Клуб *</label><select class="form-input" id="beltClubId" required><option value="">Выберите клуб</option></select></div><div class="form-group"><label class="form-label">Цвет пояса</label><div style="display:flex;gap:.75rem;align-items:center"><input type="color" id="beltColor" value="#ffffff" style="width:60px;height:44px;border:2px solid var(--b);border-radius:8px;padding:2px;cursor:pointer"><span style="font-size:.9rem;color:#666">Цвет для отображения</span></div></div><div class="form-group"><label class="form-label">Порядковый номер *</label><input type="number" class="form-input" id="beltOrder" min="1" placeholder="1 — первый (начальный)" required></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeBeltModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('beltForm').requestSubmit()">Сохранить</button></div></div></div>
+<div class="modal" id="beltModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="beltModalTitle">Добавить степень</h2><button class="modal-close" onclick="closeBeltModal()">&#x2715;</button></div><div class="modal-body"><form id="beltForm" onsubmit="saveBelt(event)"><input type="hidden" id="beltId"><input type="hidden" id="beltClubId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="beltName" placeholder="Например: Белый пояс, 1-я кю..." required></div><div class="form-group"><label class="form-label">Цвет пояса</label><div style="display:flex;gap:.75rem;align-items:center"><input type="color" id="beltColor" value="#ffffff" style="width:60px;height:44px;border:2px solid var(--b);border-radius:8px;padding:2px;cursor:pointer"><span style="font-size:.9rem;color:#666">Цвет для отображения</span></div></div><div class="form-group"><label class="form-label">Порядковый номер *</label><input type="number" class="form-input" id="beltOrder" min="1" placeholder="1 — первый (начальный)" required></div><div class="form-group"><label class="form-label">⏱ Минимальный срок до следующего экзамена</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem"><div><input type="number" class="form-input" id="beltMinYears" min="0" max="10" value="0" placeholder="0"><small style="color:#888;display:block;margin-top:.25rem">Лет</small></div><div><input type="number" class="form-input" id="beltMinMonths" min="0" max="11" value="0" placeholder="0"><small style="color:#888;display:block;margin-top:.25rem">Месяцев</small></div></div><small style="color:#aaa;margin-top:.35rem;display:block">Спортсмен увидит обратный отсчёт до экзамена</small></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeBeltModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('beltForm').requestSubmit()">Сохранить</button></div></div></div>
 
 
 
@@ -569,7 +563,29 @@ async function loadGroupsForTrainer(trainerId){try{const allGroups=groups||[];le
 async function saveTrainer(e){e.preventDefault();const id=document.getElementById('trainerId').value;const email=document.getElementById('trainerEmail').value.trim();const password=document.getElementById('trainerPassword').value;const firstName=document.getElementById('trainerFirstName').value.trim();const lastName=document.getElementById('trainerLastName').value.trim();const club_id=document.getElementById('trainerClubId').value;const day=document.getElementById('trainerBirthDay').value;const month=document.getElementById('trainerBirthMonth').value;const year=document.getElementById('trainerBirthYear').value;const birthDate=(day&&month&&year)?`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`:'';const phone=document.getElementById('trainerPhone').value.trim();const qualification=document.getElementById('trainerQualification').value.trim();const selectedGroups=Array.from(document.querySelectorAll('#trainerGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));if(!club_id){alert('Выберите клуб!');return}if(id){const data={id:parseInt(id),email,first_name:firstName,last_name:lastName,phone,qualification,club_id:parseInt(club_id)};if(birthDate)data.birth_date=birthDate;if(password)data.password=password;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});const text2=await r2.text();let currentGroupIds=[];if(text2){const d2=JSON.parse(text2);const currentGroups=d2.merged||d2||[];currentGroupIds=currentGroups.map(g=>g.group_id).filter(Boolean)}const toRemove=currentGroupIds.filter(gid=>!selectedGroups.includes(gid));const toAdd=selectedGroups.filter(gid=>!currentGroupIds.includes(gid));for(let gid of toRemove){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'remove',data:{trainer_id:parseInt(id),group_id:gid}})})}for(let gid of toAdd){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(id),group_id:gid}})})}closeTrainerModal();alert('Тренер обновлен!');await loadTrainers()}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}else{try{const registerData={action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName,phone,qualification,club_id:parseInt(club_id)};if(birthDate)registerData.birth_date=birthDate;const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(registerData)});const res=await r.json();if(!r.ok){alert('Ошибка: '+(res.error||'Не удалось создать тренера'));return}let newTrainerId=res.user_id||res.id||res.userId;if(!newTrainerId&&(res.success||res.token)){await new Promise(resolve=>setTimeout(resolve,500));const listRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});const listData=await listRes.json();const allTrainers=listData.merged||listData||[];const newTrainer=allTrainers.find(t=>t.email===email);if(newTrainer){newTrainerId=newTrainer.id}}if(newTrainerId&&selectedGroups.length>0){for(let gid of selectedGroups){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(newTrainerId),group_id:gid}})})}}closeTrainerModal();alert('✅ Тренер создан!');await loadTrainers()}catch(err){console.error(err);alert('❌ Ошибка: '+err.message)}}}
 async function deleteTrainer(id){if(!confirm('Удалить тренера?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Тренер удален!');await loadTrainers()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
 async function loadAthletes(){try{document.getElementById('loadingAthletes').style.display='block';document.getElementById('athletesTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});let d=await r.json();allAthletes=Array.isArray(d)?d:(d.merged||[]);console.log('Athletes loaded:',allAthletes);const clubsSet=new Set(allAthletes.map(a=>a.club_names).filter(Boolean));document.getElementById('athleteClubFilter').innerHTML='<option value="">Все</option>'+Array.from(clubsSet).map(c=>`<option value="${c}">${c}</option>`).join('');const groupsSet=new Set();allAthletes.forEach(a=>{if(a.group_names&&a.group_names!=='Без группы'){a.group_names.split(', ').forEach(g=>groupsSet.add(g))}});document.getElementById('athleteGroupFilter').innerHTML='<option value="">Все</option>'+Array.from(groupsSet).map(g=>`<option value="${g}">${g}</option>`).join('');document.getElementById('loadingAthletes').style.display='none';document.getElementById('athletesTable').style.display='table';renderAthletesTable(allAthletes)}catch(e){console.error('loadAthletes error:',e);document.getElementById('loadingAthletes').textContent='Ошибка загрузки: '+e.message;allAthletes=[]}}
-function renderAthletesTable(data){const t=document.getElementById('athletesTableBody');t.innerHTML='';data.forEach(a=>{const r=document.createElement('tr');r.innerHTML=`<td><img src="${a.photo_url||'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect width="50" height="50" rx="25" fill="%230066CC"%2F%3E%3Ctext x="50%25" y="55%25" text-anchor="middle" fill="white" font-size="18" font-family="sans-serif" dy=".1em"%3E%3F%3C%2Ftext%3E%3C%2Fsvg%3E'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteAthlete(${a.id})">🗑️</button></div></td>`;t.appendChild(r)})}
+function _beltCountdown(athlete){
+  // athlete must have: current_belt_name, current_belt_color, belt_awarded_at, belt_min_days
+  if(!athlete.current_belt_name) return '<span style="color:#bbb;font-size:.8rem">—</span>';
+  const color=athlete.current_belt_color||'#ccc';
+  const dot=`<span class="color-dot" style="background:${color};width:12px;height:12px;margin-right:3px"></span>`;
+  const beltLabel=`${dot}<span style="font-size:.82rem;font-weight:600">${athlete.current_belt_name}</span>`;
+  const minDays=parseInt(athlete.belt_min_days)||0;
+  if(!minDays||!athlete.belt_awarded_at) return `<div>${beltLabel}</div>`;
+  const awardedAt=new Date(athlete.belt_awarded_at);
+  const now=new Date();
+  const daysPassed=Math.floor((now-awardedAt)/(1000*60*60*24));
+  const daysLeft=minDays-daysPassed;
+  if(daysLeft<=0){
+    return `<div>${beltLabel}<br><span style="color:#28a745;font-size:.75rem;font-weight:600">✅ Можно сдавать!</span></div>`;
+  }
+  const months=Math.floor(daysLeft/30);
+  const days=daysLeft%30;
+  let timeStr='';
+  if(months>0) timeStr+=months+'мес ';
+  timeStr+=days+'дн';
+  return `<div>${beltLabel}<br><span style="color:#e65100;font-size:.75rem">⏳ До экзамена: ${timeStr}</span></div>`;
+}
+function renderAthletesTable(data){const t=document.getElementById('athletesTableBody');t.innerHTML='';data.forEach(a=>{const beltCell=_beltCountdown(a);const r=document.createElement('tr');r.innerHTML=`<td><img src="${a.photo_url||'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect width="50" height="50" rx="25" fill="%230066CC"%2F%3E%3Ctext x="50%25" y="55%25" text-anchor="middle" fill="white" font-size="18" font-family="sans-serif" dy=".1em"%3E%3F%3C%2Ftext%3E%3C%2Fsvg%3E'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td>${beltCell}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteAthlete(${a.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 async function deleteAthlete(id){if(!confirm('Удалить спортсмена?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Спортсмен удален!');await loadAthletes()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
 function filterAthletes(){const search=(document.getElementById('athleteSearch')?.value||'').toLowerCase();const club=document.getElementById('athleteClubFilter')?.value||'';const group=document.getElementById('athleteGroupFilter')?.value||'';const filtered=allAthletes.filter(a=>{const name=`${a.first_name} ${a.last_name}`.toLowerCase();if(search&&!name.includes(search))return false;if(club&&a.club_names!==club)return false;if(group&&(!a.group_names||!a.group_names.includes(group)))return false;return true});renderAthletesTable(filtered)}
 document.getElementById('athleteSearch')?.addEventListener('input',filterAthletes);document.getElementById('athleteClubFilter')?.addEventListener('change',filterAthletes);document.getElementById('athleteGroupFilter')?.addEventListener('change',filterAthletes);
@@ -581,12 +597,96 @@ function openTrainerModal(){document.getElementById('trainerModal').classList.ad
 function closeTrainerModal(){document.getElementById('trainerModal').classList.remove('active');document.body.style.overflow='';document.getElementById('trainerPassword').required=true}
 
 // ===== BELTS =====
-async function loadBelts(){document.getElementById('loadingBelts').style.display='block';document.getElementById('beltsTable').style.display='none';document.getElementById('emptyBelts').style.display='none';try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:'list'})});const d=await r.json();allBelts=d.merged||d||[];const sel=document.getElementById('beltClubFilter');clubs.forEach(c=>{if(!Array.from(sel.options).find(o=>o.value==c.id)){const o=document.createElement('option');o.value=c.id;o.textContent=c.name;sel.appendChild(o)}});document.getElementById('loadingBelts').style.display='none';filterBelts();}catch(e){document.getElementById('loadingBelts').textContent='Ошибка загрузки'}}
-function filterBelts(){const clubId=document.getElementById('beltClubFilter').value;belts=clubId?allBelts.filter(b=>String(b.club_id)===String(clubId)):allBelts;if(belts.length===0){document.getElementById('emptyBelts').style.display='block';document.getElementById('beltsTable').style.display='none';}else{document.getElementById('emptyBelts').style.display='none';document.getElementById('beltsTable').style.display='table';renderBeltsTable();}}
-function renderBeltsTable(){const t=document.getElementById('beltsTableBody');t.innerHTML='';[...belts].sort((a,b)=>(a.order_index||0)-(b.order_index||0)).forEach(b=>{const clubName=clubs.find(c=>c.id===b.club_id)?.name||'—';const dot=b.color?`<span class="color-dot" style="background:${b.color}"></span>${b.color}`:'—';const r=document.createElement('tr');r.innerHTML=`<td>${b.order_index||'—'}</td><td><strong>${b.name}</strong></td><td>${dot}</td><td>${clubName}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editBelt(${b.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteBelt(${b.id})">🗑️</button></div></td>`;t.appendChild(r);})}
-function addBelt(){document.getElementById('beltModalTitle').textContent='Добавить степень';document.getElementById('beltId').value='';document.getElementById('beltName').value='';document.getElementById('beltColor').value='#ffffff';document.getElementById('beltOrder').value='';document.getElementById('beltClubId').innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');openBeltModal()}
-function editBelt(id){const b=allBelts.find(x=>x.id===id);if(!b)return;document.getElementById('beltModalTitle').textContent='Редактировать степень';document.getElementById('beltId').value=b.id;document.getElementById('beltName').value=b.name;document.getElementById('beltColor').value=b.color||'#ffffff';document.getElementById('beltOrder').value=b.order_index||'';document.getElementById('beltClubId').innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');document.getElementById('beltClubId').value=b.club_id||'';openBeltModal()}
-async function saveBelt(e){e.preventDefault();const id=document.getElementById('beltId').value;const name=document.getElementById('beltName').value.trim();const club_id=document.getElementById('beltClubId').value;const color=document.getElementById('beltColor').value;const order_index=parseInt(document.getElementById('beltOrder').value)||1;if(!name||!club_id){alert('Заполните обязательные поля');return}const data={name,club_id:parseInt(club_id),color,order_index};if(id)data.id=parseInt(id);try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:id?'update':'create',data})});const res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeBeltModal();alert(id?'Степень обновлена!':'Степень добавлена!');await loadBelts();}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)));}}catch(err){alert('Ошибка: '+err.message)}}
+async function loadBelts(){
+  document.getElementById('loadingBelts').style.display='block';
+  document.getElementById('beltsTable').style.display='none';
+  document.getElementById('emptyBelts').style.display='none';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:'list'})});
+    const d=await r.json();
+    allBelts=d.merged||d||[];
+    document.getElementById('loadingBelts').style.display='none';
+    filterBelts();
+  }catch(e){document.getElementById('loadingBelts').textContent='Ошибка загрузки'}
+}
+function filterBelts(){
+  belts=allBelts;
+  if(belts.length===0){document.getElementById('emptyBelts').style.display='block';document.getElementById('beltsTable').style.display='none';}
+  else{document.getElementById('emptyBelts').style.display='none';document.getElementById('beltsTable').style.display='table';renderBeltsTable();}
+}
+function formatMinDays(min_days){
+  if(!min_days||min_days<=0) return '—';
+  const years=Math.floor(min_days/365);
+  const months=Math.floor((min_days%365)/30);
+  let parts=[];
+  if(years>0) parts.push(years+'л');
+  if(months>0) parts.push(months+'мес');
+  return parts.length?parts.join(' '):(min_days+'дн');
+}
+function renderBeltsTable(){
+  const t=document.getElementById('beltsTableBody');
+  t.innerHTML='';
+  [...belts].sort((a,b)=>(a.order_index||0)-(b.order_index||0)).forEach(b=>{
+    const dot=b.color?`<span class="color-dot" style="background:${b.color}"></span>`:'';
+    const minDaysStr=formatMinDays(b.min_days);
+    const r=document.createElement('tr');
+    r.innerHTML=`<td>${b.order_index||'—'}</td><td><strong>${b.name}</strong></td><td>${dot}${b.color||'—'}</td><td style="color:${b.min_days>0?'var(--p)':'#aaa'}">${minDaysStr}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editBelt(${b.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteBelt(${b.id})">🗑️</button></div></td>`;
+    t.appendChild(r);
+  });
+}
+function _minDaysToYearsMonths(min_days){
+  const md=min_days||0;
+  const y=Math.floor(md/365);
+  const m=Math.floor((md%365)/30);
+  return{y,m};
+}
+function addBelt(){
+  document.getElementById('beltModalTitle').textContent='Добавить степень';
+  document.getElementById('beltId').value='';
+  document.getElementById('beltClubId').value=clubs[0]?.id||'';
+  document.getElementById('beltName').value='';
+  document.getElementById('beltColor').value='#ffffff';
+  document.getElementById('beltOrder').value='';
+  document.getElementById('beltMinYears').value='0';
+  document.getElementById('beltMinMonths').value='0';
+  openBeltModal();
+}
+function editBelt(id){
+  const b=allBelts.find(x=>x.id===id);if(!b)return;
+  document.getElementById('beltModalTitle').textContent='Редактировать степень';
+  document.getElementById('beltId').value=b.id;
+  document.getElementById('beltClubId').value=b.club_id||'';
+  document.getElementById('beltName').value=b.name;
+  document.getElementById('beltColor').value=b.color||'#ffffff';
+  document.getElementById('beltOrder').value=b.order_index||'';
+  const {y,m}=_minDaysToYearsMonths(b.min_days);
+  document.getElementById('beltMinYears').value=y;
+  document.getElementById('beltMinMonths').value=m;
+  openBeltModal();
+}
+async function saveBelt(e){
+  e.preventDefault();
+  const id=document.getElementById('beltId').value;
+  const name=document.getElementById('beltName').value.trim();
+  const color=document.getElementById('beltColor').value;
+  const order_index=parseInt(document.getElementById('beltOrder').value)||1;
+  const minYears=parseInt(document.getElementById('beltMinYears').value)||0;
+  const minMonths=parseInt(document.getElementById('beltMinMonths').value)||0;
+  const min_days=minYears*365+minMonths*30;
+  // Use club_id from hidden field (set at load), or first club
+  const club_id=document.getElementById('beltClubId').value||clubs[0]?.id;
+  if(!name){alert('Введите название');return}
+  const data={name,color,order_index,min_days};
+  if(club_id) data.club_id=parseInt(club_id);
+  if(id) data.id=parseInt(id);
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:id?'update':'create',data})});
+    const res=await r.json();
+    const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+    if(result&&result.id){closeBeltModal();alert(id?'Степень обновлена!':'Степень добавлена!');await loadBelts();}
+    else{alert('Ошибка: '+(result?.error||JSON.stringify(res)));}
+  }catch(err){alert('Ошибка: '+err.message)}
+}
 async function deleteBelt(id){if(!confirm('Удалить степень?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Удалено!');await loadBelts();}else{alert('Ошибка удаления');}}catch(err){alert('Ошибка: '+err.message)}}
 
 // ===== EVENTS =====
