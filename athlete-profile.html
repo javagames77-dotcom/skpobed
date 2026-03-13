@@ -315,7 +315,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <div class="tabs-bar">
     <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
-    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения2</button>
+    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
     <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
     <button class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
     <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
@@ -2026,6 +2026,12 @@ async function loadMedical() {
     el.innerHTML = certs.map(cert => {
       let ai = {};
       try { ai = JSON.parse(cert.notes || '{}'); } catch(e) {}
+
+      // Если notes нет — пробуем вытащить дату из title ("Медсправка от ... до 2024-06-11")
+      if (!ai.expires_date && cert.title) {
+        const m = cert.title.match(/до (\d{4}-\d{2}-\d{2})/);
+        if (m) ai.expires_date = m[1];
+      }
 
       let statusHtml = '';
       const expDate = ai.expires_date || null;
