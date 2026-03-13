@@ -298,7 +298,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <div class="hero-stats">
         <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
-        <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость1</div></div>
+        <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
       </div>
     </div>
@@ -1705,7 +1705,7 @@ function renderPhysChart() {
   const history = window._physHistory || [];
   const _pd = str => { const s=String(str||'').split('T')[0]; const [y,m,d]=s.split('-').map(Number); return (y&&m&&d)?new Date(y,m-1,d):new Date(NaN); };
   const dataPoints = history.filter(h => physChartMode === 'weight' ? h.weight_kg : h.height_cm)
-    .map(h => ({ x: h.recorded_at ? String(h.recorded_at).split('T')[0] : h.date, y: physChartMode === 'weight' ? parseFloat(h.weight_kg) : parseInt(h.height_cm) }))
+    .map(h => ({ x: h.recorded_at ? String(h.recorded_at).split('T')[0] : h.date, y: physChartMode === 'weight' ? parseFloat(h.weight_kg) : parseFloat(h.height_cm) }))
     .sort((a,b) => _pd(a.x) - _pd(b.x));
 
   // Add current value as latest point if not in history
@@ -1776,8 +1776,8 @@ function renderPhysChart() {
 
 function openPhysChartModal() {
   openModal('physChartModal');
-  // Try load history
-  loadPhysHistory().then(renderPhysChart);
+  // Load history then render
+  loadPhysHistory().then(() => renderPhysChart());
 }
 
 async function loadPhysHistory() {
@@ -1785,22 +1785,22 @@ async function loadPhysHistory() {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'children_extended', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    console.log('loadPhysHistory raw:', JSON.stringify(d).substring(0,500));
-    // Пробуем все варианты структуры ответа
     let hist = [];
     if (Array.isArray(d)) hist = d;
     else if (Array.isArray(d.merged)) hist = d.merged;
     else if (Array.isArray(d.data)) hist = d.data;
     else if (d && typeof d === 'object') {
-      // Может быть один объект
-      const vals = Object.values(d);
-      const arr = vals.find(v => Array.isArray(v));
+      const arr = Object.values(d).find(v => Array.isArray(v));
       if (arr) hist = arr;
     }
-    console.log('loadPhysHistory parsed:', hist.length, 'records', hist[0]);
     window._physHistory = hist.filter(h => h.weight_kg || h.height_cm);
-    console.log('_physHistory after filter:', window._physHistory.length);
-  } catch(e) { console.error('loadPhysHistory error:', e); window._physHistory = []; }
+    console.log('_physHistory loaded:', window._physHistory.length, 'records');
+    return window._physHistory;
+  } catch(e) {
+    console.error('loadPhysHistory error:', e);
+    window._physHistory = [];
+    return [];
+  }
 }
 
 // ============================
