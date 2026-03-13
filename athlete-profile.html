@@ -1934,10 +1934,12 @@ async function loadDocuments() {
     const docs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     const icons = {birth_cert:'📜', medical:'🏥', other:'📎'};
     document.getElementById('docGrid').innerHTML = docs.map(doc => `
-      <div class="doc-card filled" onclick="window.open('${doc.file_url}','_blank')">
-        <div class="doc-icon">${icons[doc.doc_type]||'📎'}</div>
-        <div class="doc-name">${doc.title}</div>
-        <div class="doc-date">${doc.created_at ? new Date(doc.created_at).toLocaleDateString('ru-RU') : ''}</div>
+      <div class="doc-card filled">
+        <div onclick="doc.file_url && window.open('${doc.file_url}','_blank')" style="cursor:pointer;flex:1">
+          <div class="doc-icon">${icons[doc.doc_type]||'📎'}</div>
+          <div class="doc-name">${doc.title || doc.doc_type || 'Документ'}</div>
+          <div class="doc-date">${doc.created_at ? new Date(doc.created_at).toLocaleDateString('ru-RU') : ''}</div>
+        </div>
       </div>
     `).join('');
   } catch(e) {}
@@ -1945,18 +1947,37 @@ async function loadDocuments() {
 
 async function uploadDocument(input) {
   const file = input.files[0]; if (!file) return;
-  const type = prompt('Тип документа: birth_cert / medical / other', 'other');
+
+  // Тип документа
+  const typeMap = {'1':'birth_cert','2':'medical','3':'other'};
+  const typeChoice = prompt('Тип документа:\n1 - Свидетельство о рождении\n2 - Медсправка\n3 - Другое\n\nВведите номер:', '3');
+  const doc_type = typeMap[typeChoice] || 'other';
   const title = prompt('Название документа:', file.name.replace(/\.[^.]+$/,''));
   if (!title) return;
+
   const formData = new FormData();
   formData.append('token', token);
   formData.append('file', file);
-  formData.append('doc_data', JSON.stringify({child_id:athleteId, doc_type:type||'other', title}));
+  formData.append('doc_data', JSON.stringify({child_id: athleteId, doc_type, title}));
+
+  showToast('⏳ Загрузка документа...', 'info', 10000);
   try {
-    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-athlete-doc', {method:'POST', body:formData});
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-athlete-doc', {
+      method: 'POST',
+      body: formData
+    });
     const d = await r.json();
-    if (d.url) { await loadDocuments(); alert('✅ Документ загружен!'); }
-  } catch(e) { alert('Ошибка загрузки'); }
+    if (d.success || d.url || (d.doc && d.doc.id)) {
+      await loadDocuments();
+      showToast('✅ Документ загружен!', 'success');
+    } else {
+      showToast('Ошибка: ' + (d.error || 'Неизвестная ошибка'), 'error');
+    }
+  } catch(e) {
+    console.error('uploadDocument error:', e);
+    showToast('Ошибка загрузки документа', 'error');
+  }
+  input.value = '';
 }
 
 // ============================
