@@ -125,14 +125,14 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .msg.theirs{align-self:flex-start;align-items:flex-start}
 .msg-sender{font-size:.72rem;color:#888;margin-bottom:.2rem;padding:0 .25rem}
 .msg-bubble{padding:.65rem 1rem;border-radius:18px;font-size:.9rem;line-height:1.5;word-break:break-word}
-.msg.mine .msg-bubble{background:#4361ee;color:#fff;border-bottom-right-radius:4px}
-.msg.theirs .msg-bubble{background:#f0f2f5;color:#1a1a2e;border-bottom-left-radius:4px}
-.msg-bubble img{max-width:220px;border-radius:10px;display:block;cursor:pointer;margin-top:.25rem;border:none;outline:none}
+.msg.mine .msg-bubble{background:#dbeafe;color:#1e3a8a;border-bottom-right-radius:4px;overflow:hidden}
+.msg.theirs .msg-bubble{background:#f0f2f5;color:#1a1a2e;border-bottom-left-radius:4px;overflow:hidden}
+.msg-bubble img{max-width:220px;border-radius:10px;display:block;cursor:pointer;border:none;outline:none;margin:-.65rem -1rem;width:calc(100% + 2rem);max-width:240px}
 .msg-file-link{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:rgba(255,255,255,.25);border-radius:8px;font-size:.82rem;text-decoration:none;color:inherit;margin-top:.25rem}
 .msg.theirs .msg-file-link{background:rgba(0,0,0,.07)}
 .msg-meta{display:flex;align-items:center;gap:.4rem;margin-top:.2rem;padding:0 .25rem}
 .msg-time{font-size:.68rem;color:#aaa}
-.msg-read{font-size:.7rem;color:#4361ee}
+.msg-read{font-size:.7rem;color:#1e3a8a}
 .msg-date-sep{text-align:center;font-size:.75rem;color:#aaa;padding:.5rem 0;position:relative;margin:.25rem 0;align-self:center;width:100%}
 .msg-date-sep span{background:#fff;padding:0 .75rem;position:relative;z-index:1}
 .msg-date-sep::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#e5e7eb}
@@ -1267,17 +1267,30 @@ async function initChat() {
 
 async function loadChatContacts() {
   try {
+    // Загружаем спортсменов
     const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'children', action:'list'})});
     const text = await r.text();
     const d = text ? JSON.parse(text) : [];
     const athletes = Array.isArray(d) ? d : (d.merged || []);
-    const prevMap = {};
-    _chatContacts.forEach(c => { prevMap[c.id] = {_lastMsg:c._lastMsg, _unread:c._unread}; });
-    _chatContacts = athletes.map(a => ({...a,
-      _lastMsg: prevMap[a.id]?._lastMsg || null,
-      _unread:  prevMap[a.id]?._unread  || 0
-    }));
+
+    // Загружаем все сообщения для счётчиков
+    let allMsgs = [];
+    try {
+      const mr = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token, resource:'messages', action:'list_all', data:{limit:500}})});
+      const mt = await mr.text();
+      const md = mt ? JSON.parse(mt) : [];
+      allMsgs = Array.isArray(md) ? md : (md.merged || []);
+    } catch(e) {}
+
+    _chatContacts = athletes.map(a => {
+      const msgs = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
+      const last = msgs[msgs.length - 1] || null;
+      const unread = msgs.filter(m => !m.is_read && m.from_user_id !== user.id).length;
+      return {...a, _lastMsg: last, _unread: unread};
+    });
+
     _chatFiltered = [..._chatContacts];
     const total = _chatContacts.reduce((s,c) => s + (c._unread||0), 0);
     updateDirChatBadge(total);
