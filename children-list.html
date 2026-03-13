@@ -1000,16 +1000,16 @@ async function refreshTrainerContacts() {
       body: JSON.stringify({token, resource:"children", action:"list"})});
     const d = await r.json();
     const athletes = Array.isArray(d) ? d : (d.merged || []);
-    const msgR = await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({token, resource:"messages", action:"list_all", data:{limit:500}})});
-    const msgD = await msgR.json();
-    const allMsgs = Array.isArray(msgD) ? msgD : (msgD.merged || []);
-    _tChatContacts = athletes.map(a => {
-      const cm = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
-      const last = cm[cm.length - 1];
-      const unread = cm.filter(m => !m.is_read && m.from_user_id !== user.id).length;
-      return {...a, _lastMsg: last, _unread: unread};
-    });
+
+    const prevMap = {};
+    _tChatContacts.forEach(c => { prevMap[c.id] = {_lastMsg: c._lastMsg, _unread: c._unread}; });
+
+    _tChatContacts = athletes.map(a => ({
+      ...a,
+      _lastMsg: prevMap[a.id]?._lastMsg || null,
+      _unread:  prevMap[a.id]?._unread  || 0
+    }));
+
     const total = _tChatContacts.reduce((s,c) => s + (c._unread||0), 0);
     const badge = document.getElementById("trainerChatUnread");
     if (badge) { badge.textContent = total||""; badge.style.display = total ? "" : "none"; }
