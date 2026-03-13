@@ -189,7 +189,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
-<button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени2</button>
+<button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
 <button class="tab" onclick="switchTab('events')">📅 Мероприятия</button>
 <button class="tab" onclick="switchTab('news')">🔍 AI-Новости</button>
 <button class="tab" onclick="switchTab('chat')" id="tabBtnChat">💬 Чат<span class="unread-badge" id="dirChatUnread" style="display:none"></span></button>
@@ -582,11 +582,12 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <!-- CHAT TAB -->
 <div class="tab-content" id="tab-chat">
-<div style="margin-bottom:1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
-  <h2 style="margin:0;font-size:1.1rem;font-weight:700">💬 Чат</h2>
-  <button class="broadcast-btn" onclick="openBroadcast()">📢 Написать всем</button>
+<div class="page-header">
+<h1 class="page-title">💬 Чат</h1>
+<button class="btn-add broadcast-btn" onclick="openBroadcast()"><span>📢</span><span>Написать всем</span></button>
 </div>
-<div class="chat-layout" style="margin-bottom:2rem">
+<div class="table-container" style="margin-bottom:2rem;overflow:visible">
+<div class="chat-layout" style="border:none;box-shadow:none;border-radius:0">
   <div class="chat-sidebar">
     <div class="chat-sidebar-header">
       <span>Контакты</span>
@@ -623,6 +624,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <!-- Broadcast modal -->
