@@ -315,7 +315,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <div class="tabs-bar">
     <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
-    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
+    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения2</button>
     <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
     <button class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
     <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
@@ -569,9 +569,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <div class="tab-pane" id="tab-medical">
     <div class="card">
       <div class="card-title"><div class="card-title-left">🏥 Медицинский допуск</div></div>
-      <div id="medBlock">
-        <p style="color:var(--muted)">Данные не загружены</p>
-      </div>
+      <div id="medBlock"><p style="color:var(--muted)">Данные не загружены</p></div>
       <div style="margin-top:1.5rem">
         <label class="btn btn-ghost" style="cursor:pointer">
           <input type="file" accept="image/*,application/pdf" style="display:none" onchange="uploadMedical(this)">
@@ -2015,51 +2013,68 @@ async function uploadDocument(input) {
 // ============================
 async function loadMedical() {
   const el = document.getElementById('medBlock');
-  if (!athlete.medical_cert_url && !athlete.medical_cert_expires) {
-    el.innerHTML = '<p style="color:var(--muted)">Медсправка не добавлена</p>';
-    return;
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_documents', action:'list', data:{child_id: athleteId}})});
+    const d = await r.json();
+    const all = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+    const certs = all.filter(doc => doc.doc_type === 'medical');
+    if (!certs.length) {
+      el.innerHTML = '<p style="color:var(--muted)">Медсправки не добавлены</p>';
+      return;
+    }
+    el.innerHTML = certs.map(cert => {
+      let ai = {};
+      try { ai = JSON.parse(cert.notes || '{}'); } catch(e) {}
+
+      let statusHtml = '';
+      const expDate = ai.expires_date || null;
+      if (expDate) {
+        const exp = new Date(expDate);
+        const now = new Date();
+        const diff = Math.ceil((exp - now) / 86400000);
+        const status = diff < 0 ? 'expired' : diff < 30 ? 'warn' : 'ok';
+        const labels = {ok:'✅ Действует', warn:'⚠️ Истекает', expired:'❌ Истекла'};
+        statusHtml = `
+          <span class="med-status ${status}">${labels[status]}</span>
+          <span>До <b>${exp.toLocaleDateString('ru-RU')}</b></span>
+          ${diff > 0
+            ? `<span style="color:var(--muted);font-size:.8rem">осталось ${diff} дн.</span>`
+            : `<span style="color:var(--red);font-size:.8rem">просрочена ${Math.abs(diff)} дн. назад</span>`}`;
+      } else {
+        statusHtml = `<span class="med-status warn">⚠️ Дата не определена</span>`;
+      }
+
+      const details = [
+        ai.diagnosis       && `🩺 <b>Заключение:</b> ${ai.diagnosis}`,
+        ai.sport_clearance && `✅ <b>Допуск:</b> ${ai.sport_clearance}`,
+        ai.clinic_name     && `🏥 <b>Учреждение:</b> ${ai.clinic_name}`,
+        ai.doctor_name     && `👨‍⚕️ <b>Врач:</b> ${ai.doctor_name}`,
+        ai.sport_type      && `🥋 <b>Вид спорта:</b> ${ai.sport_type}`,
+        ai.issued_date     && `📅 <b>Выдана:</b> ${ai.issued_date}`,
+        ai.athlete_name    && `👤 <b>Спортсмен:</b> ${ai.athlete_name}`,
+      ].filter(Boolean);
+
+      return `<div style="border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.75rem">
+        <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:${details.length ? '.75rem' : '0'}">
+          ${statusHtml}
+          ${cert.file_url ? `<a href="${cert.file_url}" target="_blank" class="btn btn-sm btn-ghost">👁️ Просмотр</a>` : ''}
+          <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="deleteMedicalCert(${cert.id},${cert.child_id})">🗑 Удалить</button>
+          <span style="color:var(--muted);font-size:.75rem;margin-left:auto">${cert.created_at ? new Date(cert.created_at).toLocaleDateString('ru-RU') : ''}</span>
+        </div>
+        ${details.length ? `<div style="font-size:.85rem;display:flex;flex-direction:column;gap:.25rem">${details.map(d => `<div>${d}</div>`).join('')}</div>` : ''}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<p style="color:var(--muted)">Ошибка загрузки</p>';
   }
-  const ai = athlete._medical_ai || {};
-  let statusHtml = '';
-  if (athlete.medical_cert_expires) {
-    const exp = new Date(athlete.medical_cert_expires);
-    const now = new Date();
-    const diff = Math.ceil((exp-now)/86400000);
-    const status = diff < 0 ? 'expired' : diff < 30 ? 'warn' : 'ok';
-    const labels = {ok:'✅ Действует', warn:'⚠️ Истекает', expired:'❌ Истекла'};
-    statusHtml = `
-      <span class="med-status ${status}">${labels[status]}</span>
-      <span>До <b>${exp.toLocaleDateString('ru-RU')}</b></span>
-      ${diff > 0 ? `<span style="color:var(--muted);font-size:.85rem">осталось ${diff} дн.</span>` : `<span style="color:var(--red);font-size:.85rem">просрочена ${Math.abs(diff)} дн. назад</span>`}`;
-  } else {
-    statusHtml = `<span class="med-status warn">⚠️ Дата не определена</span>`;
-  }
-  el.innerHTML = `
-    <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
-      ${statusHtml}
-      ${athlete.medical_cert_url ? `<a href="${athlete.medical_cert_url}" target="_blank" class="btn btn-sm btn-ghost">👁️ Просмотр</a>` : ''}
-      <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="deleteMedical()">🗑 Удалить</button>
-    </div>
-    ${ai.diagnosis || ai.sport_clearance || ai.clinic_name || ai.doctor_name ? `
-    <div style="margin-top:.75rem;padding:.75rem;background:#f8fafc;border-radius:8px;font-size:.85rem;display:flex;flex-direction:column;gap:.3rem">
-      ${ai.diagnosis       ? `<div>🩺 <b>Заключение:</b> ${ai.diagnosis}</div>` : ''}
-      ${ai.sport_clearance ? `<div>✅ <b>Допуск:</b> ${ai.sport_clearance}</div>` : ''}
-      ${ai.clinic_name     ? `<div>🏥 <b>Учреждение:</b> ${ai.clinic_name}</div>` : ''}
-      ${ai.doctor_name     ? `<div>👨‍⚕️ <b>Врач:</b> ${ai.doctor_name}</div>` : ''}
-      ${ai.sport_type      ? `<div>🥋 <b>Вид спорта:</b> ${ai.sport_type}</div>` : ''}
-      ${ai.issued_date     ? `<div>📅 <b>Выдана:</b> ${ai.issued_date}</div>` : ''}
-    </div>` : ''}
-  `;
 }
 
-async function deleteMedical() {
+async function deleteMedicalCert(certId, childId) {
   if (!confirm('Удалить медсправку?')) return;
   try {
     await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'children_profile', action:'update', data:{child_id: athleteId, medical_cert_url: null, medical_cert_expires: null}})});
-    athlete.medical_cert_url = null;
-    athlete.medical_cert_expires = null;
-    athlete._medical_ai = {};
+      body: JSON.stringify({token, resource:'athlete_documents', action:'delete', data:{id: certId, child_id: childId}})});
     await loadMedical();
     showToast('Медсправка удалена', 'success');
   } catch(e) { showToast('Ошибка удаления', 'error'); }
@@ -2087,14 +2102,10 @@ async function uploadMedical(input) {
       body: JSON.stringify({token, child_id: athleteId, file_base64, file_mime})
     });
     const d = await r.json();
-    if (d.success || d.file_url) {
-      if (d.expires_date) athlete.medical_cert_expires = d.expires_date;
-      if (d.file_url) athlete.medical_cert_url = d.file_url;
-      // Сохраняем все AI данные
-      if (d.ai_data) athlete._medical_ai = d.ai_data;
+    if (d.success || d.doc) {
       await loadMedical();
       const ai = d.ai_data || {};
-      const dateStr = d.expires_date ? new Date(d.expires_date).toLocaleDateString('ru-RU') : 'не определена';
+      const dateStr = ai.expires_date ? new Date(ai.expires_date).toLocaleDateString('ru-RU') : 'не определена';
       let msg = `✅ Медсправка загружена!\n\nAI распознал:\n`;
       if (ai.issued_date)     msg += `📅 Выдана: ${ai.issued_date}\n`;
       if (ai.expires_date)    msg += `📅 Действует до: ${dateStr}\n`;
