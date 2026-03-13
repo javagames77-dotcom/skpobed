@@ -314,7 +314,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед1</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -1941,7 +1941,7 @@ async function loadMessages() {
     // Рендерим с разделителями по датам
     let lastDate = '';
     const html = msgs.map(m => {
-      const isMine = isTrainer ? m.from_user_id === userId : !m.from_user_id;
+      const isMine = isTrainer ? m.from_user_id === userId : (m.is_from_athlete === true);
       const dt = new Date(m.created_at);
       const dateKey = dt.toLocaleDateString('ru-RU');
       const time = dt.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
@@ -2052,12 +2052,12 @@ async function sendMessage() {
       const rd = await r.json();
       const file_url = rd.doc?.file_url || rd.url || null;
       clearAttachment();
-      await apiFetch('messages','create',{child_id:athleteId, text: text || '', file_url, from_user_id:userId});
+      await apiFetch('messages','create',{child_id:athleteId, text: text || '', file_url, from_user_id:userId, is_from_athlete:true});
     } catch(e) {
       showToast('Ошибка отправки файла', 'error'); return;
     }
   } else {
-    await apiFetch('messages','create',{child_id:athleteId, text, from_user_id:userId});
+    await apiFetch('messages','create',{child_id:athleteId, text, from_user_id:userId, is_from_athlete:true});
   }
   await loadMessages();
 }
