@@ -583,7 +583,7 @@ img{border:none;outline:none}
 
 <!-- CHAT TAB -->
 <div class="tab-content" id="tab-chat">
-<div class="page-header">
+<div class="page-header" style="max-width:1200px;margin-left:auto;margin-right:auto">
 <h1 class="page-title">💬 Чат</h1>
 <button class="btn-add" onclick="openBroadcast()"><span>📢</span><span>Написать всем</span></button>
 </div>
@@ -1411,12 +1411,12 @@ async function loadChatMessages(childId, scrollDown) {
       if (m.file_url) {
         const isImg = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(m.file_url);
         bubble = isImg
-          ? `${m.text ? `<div style="margin-bottom:.3rem">${m.text}</div>` : ''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy" style="max-width:220px;border-radius:10px;display:block;cursor:pointer;border:none;outline:none">`
+          ? `${m.text ? `<div style="margin-bottom:.3rem">${m.text}</div>` : ''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy" style="max-width:220px;border-radius:10px;display:block;cursor:pointer;border:none;outline:none;box-shadow:none">`
           : `${m.text ? `<div style="margin-bottom:.3rem">${m.text}</div>` : ''}<a href="${m.file_url}" target="_blank" style="color:inherit;font-size:.82rem">📎 ${m.file_url.split('/').pop().split('?')[0]}</a>`;
       } else { bubble = m.text || ''; }
       const bubbleStyle = isMine
-        ? 'background:#4361ee;color:#fff;border-radius:18px 18px 4px 18px'
-        : 'background:#fff;color:#1a1a2e;border-radius:18px 18px 18px 4px;border:1px solid #e5e7eb';
+        ? 'background:#4361ee;color:#fff;border-radius:18px 18px 4px 18px;border:none;padding:.6rem .9rem;font-size:.88rem;line-height:1.5;word-break:break-word'
+        : 'background:#fff;color:#1a1a2e;border-radius:18px 18px 18px 4px;border:1px solid #e5e7eb;padding:.6rem .9rem;font-size:.88rem;line-height:1.5;word-break:break-word';
       const wrapStyle = isMine
         ? 'align-self:flex-end;align-items:flex-end;max-width:72%'
         : 'align-self:flex-start;align-items:flex-start;max-width:72%';
@@ -1424,7 +1424,7 @@ async function loadChatMessages(childId, scrollDown) {
       const readMark = isMine ? `<span style="font-size:.66rem;color:rgba(255,255,255,.8)">${m.is_read ? '✓✓' : '✓'}</span>` : '';
       return `${sep}<div style="display:flex;flex-direction:column;${wrapStyle}">
         ${sender}
-        <div style="padding:.6rem .9rem;font-size:.88rem;line-height:1.5;word-break:break-word;${bubbleStyle}">${bubble}</div>
+        <div style="${bubbleStyle}">${bubble}</div>
         <div style="display:flex;align-items:center;gap:.3rem;margin-top:.12rem;padding:0 .2rem">
           <span style="font-size:.66rem;color:#aaa">${time}</span>${readMark}
         </div>
