@@ -250,6 +250,50 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .btn-calendar:hover {
   background: #f8f9ff;
 }
+
+/* CHAT */
+.chat-layout{display:flex;height:560px;border:1px solid var(--b,#e5e7eb);border-radius:12px;overflow:hidden;background:#fff}
+.chat-sidebar{width:260px;flex-shrink:0;border-right:1px solid var(--b,#e5e7eb);display:flex;flex-direction:column;background:#fafafa}
+.chat-sidebar-header{padding:.75rem 1rem;font-weight:700;font-size:.88rem;border-bottom:1px solid var(--b,#e5e7eb);display:flex;align-items:center;justify-content:space-between}
+.chat-search-box{padding:.5rem .75rem;border-bottom:1px solid var(--b,#e5e7eb)}
+.chat-search-box input{width:100%;padding:.4rem .7rem;border:1px solid var(--b,#e5e7eb);border-radius:8px;font-size:.8rem;box-sizing:border-box}
+.chat-contact-list{flex:1;overflow-y:auto}
+.chat-contact{padding:.6rem .85rem;cursor:pointer;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid #f0f0f0;transition:background .15s}
+.chat-contact:hover,.chat-contact.active{background:#e8eeff}
+.chat-contact-av{width:34px;height:34px;border-radius:50%;background:var(--p,#4361ee);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0}
+.chat-contact-info{flex:1;min-width:0}
+.chat-contact-name{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-contact-prev{font-size:.73rem;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-cbadge{min-width:17px;height:17px;background:#ef4444;color:#fff;border-radius:9px;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0}
+.chat-main{flex:1;display:flex;flex-direction:column;min-width:0}
+.chat-main-hdr{padding:.7rem 1rem;border-bottom:1px solid var(--b,#e5e7eb);font-weight:600;font-size:.88rem;display:flex;align-items:center;gap:.6rem;background:#fff;min-height:46px}
+.chat-messages{flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.4rem}
+.msg{max-width:75%;display:flex;flex-direction:column}
+.msg.mine{align-self:flex-end;align-items:flex-end}
+.msg.theirs{align-self:flex-start;align-items:flex-start}
+.msg-sender{font-size:.69rem;color:#999;margin-bottom:.15rem;padding:0 .2rem}
+.msg-bubble{padding:.55rem .85rem;border-radius:16px;font-size:.87rem;line-height:1.5;word-break:break-word}
+.msg.mine .msg-bubble{background:var(--p,#4361ee);color:#fff;border-bottom-right-radius:4px}
+.msg.theirs .msg-bubble{background:#f0f2f5;color:#1a1a2e;border-bottom-left-radius:4px}
+.msg-bubble img{max-width:200px;border-radius:8px;display:block;cursor:pointer;margin-top:.2rem}
+.msg-file-link{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .5rem;background:rgba(255,255,255,.25);border-radius:6px;font-size:.78rem;text-decoration:none;color:inherit;margin-top:.2rem}
+.msg.theirs .msg-file-link{background:rgba(0,0,0,.07)}
+.msg-meta{display:flex;align-items:center;gap:.3rem;margin-top:.12rem;padding:0 .2rem}
+.msg-time{font-size:.66rem;color:#aaa}
+.msg-read{font-size:.66rem;color:var(--p,#4361ee)}
+.msg-date-sep{text-align:center;font-size:.72rem;color:#aaa;padding:.35rem 0;position:relative;margin:.15rem 0}
+.msg-date-sep span{background:#fff;padding:0 .6rem;position:relative;z-index:1}
+.msg-date-sep::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#e5e7eb}
+.chat-input-area{padding:.55rem .7rem;border-top:1px solid var(--b,#e5e7eb);display:flex;gap:.45rem;align-items:flex-end}
+.chat-textarea{flex:1;padding:.55rem .85rem;border:1.5px solid var(--b,#e5e7eb);border-radius:9px;font-size:.87rem;font-family:inherit;resize:none;max-height:90px;overflow-y:auto;line-height:1.4}
+.chat-textarea:focus{outline:none;border-color:var(--p,#4361ee)}
+.chat-attach-btn{padding:.5rem .65rem;border:1.5px solid var(--b,#e5e7eb);border-radius:8px;background:#fff;cursor:pointer;font-size:.95rem;flex-shrink:0;line-height:1}
+.chat-attach-btn:hover{border-color:var(--p,#4361ee)}
+.chat-send-btn{padding:.5rem .85rem;background:var(--p,#4361ee);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.88rem;flex-shrink:0}
+.chat-preview-bar{padding:.4rem .7rem;background:#f8fafc;border-top:1px solid var(--b,#e5e7eb);display:none;align-items:center;gap:.55rem;font-size:.8rem}
+.chat-preview-bar.visible{display:flex}
+.unread-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:9px;font-size:.7rem;font-weight:700;padding:0 5px;margin-left:.35rem;vertical-align:middle}
+.broadcast-btn{padding:.35rem .75rem;background:#6c63ff;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:.78rem}
 </style>
 </head>
 <body>
@@ -270,6 +314,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="container">
 <div class="tabs">
 <button class="tab active" onclick="switchTab('children')">👶 Спортсмены</button>
+<button class="tab" onclick="switchTab('chat')" id="trainerTabBtnChat">💬 Чат<span class="unread-badge" id="trainerChatUnread" style="display:none"></span></button>
 </div>
 
 <div class="tab-content active" id="tab-children">
@@ -377,6 +422,61 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 </div>
 
+<!-- CHAT TAB -->
+<div class="tab-content" id="tab-chat">
+<div style="margin-bottom:1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+  <h2 style="margin:0;font-size:1.1rem;font-weight:700">💬 Чат со спортсменами</h2>
+  <button class="broadcast-btn" onclick="openTrainerBroadcast()">📢 Написать всем</button>
+</div>
+<div class="chat-layout">
+  <div class="chat-sidebar">
+    <div class="chat-sidebar-header">
+      <span>Мои спортсмены</span>
+      <span id="trainerChatTotalUnread" style="font-size:.75rem;color:#ef4444;font-weight:700"></span>
+    </div>
+    <div class="chat-search-box">
+      <input type="text" placeholder="Поиск..." oninput="filterTrainerContacts(this.value)">
+    </div>
+    <div class="chat-contact-list" id="trainerChatContactList">
+      <div style="text-align:center;padding:2rem;color:#bbb;font-size:.82rem">Загрузка...</div>
+    </div>
+  </div>
+  <div class="chat-main">
+    <div id="trainerChatEmpty" style="flex:1;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:.88rem;flex-direction:column;gap:.5rem">
+      <div style="font-size:2rem">💬</div><div>Выберите спортсмена</div>
+    </div>
+    <div id="trainerChatActiveArea" style="display:none;flex:1;flex-direction:column;min-width:0">
+      <div class="chat-main-hdr" id="trainerChatHdr">—</div>
+      <div class="chat-messages" id="trainerChatMsgs"></div>
+      <div class="chat-preview-bar" id="trainerChatPreviewBar">
+        <img id="trainerChatThumb" style="width:36px;height:36px;object-fit:cover;border-radius:6px;display:none">
+        <span id="trainerChatFileName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+        <button onclick="clearTrainerAttach()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:#aaa">x</button>
+      </div>
+      <div class="chat-input-area">
+        <label class="chat-attach-btn">
+          📎<input type="file" id="trainerChatFile" accept="image/*,application/pdf" style="display:none" onchange="handleTrainerFile(this)">
+        </label>
+        <textarea class="chat-textarea" id="trainerChatText" placeholder="Написать сообщение..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTrainerMsg()}"
+          oninput="this.style.height=\'auto\';this.style.height=Math.min(this.scrollHeight,90)+\'px\'"></textarea>
+        <button class="chat-send-btn" onclick="sendTrainerMsg()">&#x27A4;</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="trainerBroadcastModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:1.5rem;width:480px;max-width:95vw">
+    <h3 style="margin:0 0 1rem">📢 Написать всем спортсменам</h3>
+    <textarea id="trainerBroadcastText" style="width:100%;height:100px;padding:.75rem;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:.9rem;box-sizing:border-box;resize:vertical" placeholder="Текст сообщения..."></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:.75rem;margin-top:1rem">
+      <button onclick="document.getElementById(\'trainerBroadcastModal\').style.display=\'none\'" style="padding:.6rem 1.2rem;border:1.5px solid #e5e7eb;border-radius:9px;background:#fff;cursor:pointer">Отмена</button>
+      <button onclick="sendTrainerBroadcast()" style="padding:.6rem 1.2rem;background:var(--p,#4361ee);color:#fff;border:none;border-radius:9px;cursor:pointer;font-weight:600">Отправить всем</button>
+    </div>
+  </div>
+</div>
+</div>
+
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const CLOUDINARY_CLOUD='dzxvshxvk';
@@ -400,6 +500,7 @@ document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'
 event.target.classList.add('active');
 document.getElementById(`tab-${t}`).classList.add('active');
 if(t==='groups'&&groups.length===0)loadGroups();
+if(t==='chat')initTrainerChat();
 }
 
 function initDateDropdowns(){
@@ -872,6 +973,195 @@ document.body.style.overflow='hidden';
 function closeGroupModal(){
 document.getElementById('groupModal').classList.remove('active');
 document.body.style.overflow='';
+}
+
+
+// ============================
+// CHAT (TRAINER)
+// ============================
+let _tChatContacts = [];
+let _tChatFiltered = [];
+let _tChatActiveId = null;
+let _tChatInterval = null;
+let _tChatAttach = null;
+let _tChatLastCount = 0;
+let _tChatInited = false;
+
+async function initTrainerChat() {
+  if (_tChatInited) { refreshTrainerContacts(); return; }
+  _tChatInited = true;
+  await refreshTrainerContacts();
+  _tChatInterval = setInterval(refreshTrainerContacts, 12000);
+}
+
+async function refreshTrainerContacts() {
+  try {
+    const r = await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({token, resource:"children", action:"list"})});
+    const d = await r.json();
+    const athletes = Array.isArray(d) ? d : (d.merged || []);
+    const msgR = await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({token, resource:"messages", action:"list_all", data:{limit:500}})});
+    const msgD = await msgR.json();
+    const allMsgs = Array.isArray(msgD) ? msgD : (msgD.merged || []);
+    _tChatContacts = athletes.map(a => {
+      const cm = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
+      const last = cm[cm.length - 1];
+      const unread = cm.filter(m => !m.is_read && m.from_user_id !== user.id).length;
+      return {...a, _lastMsg: last, _unread: unread};
+    });
+    const total = _tChatContacts.reduce((s,c) => s + (c._unread||0), 0);
+    const badge = document.getElementById("trainerChatUnread");
+    if (badge) { badge.textContent = total||""; badge.style.display = total ? "" : "none"; }
+    const tot = document.getElementById("trainerChatTotalUnread");
+    if (tot) tot.textContent = total ? total + " непрочитанных" : "";
+    _tChatFiltered = [..._tChatContacts];
+    renderTrainerContacts();
+    if (_tChatActiveId) loadTrainerMsgs(_tChatActiveId, false);
+  } catch(e) { console.error(e); }
+}
+
+function renderTrainerContacts() {
+  const el = document.getElementById("trainerChatContactList");
+  if (!el) return;
+  if (!_tChatFiltered.length) { el.innerHTML = "<div style=\"text-align:center;padding:2rem;color:#bbb;font-size:.82rem\">Нет спортсменов</div>"; return; }
+  el.innerHTML = _tChatFiltered.map(c => {
+    const name = c.first_name + " " + c.last_name;
+    const ini = (c.first_name||"")[0] + (c.last_name||"")[0];
+    const av = c.photo_url ? `<img src="${c.photo_url}" style="width:34px;height:34px;border-radius:50%;object-fit:cover">` : `<div class="chat-contact-av">${ini}</div>`;
+    const prev = c._lastMsg ? (c._lastMsg.text || "файл") : "Нет сообщений";
+    const badge = c._unread ? `<div class="chat-cbadge">${c._unread}</div>` : "";
+    const act = c.id === _tChatActiveId ? " active" : "";
+    return `<div class="chat-contact${act}" onclick="openTrainerChat(${c.id},'${name.replace(/'/g,"\'")}')">
+      ${av}<div class="chat-contact-info"><div class="chat-contact-name">${name}</div><div class="chat-contact-prev">${prev.toString().substring(0,35)}</div></div>${badge}</div>`;
+  }).join("");
+}
+
+function filterTrainerContacts(q) {
+  const s = q.toLowerCase();
+  _tChatFiltered = s ? _tChatContacts.filter(c => (c.first_name+" "+c.last_name).toLowerCase().includes(s)) : [..._tChatContacts];
+  renderTrainerContacts();
+}
+
+function openTrainerChat(id, name) {
+  _tChatActiveId = id;
+  document.getElementById("trainerChatEmpty").style.display = "none";
+  const area = document.getElementById("trainerChatActiveArea");
+  area.style.display = "flex"; area.style.flexDirection = "column";
+  document.getElementById("trainerChatHdr").textContent = name;
+  renderTrainerContacts();
+  loadTrainerMsgs(id, true);
+}
+
+async function loadTrainerMsgs(childId, scrollDown) {
+  try {
+    const r = await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({token, resource:"messages", action:"list", data:{child_id: childId}})});
+    const d = await r.json();
+    const msgs = Array.isArray(d) ? d : (d.merged || []);
+    const container = document.getElementById("trainerChatMsgs");
+    if (!container) return;
+    const wasBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 80;
+    if (!msgs.length) { container.innerHTML = "<div style=\"text-align:center;padding:2rem;color:#bbb;font-size:.83rem\">Нет сообщений</div>"; return; }
+    let lastDate = "";
+    container.innerHTML = msgs.map(m => {
+      const isMine = m.from_user_id === user.id;
+      const dt = new Date(m.created_at);
+      const dk = dt.toLocaleDateString("ru-RU");
+      const time = dt.toLocaleTimeString("ru-RU", {hour:"2-digit", minute:"2-digit"});
+      let sep = "";
+      if (dk !== lastDate) {
+        lastDate = dk;
+        const today = new Date().toLocaleDateString("ru-RU");
+        const yest = new Date(Date.now()-86400000).toLocaleDateString("ru-RU");
+        const lbl = dk === today ? "Сегодня" : dk === yest ? "Вчера" : dk;
+        sep = `<div class="msg-date-sep"><span>${lbl}</span></div>`;
+      }
+      let bubble = "";
+      if (m.file_url) {
+        const isImg = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(m.file_url);
+        bubble = isImg ? `${m.text ? "<div>"+m.text+"</div>" : ""}<img src="${m.file_url}" onclick="window.open(\'${m.file_url}\',\'_blank\')" loading="lazy">`
+          : `${m.text ? "<div style=\"margin-bottom:.3rem\">"+m.text+"</div>" : ""}<a href="${m.file_url}" target="_blank" class="msg-file-link">📎 ${m.file_url.split("/").pop().split("?")[0]}</a>`;
+      } else { bubble = m.text || ""; }
+      const sender = !isMine ? `<div class="msg-sender">${m.sender_name||"Спортсмен"}</div>` : "";
+      const rm = isMine ? `<span class="msg-read">${m.is_read ? "✓✓" : "✓"}</span>` : "";
+      return `${sep}<div class="msg ${isMine?"mine":"theirs"}">${sender}<div class="msg-bubble">${bubble}</div><div class="msg-meta"><span class="msg-time">${time}</span>${rm}</div></div>`;
+    }).join("");
+    if (scrollDown || wasBottom || msgs.length !== _tChatLastCount) container.scrollTop = container.scrollHeight;
+    _tChatLastCount = msgs.length;
+    const unread = msgs.filter(m => !m.is_read && m.from_user_id !== user.id).length;
+    if (unread > 0) fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({token, resource:"messages", action:"read", data:{child_id: childId}})});
+  } catch(e) { console.error(e); }
+}
+
+function handleTrainerFile(input) {
+  const file = input.files[0]; if (!file) return;
+  _tChatAttach = file;
+  const bar = document.getElementById("trainerChatPreviewBar");
+  const thumb = document.getElementById("trainerChatThumb");
+  const nm = document.getElementById("trainerChatFileName");
+  bar.classList.add("visible"); nm.textContent = file.name;
+  if (file.type.startsWith("image/")) { thumb.src = URL.createObjectURL(file); thumb.style.display = "block"; }
+  else { thumb.style.display = "none"; }
+}
+
+function clearTrainerAttach() {
+  _tChatAttach = null;
+  document.getElementById("trainerChatFile").value = "";
+  document.getElementById("trainerChatPreviewBar").classList.remove("visible");
+}
+
+async function sendTrainerMsg() {
+  if (!_tChatActiveId) return;
+  const ta = document.getElementById("trainerChatText");
+  const text = ta.value.trim();
+  if (!text && !_tChatAttach) return;
+  ta.value = ""; ta.style.height = "auto";
+  let file_url = null;
+  if (_tChatAttach) {
+    try {
+      const du = await new Promise((res,rej) => { const rd = new FileReader(); rd.onload=()=>res(rd.result); rd.onerror=rej; rd.readAsDataURL(_tChatAttach); });
+      const mime = _tChatAttach.type || "application/octet-stream";
+      const b64 = du.split(",")[1];
+      const r = await fetch("https://primary-production-4b93e.up.railway.app/webhook/upload-athlete-doc", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({token, child_id:_tChatActiveId, doc_type:"chat_file", title:_tChatAttach.name, file_base64:b64, file_mime:mime})
+      });
+      const rd = await r.json();
+      file_url = rd.doc?.file_url || rd.url || null;
+      clearTrainerAttach();
+    } catch(e) { alert("Ошибка загрузки файла"); return; }
+  }
+  await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({token, resource:"messages", action:"create",
+      data:{child_id:_tChatActiveId, text:text||"", file_url, from_user_id:user.id}})});
+  await loadTrainerMsgs(_tChatActiveId, true);
+}
+
+function openTrainerBroadcast() {
+  document.getElementById("trainerBroadcastText").value = "";
+  document.getElementById("trainerBroadcastModal").style.display = "flex";
+}
+
+async function sendTrainerBroadcast() {
+  const text = document.getElementById("trainerBroadcastText").value.trim();
+  if (!text) { alert("Введите текст"); return; }
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = "Отправка...";
+  try {
+    let sent = 0;
+    for (const a of _tChatContacts) {
+      await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({token, resource:"messages", action:"create",
+          data:{child_id:a.id, text, from_user_id:user.id}})});
+      sent++;
+    }
+    document.getElementById("trainerBroadcastModal").style.display = "none";
+    alert("Сообщение отправлено " + sent + " спортсменам");
+    refreshTrainerContacts();
+  } catch(e) { alert("Ошибка: " + e.message); }
+  finally { btn.disabled = false; btn.textContent = "Отправить всем"; }
 }
 
 function logout(){
