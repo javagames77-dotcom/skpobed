@@ -288,6 +288,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
         <div class="meta-chip"><span class="ic">👤</span><span id="heroContact">—</span></div>
         <div class="meta-chip"><span class="ic">⚖️</span><span id="heroWeight">—</span></div>
         <div class="meta-chip"><span class="ic">📏</span><span id="heroHeight">—</span></div>
+        <div class="meta-chip" id="heroTrainingChip" style="display:none"><span class="ic">🗓️</span><span id="heroTraining">—</span></div>
       </div>
       <div class="belt-display">
         <div class="belt-color" id="heroBeltColor"></div>
@@ -311,7 +312,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <div class="tabs-bar">
     <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
-    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения2</button>
+    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
     <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
     <button class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
     <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
@@ -338,6 +339,10 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
           <div id="infoContact"></div>
         </div>
         <div class="form-group">
+          <div class="form-label">Занимается с</div>
+          <div id="infoTrainingStart" style="font-size:1rem;font-weight:600">—</div>
+        </div>
+        <div class="form-group">
           <div class="form-label">Телефон контакта</div>
           <div id="infoContactPhone"></div>
         </div>
@@ -349,7 +354,13 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
         </div>
       </div>
       <div class="card">
-        <div class="card-title"><div class="card-title-left">⚖️ Физические данные</div><button class="btn btn-sm btn-ghost" onclick="openModal('editPhysModal')">✏️ Редактировать</button></div>
+        <div class="card-title">
+          <div class="card-title-left">⚖️ Физические данные</div>
+          <div style="display:flex;gap:.4rem">
+            <button class="btn btn-sm btn-ghost" onclick="openPhysChartModal()">📊 Графики</button>
+            <button class="btn btn-sm btn-ghost" onclick="openModal('editPhysModal')">✏️ Редактировать</button>
+          </div>
+        </div>
         <div class="form-row">
           <div class="form-group">
             <div class="form-label">Вес (кг)</div>
@@ -609,6 +620,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <div class="form-group"><label class="form-label">Контактное лицо</label><input id="ei_contactName" class="form-input" placeholder="ФИО родителя"></div>
       <div class="form-group"><label class="form-label">Телефон</label><input id="ei_contactPhone" class="form-input" placeholder="+380..."></div>
     </div>
+    <div class="form-group"><label class="form-label">📅 Дата начала занятий</label><input type="date" id="ei_trainingStart" class="form-input"></div>
     <div style="display:flex;gap:.75rem;margin-top:1rem">
       <button class="btn btn-ghost" onclick="closeModal('editInfoModal')">Отмена</button>
       <button class="btn btn-primary" onclick="saveInfo()">Сохранить</button>
@@ -667,6 +679,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
     <div class="form-group"><label class="form-label">Пояс</label><select id="ab_belt" class="form-input"><option value="">Загрузка...</option></select></div>
     <div class="form-group"><label class="form-label">Дата присвоения</label><input type="date" id="ab_date" class="form-input"></div>
     <div class="form-group"><label class="form-label">Заметка</label><textarea id="ab_note" class="form-input" rows="2" placeholder="Результаты аттестации..."></textarea></div>
+    <div id="beltMinDaysInfo" style="display:none;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:.6rem .8rem;font-size:.82rem;color:#0369a1;margin-bottom:.5rem"></div>
     <div style="display:flex;gap:.75rem;margin-top:1rem">
       <button class="btn btn-ghost" onclick="closeModal('addBeltModal')">Отмена</button>
       <button class="btn btn-orange" id="ab_save_btn" onclick="saveBelt()">💾 Сохранить</button>
@@ -763,6 +776,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
 const API2 = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
@@ -829,6 +843,27 @@ async function loadAthlete() {
   const age = birthDate ? Math.floor((Date.now() - birthDate) / 31557600000) : null;
   document.getElementById('heroBirth').textContent = birthDate ? `${birthDate.toLocaleDateString('ru-RU')} (${age} лет)` : '—';
   document.getElementById('heroContact').textContent = athlete.contact_name || '—';
+
+  // Training duration
+  if (athlete.training_start) {
+    const ts = new Date(athlete.training_start);
+    const now = new Date();
+    const diffMs = now - ts;
+    const totalMonths = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 30.44));
+    const years = Math.floor(totalMonths / 12);
+    const months = totalMonths % 12;
+    let dur = '';
+    if (years > 0) dur = years + ' ' + (years === 1 ? 'год' : years < 5 ? 'года' : 'лет');
+    if (months > 0) dur += (dur ? ' ' : '') + months + ' ' + (months === 1 ? 'месяц' : months < 5 ? 'месяца' : 'месяцев');
+    if (!dur) dur = 'меньше месяца';
+    document.getElementById('heroTraining').textContent = 'Тренируется ' + dur;
+    document.getElementById('heroTrainingChip').style.display = 'flex';
+    const tsStr = ts.toLocaleDateString('ru-RU');
+    document.getElementById('infoTrainingStart').textContent = tsStr + ' (' + (dur) + ')';
+  } else {
+    document.getElementById('heroTrainingChip').style.display = 'none';
+    document.getElementById('infoTrainingStart').textContent = '—';
+  }
   document.getElementById('heroWeight').textContent = athlete.weight_kg ? `${athlete.weight_kg} кг` : '—';
   document.getElementById('heroHeight').textContent = athlete.height_cm ? `${athlete.height_cm} см` : '—';
 
@@ -854,6 +889,7 @@ async function loadAthlete() {
   document.getElementById('ei_birthDate').value = athlete.birth_date ? athlete.birth_date.split('T')[0] : '';
   document.getElementById('ei_contactName').value = athlete.contact_name || '';
   document.getElementById('ei_contactPhone').value = athlete.contact_phone || '';
+  document.getElementById('ei_trainingStart').value = athlete.training_start ? athlete.training_start.split('T')[0] : '';
   document.getElementById('ep_weight').value = athlete.weight_kg || '';
   document.getElementById('ep_height').value = athlete.height_cm || '';
   document.getElementById('ep_weightCat').value = athlete.weight_category || '';
@@ -950,7 +986,19 @@ async function loadBelts() {
   const d = await r.json();
   allBelts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
   // Populate select
-  document.getElementById('ab_belt').innerHTML = allBelts.map(b => `<option value="${b.id}" data-color="${b.color}">${b.name}</option>`).join('');
+  document.getElementById('ab_belt').innerHTML = allBelts.map(b => `<option value="${b.id}" data-color="${b.color}" data-mindays="${b.min_days||0}">${b.name}${b.min_days ? ' (мин. ' + b.min_days + ' дн.)' : ''}</option>`).join('');
+  document.getElementById('ab_belt').onchange = function() {
+    const opt = this.options[this.selectedIndex];
+    const minDays = parseInt(opt.dataset.mindays) || 0;
+    const info = document.getElementById('beltMinDaysInfo');
+    if (minDays > 0) {
+      const mos = Math.round(minDays / 30);
+      info.textContent = `⏱️ Минимальный срок с этим поясом: ${minDays} дней (~${mos} мес.)`;
+      info.style.display = 'block';
+    } else {
+      info.style.display = 'none';
+    }
+  };
 }
 
 async function loadBeltHistory() {
@@ -971,25 +1019,65 @@ async function loadBeltHistory() {
     }
 
     const canEdit = userRole === 'director' || userRole === 'trainer';
-    document.getElementById('beltTimeline').innerHTML = belts.length ? belts.map(b => `
-      <div class="belt-item" style="display:flex;align-items:flex-start;gap:.75rem;padding:.65rem 0;border-bottom:1px solid var(--border)">
-        <div style="width:14px;height:14px;border-radius:50%;background:${b.color||'#888'};flex-shrink:0;margin-top:.2rem"></div>
+    // Sort by date ascending to calculate durations
+    const sortedAsc = [...belts].sort((a,b) => new Date(a.awarded_at) - new Date(b.awarded_at));
+    
+    document.getElementById('beltTimeline').innerHTML = belts.length ? belts.map((b, idx) => {
+      const awardedDate = b.awarded_at ? new Date(b.awarded_at) : null;
+      // Next belt in history (for current belt — until today, for older — until next award)
+      const nextBelt = belts[idx - 1]; // belts are DESC, so idx-1 is more recent
+      const endDate = nextBelt && nextBelt.awarded_at ? new Date(nextBelt.awarded_at) : new Date();
+      
+      // Time with this belt
+      let timeWithBelt = '';
+      if (awardedDate) {
+        const diffDays = Math.floor((endDate - awardedDate) / 86400000);
+        const yrs = Math.floor(diffDays / 365);
+        const mos = Math.floor((diffDays % 365) / 30);
+        const parts = [];
+        if (yrs > 0) parts.push(yrs + ' ' + (yrs===1?'год':yrs<5?'года':'лет'));
+        if (mos > 0) parts.push(mos + ' ' + (mos===1?'месяц':mos<5?'месяца':'месяцев'));
+        timeWithBelt = parts.length ? parts.join(' ') : 'меньше месяца';
+      }
+
+      // Time until next (only for current/latest belt)
+      const isLatest = idx === 0;
+      let nextInfo = '';
+      if (isLatest && b.min_days > 0 && awardedDate) {
+        const daysWith = Math.floor((new Date() - awardedDate) / 86400000);
+        const daysLeft = b.min_days - daysWith;
+        if (daysLeft > 0) {
+          const mLeft = Math.ceil(daysLeft / 30);
+          nextInfo = `<div style="margin-top:.3rem;font-size:.78rem;background:#fef3c7;color:#92400e;padding:.25rem .5rem;border-radius:6px;display:inline-block">⏳ До следующего пояса: ещё ${daysLeft} дн. (~${mLeft} мес.)</div>`;
+        } else {
+          nextInfo = `<div style="margin-top:.3rem;font-size:.78rem;background:#d1fae5;color:#065f46;padding:.25rem .5rem;border-radius:6px;display:inline-block">✅ Можно сдавать на следующий пояс!</div>`;
+        }
+      }
+
+      return `
+      <div class="belt-item" style="display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--border)">
+        <div style="width:16px;height:16px;border-radius:50%;background:${b.color||'#888'};flex-shrink:0;margin-top:.15rem;box-shadow:0 0 0 3px ${b.color||'#888'}33"></div>
         <div style="flex:1">
-          <div style="font-weight:600;font-size:.9rem">${b.belt_name || b.name || '—'}</div>
-          <div style="font-size:.8rem;color:var(--muted);margin-top:.15rem">
-            📅 ${b.awarded_at ? new Date(b.awarded_at).toLocaleDateString('ru-RU') : '—'}
+          <div style="font-weight:700;font-size:.95rem">${b.belt_name || b.name || '—'}</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:.2rem">
+            📅 ${awardedDate ? awardedDate.toLocaleDateString('ru-RU') : '—'}
             ${b.awarded_by_name ? '· 👤 ' + b.awarded_by_name : ''}
             ${b.notes ? '· <em>' + b.notes + '</em>' : ''}
           </div>
+          <div style="font-size:.8rem;margin-top:.25rem">
+            🕐 С этим поясом: <strong>${timeWithBelt}</strong>
+            ${b.min_days ? ` · минимум ${b.min_days} дн.` : ''}
+          </div>
+          ${nextInfo}
         </div>
         ${canEdit ? `<div style="display:flex;gap:.4rem;flex-shrink:0">
           <button onclick="editBelt(${b.id}, ${b.belt_id}, '${b.awarded_at ? b.awarded_at.split('T')[0] : ''}', '${(b.notes||'').replace(/'/g,"\'")}')"
-            style="background:none;border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem" title="Редактировать">✏️</button>
+            style="background:none;border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem">✏️</button>
           <button onclick="deleteBelt(${b.id})"
-            style="background:none;border:1px solid #ffcdd2;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;color:#c62828" title="Удалить">🗑️</button>
+            style="background:none;border:1px solid #ffcdd2;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;color:#c62828">🗑️</button>
         </div>` : ''}
-      </div>
-    `).join('') : '<p style="color:var(--muted)">История поясов пуста</p>';
+      </div>`;
+    }).join('') : '<p style="color:var(--muted)">История поясов пуста</p>';
   } catch(e) { console.warn('Belt history:', e); }
 }
 
@@ -1595,6 +1683,102 @@ async function registerForEvent(eventId) {
 
 
 // ============================
+// PHYSICAL CHARTS
+// ============================
+let physChartInstance = null;
+let physChartMode = 'weight';
+
+function switchPhysChart(mode) {
+  physChartMode = mode;
+  document.getElementById('chartBtnWeight').className = mode === 'weight' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-ghost';
+  document.getElementById('chartBtnHeight').className = mode === 'height' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-ghost';
+  renderPhysChart();
+}
+
+function renderPhysChart() {
+  // Build history from attendance dates + current values
+  // Use athlete_extended history if available, otherwise show current point
+  const canvas = document.getElementById('physChartCanvas');
+  const emptyEl = document.getElementById('physChartEmpty');
+  
+  // Collect data points from physHistory (loaded separately) or fallback to single point
+  const history = window._physHistory || [];
+  const dataPoints = history.filter(h => physChartMode === 'weight' ? h.weight_kg : h.height_cm)
+    .map(h => ({ x: h.recorded_at ? h.recorded_at.split('T')[0] : h.date, y: physChartMode === 'weight' ? parseFloat(h.weight_kg) : parseInt(h.height_cm) }))
+    .sort((a,b) => new Date(a.x) - new Date(b.x));
+
+  // Add current value as latest point if not in history
+  if (athlete) {
+    const val = physChartMode === 'weight' ? athlete.weight_kg : athlete.height_cm;
+    if (val) {
+      const today = new Date().toISOString().split('T')[0];
+      if (!dataPoints.length || dataPoints[dataPoints.length-1].x !== today) {
+        dataPoints.push({ x: today, y: parseFloat(val) });
+      }
+    }
+  }
+
+  if (dataPoints.length < 1) {
+    canvas.style.display = 'none';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  canvas.style.display = 'block';
+  emptyEl.style.display = 'none';
+
+  if (physChartInstance) physChartInstance.destroy();
+
+  const label = physChartMode === 'weight' ? 'Вес (кг)' : 'Рост (см)';
+  const color = physChartMode === 'weight' ? '#f97316' : '#2563eb';
+
+  physChartInstance = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: dataPoints.map(p => {
+        const d = new Date(p.x);
+        return d.toLocaleDateString('ru-RU', {day:'2-digit', month:'short', year:'2-digit'});
+      }),
+      datasets: [{
+        label,
+        data: dataPoints.map(p => p.y),
+        borderColor: color,
+        backgroundColor: color + '22',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 5,
+        pointBackgroundColor: color,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          beginAtZero: false,
+          ticks: { callback: v => v + (physChartMode === 'weight' ? ' кг' : ' см') }
+        }
+      }
+    }
+  });
+}
+
+function openPhysChartModal() {
+  openModal('physChartModal');
+  // Try load history
+  loadPhysHistory().then(renderPhysChart);
+}
+
+async function loadPhysHistory() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'children_extended', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const hist = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+    window._physHistory = hist.filter(h => h.weight_kg || h.height_cm);
+  } catch(e) { window._physHistory = []; }
+}
+
+// ============================
 // TOAST NOTIFICATIONS
 // ============================
 function showToast(msg, type='info', duration=4000) {
@@ -2067,7 +2251,8 @@ async function saveInfo() {
     id:athleteId, first_name:fn, last_name:ln,
     birth_date: document.getElementById('ei_birthDate').value || null,
     contact_name: document.getElementById('ei_contactName').value,
-    contact_phone: document.getElementById('ei_contactPhone').value
+    contact_phone: document.getElementById('ei_contactPhone').value,
+    training_start: document.getElementById('ei_trainingStart').value || null
   });
   closeModal('editInfoModal');
   await loadAthlete();
@@ -2236,5 +2421,18 @@ init();
     </div>
   </div>
 </div>
+<div class="modal" id="physChartModal">
+  <div class="modal-box" style="max-width:720px;width:95vw">
+    <button class="modal-close" onclick="closeModal('physChartModal')">×</button>
+    <h2 class="modal-title">📊 Динамика веса и роста</h2>
+    <div style="display:flex;gap:.75rem;margin-bottom:1rem">
+      <button class="btn btn-sm btn-primary" onclick="switchPhysChart('weight')" id="chartBtnWeight">⚖️ Вес</button>
+      <button class="btn btn-sm btn-ghost" onclick="switchPhysChart('height')" id="chartBtnHeight">📏 Рост</button>
+    </div>
+    <canvas id="physChartCanvas" height="260"></canvas>
+    <p id="physChartEmpty" style="display:none;text-align:center;color:var(--muted);padding:2rem">Данных пока нет. Добавляйте физические данные — они сохраняются в историю автоматически.</p>
+  </div>
+</div>
+
 </body>
 </html>
