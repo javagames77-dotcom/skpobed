@@ -187,7 +187,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="tabs">
 <button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
-<button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
+<button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры3</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
 <button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
 <button class="tab" onclick="switchTab('events')">📅 Мероприятия</button>
@@ -1275,10 +1275,13 @@ let _chatLastCount = 0;
 let _chatInited = false;
 
 async function initChat() {
-  if (_chatInited) { refreshChatContacts(); return; }
+  if (_chatInited) return;
   _chatInited = true;
   await refreshChatContacts();
-  _chatInterval = setInterval(refreshChatContacts, 12000);
+  // Обновляем только активный чат, не весь список
+  _chatInterval = setInterval(() => {
+    if (_chatActiveId) loadChatMessages(_chatActiveId, false);
+  }, 8000);
 }
 
 async function refreshChatContacts() {
@@ -1290,21 +1293,15 @@ async function refreshChatContacts() {
     const athletes = Array.isArray(d) ? d : (d.merged || []);
 
     // Загружаем все сообщения одним запросом для счётчиков
-    let allMsgs = [];
-    try {
-      const mr = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({token, resource:'messages', action:'list_all', data:{limit:500}})});
-      const mt = await mr.text();
-      const md = mt ? JSON.parse(mt) : [];
-      allMsgs = Array.isArray(md) ? md : (md.merged || []);
-    } catch(e) {}
+    // Сохраняем данные о сообщениях из предыдущего состояния
+    const prevMap = {};
+    _chatContacts.forEach(c => { prevMap[c.id] = {_lastMsg: c._lastMsg, _unread: c._unread}; });
 
-    _chatContacts = athletes.map(a => {
-      const cm = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
-      const last = cm[cm.length - 1] || (_chatContacts.find(c=>c.id===a.id)?._lastMsg) || null;
-      const unread = cm.filter(m => !m.is_read && m.from_user_id !== user.id).length;
-      return {...a, _lastMsg: last, _unread: unread};
-    });
+    _chatContacts = athletes.map(a => ({
+      ...a,
+      _lastMsg: prevMap[a.id]?._lastMsg || null,
+      _unread:  prevMap[a.id]?._unread  || 0
+    }));
 
     const totalUnread = _chatContacts.reduce((s, c) => s + (c._unread || 0), 0);
     const badge = document.getElementById('dirChatUnread');
@@ -1409,16 +1406,15 @@ async function loadChatMessages(childId, scrollDown) {
     if (scrollDown || wasAtBottom || msgs.length !== _chatLastCount) container.scrollTop = container.scrollHeight;
     _chatLastCount = msgs.length;
 
-    // Обновляем превью и счётчик в сайдбаре
+    // Обновляем данные контакта и бейдж таба — БЕЗ перерисовки списка
     const contact = _chatContacts.find(c => c.id === childId);
     if (contact) {
-      const last = msgs[msgs.length - 1];
-      contact._lastMsg = last;
-      const unreadCount = msgs.filter(m => !m.is_read && m.from_user_id !== user.id).length;
-      contact._unread = unreadCount;
-      _chatFilteredContacts = [..._chatContacts];
-      renderChatContacts();
+      contact._lastMsg = msgs[msgs.length - 1] || null;
+      contact._unread = 0; // обнуляем для открытого чата
     }
+    const totalUnread = _chatContacts.reduce((s, c) => s + (c._unread || 0), 0);
+    const badge = document.getElementById('dirChatUnread');
+    if (badge) { badge.textContent = totalUnread || ''; badge.style.display = totalUnread ? '' : 'none'; }
 
     // Помечаем прочитанными
     const unread = msgs.filter(m => !m.is_read && m.from_user_id !== user.id).length;
