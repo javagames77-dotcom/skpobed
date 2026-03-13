@@ -479,6 +479,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const API2='https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
 const CLOUDINARY_CLOUD='dzxvshxvk';
 const CLOUDINARY_UPLOAD_PRESET='ml_default';
 const FACEPP_KEY='ZdR2xNAbSgwc93z8TZ2h31CVq5Pr4UES';
@@ -998,7 +999,8 @@ async function refreshTrainerContacts() {
   try {
     const r = await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({token, resource:"children", action:"list"})});
-    const d = await r.json();
+    const text = await r.text();
+    const d = text ? JSON.parse(text) : [];
     const athletes = Array.isArray(d) ? d : (d.merged || []);
 
     const prevMap = {};
@@ -1055,7 +1057,7 @@ function openTrainerChat(id, name) {
 
 async function loadTrainerMsgs(childId, scrollDown) {
   try {
-    const r = await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+    const r = await fetch(API2, {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({token, resource:"messages", action:"list", data:{child_id: childId}})});
     const text = await r.text();
     const d = text ? JSON.parse(text) : [];
@@ -1091,7 +1093,7 @@ async function loadTrainerMsgs(childId, scrollDown) {
     if (scrollDown || wasBottom || msgs.length !== _tChatLastCount) container.scrollTop = container.scrollHeight;
     _tChatLastCount = msgs.length;
     const unread = msgs.filter(m => !m.is_read && m.from_user_id !== user.id).length;
-    if (unread > 0) fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+    if (unread > 0) fetch(API2, {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({token, resource:"messages", action:"read", data:{child_id: childId}})});
   } catch(e) { console.error(e); }
 }
@@ -1134,7 +1136,7 @@ async function sendTrainerMsg() {
       clearTrainerAttach();
     } catch(e) { alert("Ошибка загрузки файла"); return; }
   }
-  await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+  await fetch(API2, {method:"POST", headers:{"Content-Type":"application/json"},
     body: JSON.stringify({token, resource:"messages", action:"create",
       data:{child_id:_tChatActiveId, text:text||"", file_url, from_user_id:user.id}})});
   await loadTrainerMsgs(_tChatActiveId, true);
@@ -1153,7 +1155,7 @@ async function sendTrainerBroadcast() {
   try {
     let sent = 0;
     for (const a of _tChatContacts) {
-      await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"},
+      await fetch(API2, {method:"POST", headers:{"Content-Type":"application/json"},
         body: JSON.stringify({token, resource:"messages", action:"create",
           data:{child_id:a.id, text, from_user_id:user.id}})});
       sent++;
