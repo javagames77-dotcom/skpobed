@@ -1785,9 +1785,22 @@ async function loadPhysHistory() {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'children_extended', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    const hist = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+    console.log('loadPhysHistory raw:', JSON.stringify(d).substring(0,500));
+    // Пробуем все варианты структуры ответа
+    let hist = [];
+    if (Array.isArray(d)) hist = d;
+    else if (Array.isArray(d.merged)) hist = d.merged;
+    else if (Array.isArray(d.data)) hist = d.data;
+    else if (d && typeof d === 'object') {
+      // Может быть один объект
+      const vals = Object.values(d);
+      const arr = vals.find(v => Array.isArray(v));
+      if (arr) hist = arr;
+    }
+    console.log('loadPhysHistory parsed:', hist.length, 'records', hist[0]);
     window._physHistory = hist.filter(h => h.weight_kg || h.height_cm);
-  } catch(e) { window._physHistory = []; }
+    console.log('_physHistory after filter:', window._physHistory.length);
+  } catch(e) { console.error('loadPhysHistory error:', e); window._physHistory = []; }
 }
 
 // ============================
