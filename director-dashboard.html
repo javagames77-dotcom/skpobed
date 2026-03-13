@@ -187,7 +187,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="container">
 <div class="tabs">
 <button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
-<button class="tab" onclick="switchTab('groups')">👥 Группы1</button>
+<button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
 <button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
@@ -1284,9 +1284,10 @@ async function initChat() {
 
 async function refreshChatContacts() {
   try {
-    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'children', action:'list'})});
-    const d = await r.json();
+    const text = await r.text();
+    const d = text ? JSON.parse(text) : [];
     const athletes = Array.isArray(d) ? d : (d.merged || []);
 
     // Сохраняем _lastMsg и _unread из предыдущего состояния если есть
