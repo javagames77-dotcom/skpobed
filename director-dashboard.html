@@ -133,7 +133,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .chat-contact-name{font-size:.83rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1a1a2e}
 .chat-contact-prev{font-size:.73rem;color:#9a9eb5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.1rem}
 .chat-cbadge{min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:9px;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0}
-.chat-main{flex:1;display:flex;flex-direction:column;min-width:0;background:#fff}
+.chat-main{flex:1;display:flex;flex-direction:column;min-width:0;background:#fff;overflow:hidden}
 .chat-main-hdr{padding:.75rem 1rem;border-bottom:1px solid var(--b,#e5e7eb);font-weight:700;font-size:.92rem;display:flex;align-items:center;gap:.6rem;background:#fff}
 .chat-messages{flex:1;overflow-y:auto;padding:1rem .75rem;display:flex;flex-direction:column;gap:.35rem;background:#f9fafb}
 .msg{max-width:72%;display:flex;flex-direction:column}
@@ -143,7 +143,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .msg-bubble{padding:.6rem .9rem;border-radius:18px;font-size:.88rem;line-height:1.5;word-break:break-word}
 .msg.mine .msg-bubble{background:linear-gradient(135deg,var(--p,#4361ee),#5a72f0);color:#fff;border-bottom-right-radius:4px;box-shadow:0 2px 8px rgba(67,97,238,.3)}
 .msg.theirs .msg-bubble{background:#fff;color:#1a1a2e;border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.08);border:1px solid #eff0f6}
-.msg-bubble img{max-width:220px;border-radius:10px;display:block;cursor:pointer;margin-top:.25rem}
+.msg-bubble img{max-width:220px;width:100%;border-radius:10px;display:block;cursor:pointer;margin-top:.25rem}
 .msg-file-link{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .55rem;background:rgba(255,255,255,.2);border-radius:6px;font-size:.78rem;text-decoration:none;color:inherit;margin-top:.2rem}
 .msg.theirs .msg-file-link{background:rgba(67,97,238,.08);color:var(--p,#4361ee)}
 .msg-meta{display:flex;align-items:center;gap:.3rem;margin-top:.15rem;padding:0 .25rem}
@@ -185,7 +185,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы2</button>
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
@@ -1289,15 +1289,22 @@ async function refreshChatContacts() {
     const d = text ? JSON.parse(text) : [];
     const athletes = Array.isArray(d) ? d : (d.merged || []);
 
-    // Сохраняем _lastMsg и _unread из предыдущего состояния если есть
-    const prevMap = {};
-    _chatContacts.forEach(c => { prevMap[c.id] = {_lastMsg: c._lastMsg, _unread: c._unread}; });
+    // Загружаем все сообщения одним запросом для счётчиков
+    let allMsgs = [];
+    try {
+      const mr = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token, resource:'messages', action:'list_all', data:{limit:500}})});
+      const mt = await mr.text();
+      const md = mt ? JSON.parse(mt) : [];
+      allMsgs = Array.isArray(md) ? md : (md.merged || []);
+    } catch(e) {}
 
-    _chatContacts = athletes.map(a => ({
-      ...a,
-      _lastMsg: prevMap[a.id]?._lastMsg || null,
-      _unread:  prevMap[a.id]?._unread  || 0
-    }));
+    _chatContacts = athletes.map(a => {
+      const cm = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
+      const last = cm[cm.length - 1] || (_chatContacts.find(c=>c.id===a.id)?._lastMsg) || null;
+      const unread = cm.filter(m => !m.is_read && m.from_user_id !== user.id).length;
+      return {...a, _lastMsg: last, _unread: unread};
+    });
 
     const totalUnread = _chatContacts.reduce((s, c) => s + (c._unread || 0), 0);
     const badge = document.getElementById('dirChatUnread');
