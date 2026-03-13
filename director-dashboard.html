@@ -157,7 +157,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы3</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
@@ -1363,7 +1363,7 @@ async function loadChatMessages(childId, scrollDown) {
 
     let lastDate = '';
     container.innerHTML = msgs.map(m => {
-      const isMine = m.from_user_id === user.id;
+      const isMine = (m.to_user_id !== -1);
       const dt = new Date(m.created_at);
       const dk = dt.toLocaleDateString('ru-RU');
       const time = dt.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
@@ -1382,7 +1382,7 @@ async function loadChatMessages(childId, scrollDown) {
           ? `${m.text?'<div>'+m.text+'</div>':''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy">`
           : `${m.text?'<div style="margin-bottom:.3rem">'+m.text+'</div>':''}<a href="${m.file_url}" target="_blank" class="msg-file-link">📎 ${m.file_url.split('/').pop().split('?')[0]}</a>`;
       } else { bubble = m.text || ''; }
-      const sender = !isMine ? `<div class="msg-sender">${m.sender_name||'Спортсмен'}</div>` : '';
+      const sender = !isMine ? `<div class="msg-sender">${document.getElementById('chatMainHdr').textContent||'Спортсмен'}</div>` : '';
       const rm = isMine ? `<span class="msg-read">${m.is_read?'✓✓':'✓'}</span>` : '';
       return `${sep}<div class="msg ${isMine?'mine':'theirs'}">${sender}<div class="msg-bubble">${bubble}</div><div class="msg-meta"><span class="msg-time">${time}</span>${rm}</div></div>`;
     }).join('');
