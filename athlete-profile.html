@@ -312,7 +312,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <div class="tabs-bar">
     <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
-    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения1</button>
+    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
     <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
     <button class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
     <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
@@ -1934,12 +1934,10 @@ async function loadDocuments() {
     const docs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     const icons = {birth_cert:'📜', medical:'🏥', other:'📎'};
     document.getElementById('docGrid').innerHTML = docs.map(doc => `
-      <div class="doc-card filled">
-        <div onclick="doc.file_url && window.open('${doc.file_url}','_blank')" style="cursor:pointer;flex:1">
-          <div class="doc-icon">${icons[doc.doc_type]||'📎'}</div>
-          <div class="doc-name">${doc.title || doc.doc_type || 'Документ'}</div>
-          <div class="doc-date">${doc.created_at ? new Date(doc.created_at).toLocaleDateString('ru-RU') : ''}</div>
-        </div>
+      <div class="doc-card filled" onclick="window.open('${doc.file_url}','_blank')" style="cursor:pointer">
+        <div class="doc-icon">${icons[doc.doc_type]||'📎'}</div>
+        <div class="doc-name">${doc.title || doc.doc_type || 'Документ'}</div>
+        <div class="doc-date">${doc.created_at ? new Date(doc.created_at).toLocaleDateString('ru-RU') : ''}</div>
       </div>
     `).join('');
   } catch(e) {}
