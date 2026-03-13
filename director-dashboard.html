@@ -189,7 +189,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
-<button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены1</button>
+<button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
 <button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
 <button class="tab" onclick="switchTab('events')">📅 Мероприятия</button>
 <button class="tab" onclick="switchTab('news')">🔍 AI-Новости</button>
@@ -1360,7 +1360,8 @@ async function loadChatMessages(childId, scrollDown) {
   try {
     const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'messages', action:'list', data:{child_id: childId}})});
-    const d = await r.json();
+    const text = await r.text();
+    const d = text ? JSON.parse(text) : [];
     const msgs = Array.isArray(d) ? d : (d.merged || []);
     const container = document.getElementById('chatMsgList');
     if (!container) return;
