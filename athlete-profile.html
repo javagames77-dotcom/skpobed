@@ -805,7 +805,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 <script>
 const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
 const API2 = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
-const ATHLETE_RESOURCES = new Set(['absence_notifications','athlete_belts','athlete_documents','athlete_injuries','athlete_goals','athlete_competitions','messages','notifications','notification_reads','club_rating','children_profile','children_extended']);
+const ATHLETE_RESOURCES = new Set(['absence_notifications','athlete_belts','athlete_documents','athlete_injuries','athlete_goals','athlete_competitions','messages','notifications','notification_reads','club_rating','children_profile','children_extended','attendance','children']);
 const token = localStorage.getItem('token');
 const athleteId = parseInt(new URLSearchParams(location.search).get('id'));
 const userRole = localStorage.getItem('role') || 'director';
@@ -949,11 +949,12 @@ async function loadAthlete() {
 // GROUPS
 // ============================
 async function loadGroups() {
-  // Load all groups for club (for edit modal checkboxes)
-  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+  // Load all groups — use API2 for athlete/trainer (Main API filters by club_id)
+  const groupsAPI = (userRole === 'athlete' || userRole === 'trainer') ? API2 : API;
+  const r = await fetch(groupsAPI, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'groups', action:'list'})});
   const d = await r.json();
-  allGroups = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+  allGroups = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : [])).filter(g => g && g.id && g.name);
 
   // athlete.groups comes from children_profile — ALL groups of this athlete
   let rawGroups = athlete.groups;
@@ -1023,10 +1024,11 @@ async function saveGroups() {
 // BELT HISTORY
 // ============================
 async function loadBelts() {
-  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+  const beltsAPI = (userRole === 'athlete' || userRole === 'trainer') ? API2 : API;
+  const r = await fetch(beltsAPI, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'belt_grades', action:'list'})});
   const d = await r.json();
-  allBelts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+  allBelts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : [])).filter(b => b && b.id && b.name);
   // Populate select
   document.getElementById('ab_belt').innerHTML = allBelts.map(b => `<option value="${b.id}" data-color="${b.color}" data-mindays="${b.min_days||0}">${b.name}${b.min_days ? ' (мин. ' + b.min_days + ' дн.)' : ''}</option>`).join('');
   document.getElementById('ab_belt').onchange = function() {
@@ -2469,11 +2471,15 @@ async function calculateRoutes() {
   }
 
   try {
-    // Load clubs
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'clubs', action:'list'})});
+    // Load clubs — use athlete-api for trainer/athlete (Main API filters by club_id)
+    const clubsAPI = (userRole === 'athlete' || userRole === 'trainer') ? API2 : API;
+    const clubsBody = (userRole === 'athlete' || userRole === 'trainer')
+      ? {token, resource:'clubs', action:'list', data:{child_id: athleteId}}
+      : {token, resource:'clubs', action:'list'};
+    const r = await fetch(clubsAPI, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(clubsBody)});
     const d = await r.json();
-    const clubs = ((Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []))).filter(c => c.address);
+    const clubs = ((Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []))).filter(c => c && c.address);
 
     if (!clubs.length) {
       document.getElementById('travelInfo').innerHTML = '<div style="color:var(--muted);font-size:.85rem">Адрес клуба не указан</div>';
