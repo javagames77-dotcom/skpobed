@@ -782,7 +782,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 <script>
 const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
 const API2 = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
-const ATHLETE_RESOURCES = new Set(['absence_notifications','athlete_belts','athlete_documents','athlete_injuries','athlete_goals','athlete_competitions','messages','notifications','notification_reads','club_rating','children_profile','children_extended']);
+const ATHLETE_RESOURCES = new Set(['absence_notifications','athlete_belts','athlete_documents','athlete_injuries','athlete_goals','athlete_competitions','messages','notifications','notification_reads','club_rating','children_profile','children_extended','belt_grades','groups','clubs','attendance','children']);
 const token = localStorage.getItem('token');
 const athleteId = parseInt(new URLSearchParams(location.search).get('id'));
 const userRole = localStorage.getItem('role') || 'director';
@@ -917,8 +917,8 @@ async function loadAthlete() {
 // GROUPS
 // ============================
 async function loadGroups() {
-  // Load all groups via athlete-api (works for all roles without club_id filtering)
-  const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+  // Load all groups for club (for edit modal + calendar schedule)
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'groups', action:'list'})});
   const d = await r.json();
   allGroups = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
@@ -988,7 +988,7 @@ async function saveGroups() {
 // BELT HISTORY
 // ============================
 async function loadBelts() {
-  const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'belt_grades', action:'list'})});
   const d = await r.json();
   allBelts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
@@ -2320,11 +2320,11 @@ async function calculateRoutes() {
   }
 
   try {
-    // Load clubs via athlete-api (works for all roles, returns clubs by child's groups)
-    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'clubs', action:'list', data:{child_id: athleteId}})});
+    // Load clubs
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'clubs', action:'list'})});
     const d = await r.json();
-    const clubs = ((Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []))).filter(c => c && c.address);
+    const clubs = ((Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []))).filter(c => c.address);
 
     if (!clubs.length) {
       document.getElementById('travelInfo').innerHTML = '<div style="color:var(--muted);font-size:.85rem">Адрес клуба не указан</div>';
