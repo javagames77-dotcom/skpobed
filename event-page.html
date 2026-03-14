@@ -2,613 +2,3015 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Мероприятие — InSkill Online</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Профиль спортсмена — InSkill</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0;
-  --green:#28a745;--red:#dc3545;--orange:#FF9933;
+:root {
+  --p: #0066CC;
+  --p2: #0052a3;
+  --s: #FF9933;
+  --s2: #e6851a;
+  --d: #0f1923;
+  --l: #f0f4f8;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --green: #22c55e;
+  --red: #ef4444;
+  --purple: #8b5cf6;
+  --text: #334155;
+  --muted: #94a3b8;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--l);color:var(--d)}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); min-height:100vh; }
 
-/* ── HEADER ── */
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05);position:sticky;top:0;z-index:100}
-.header-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:.75rem;font-size:1.4rem;font-weight:700;color:var(--p);text-decoration:none}
-.logo-icon{width:36px;height:36px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
-.logo-bars{display:flex;gap:3px;align-items:flex-end}
-.logo-bar{width:5px;background:#fff;border-radius:2px}
-.logo-bar:nth-child(1){height:10px}
-.logo-bar:nth-child(2){height:16px;background:var(--s)}
-.logo-bar:nth-child(3){height:22px;background:var(--s)}
-.back-btn{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--l);border:1px solid var(--b);border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600;color:var(--d);text-decoration:none}
-.back-btn:hover{background:#e9ecef}
+/* HEADER */
+.header { background:var(--d); padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; box-shadow:0 2px 20px rgba(0,0,0,.3); }
+.logo { font-family:'Unbounded',sans-serif; font-size:1.2rem; color:#fff; text-decoration:none; }
+.logo span { color:var(--s); }
+.btn-back { padding:.5rem 1.2rem; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:8px; color:#fff; text-decoration:none; font-size:.9rem; transition:all .2s; }
+.btn-back:hover { background:rgba(255,255,255,.2); }
 
-/* ── LAYOUT ── */
-.container{max-width:1200px;margin:2rem auto;padding:0 2rem;display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start}
-@media(max-width:900px){.container{grid-template-columns:1fr;padding:0 1rem}}
+/* HERO */
+.hero { background:linear-gradient(135deg, var(--d) 0%, #1a2942 60%, #0d3060 100%); padding:2.5rem 2rem; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; top:-50%; right:-10%; width:500px; height:500px; background:radial-gradient(circle, rgba(0,102,204,.3) 0%, transparent 70%); }
+.hero-inner { max-width:1200px; margin:0 auto; display:flex; gap:2rem; align-items:flex-start; position:relative; }
+.photo-wrap { position:relative; flex-shrink:0; }
+.athlete-photo { width:140px; height:140px; border-radius:50%; object-fit:cover; border:4px solid var(--s); display:block; }
+.photo-btn { position:absolute; bottom:4px; right:4px; width:36px; height:36px; background:var(--s); border:none; border-radius:50%; color:#fff; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .2s; }
+.photo-btn:hover { transform:scale(1.1); }
+.frozen-badge { position:absolute; top:0; left:50%; transform:translateX(-50%); background:#3b82f6; color:#fff; font-size:.65rem; font-weight:700; padding:.2rem .6rem; border-radius:20px; white-space:nowrap; }
+.hero-info { flex:1; }
+.athlete-name { font-family:'Unbounded',sans-serif; font-size:2rem; color:#fff; line-height:1.2; margin-bottom:.5rem; }
+.athlete-meta { display:flex; flex-wrap:wrap; gap:.75rem; margin-bottom:1rem; }
+.meta-chip { display:flex; align-items:center; gap:.4rem; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:.35rem .8rem; font-size:.85rem; color:rgba(255,255,255,.85); }
+.meta-chip .ic { font-size:1rem; }
+.belt-display { display:flex; align-items:center; gap:.75rem; }
+.belt-color { width:60px; height:14px; border-radius:4px; border:2px solid rgba(255,255,255,.3); }
+.belt-name { color:#fff; font-weight:600; font-size:.95rem; }
+.hero-badges { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1rem; }
+.badge-chip { display:flex; align-items:center; gap:.3rem; padding:.3rem .7rem; border-radius:20px; font-size:.75rem; font-weight:600; }
+.badge-chip.gold { background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; }
+.badge-chip.silver { background:linear-gradient(135deg,#94a3b8,#64748b); color:#fff; }
+.badge-chip.blue { background:linear-gradient(135deg,var(--p),var(--p2)); color:#fff; }
+.badge-chip.green { background:linear-gradient(135deg,#22c55e,#16a34a); color:#fff; }
+.badge-chip.purple { background:linear-gradient(135deg,#8b5cf6,#7c3aed); color:#fff; }
 
-/* ── CARDS ── */
-.card{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:hidden}
-.card-header{padding:1.25rem 1.5rem;border-bottom:2px solid var(--l);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-size:1.1rem;font-weight:700;color:var(--d)}
-.card-body{padding:1.5rem}
+.hero-stats { display:flex; gap:1.5rem; margin-top:1.5rem; }
+.hstat { text-align:center; }
+.hstat-val { font-family:'Unbounded',sans-serif; font-size:1.6rem; font-weight:700; color:#fff; }
+.hstat-lbl { font-size:.7rem; color:rgba(255,255,255,.6); text-transform:uppercase; letter-spacing:.05em; margin-top:.2rem; }
 
-/* ── EVENT HERO ── */
-.event-hero{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:2rem;margin-bottom:1.5rem}
-.event-title{font-size:2rem;font-weight:800;color:var(--d);margin-bottom:.5rem;line-height:1.2}
-.event-meta{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem}
-.meta-chip{display:flex;align-items:center;gap:.4rem;padding:.4rem .9rem;border-radius:20px;font-size:.9rem;font-weight:500}
-.meta-chip.date{background:#e3f2fd;color:var(--p)}
-.meta-chip.location{background:#f3e5f5;color:#7b1fa2;cursor:pointer}
-.meta-chip.location:hover{background:#e8d5f0}
-.meta-chip.groups{background:#e8f5e9;color:#2e7d32}
-.event-desc{margin-top:1.25rem;color:#444;line-height:1.7;font-size:.95rem}
+/* MAIN CONTENT */
+.main { max-width:1200px; margin:0 auto; padding:2rem; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+@media(max-width:768px) { .grid-2 { grid-template-columns:1fr; } .hero-inner { flex-direction:column; } .athlete-name { font-size:1.4rem; } }
 
-/* ── COUNTDOWN STRIP ── */
-.countdown-strip{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
-@media(max-width:600px){.countdown-strip{grid-template-columns:1fr}}
-.countdown-card{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem}
-.countdown-icon{font-size:2rem;flex-shrink:0}
-.countdown-info{}
-.countdown-label{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:.25rem}
-.countdown-value{font-size:1.5rem;font-weight:800;color:var(--d);line-height:1}
-.countdown-sub{font-size:.8rem;color:#888;margin-top:.2rem}
-.countdown-value.urgent{color:var(--red)}
-.countdown-value.soon{color:var(--orange)}
-.countdown-value.ok{color:var(--green)}
-.countdown-value.closed{color:var(--red);font-size:1rem}
+/* TABS */
+.tabs-bar { display:flex; gap:.25rem; background:var(--card); border-radius:12px; padding:.4rem; margin-bottom:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,.06); overflow-x:auto; }
+.tab-btn { padding:.6rem 1.1rem; border:none; border-radius:8px; background:transparent; color:var(--muted); font-weight:500; font-size:.85rem; cursor:pointer; white-space:nowrap; transition:all .2s; }
+.tab-btn.active { background:var(--p); color:#fff; }
+.tab-btn:hover:not(.active) { background:var(--l); color:var(--text); }
+.tab-pane { display:none; }
+.tab-pane.active { display:block; }
 
-/* ── MAP ── */
-.map-container{border-radius:12px;overflow:hidden;margin-top:1rem}
-.map-container iframe{display:block;width:100%;height:280px;border:0}
-.no-map{padding:2rem;text-align:center;color:#999;background:var(--l);border-radius:12px;font-size:.9rem}
+/* CARDS */
+.card { background:var(--card); border-radius:14px; padding:1.5rem; box-shadow:0 2px 12px rgba(0,0,0,.06); margin-bottom:1.5rem; }
+.card-title { font-family:'Unbounded',sans-serif; font-size:.9rem; color:var(--p); margin-bottom:1.2rem; display:flex; align-items:center; justify-content:space-between; }
+.card-title-left { display:flex; align-items:center; gap:.5rem; }
 
-/* ── STATS ROW ── */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
-.stat-box{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);padding:1.25rem;text-align:center}
-.stat-num{font-size:1.8rem;font-weight:800;color:var(--p)}
-.stat-label{font-size:.8rem;color:#888;font-weight:600;margin-top:.25rem;text-transform:uppercase}
+/* FORM */
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+.form-row.single { grid-template-columns:1fr; }
+.form-group { margin-bottom:.75rem; }
+.form-label { display:block; font-size:.8rem; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-bottom:.35rem; }
+.form-input { width:100%; padding:.7rem 1rem; border:2px solid var(--border); border-radius:8px; font-size:.95rem; font-family:'Inter',sans-serif; transition:border .2s; }
+.form-input:focus { outline:none; border-color:var(--p); }
+.form-input:disabled { background:#f8fafc; color:var(--muted); }
 
-/* ── REGISTRATIONS TABLE ── */
-.reg-table{width:100%;border-collapse:collapse}
-.reg-table th{padding:.75rem 1rem;text-align:left;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;border-bottom:2px solid var(--b)}
-.reg-table td{padding:.75rem 1rem;border-bottom:1px solid var(--l);vertical-align:middle}
-.reg-table tr:last-child td{border-bottom:none}
-.reg-table tr:hover td{background:#fafbff}
-.athlete-row{display:flex;align-items:center;gap:.75rem}
-.athlete-photo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--b);flex-shrink:0}
-.athlete-name{font-weight:600;font-size:.95rem}
-.athlete-group{font-size:.8rem;color:#888}
-.fee-input{width:90px;padding:.4rem .6rem;border:2px solid var(--b);border-radius:6px;font-size:.9rem;text-align:center;transition:border-color .2s}
-.fee-input:focus{outline:none;border-color:var(--p)}
-.fee-input.changed{border-color:var(--s)}
-.fee-save-btn{padding:.35rem .6rem;background:var(--s);color:#fff;border:none;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;display:none}
-.fee-save-btn.visible{display:inline-block}
-.paid-checkbox{width:20px;height:20px;cursor:pointer;accent-color:var(--green)}
-.paid-label{display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.85rem}
-.paid-label.is-paid{color:var(--green);font-weight:600}
-.paid-label.not-paid{color:#aaa}
-.badge-paid{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:10px;font-size:.75rem;font-weight:600}
-.badge-paid.yes{background:#e8f5e9;color:var(--green)}
-.badge-paid.no{background:#fff3e0;color:#e65100}
+/* BUTTONS */
+.btn { padding:.65rem 1.3rem; border:none; border-radius:8px; font-weight:600; font-size:.9rem; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:.4rem; }
+.btn-primary { background:var(--p); color:#fff; }
+.btn-primary:hover { background:var(--p2); }
+.btn-orange { background:var(--s); color:#fff; }
+.btn-orange:hover { background:var(--s2); }
+.btn-ghost { background:var(--l); color:var(--text); }
+.btn-ghost:hover { background:var(--border); }
+.btn-sm { padding:.4rem .8rem; font-size:.8rem; }
+.btn-red { background:#fee2e2; color:var(--red); }
+.btn-green { background:#dcfce7; color:#16a34a; }
 
-/* ── EMPTY ── */
-.empty-regs{padding:3rem;text-align:center;color:#aaa}
-.empty-regs .big{font-size:3rem;margin-bottom:.5rem}
-.athlete-avatar{width:40px;height:40px;border-radius:50%;background:var(--p);color:#fff;font-size:.85rem;font-weight:700;flex-shrink:0;align-items:center;justify-content:center;text-transform:uppercase;letter-spacing:-.5px}
+/* ATTENDANCE CALENDAR */
+.cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+.cal-nav-btn { background:none; border:1px solid var(--border); border-radius:8px; width:34px; height:34px; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center; }
+.cal-nav-btn:hover { background:var(--l); }
+.cal-month-label { font-family:'Unbounded',sans-serif; font-size:.95rem; color:var(--d); }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.cal-dow { text-align:center; font-size:.7rem; font-weight:700; text-transform:uppercase; color:var(--muted); padding:.3rem 0; }
+.cal-day { aspect-ratio:1; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:.82rem; font-weight:500; cursor:default; position:relative; transition:transform .15s; }
+.cal-day:hover { transform:scale(1.08); z-index:1; }
+.cal-day.empty { background:transparent; }
+.cal-day.present { background:#dcfce7; color:#15803d; border:1px solid #86efac; }
+.cal-day.absent { background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; }
+.cal-day.missing { background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1; }
+.cal-day.absent.explained { background:#fef9c3; color:#92400e; border:1px solid #fde047; }
+.cal-day.upcoming { background:#f1f5f9; color:var(--muted); border:1px dashed var(--border); }
+.cal-day.notif { background:#fef9c3; color:#92400e; border:1px solid #fde047; }
+.cal-day.today { box-shadow:0 0 0 2px var(--p); }
+.cal-legend { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:1rem; font-size:.78rem; }
+.cal-legend-item { display:flex; align-items:center; gap:.4rem; }
+.cal-legend-dot { width:14px; height:14px; border-radius:4px; }
+.cal-tooltip { position:absolute; bottom:110%; left:50%; transform:translateX(-50%); background:var(--d); color:#fff; font-size:.72rem; padding:.35rem .6rem; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:10; display:none; }
+.cal-day:hover .cal-tooltip { display:block; }
+.cal-group-select { display:flex; gap:.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+.cal-group-btn { padding:.35rem .9rem; border-radius:20px; border:1px solid var(--border); background:#fff; font-size:.82rem; cursor:pointer; transition:all .2s; }
+.cal-group-btn.active { background:var(--p); color:#fff; border-color:var(--p); }
 
-/* ── LOADING ── */
-.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;height:1.2em}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* BELT TIMELINE */
+.belt-timeline { display:flex; flex-direction:column; gap:.75rem; }
+.belt-item { display:flex; align-items:center; gap:1rem; padding:.75rem; background:var(--l); border-radius:10px; }
+.belt-dot { width:36px; height:36px; border-radius:50%; flex-shrink:0; border:2px solid rgba(0,0,0,.1); }
+.belt-info { flex:1; }
+.belt-info-name { font-weight:600; font-size:.95rem; }
+.belt-info-date { font-size:.8rem; color:var(--muted); }
 
-/* ── SIDEBAR INFO ── */
-.info-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--l)}
-.info-row:last-child{border-bottom:none}
-.info-key{font-size:.85rem;color:#888;font-weight:500}
-.info-val{font-size:.9rem;font-weight:600;color:var(--d);text-align:right;max-width:60%}
-.deadline-closed{color:var(--red)}
-.deadline-soon{color:var(--orange)}
-.deadline-ok{color:var(--green)}
+/* COMPETITION CARDS */
+.comp-card { border:1px solid var(--border); border-radius:10px; padding:1rem; margin-bottom:.75rem; transition:all .2s; }
+.comp-card:hover { border-color:var(--p); box-shadow:0 2px 12px rgba(0,102,204,.1); }
+.comp-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:.5rem; }
+.comp-title { font-weight:600; font-size:.95rem; color:var(--d); }
+.comp-date { font-size:.8rem; color:var(--muted); }
+.comp-meta { display:flex; flex-wrap:wrap; gap:.5rem; }
+.comp-tag { font-size:.75rem; padding:.2rem .6rem; border-radius:6px; font-weight:500; }
+.comp-tag.win { background:#dcfce7; color:#16a34a; }
+.comp-tag.loss { background:#fee2e2; color:var(--red); }
+.comp-tag.cat { background:#ede9fe; color:#7c3aed; }
+.comp-tag.place { background:#fef3c7; color:#d97706; }
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:2rem;right:2rem;padding:.75rem 1.25rem;background:#333;color:#fff;border-radius:10px;font-size:.9rem;font-weight:500;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
-.toast.show{opacity:1;transform:translateY(0)}
-.toast.success{background:var(--green)}
-.toast.error{background:var(--red)}
+/* UPCOMING events */
+.upcoming-card { border:2px solid var(--s); border-radius:12px; padding:1.2rem; margin-bottom:.75rem; background:linear-gradient(135deg,#fff 0%,#fff9f0 100%); }
+.upcoming-title { font-weight:700; font-size:1rem; color:var(--d); margin-bottom:.4rem; }
+.upcoming-meta { font-size:.82rem; color:var(--muted); margin-bottom:.75rem; }
+.upcoming-actions { display:flex; gap:.5rem; }
+
+/* CHAT */
+.chat-wrap { display:flex; flex-direction:column; height:400px; }
+.chat-messages { flex:1; overflow-y:auto; padding:.5rem; display:flex; flex-direction:column; gap:.75rem; }
+.msg { max-width:75%; }
+.msg.mine { align-self:flex-end; }
+.msg.theirs { align-self:flex-start; }
+.msg-bubble { padding:.75rem 1rem; border-radius:16px; font-size:.9rem; line-height:1.5; }
+.msg.mine .msg-bubble { background:var(--p); color:#fff; border-bottom-right-radius:4px; }
+.msg.theirs .msg-bubble { background:var(--l); color:var(--d); border-bottom-left-radius:4px; }
+.msg-time { font-size:.7rem; color:var(--muted); margin-top:.25rem; text-align:right; }
+.chat-input-row { display:flex; gap:.75rem; padding:.75rem 0 0; border-top:1px solid var(--border); }
+.chat-input { flex:1; padding:.7rem 1rem; border:2px solid var(--border); border-radius:10px; font-size:.9rem; font-family:'Inter',sans-serif; }
+.chat-input:focus { outline:none; border-color:var(--p); }
+
+/* DOCUMENTS */
+.doc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:1rem; }
+.doc-card { border:2px dashed var(--border); border-radius:12px; padding:1.2rem; text-align:center; cursor:pointer; transition:all .2s; position:relative; }
+.doc-card:hover { border-color:var(--p); background:#f0f7ff; }
+.doc-card.filled { border-style:solid; border-color:var(--border); }
+.doc-icon { font-size:2rem; margin-bottom:.5rem; }
+.doc-name { font-size:.8rem; font-weight:600; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; }
+.doc-date { font-size:.7rem; color:var(--muted); margin-top:.2rem; }
+.doc-delete { position:absolute; top:6px; right:6px; background:none; border:none; cursor:pointer; font-size:.9rem; color:var(--muted); opacity:0; transition:opacity .2s; padding:2px 4px; border-radius:4px; }
+.doc-card:hover .doc-delete { opacity:1; }
+.doc-delete:hover { color:var(--red); background:#fee2e2; }
+
+/* INJURY */
+.injury-item { border-left:3px solid var(--red); padding:.75rem 1rem; background:#fff5f5; border-radius:0 10px 10px 0; margin-bottom:.75rem; }
+.injury-title { font-weight:600; font-size:.95rem; color:var(--d); }
+.injury-dates { font-size:.8rem; color:var(--muted); margin:.25rem 0; }
+.injury-desc { font-size:.85rem; color:var(--text); }
+
+/* GOALS */
+.goal-item { display:flex; align-items:flex-start; gap:.75rem; padding:.75rem; border:1px solid var(--border); border-radius:10px; margin-bottom:.6rem; }
+.goal-check { width:22px; height:22px; border-radius:50%; border:2px solid var(--border); flex-shrink:0; cursor:pointer; display:flex; align-items:center; justify-content:center; margin-top:.1rem; }
+.goal-check.done { background:var(--green); border-color:var(--green); color:#fff; }
+.goal-text { flex:1; }
+.goal-name { font-size:.9rem; font-weight:500; }
+.goal-date { font-size:.75rem; color:var(--muted); }
+
+/* MEDICAL */
+.med-status { display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .9rem; border-radius:20px; font-weight:600; font-size:.85rem; }
+.med-status.ok { background:#dcfce7; color:#16a34a; }
+.med-status.warn { background:#fef9c3; color:#ca8a04; }
+.med-status.expired { background:#fee2e2; color:var(--red); }
+
+/* ADDRESS */
+.address-block { background:var(--l); border-radius:10px; padding:1rem; }
+.address-text { font-size:.95rem; margin-bottom:.5rem; }
+.travel-info { display:flex; gap:1rem; flex-wrap:wrap; }
+.travel-chip { display:flex; align-items:center; gap:.4rem; font-size:.85rem; font-weight:500; padding:.35rem .8rem; background:#fff; border:1px solid var(--border); border-radius:8px; }
+
+/* MODAL */
+.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:200; align-items:center; justify-content:center; }
+.modal.active { display:flex; }
+.modal-box { background:#fff; border-radius:16px; max-width:560px; width:94%; max-height:90vh; overflow-y:auto; padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,.25); }
+.modal-title { font-family:'Unbounded',sans-serif; font-size:1.1rem; color:var(--p); margin-bottom:1.5rem; }
+.modal-close { float:right; background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--muted); }
+
+/* PHOTO MODAL */
+.photo-modal-img { width:100%; max-height:70vh; object-fit:contain; border-radius:12px; margin-bottom:1rem; }
+
+/* NOTIFY banner */
+.notify-banner { background:linear-gradient(135deg,#1e3a5f,#0d3060); border:1px solid rgba(255,200,50,.3); border-radius:14px; padding:1.5rem; margin-bottom:1.5rem; color:#fff; display:none; }
+.notify-banner h3 { font-family:'Unbounded',sans-serif; font-size:1rem; color:var(--s); margin-bottom:.5rem; }
+.notify-banner p { font-size:.9rem; opacity:.9; margin-bottom:1rem; }
+
+.pagination { display:flex; gap:.5rem; justify-content:center; margin-top:1rem; }
+.page-btn { width:36px; height:36px; border-radius:8px; border:1px solid var(--border); background:#fff; cursor:pointer; font-size:.85rem; font-weight:500; }
+.page-btn.active { background:var(--p); color:#fff; border-color:var(--p); }
+
+.search-row { display:flex; gap:.75rem; margin-bottom:1rem; }
+.search-input { flex:1; padding:.65rem 1rem; border:2px solid var(--border); border-radius:8px; font-size:.9rem; }
+.search-input:focus { outline:none; border-color:var(--p); }
+
+.smoothcomp-block { background:linear-gradient(135deg,#1a1a2e,#16213e); border-radius:12px; padding:1.2rem; color:#fff; }
+.smoothcomp-block h4 { font-weight:600; margin-bottom:.5rem; color:#a78bfa; }
+.platform-row { display:flex; gap:.75rem; align-items:center; margin-bottom:.75rem; }
+.platform-input { flex:1; padding:.6rem .9rem; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:8px; color:#fff; font-size:.85rem; }
+.platform-input::placeholder { color:rgba(255,255,255,.4); }
+.platform-tag { font-size:.75rem; font-weight:700; padding:.2rem .6rem; border-radius:6px; }
+.platform-tag.sc { background:#7c3aed; }
+.platform-tag.ajp { background:#0369a1; }
+
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
+.stat-box { background:var(--l); border-radius:12px; padding:1rem; text-align:center; }
+.stat-box .val { font-family:'Unbounded',sans-serif; font-size:1.6rem; font-weight:700; color:var(--p); }
+.stat-box .lbl { font-size:.72rem; color:var(--muted); text-transform:uppercase; margin-top:.25rem; }
+.stat-box.win-box .val { color:var(--green); }
+.stat-box.loss-box .val { color:var(--red); }
+
+.section-divider { font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:.5rem 0; }
+
+.frozen-overlay { opacity:.6; pointer-events:none; }
+.frozen-notice { background:#dbeafe; border:1px solid #93c5fd; border-radius:10px; padding:1rem; margin-bottom:1rem; color:#1d4ed8; font-size:.9rem; }
+
+.qr-wrap { display:flex; flex-direction:column; align-items:center; gap:1rem; padding:1rem; }
+.qr-code { width:180px; height:180px; background:var(--l); border-radius:12px; display:flex; align-items:center; justify-content:center; border:2px solid var(--border); }
+
+.rating-bar { background:var(--l); border-radius:8px; height:10px; overflow:hidden; margin-top:.4rem; }
+.rating-fill { height:100%; background:linear-gradient(90deg,var(--p),var(--s)); border-radius:8px; transition:width .8s ease; }
+
+/* LOADING */
+.loading-state { text-align:center; padding:4rem; }
+.spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--p); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 1rem; }
+@keyframes spin { to { transform:rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="header-content">
-    <a href="/" class="logo">
-      <div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
-      <span>InSkill<span style="color:var(--s)">.online</span></span>
-    </a>
-    <a href="/director-dashboard.html" class="back-btn">← Назад к панели</a>
-  </div>
-</header>
-
-<div id="mainContent" style="max-width:1200px;margin:2rem auto;padding:0 2rem">
-  <!-- Loading state -->
-  <div id="loadingState">
-    <div style="background:#fff;border-radius:16px;padding:2rem;margin-bottom:1.5rem">
-      <div class="skeleton" style="width:60%;height:2.5rem;margin-bottom:1rem"></div>
-      <div class="skeleton" style="width:40%;height:1rem;margin-bottom:.5rem"></div>
-      <div class="skeleton" style="width:30%;height:1rem"></div>
-    </div>
-  </div>
-  <div id="errorState" style="display:none;text-align:center;padding:4rem;color:#aaa">
-    <div style="font-size:3rem">😕</div>
-    <div style="margin-top:1rem;font-size:1.2rem;font-weight:600">Мероприятие не найдено</div>
-    <a href="/director-dashboard.html" style="display:inline-block;margin-top:1.5rem;color:var(--p)">← Вернуться</a>
-  </div>
+<div class="header">
+  <a href="/" class="logo">InSkill<span>.online</span></a>
+  <a href="javascript:history.back()" class="btn-back" id="btnBack">← Назад</a>
+  <button onclick="athleteLogout()" class="btn-back" id="btnLogout" style="display:none">Выход из профиля</button>
 </div>
 
-<div id="pageContent" style="display:none">
-
-<!-- EVENT HERO -->
-<div style="max-width:1200px;margin:2rem auto 0;padding:0 2rem">
-  <div class="event-hero">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
-      <div style="flex:1">
-        <div id="heroTitle" class="event-title">—</div>
-        <div id="heroMeta" class="event-meta"></div>
-      </div>
-      <div id="deadlineStatus" style="flex-shrink:0"></div>
-    </div>
-    <div id="heroDesc" class="event-desc" style="display:none"></div>
-  </div>
+<!-- NOTIFICATIONS BANNER -->
+<div id="notifyBanner" class="notify-banner" style="max-width:1200px;margin:1rem auto 0;padding:1.5rem">
+  <h3 id="notifyTitle">📢 Новое уведомление</h3>
+  <p id="notifyText"></p>
+  <button class="btn btn-orange btn-sm" onclick="markNotificationRead()">✅ Ознакомился</button>
 </div>
 
-<!-- COUNTDOWN + STATS -->
-<div style="max-width:1200px;margin:1rem auto 0;padding:0 2rem">
-  <div class="countdown-strip">
-    <div class="countdown-card">
-      <div class="countdown-icon">📅</div>
-      <div class="countdown-info">
-        <div class="countdown-label">До мероприятия</div>
-        <div id="cdEvent" class="countdown-value">—</div>
-        <div id="cdEventSub" class="countdown-sub"></div>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="photo-wrap">
+      <img id="athletePhoto" src="https://ui-avatars.com/api/?name=A&background=0066CC&color=fff" class="athlete-photo">
+      <button class="photo-btn" onclick="document.getElementById('photoInput').click()" title="Обновить фото">📷</button>
+      <input type="file" id="photoInput" accept="image/*" style="display:none">
+      <div id="frozenBadge" class="frozen-badge" style="display:none">🧊 Заморожен</div>
+    </div>
+    <div class="hero-info">
+      <div class="athlete-name" id="athleteName">—</div>
+      <div class="athlete-meta">
+        <div class="meta-chip"><span class="ic">🎂</span><span id="heroBirth">—</span></div>
+        <div class="meta-chip"><span class="ic">👤</span><span id="heroContact">—</span></div>
+        <div class="meta-chip"><span class="ic">⚖️</span><span id="heroWeight">—</span></div>
+        <div class="meta-chip"><span class="ic">📏</span><span id="heroHeight">—</span></div>
+        <div class="meta-chip" id="heroTrainingChip" style="display:none"><span class="ic">🗓️</span><span id="heroTraining">—</span></div>
       </div>
-    </div>
-    <div class="countdown-card">
-      <div class="countdown-icon">⏰</div>
-      <div class="countdown-info">
-        <div class="countdown-label">Срок регистрации</div>
-        <div id="cdDeadline" class="countdown-value">—</div>
-        <div id="cdDeadlineSub" class="countdown-sub"></div>
+      <div class="belt-display">
+        <div class="belt-color" id="heroBeltColor"></div>
+        <div class="belt-name" id="heroBeltName">Без пояса</div>
       </div>
-    </div>
-  </div>
-
-  <div class="stats-row">
-    <div class="stat-box">
-      <div id="statReg" class="stat-num">—</div>
-      <div class="stat-label">Записалось</div>
-    </div>
-    <div class="stat-box">
-      <div id="statPaid" class="stat-num">—</div>
-      <div class="stat-label">Оплатили</div>
-    </div>
-    <div class="stat-box">
-      <div id="statTotal" class="stat-num">—</div>
-      <div class="stat-label">Сумма взносов</div>
+      <div class="hero-badges" id="heroBadges"></div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
+        <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
+        <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
+        <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- MAIN GRID -->
-<div class="container">
+<!-- MAIN -->
+<div class="main" id="mainContent" style="display:none">
 
-  <!-- LEFT: registrations -->
-  <div>
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
+    <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
+    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
+    <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
+    <button class="tab-btn" onclick="switchTab('chat')" style="position:relative">💬 Чат <span id="chatUnreadBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:50%;font-size:.65rem;font-weight:700;width:18px;height:18px;line-height:18px;text-align:center;"></span></button>
+    <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
+    <button class="tab-btn" onclick="switchTab('medical')">🏥 Медицина</button>
+    <button class="tab-btn" onclick="switchTab('injuries')">🩹 Травмы</button>
+    <button class="tab-btn" onclick="switchTab('goals')">🎯 Цели</button>
+    <button class="tab-btn" onclick="switchTab('events')">🏅 Мероприятия</button>
+  </div>
+
+  <!-- TAB: INFO -->
+  <div class="tab-pane active" id="tab-info">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><div class="card-title-left">👤 Личные данные</div><button class="btn btn-sm btn-ghost" onclick="openModal('editInfoModal')">✏️ Редактировать</button></div>
+        <div class="form-group">
+          <div class="form-label">Имя и фамилия</div>
+          <div id="infoName" style="font-size:1rem;font-weight:600"></div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Дата рождения / Возраст</div>
+          <div id="infoBirth"></div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Контактное лицо</div>
+          <div id="infoContact"></div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Занимается с</div>
+          <div id="infoTrainingStart" style="font-size:1rem;font-weight:600">—</div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Телефон контакта</div>
+          <div id="infoContactPhone"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><div class="card-title-left">📍 Адрес и маршрут</div><button class="btn btn-sm btn-ghost" onclick="openModal('editAddressModal')">✏️ Редактировать</button></div>
+        <div id="addressBlock">
+          <p style="color:var(--muted);font-size:.9rem">Адрес не указан</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-left">⚖️ Физические данные</div>
+          <div style="display:flex;gap:.4rem">
+            <button class="btn btn-sm btn-ghost" onclick="openPhysChartModal()">📊 Графики</button>
+            <button class="btn btn-sm btn-ghost" onclick="openModal('editPhysModal')">✏️ Редактировать</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <div class="form-label">Вес (кг)</div>
+            <div id="infoWeight" style="font-size:1rem;font-weight:600">—</div>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Рост (см)</div>
+            <div id="infoHeight" style="font-size:1rem;font-weight:600">—</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Весовая категория</div>
+          <div id="infoWeightCat" style="font-size:1rem;font-weight:600">—</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">
+          <div class="card-title-left">🏟️ Группы</div>
+          <button id="groupsEditBtn" class="btn btn-sm btn-outline" onclick="openModal('editGroupsModal')" style="display:none">✏️ Изменить</button>
+        </div>
+        <div id="infoGroups"></div>
+      </div>
+    </div>
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Записавшиеся спортсмены</span>
-        <span id="regCountBadge" style="background:var(--p);color:#fff;padding:.2rem .7rem;border-radius:20px;font-size:.85rem;font-weight:600">0</span>
-      </div>
-      <div class="card-body" style="padding:0">
-        <div id="loadingRegs" style="padding:2rem;text-align:center;color:var(--p)">Загрузка...</div>
-        <div id="emptyRegs" class="empty-regs" style="display:none">
-          <div class="big">🏃</div>
-          <div>Пока никто не записался</div>
+      <div class="card-title"><div class="card-title-left">⭐ Рейтинг в клубе</div></div>
+      <div id="ratingBlock"></div>
+    </div>
+    <!-- QR -->
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">📲 QR-код для отметки</div></div>
+      <div class="qr-wrap">
+        <div class="qr-code" id="qrCode">
+          <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg" id="qrSvg"></svg>
         </div>
-        <div id="regsTableWrap" style="display:none;overflow-x:auto">
-          <table class="reg-table">
-            <thead>
-              <tr>
-                <th>Спортсмен</th>
-                <th>Взнос (грн)</th>
-                <th>Оплатил</th>
-              </tr>
-            </thead>
-            <tbody id="regsTableBody"></tbody>
-          </table>
+        <p style="font-size:.82rem;color:var(--muted);text-align:center">Тренер сканирует QR для отметки посещения</p>
+        <button class="btn btn-ghost btn-sm" onclick="downloadQR()">⬇️ Скачать QR</button>
+      </div>
+    </div>
+    <!-- Freeze -->
+    <div class="card" id="freezeCard">
+      <div class="card-title"><div class="card-title-left">🧊 Статус спортсмена</div></div>
+      <div id="freezeStatus"></div>
+    </div>
+  </div>
+
+  <!-- TAB: BELTS -->
+  <div class="tab-pane" id="tab-belts">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🥋 История поясов</div><button class="btn btn-sm btn-orange" id="addBeltBtn" onclick="resetBeltModal(); openModal('addBeltModal')" style="display:none">+ Добавить</button></div>
+      <div id="beltTimeline" class="belt-timeline"></div>
+    </div>
+  </div>
+
+  <!-- TAB: ATTENDANCE -->
+  <div class="tab-pane" id="tab-attendance">
+
+    <!-- Alert: unexplained absences -->
+    <div id="absenceAlert" style="display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:12px;padding:1.2rem;margin-bottom:1.5rem">
+      <div style="font-weight:700;color:#856404;margin-bottom:.4rem">⚠️ Внимание!</div>
+      <div id="absenceAlertText" style="color:#856404;font-size:.9rem;margin-bottom:.75rem"></div>
+      <button class="btn btn-sm btn-orange" onclick="openAbsenceExplain()">📝 Указать причину</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" style="margin-bottom:1.5rem">
+      <div class="stat-box"><div class="val" id="attTotal">0</div><div class="lbl">Всего тренировок</div></div>
+      <div class="stat-box win-box"><div class="val" id="attPresent">0</div><div class="lbl">Присутствовал</div></div>
+      <div class="stat-box loss-box"><div class="val" id="attAbsent">0</div><div class="lbl">Пропустил</div></div>
+      <div class="stat-box"><div class="val" id="attStreak">0</div><div class="lbl">Серия подряд</div></div>
+    </div>
+
+    <!-- View switcher -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+      <button id="attViewTable" class="btn btn-primary btn-sm" onclick="switchAttView(&apos;table&apos;)">📋 Таблица</button>
+      <button id="attViewCal" class="btn btn-ghost btn-sm" onclick="switchAttView(&apos;calendar&apos;)">📅 Календарь</button>
+    </div>
+
+    <!-- TABLE view -->
+    <div id="attTableView" class="card">
+      <div id="calGroupSelectTable" class="cal-group-select"></div>
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="attTablePrevMonth()">&#8592;</button>
+        <div class="cal-month-label" id="attTableMonthLabel"></div>
+        <button class="cal-nav-btn" onclick="attTableNextMonth()">&#8594;</button>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border)">
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Дата</th>
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Группа</th>
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Статус</th>
+            <th style="padding:.6rem .8rem"></th>
+          </tr>
+        </thead>
+        <tbody id="attTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Calendar card -->
+    <div id="attCalView" style="display:none">
+    <div class="card">
+      <!-- Group selector -->
+      <div class="cal-group-select" id="calGroupSelect"></div>
+
+      <!-- Month nav -->
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="calPrevMonth()">←</button>
+        <div class="cal-month-label" id="calMonthLabel"></div>
+        <button class="cal-nav-btn" onclick="calNextMonth()">→</button>
+      </div>
+
+      <!-- Days of week -->
+      <div class="cal-grid" id="calDowRow">
+        <div class="cal-dow">Пн</div><div class="cal-dow">Вт</div><div class="cal-dow">Ср</div>
+        <div class="cal-dow">Чт</div><div class="cal-dow">Пт</div><div class="cal-dow">Сб</div>
+        <div class="cal-dow">Вс</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+
+      <!-- Legend -->
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#dcfce7;border:1px solid #86efac"></div> Присутствовал</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fee2e2;border:1px solid #fca5a5"></div> Пропустил (нажми для объяснения)</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#fef9c3;border:1px solid #fde047"></div> Причина указана</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#f1f5f9;border:1px solid #cbd5e1"></div> Нет данных</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#f1f5f9;border:1px dashed #cbd5e1"></div> Предстоящая тренировка</div>
+      </div>
+    </div>
+    </div><!-- /attCalView -->
+
+    <!-- Notify absence -->
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🔔 Предупредить об отсутствии</div></div>
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Укажите даты когда спортсмена не будет — тренер будет оповещён заранее</p>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">С</label><input type="date" id="absFrom" class="form-input"></div>
+        <div class="form-group"><label class="form-label">По</label><input type="date" id="absTo" class="form-input"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Причина</label>
+        <select id="absReason" class="form-input">
+          <option value="">— выбрать —</option>
+          <option>Болезнь</option><option>Учёба / экзамены</option><option>Семейные обстоятельства</option>
+          <option>Соревнования (другой клуб)</option><option>Отпуск / поездка</option><option>Другое</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Комментарий (необязательно)</label>
+        <input id="absComment" class="form-input" placeholder="Дополнительная информация...">
+      </div>
+      <button class="btn btn-primary" onclick="submitAbsenceNotif()">📤 Отправить тренеру</button>
+    </div>
+
+  </div>
+
+  <!-- TAB: COMPETITIONS -->
+  <div class="tab-pane" id="tab-competitions">
+    <!-- Stats summary -->
+    <div class="stats-grid">
+      <div class="stat-box"><div class="val" id="cTotal">0</div><div class="lbl">Турниров</div></div>
+      <div class="stat-box win-box"><div class="val" id="cWins">0</div><div class="lbl">Побед</div></div>
+      <div class="stat-box loss-box"><div class="val" id="cLosses">0</div><div class="lbl">Поражений</div></div>
+      <div class="stat-box"><div class="val" id="cWinRate">0%</div><div class="lbl">% побед</div></div>
+    </div>
+
+    <!-- Smoothcomp / AJP sync -->
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🔗 Внешние профили</div></div>
+      <div class="smoothcomp-block">
+        <h4>Smoothcomp & AJP — синхронизация</h4>
+        <div class="platform-row">
+          <span class="platform-tag sc">SC</span>
+          <input class="platform-input" id="scUrl" placeholder="https://smoothcomp.com/en/profile/XXXXX" oninput="detectPlatformId(this,'sc')">
+          <button class="btn btn-sm btn-primary" onclick="syncProfile('smoothcomp')">Подтянуть</button>
+        </div>
+        <div class="platform-row">
+          <span class="platform-tag ajp">AJP</span>
+          <input class="platform-input" id="ajpUrl" placeholder="https://ajptour.com/ru/profile/XXXXX" oninput="detectPlatformId(this,'ajp')">
+          <button class="btn btn-sm btn-primary" onclick="syncProfile('ajp')">Подтянуть</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub-tabs -->
+    <div class="tabs-bar" style="margin-bottom:1rem">
+      <button class="tab-btn active" onclick="switchCompTab('past')" id="compTab-past">📋 Прошедшие</button>
+      <button class="tab-btn" onclick="switchCompTab('upcoming')" id="compTab-upcoming">⚡ Предстоящие</button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-row" id="compSearchRow">
+      <input class="search-input" id="compSearch" placeholder="🔍 Поиск по названию, сопернику..." oninput="filterComps()">
+      <input type="date" class="search-input" id="compDateFrom" style="max-width:160px" onchange="filterComps()">
+      <input type="date" class="search-input" id="compDateTo" style="max-width:160px" onchange="filterComps()">
+    </div>
+
+    <div id="compMethodStats"></div>
+    <div id="compList"></div>
+    <div class="pagination" id="compPagination"></div>
+
+    <button class="btn btn-orange" onclick="openModal('addCompModal')" style="margin-top:1rem">+ Добавить соревнование</button>
+  </div>
+
+  <!-- TAB: CHAT -->
+  <div class="tab-pane" id="tab-chat">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">💬 Чат с тренером / директором</div></div>
+      <div id="chatContactsRow" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+        <span style="font-size:.85rem;color:var(--muted);align-self:center">Написать:</span>
+        <div id="chatContactBtns" style="display:flex;gap:.5rem;flex-wrap:wrap"></div>
+      </div>
+      <div class="chat-wrap">
+        <div class="chat-messages" id="chatMessages">
+          <p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-input" id="chatInput" placeholder="Написать сообщение..." onkeydown="if(event.key==='Enter')sendMessage()">
+          <button class="btn btn-primary" onclick="sendMessage()">➤</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT: sidebar -->
-  <div>
+  <!-- TAB: DOCUMENTS -->
+  <div class="tab-pane" id="tab-documents">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">📄 Документы</div></div>
+      <div class="doc-grid" id="docGrid"></div>
+      <label class="doc-card" style="cursor:pointer;margin-top:.75rem;border-style:dashed;display:block">
+        <input type="file" accept="image/*,application/pdf" style="display:none" onchange="uploadDocument(this)">
+        <div class="doc-icon">➕</div>
+        <div class="doc-name">Добавить документ</div>
+      </label>
+    </div>
+  </div>
 
-    <!-- Info card -->
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-header"><span class="card-title">📋 Детали</span></div>
-      <div class="card-body">
-        <div id="infoRows"></div>
+  <!-- TAB: MEDICAL -->
+  <div class="tab-pane" id="tab-medical">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🏥 Медицинский допуск</div></div>
+      <div id="medBlock"><p style="color:var(--muted)">Данные не загружены</p></div>
+      <div style="margin-top:1.5rem">
+        <label class="btn btn-ghost" style="cursor:pointer">
+          <input type="file" accept="image/*,application/pdf" style="display:none" onchange="uploadMedical(this)">
+          📎 Загрузить медсправку (AI распознает данные)
+        </label>
       </div>
     </div>
+  </div>
 
-    <!-- Map card -->
-    <div class="card" id="mapCard" style="display:none">
-      <div class="card-header">
-        <span class="card-title">📍 Место проведения</span>
-        <a id="mapLink" href="#" target="_blank" style="font-size:.8rem;color:var(--p);font-weight:600">Открыть в Maps</a>
-      </div>
-      <div class="card-body" style="padding:.5rem">
-        <div class="map-container">
-          <iframe id="mapIframe" src="" frameborder="0" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-      </div>
+  <!-- TAB: INJURIES -->
+  <div class="tab-pane" id="tab-injuries">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🩹 История травм</div><button class="btn btn-sm btn-red" id="addInjuryBtn" style="display:none" onclick="openModal('addInjuryModal')">+ Добавить</button></div>
+      <div id="injuryList"></div>
+    </div>
+  </div>
+
+  <!-- TAB: GOALS -->
+  <div class="tab-pane" id="tab-goals">
+    <div class="card">
+      <div class="card-title"><div class="card-title-left">🎯 Цели тренера</div><button class="btn btn-sm btn-primary" id="addGoalBtn" style="display:none" onclick="openModal('addGoalModal')">+ Добавить цель</button></div>
+      <div id="goalsList"></div>
+    </div>
+  </div>
+
+
+  <!-- TAB: EVENTS -->
+  <div class="tab-pane" id="tab-events">
+
+    <!-- Фильтры -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
+      <button id="evFilterAll" class="btn btn-primary btn-sm" onclick="evSetFilter(&apos;all&apos;)">Все</button>
+      <button id="evFilterAttending" class="btn btn-ghost btn-sm" onclick="evSetFilter(&apos;attending&apos;)">✅ Записался</button>
+      <button id="evFilterUpcoming" class="btn btn-ghost btn-sm" onclick="evSetFilter(&apos;upcoming&apos;)">⚡ Предстоящие</button>
+      <button id="evFilterPast" class="btn btn-ghost btn-sm" onclick="evSetFilter(&apos;past&apos;)">📋 Прошедшие</button>
     </div>
 
+    <div id="eventsList"></div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- LOADING -->
+<div id="loadingState" class="loading-state" style="display:none">
+  <div class="spinner"></div>
+  <p style="color:var(--muted)">Загрузка профиля...</p>
+</div>
+
+<!-- ============================
+     MODALS
+     ============================ -->
+
+<!-- Edit Info -->
+<div class="modal" id="editInfoModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('editInfoModal')">×</button>
+    <h2 class="modal-title">Личные данные</h2>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Имя *</label><input id="ei_firstName" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Фамилия *</label><input id="ei_lastName" class="form-input"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Дата рождения</label><input type="date" id="ei_birthDate" class="form-input"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Контактное лицо</label><input id="ei_contactName" class="form-input" placeholder="ФИО родителя"></div>
+      <div class="form-group"><label class="form-label">Телефон</label><input id="ei_contactPhone" class="form-input" placeholder="+380..."></div>
+    </div>
+    <div class="form-group"><label class="form-label">📅 Дата начала занятий</label><input type="date" id="ei_trainingStart" class="form-input"></div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('editInfoModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveInfo()">Сохранить</button>
+    </div>
   </div>
 </div>
+
+<!-- Edit Address -->
+<div class="modal" id="editAddressModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('editAddressModal')">×</button>
+    <h2 class="modal-title">📍 Адрес и маршрут</h2>
+    <div class="form-group" style="position:relative">
+      <label class="form-label">Домашний адрес</label>
+      <input id="ea_address" class="form-input" placeholder="Начните вводить адрес..." autocomplete="off" oninput="addressAutocomplete(this.value)">
+      <div id="addressSuggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:999;max-height:220px;overflow-y:auto"></div>
+    </div>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">После сохранения система рассчитает время до зала</p>
+    <div style="display:flex;gap:.75rem">
+      <button class="btn btn-ghost" onclick="closeModal('editAddressModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveAddress()">💾 Сохранить</button>
+    </div>
+  </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Edit Physical -->
+<div class="modal" id="editPhysModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('editPhysModal')">×</button>
+    <h2 class="modal-title">⚖️ Физические данные</h2>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Вес (кг)</label><input type="number" id="ep_weight" class="form-input" step="0.1" min="10" max="200"></div>
+      <div class="form-group"><label class="form-label">Рост (см)</label><input type="number" id="ep_height" class="form-input" min="50" max="250"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Весовая категория</label>
+      <select id="ep_weightCat" class="form-input">
+        <option value="">— выбрать —</option>
+        <option>До 40 кг</option><option>До 46 кг</option><option>До 50 кг</option>
+        <option>До 55 кг</option><option>До 60 кг</option><option>До 66 кг</option>
+        <option>До 73 кг</option><option>До 82 кг</option><option>До 91 кг</option>
+        <option>До 100 кг</option><option>Свыше 100 кг</option><option>Абсолют</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('editPhysModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="savePhysical()">Сохранить</button>
+    </div>
+  </div>
+</div>
 
+<!-- Add Belt -->
+<div class="modal" id="addBeltModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('addBeltModal')">×</button>
+    <h2 class="modal-title" id="addBeltTitle">🥋 Добавить пояс</h2>
+    <div class="form-group"><label class="form-label">Пояс</label><select id="ab_belt" class="form-input"><option value="">Загрузка...</option></select></div>
+    <div class="form-group"><label class="form-label">Дата присвоения</label><input type="date" id="ab_date" class="form-input"></div>
+    <div class="form-group"><label class="form-label">Заметка</label><textarea id="ab_note" class="form-input" rows="2" placeholder="Результаты аттестации..."></textarea></div>
+    <div id="beltMinDaysInfo" style="display:none;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:.6rem .8rem;font-size:.82rem;color:#0369a1;margin-bottom:.5rem"></div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('addBeltModal')">Отмена</button>
+      <button class="btn btn-orange" id="ab_save_btn" onclick="saveBelt()">💾 Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Competition -->
+<div class="modal" id="addCompModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('addCompModal')">×</button>
+    <h2 class="modal-title">🏆 Добавить соревнование</h2>
+    <div class="form-group"><label class="form-label">Название</label><input id="ac_title" class="form-input" placeholder="Кубок Украины по BJJ"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Дата</label><input type="date" id="ac_date" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Место</label><input id="ac_location" class="form-input" placeholder="Киев"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Категория</label><input id="ac_category" class="form-input" placeholder="до 66 кг, синий пояс"></div>
+      <div class="form-group"><label class="form-label">Место в турнире</label><input id="ac_placement" class="form-input" placeholder="1 место"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Соперник (финал)</label><input id="ac_opponent" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Результат</label><select id="ac_result" class="form-input"><option value="">—</option><option value="win">Победа</option><option value="loss">Поражение</option></select></div>
+    </div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('addCompModal')">Отмена</button>
+      <button class="btn btn-orange" onclick="saveComp()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sync Profile Confirm -->
+<div class="modal" id="syncConfirmModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('syncConfirmModal')">×</button>
+    <h2 class="modal-title">Подтвердите профиль</h2>
+    <div style="background:var(--l);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem">
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:.25rem" id="syncName">—</div>
+      <div style="font-size:.85rem;color:var(--muted)" id="syncPlatform">—</div>
+      <div style="margin-top:.5rem;font-size:.9rem" id="syncStats">—</div>
+    </div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Это верный спортсмен? Данные о соревнованиях будут добавлены в профиль.</p>
+    <div style="display:flex;gap:.75rem">
+      <button class="btn btn-ghost" onclick="closeModal('syncConfirmModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="confirmSync()">✅ Подтвердить и импортировать</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Injury -->
+<div class="modal" id="addInjuryModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('addInjuryModal')">×</button>
+    <h2 class="modal-title">🩹 Добавить травму</h2>
+    <div class="form-group"><label class="form-label">Название</label><input id="ai_title" class="form-input" placeholder="Растяжение связок колена"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Дата травмы</label><input type="date" id="ai_date" class="form-input"></div>
+      <div class="form-group"><label class="form-label">Дата восстановления</label><input type="date" id="ai_recovery" class="form-input"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Описание</label><textarea id="ai_desc" class="form-input" rows="3"></textarea></div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('addInjuryModal')">Отмена</button>
+      <button class="btn btn-red" onclick="saveInjury()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Goal -->
+<div class="modal" id="addGoalModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('addGoalModal')">×</button>
+    <h2 class="modal-title">🎯 Новая цель</h2>
+    <div class="form-group"><label class="form-label">Цель</label><textarea id="ag_text" class="form-input" rows="3" placeholder="Сдать аттестацию на синий пояс к маю..."></textarea></div>
+    <div class="form-group"><label class="form-label">Срок</label><input type="date" id="ag_date" class="form-input"></div>
+    <div style="display:flex;gap:.75rem;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="closeModal('addGoalModal')">Отмена</button>
+      <button class="btn btn-primary" onclick="saveGoal()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Photo Viewer -->
+<div class="modal" id="photoModal">
+  <div class="modal-box" style="max-width:640px">
+    <button class="modal-close" onclick="closeModal('photoModal')">×</button>
+    <img id="photoModalImg" class="photo-modal-img" src="">
+    <div style="display:flex;gap:.75rem;justify-content:center">
+      <button class="btn btn-ghost" onclick="closeModal('photoModal')">Закрыть</button>
+      <label class="btn btn-orange" style="cursor:pointer">
+        <input type="file" accept="image/*" style="display:none" onchange="uploadAthletePhoto(this)">📷 Обновить фото
+      </label>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
-// No API key - using OpenStreetMap
-let token = localStorage.getItem('token');
-let eventId = null;
-let eventData = null;
-let registrations = [];
+const API2 = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
+const ATHLETE_RESOURCES = new Set(['absence_notifications','athlete_belts','athlete_documents','athlete_injuries','athlete_goals','athlete_competitions','messages','notifications','notification_reads','club_rating','children_profile','children_extended','belt_grades','groups','clubs','attendance','children']);
+const token = localStorage.getItem('token');
+const athleteId = parseInt(new URLSearchParams(location.search).get('id'));
+const userRole = localStorage.getItem('role') || 'director';
+const userId = parseInt(localStorage.getItem('user_id')) || 0;
 
-if (!token) { window.location.href = '/'; throw new Error('No auth'); }
+if (!token || !athleteId) { location.href = '/'; }
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
-function showToast(msg, type='success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast show ${type}`;
-  setTimeout(() => t.className = 'toast', 2500);
+function athleteLogout() {
+  ['token','user','role','user_id','athlete_id'].forEach(k => localStorage.removeItem(k));
+  location.href = '/';
+}
+if (userRole === 'athlete') {
+  document.getElementById('btnBack').style.display = 'none';
+  document.getElementById('btnLogout').style.display = '';
+}
+function athleteLogout() {
+  ['token','user','role','user_id','athlete_id'].forEach(k => localStorage.removeItem(k));
+  location.href = '/';
 }
 
-// ── Days remaining ────────────────────────────────────────────────────────────
-function daysUntil(dateStr) {
-  if (!dateStr) return null;
-  const target = new Date(dateStr);
-  target.setHours(23, 59, 59);
-  const now = new Date();
-  return Math.ceil((target - now) / (1000 * 60 * 60 * 24));
-}
+let athlete = null, allGroups = [], athleteGroupIds = [], allBelts = [];
+let competitions = [], filteredComps = [], compPage = 1;
+let pendingSync = null, pendingSyncPlatform = null;
+let chatInterval = null;
 
-function formatDate(dateStr) {
-  if (!dateStr) return '—';
-  return new Date(dateStr).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────────
+// ============================
+// INIT
+// ============================
 async function init() {
-  const params = new URLSearchParams(location.search);
-  eventId = params.get('id');
-  if (!eventId) { showError(); return; }
-
+  document.getElementById('loadingState').style.display = 'block';
   try {
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'events', action: 'get', data: { id: parseInt(eventId) } })
-    });
-    const d = await r.json();
-    eventData = (d.merged && d.merged[0]) || (Array.isArray(d) ? d[0] : d);
-    if (!eventData || !eventData.id) { showError(); return; }
-    renderEvent();
-    await loadRegistrations();
+    await loadAthlete();
+    await loadGroups();
+    await loadBelts();
+    await loadAttendance();
+    await loadCompetitions();
+    await loadBeltHistory();
+    await loadDocuments();
+    await loadInjuries();
+    await loadGoals();
+    await loadEvents();
+    await loadMedical();
+    await loadRating();
+    await loadNotifications();
+    renderQR();
+    startChatPolling();
+    document.getElementById('mainContent').style.display = 'block';
   } catch(e) {
     console.error(e);
-    showError();
+  } finally {
+    document.getElementById('loadingState').style.display = 'none';
   }
 }
 
-function showError() {
-  document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('errorState').style.display = 'block';
-}
-
-// ── Render event data ─────────────────────────────────────────────────────────
-function renderEvent() {
-  document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('pageContent').style.display = 'block';
-  document.title = (eventData.title || 'Мероприятие') + ' — InSkill Online';
+// ============================
+// LOAD ATHLETE
+// ============================
+async function loadAthlete() {
+  const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'children_profile', action:'get', data:{child_id: athleteId}})});
+  const d = await r.json();
+  const list = d.merged || [];
+  athlete = list[0] || null;
+  if (!athlete) { alert('Спортсмен не найден'); history.back(); return; }
+  if (typeof athlete.groups === 'string') { try { athlete.groups = JSON.parse(athlete.groups); } catch(e) { athlete.groups = []; } }
+  athleteGroupIds = (athlete.groups || []).map(g => g.id).filter(Boolean);
 
   // Hero
-  document.getElementById('heroTitle').textContent = eventData.title || '—';
+  document.getElementById('athleteName').textContent = `${athlete.first_name} ${athlete.last_name}`;
+  if (athlete.photo_url) document.getElementById('athletePhoto').src = athlete.photo_url;
+  else document.getElementById('athletePhoto').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(athlete.first_name+' '+athlete.last_name)}&background=0066CC&color=fff&size=140`;
 
-  const meta = document.getElementById('heroMeta');
-  meta.innerHTML = '';
-  if (eventData.event_date) {
-    meta.innerHTML += `<span class="meta-chip date">📅 ${formatDate(eventData.event_date)}</span>`;
-  }
-  if (eventData.location) {
-    const chip = document.createElement('span');
-    chip.className = 'meta-chip location';
-    chip.innerHTML = `📍 ${eventData.location}`;
-    chip.onclick = () => window.open(`https://www.google.com/maps/search/${encodeURIComponent(eventData.location)}`, '_blank');
-    meta.appendChild(chip);
-  }
-  if (eventData.group_names && eventData.group_names !== 'Все группы') {
-    meta.innerHTML += `<span class="meta-chip groups">👥 ${eventData.group_names}</span>`;
-  }
+  const birthDate = athlete.birth_date ? new Date(athlete.birth_date) : null;
+  const age = birthDate ? Math.floor((Date.now() - birthDate) / 31557600000) : null;
+  document.getElementById('heroBirth').textContent = birthDate ? `${birthDate.toLocaleDateString('ru-RU')} (${age} лет)` : '—';
+  document.getElementById('heroContact').textContent = athlete.contact_name || '—';
 
-  if (eventData.description) {
-    const desc = document.getElementById('heroDesc');
-    desc.textContent = eventData.description;
-    desc.style.display = 'block';
-  }
-
-  // Countdown — event
-  const dEvent = daysUntil(eventData.event_date);
-  const cdEvent = document.getElementById('cdEvent');
-  const cdEventSub = document.getElementById('cdEventSub');
-  if (dEvent === null) {
-    cdEvent.textContent = '—';
-  } else if (dEvent < 0) {
-    cdEvent.className = 'countdown-value closed';
-    cdEvent.textContent = 'Прошло';
-    cdEventSub.textContent = `${Math.abs(dEvent)} дн. назад`;
-  } else if (dEvent === 0) {
-    cdEvent.className = 'countdown-value urgent';
-    cdEvent.textContent = 'Сегодня!';
-  } else if (dEvent <= 7) {
-    cdEvent.className = 'countdown-value soon';
-    cdEvent.textContent = `${dEvent} дн.`;
-    cdEventSub.textContent = formatDate(eventData.event_date);
+  // Training duration
+  if (athlete.training_start) {
+    const ts = new Date(athlete.training_start);
+    const now = new Date();
+    const diffMs = now - ts;
+    const totalMonths = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 30.44));
+    const years = Math.floor(totalMonths / 12);
+    const months = totalMonths % 12;
+    let dur = '';
+    if (years > 0) dur = years + ' ' + (years === 1 ? 'год' : years < 5 ? 'года' : 'лет');
+    if (months > 0) dur += (dur ? ' ' : '') + months + ' ' + (months === 1 ? 'месяц' : months < 5 ? 'месяца' : 'месяцев');
+    if (!dur) dur = 'меньше месяца';
+    document.getElementById('heroTraining').textContent = 'Тренируется ' + dur;
+    document.getElementById('heroTrainingChip').style.display = 'flex';
+    const tsStr = ts.toLocaleDateString('ru-RU');
+    document.getElementById('infoTrainingStart').textContent = tsStr + ' (' + (dur) + ')';
   } else {
-    cdEvent.className = 'countdown-value ok';
-    cdEvent.textContent = `${dEvent} дн.`;
-    cdEventSub.textContent = formatDate(eventData.event_date);
+    document.getElementById('heroTrainingChip').style.display = 'none';
+    document.getElementById('infoTrainingStart').textContent = '—';
   }
+  document.getElementById('heroWeight').textContent = athlete.weight_kg ? `${athlete.weight_kg} кг` : '—';
+  document.getElementById('heroHeight').textContent = athlete.height_cm ? `${athlete.height_cm} см` : '—';
 
-  // Countdown — deadline
-  const dl = eventData.registration_deadline;
-  const dDl = daysUntil(dl);
-  const cdDl = document.getElementById('cdDeadline');
-  const cdDlSub = document.getElementById('cdDeadlineSub');
-  const deadlineStatus = document.getElementById('deadlineStatus');
+  // Info tab
+  document.getElementById('infoName').textContent = `${athlete.first_name} ${athlete.last_name}`;
+  document.getElementById('infoBirth').textContent = birthDate ? `${birthDate.toLocaleDateString('ru-RU')} — ${age} лет` : '—';
+  document.getElementById('infoContact').textContent = athlete.contact_name || '—';
+  document.getElementById('infoContactPhone').textContent = athlete.contact_phone || '—';
+  document.getElementById('infoWeight').textContent = athlete.weight_kg ? `${athlete.weight_kg} кг` : '—';
+  document.getElementById('infoHeight').textContent = athlete.height_cm ? `${athlete.height_cm} см` : '—';
+  document.getElementById('infoWeightCat').textContent = athlete.weight_category || '—';
 
-  if (!dl) {
-    cdDl.textContent = 'Не задан';
-    cdDl.className = 'countdown-value';
-    cdDlSub.textContent = 'Открыта';
-  } else if (dDl < 0) {
-    cdDl.className = 'countdown-value closed';
-    cdDl.textContent = 'Закрыта';
-    cdDlSub.textContent = `Дедлайн: ${formatDate(dl)}`;
-    deadlineStatus.innerHTML = `<span style="padding:.4rem 1rem;background:#ffebee;color:var(--red);border-radius:20px;font-size:.85rem;font-weight:700">🔒 Регистрация закрыта</span>`;
-  } else if (dDl === 0) {
-    cdDl.className = 'countdown-value urgent';
-    cdDl.textContent = 'Сегодня!';
-    cdDlSub.textContent = 'Последний день';
-    deadlineStatus.innerHTML = `<span style="padding:.4rem 1rem;background:#fff3e0;color:var(--orange);border-radius:20px;font-size:.85rem;font-weight:700">⚡ Последний день!</span>`;
-  } else if (dDl <= 3) {
-    cdDl.className = 'countdown-value soon';
-    cdDl.textContent = `${dDl} дн.`;
-    cdDlSub.textContent = `До ${formatDate(dl)}`;
-    deadlineStatus.innerHTML = `<span style="padding:.4rem 1rem;background:#fff3e0;color:var(--orange);border-radius:20px;font-size:.85rem;font-weight:700">⏳ Скоро закрывается</span>`;
-  } else {
-    cdDl.className = 'countdown-value ok';
-    cdDl.textContent = `${dDl} дн.`;
-    cdDlSub.textContent = `До ${formatDate(dl)}`;
+  // Frozen
+  if (athlete.is_frozen) {
+    document.getElementById('frozenBadge').style.display = 'block';
   }
+  renderFreezeStatus();
+  renderAddress();
 
-  // Sidebar info rows
-  const rows = [
-    ['Дата', formatDate(eventData.event_date)],
-    ['Дедлайн регистрации', dl ? formatDate(dl) : '—'],
-    ['Место', eventData.location || '—'],
-    ['Бюджет', eventData.budget ? eventData.budget + ' грн' : '—'],
-    ['Сумма взноса', eventData.entry_fee ? eventData.entry_fee + ' грн' : '—'],
-  ];
-  document.getElementById('infoRows').innerHTML = rows.map(([k,v]) =>
-    `<div class="info-row"><span class="info-key">${k}</span><span class="info-val">${v}</span></div>`
-  ).join('');
+  // Fill edit modals
+  document.getElementById('ei_firstName').value = athlete.first_name || '';
+  document.getElementById('ei_lastName').value = athlete.last_name || '';
+  document.getElementById('ei_birthDate').value = athlete.birth_date ? athlete.birth_date.split('T')[0] : '';
+  document.getElementById('ei_contactName').value = athlete.contact_name || '';
+  document.getElementById('ei_contactPhone').value = athlete.contact_phone || '';
+  document.getElementById('ei_trainingStart').value = athlete.training_start ? athlete.training_start.split('T')[0] : '';
+  document.getElementById('ep_weight').value = athlete.weight_kg || '';
+  document.getElementById('ep_height').value = athlete.height_cm || '';
+  document.getElementById('ep_weightCat').value = athlete.weight_category || '';
+  document.getElementById('ea_address').value = athlete.home_address || '';
+  if (athlete.smoothcomp_id) document.getElementById('scUrl').value = `https://smoothcomp.com/en/profile/${athlete.smoothcomp_id}`;
+  if (athlete.ajp_id) document.getElementById('ajpUrl').value = `https://ajptour.com/ru/profile/${athlete.ajp_id}`;
 
-  // Map
-  if (eventData.location) {
-    const mapCard = document.getElementById('mapCard');
-    const q = encodeURIComponent(eventData.location);
-    document.getElementById('mapLink').href = `https://www.google.com/maps/search/${q}`;
-    mapCard.style.display = 'block';
-    // Geocode via Nominatim then show OSM embed
-    fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {headers:{'Accept-Language':'ru'}})
-      .then(r => r.json())
-      .then(data => {
-        if (data && data[0]) {
-          const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon), d = 0.012;
-          document.getElementById('mapIframe').src =
-            `https://www.openstreetmap.org/export/embed.html?bbox=${lon-d},${lat-d},${lon+d},${lat+d}&layer=mapnik&marker=${lat},${lon}`;
-        } else {
-          mapCard.style.display = 'none';
-        }
-      })
-      .catch(() => { mapCard.style.display = 'none'; });
+  // Role-based visibility
+  if (document.getElementById('addBeltBtn')) document.getElementById('addBeltBtn').style.display = 'inline-flex';
+  if (document.getElementById('addInjuryBtn')) document.getElementById('addInjuryBtn').style.display = 'inline-flex';
+  if (document.getElementById('addGoalBtn')) document.getElementById('addGoalBtn').style.display = 'inline-flex';
+}
+
+// ============================
+// GROUPS
+// ============================
+async function loadGroups() {
+  // Load all groups via athlete-api
+  const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'groups', action:'list'})});
+  const d = await r.json();
+  allGroups = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+
+  // athlete.groups comes from children_profile as array [{id, name, schedule, club_id}]
+  let athleteGroups = [];
+  let rawGroups = athlete.groups;
+  console.log('[loadGroups] athlete.groups raw:', rawGroups, typeof rawGroups);
+  if (typeof rawGroups === 'string') {
+    try { rawGroups = JSON.parse(rawGroups); } catch(e) { rawGroups = []; }
+  }
+  if (Array.isArray(rawGroups)) {
+    athleteGroups = rawGroups.filter(g => g && g.id && g.name);
+  }
+  console.log('[loadGroups] athleteGroups after filter:', athleteGroups);
+  athleteGroupIds = athleteGroups.map(g => g.id);
+
+  // Render group chips
+  const html = athleteGroups.length
+    ? athleteGroups.map(g => `<span style="display:inline-block;padding:.4rem .9rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:600;margin:.2rem">${g.name}</span>`).join('')
+    : '<p style="color:var(--muted);font-size:.9rem">Нет групп</p>';
+  document.getElementById('infoGroups').innerHTML = html;
+
+  // Show edit button for director and trainer
+  renderGroupsEditModal(athleteGroups);
+  if (userRole === 'director') {
+    document.getElementById('groupsEditBtn').style.display = 'inline-flex';
   }
 }
 
-// ── Load registrations ────────────────────────────────────────────────────────
-async function loadRegistrations() {
+function renderGroupsEditModal(currentGroups) {
+  const currentIds = new Set(currentGroups.map(g => g.id));
+  const el = document.getElementById('editGroupsCheckboxes');
+  if (!el) return;
+  el.innerHTML = allGroups.map(g => `
+    <label style="display:flex;align-items:center;gap:.6rem;padding:.5rem 0;cursor:pointer">
+      <input type="checkbox" value="${g.id}" ${currentIds.has(g.id) ? 'checked' : ''}
+        style="width:16px;height:16px;accent-color:var(--p)">
+      <span>${g.name}</span>
+    </label>`).join('');
+}
+
+async function saveGroups() {
+  const checks = document.querySelectorAll('#editGroupsCheckboxes input[type=checkbox]');
+  const newGroupIds = Array.from(checks).filter(c => c.checked).map(c => parseInt(c.value));
+  const oldGroupIds = athleteGroupIds;
+
+  // Remove from unchecked groups
+  for (const gid of oldGroupIds) {
+    if (!newGroupIds.includes(gid)) {
+      await apiFetch('children_groups', 'remove', {child_id: athleteId, group_id: gid});
+    }
+  }
+  // Add to new groups
+  for (const gid of newGroupIds) {
+    if (!oldGroupIds.includes(gid)) {
+      await apiFetch('children_groups', 'assign', {child_id: athleteId, group_id: gid});
+    }
+  }
+
+  closeModal('editGroupsModal');
+  await loadAthlete();
+  await loadGroups();
+}
+
+// ============================
+// BELT HISTORY
+// ============================
+async function loadBelts() {
+  const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'belt_grades', action:'list'})});
+  const d = await r.json();
+  allBelts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+  // Populate select
+  document.getElementById('ab_belt').innerHTML = allBelts.map(b => `<option value="${b.id}" data-color="${b.color}" data-mindays="${b.min_days||0}">${b.name}${b.min_days ? ' (мин. ' + b.min_days + ' дн.)' : ''}</option>`).join('');
+  document.getElementById('ab_belt').onchange = function() {
+    const opt = this.options[this.selectedIndex];
+    const minDays = parseInt(opt.dataset.mindays) || 0;
+    const info = document.getElementById('beltMinDaysInfo');
+    if (minDays > 0) {
+      const mos = Math.round(minDays / 30);
+      info.textContent = `⏱️ Минимальный срок с этим поясом: ${minDays} дней (~${mos} мес.)`;
+      info.style.display = 'block';
+    } else {
+      info.style.display = 'none';
+    }
+  };
+}
+
+async function loadBeltHistory() {
   try {
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'event_registrations', action: 'list', data: { event_id: parseInt(eventId) } })
-    });
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_belts', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    registrations = d.merged || d || [];
-    renderRegistrations();
-  } catch(e) {
-    document.getElementById('loadingRegs').textContent = 'Ошибка загрузки';
-  }
+    const belts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+
+    // SQL returns ORDER BY awarded_at DESC — belts[0] is the most recent
+    if (belts.length > 0) {
+      const latest = belts[0];
+      document.getElementById('heroBeltColor').style.background = latest.color || '#888';
+      document.getElementById('heroBeltName').textContent = latest.belt_name || latest.name || 'Пояс';
+    } else {
+      document.getElementById('heroBeltColor').style.background = '#888';
+      document.getElementById('heroBeltName').textContent = 'Без пояса';
+    }
+
+    const canEdit = userRole === 'director' || userRole === 'trainer' || userRole === 'athlete';
+    // Sort by date ascending to calculate durations
+    const sortedAsc = [...belts].sort((a,b) => new Date(a.awarded_at) - new Date(b.awarded_at));
+    
+    document.getElementById('beltTimeline').innerHTML = belts.length ? belts.map((b, idx) => {
+      const awardedDate = b.awarded_at ? new Date(b.awarded_at) : null;
+      // Next belt in history (for current belt — until today, for older — until next award)
+      const nextBelt = belts[idx - 1]; // belts are DESC, so idx-1 is more recent
+      const endDate = nextBelt && nextBelt.awarded_at ? new Date(nextBelt.awarded_at) : new Date();
+      
+      // Time with this belt
+      let timeWithBelt = '';
+      if (awardedDate) {
+        const diffDays = Math.floor((endDate - awardedDate) / 86400000);
+        const yrs = Math.floor(diffDays / 365);
+        const mos = Math.floor((diffDays % 365) / 30);
+        const parts = [];
+        if (yrs > 0) parts.push(yrs + ' ' + (yrs===1?'год':yrs<5?'года':'лет'));
+        if (mos > 0) parts.push(mos + ' ' + (mos===1?'месяц':mos<5?'месяца':'месяцев'));
+        timeWithBelt = parts.length ? parts.join(' ') : 'меньше месяца';
+      }
+
+      // Time until next (only for current/latest belt)
+      const isLatest = idx === 0;
+      let nextInfo = '';
+      if (isLatest && b.min_days > 0 && awardedDate) {
+        const daysWith = Math.floor((new Date() - awardedDate) / 86400000);
+        const daysLeft = b.min_days - daysWith;
+        if (daysLeft > 0) {
+          const mLeft = Math.ceil(daysLeft / 30);
+          nextInfo = `<div style="margin-top:.3rem;font-size:.78rem;background:#fef3c7;color:#92400e;padding:.25rem .5rem;border-radius:6px;display:inline-block">⏳ До следующего пояса: ещё ${daysLeft} дн. (~${mLeft} мес.)</div>`;
+        } else {
+          nextInfo = `<div style="margin-top:.3rem;font-size:.78rem;background:#d1fae5;color:#065f46;padding:.25rem .5rem;border-radius:6px;display:inline-block">✅ Можно сдавать на следующий пояс!</div>`;
+        }
+      }
+
+      return `
+      <div class="belt-item" style="display:flex;align-items:flex-start;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--border)">
+        <div style="width:16px;height:16px;border-radius:50%;background:${b.color||'#888'};flex-shrink:0;margin-top:.15rem;box-shadow:0 0 0 3px ${b.color||'#888'}33"></div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:.95rem">${b.belt_name || b.name || '—'}</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:.2rem">
+            📅 ${awardedDate ? awardedDate.toLocaleDateString('ru-RU') : '—'}
+            ${b.awarded_by_name ? '· 👤 ' + b.awarded_by_name : ''}
+            ${b.notes ? '· <em>' + b.notes + '</em>' : ''}
+          </div>
+          <div style="font-size:.8rem;margin-top:.25rem">
+            🕐 С этим поясом: <strong>${timeWithBelt}</strong>
+            ${b.min_days ? ` · минимум ${b.min_days} дн.` : ''}
+          </div>
+          ${nextInfo}
+        </div>
+        ${canEdit ? `<div style="display:flex;gap:.4rem;flex-shrink:0">
+          <button onclick="editBelt(${b.id}, ${b.belt_id}, '${b.awarded_at ? b.awarded_at.split('T')[0] : ''}', '${(b.notes||'').replace(/'/g,"\'")}')"
+            style="background:none;border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem">✏️</button>
+          <button onclick="deleteBelt(${b.id})"
+            style="background:none;border:1px solid #ffcdd2;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;color:#c62828">🗑️</button>
+        </div>` : ''}
+      </div>`;
+    }).join('') : '<p style="color:var(--muted)">История поясов пуста</p>';
+  } catch(e) { console.warn('Belt history:', e); }
 }
 
-function renderRegistrations() {
-  document.getElementById('loadingRegs').style.display = 'none';
-  const tbody = document.getElementById('regsTableBody');
-  tbody.innerHTML = '';
+function resetBeltModal() {
+  delete document.getElementById('addBeltModal').dataset.editId;
+  document.getElementById('addBeltTitle').textContent = '🥋 Добавить пояс';
+  document.getElementById('ab_save_btn').textContent = '💾 Сохранить';
+  document.getElementById('ab_belt').value = '';
+  document.getElementById('ab_date').value = '';
+  document.getElementById('ab_note').value = '';
+}
 
-  const totalPaid = registrations.filter(r => r.is_paid).length;
-  const totalFee = registrations.reduce((s, r) => s + (parseFloat(r.entry_fee) || 0), 0);
+function editBelt(id, beltId, date, notes) {
+  document.getElementById('ab_belt').value = beltId;
+  document.getElementById('ab_date').value = date;
+  document.getElementById('ab_note').value = notes;
+  document.getElementById('ab_save_btn').textContent = '💾 Сохранить изменения';
+  document.getElementById('addBeltModal').dataset.editId = id;
+  openModal('addBeltModal');
+}
 
-  document.getElementById('statReg').textContent = registrations.length;
-  document.getElementById('statPaid').textContent = totalPaid;
-  document.getElementById('statTotal').textContent = totalFee > 0 ? totalFee + ' грн' : '0';
-  document.getElementById('regCountBadge').textContent = registrations.length;
+async function deleteBelt(id) {
+  if (!confirm('Удалить запись о поясе?')) return;
+  await apiFetch('athlete_belts', 'delete', {id, child_id: athleteId});
+  await loadBeltHistory();
+}
 
-  if (registrations.length === 0) {
-    document.getElementById('emptyRegs').style.display = 'block';
-    document.getElementById('regsTableWrap').style.display = 'none';
+async function saveBelt() {
+  const beltId = document.getElementById('ab_belt').value;
+  const date = document.getElementById('ab_date').value;
+  const notes = document.getElementById('ab_note').value;
+  if (!beltId || !date) { alert('Выберите пояс и дату'); return; }
+  const editId = document.getElementById('addBeltModal').dataset.editId;
+  if (editId) {
+    await apiFetch('athlete_belts', 'update', {id:parseInt(editId), child_id:athleteId, belt_id:parseInt(beltId), awarded_at:date, notes});
+  } else {
+    await apiFetch('athlete_belts', 'create', {child_id:athleteId, belt_id:parseInt(beltId), awarded_at:date, notes});
+  }
+  // Reset modal to "add" mode
+  delete document.getElementById('addBeltModal').dataset.editId;
+  document.getElementById('addBeltTitle').textContent = '🥋 Добавить пояс';
+  document.getElementById('ab_save_btn').textContent = '💾 Сохранить';
+  closeModal('addBeltModal');
+  await loadBeltHistory();
+}
+
+// ============================
+// ATTENDANCE
+// ============================
+// ============================
+// ATTENDANCE TABLE
+// ============================
+function switchAttView(view) {
+  document.getElementById('attTableView').style.display = view === 'table' ? '' : 'none';
+  document.getElementById('attCalView').style.display = view === 'calendar' ? '' : 'none';
+  document.getElementById('attViewTable').className = view === 'table' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('attViewCal').className = view === 'calendar' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  if (view === 'calendar') renderCalendar();
+}
+
+let attTableYear = new Date().getFullYear();
+let attTableMonth = new Date().getMonth();
+
+function attTablePrevMonth() {
+  attTableMonth--;
+  if (attTableMonth < 0) { attTableMonth = 11; attTableYear--; }
+  renderAttTable();
+}
+function attTableNextMonth() {
+  attTableMonth++;
+  if (attTableMonth > 11) { attTableMonth = 0; attTableYear++; }
+  renderAttTable();
+}
+
+function renderAttGroupSelect() {
+  var groups = athleteGroupIds.map(function(gid) { return allGroups.find(function(g) { return g.id == gid; }); }).filter(Boolean);
+  var el = document.getElementById('calGroupSelectTable');
+  if (!el) return;
+  if (groups.length <= 1) { el.innerHTML = ''; return; }
+  el.innerHTML = '<button class="cal-group-btn ' + (calSelectedGroup==='all'?'active':'') + '" onclick="calSelectGroupTable(&apos;all&apos;)">Все группы</button>'
+    + groups.map(function(g) {
+        return '<button class="cal-group-btn ' + (calSelectedGroup==g.id?'active':'') + '" onclick="calSelectGroupTable(' + g.id + ')">' + g.name + '</button>';
+      }).join('');
+}
+
+function calSelectGroupTable(gid) {
+  calSelectedGroup = gid;
+  renderAttGroupSelect();
+  renderAttTable();
+}
+
+function renderAttTable() {
+  var tbody = document.getElementById('attTableBody');
+  if (!tbody) return;
+  var MN = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  var DN = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  var lbl = document.getElementById('attTableMonthLabel');
+  if (lbl) lbl.textContent = MN[attTableMonth] + ' ' + attTableYear;
+  renderAttGroupSelect();
+
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  // Notif map
+  var notifMap = {};
+  calAbsenceNotifs.forEach(function(n) {
+    var f = new Date(n.date_from), t = new Date(n.date_to);
+    for (var d = new Date(f); d <= t; d.setDate(d.getDate()+1)) {
+      notifMap[d.toISOString().split('T')[0]] = n;
+    }
+  });
+
+  // Attendance map для текущего месяца и группы
+  var attMap = {};
+  calAttendanceRecords
+    .filter(function(r) { return calSelectedGroup === 'all' || r.group_id == calSelectedGroup; })
+    .forEach(function(r) {
+      var k = r.training_date && r.training_date.split('T')[0];
+      if (k) attMap[k] = r;
+    });
+
+  // Собираем все дни месяца с тренировками по расписанию
+  var daysInMonth = new Date(attTableYear, attTableMonth+1, 0).getDate();
+  var rows = [];
+  for (var day = 1; day <= daysInMonth; day++) {
+    var date = new Date(attTableYear, attTableMonth, day);
+    date.setHours(0,0,0,0);
+    var dateStr = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+    var jsDay = date.getDay();
+    var schedDay = jsDay === 0 ? 6 : jsDay - 1;
+    var groupsToCheck = calSelectedGroup === 'all'
+      ? athleteGroupIds.map(function(gid){return allGroups.find(function(g){return g.id==gid;});}).filter(Boolean)
+      : [allGroups.find(function(g){return g.id==calSelectedGroup;})].filter(Boolean);
+    var isScheduled = groupsToCheck.some(function(g) {
+      var sch = typeof g.schedule==='string' ? JSON.parse(g.schedule||'[]') : (g.schedule||[]);
+      return sch.some(function(s){return s.day===schedDay;});
+    });
+    var att = attMap[dateStr];
+    var notif = notifMap[dateStr];
+    if (isScheduled || att) {
+      rows.push({dateStr:dateStr, date:date, att:att, notif:notif, isPast:date<today, isScheduled:isScheduled});
+    }
+  }
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Нет тренировок в ' + MN[attTableMonth] + ' ' + attTableYear + '</td></tr>';
     return;
   }
 
-  document.getElementById('emptyRegs').style.display = 'none';
-  document.getElementById('regsTableWrap').style.display = 'block';
+  rows.sort(function(a,b){ return b.dateStr.localeCompare(a.dateStr); });
 
-  const defaultFee = eventData.entry_fee || 0;
+  tbody.innerHTML = rows.map(function(item) {
+    var dayName = DN[item.date.getDay()];
+    var dateFmt = item.date.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+    var groupName = item.att ? (item.att.group_name||'—') : '—';
+    var status = '', bg = '', btn = '';
+    if (item.att) {
+      if (item.att.was_present) {
+        status = '<span style="color:#16a34a;font-weight:600">&#x2705; Присутствовал</span>';
+        bg = '#f0fdf4';
+      } else if (item.notif) {
+        var r = item.notif.reason || '';
+        if (item.notif.comment) r += ': ' + item.notif.comment;
+        status = '<span style="color:#92400e;font-weight:600">&#x1F7E1; ' + (r||'Причина указана') + '</span>';
+        bg = '#fefce8';
+      } else {
+        status = '<span style="color:#dc2626;font-weight:600">&#x274C; Пропустил</span>';
+        bg = '#fef2f2';
+        btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay(&apos;' + item.dateStr + '&apos;,' + item.date.getDate() + ')">&#x1F4DD; Причина</button>';
+      }
+    } else if (item.notif) {
+      var r2 = item.notif.reason || '';
+      if (item.notif.comment) r2 += ': ' + item.notif.comment;
+      status = '<span style="color:#92400e;font-weight:600">&#x1F7E1; ' + (r2||'Предупреждение') + '</span>';
+      bg = '#fefce8';
+    } else if (item.isPast) {
+      status = '<span style="color:#94a3b8">&#x2B1C; Нет данных</span>';
+      bg = '#f8fafc';
+      btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay(&apos;' + item.dateStr + '&apos;,' + item.date.getDate() + ')">&#x1F4DD; Причина</button>';
+    } else {
+      status = '<span style="color:#64748b">&#x1F4C5; Предстоящая</span>';
+      bg = '#f1f5f9';
+    }
+    return '<tr style="border-bottom:1px solid var(--border);background:' + bg + '">'
+      + '<td style="padding:.6rem .8rem;white-space:nowrap">' + dateFmt + ' <span style="color:var(--muted);font-size:.8rem">' + dayName + '</span></td>'
+      + '<td style="padding:.6rem .8rem">' + groupName + '</td>'
+      + '<td style="padding:.6rem .8rem">' + status + '</td>'
+      + '<td style="padding:.4rem .8rem">' + btn + '</td>'
+      + '</tr>';
+  }).join('');
+}
 
-  registrations.forEach(reg => {
-    const tr = document.createElement('tr');
-    const photo = reg.photo_url || null;
-    const fee = reg.entry_fee !== null && reg.entry_fee !== undefined ? reg.entry_fee : defaultFee;
-    const isPaid = !!reg.is_paid;
+// ============================
+// CALENDAR STATE
+// ============================
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-based
+let calAttendanceRecords = [];   // {training_date, was_present, group_id, reason}
+let calAbsenceNotifs = [];       // {date_from, date_to, reason, comment}
+let calScheduleDays = [];        // upcoming training dates from group schedule
+let calSelectedGroup = 'all';    // 'all' or group_id
 
-    tr.innerHTML = `
-      <td>
-        <div class="athlete-row">
-          ${photo
-            ? `<img src="${photo}" class="athlete-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-            : ''}
-          <div class="athlete-avatar" style="display:${photo?'none':'flex'}">
-            ${(reg.first_name||'?')[0]}${(reg.last_name||'')[0]||''}
-          </div>
-          <div>
-            <div class="athlete-name">${reg.first_name || ''} ${reg.last_name || ''}</div>
-            <div class="athlete-group">${reg.group_name || ''}</div>
-          </div>
+async function loadAttendance() {
+  try {
+    // Load attendance records
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'attendance', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const allRecords = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+    // Filter by this athlete's child_id (API returns all group members)
+    calAttendanceRecords = allRecords.filter(r => r.child_id == athleteId);
+    console.log('[ATT] total:', allRecords.length, '→ filtered for child', athleteId, ':', calAttendanceRecords.length);
+    console.log('[ATT] raw[0]:', JSON.stringify(allRecords[0]));
+    console.log('[ATT] athleteId typeof:', typeof athleteId, athleteId);
+    const uniqIds = [...new Set(allRecords.map(r=>r.child_id))];
+    console.log('[ATT] unique child_ids in response:', JSON.stringify(uniqIds.slice(0,15)));
+    console.log('[ATT] present sample:', JSON.stringify(calAttendanceRecords.filter(r=>r.was_present).slice(0,2)));
+    console.log('[ATT] absent sample:', JSON.stringify(calAttendanceRecords.filter(r=>!r.was_present).slice(0,2)));
+
+    // Load absence notifications
+    try {
+      const r2 = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token, resource:'absence_notifications', action:'list', data:{child_id:athleteId}})});
+      const d2 = await r2.json();
+      calAbsenceNotifs = d2.merged || d2 || [];
+    } catch(e) { calAbsenceNotifs = []; }
+
+    // Stats
+    const records = calAttendanceRecords;
+    const present = records.filter(r => r.was_present).length;
+    const total = records.length;
+    const pct = total > 0 ? Math.round(present/total*100) : 0;
+    document.getElementById('statAttendance').textContent = pct + '%';
+    document.getElementById('attTotal').textContent = total;
+    document.getElementById('attPresent').textContent = present;
+    document.getElementById('attAbsent').textContent = total - present;
+
+    // Streak (consecutive present)
+    const sorted = [...records].filter(r=>r.was_present).sort((a,b)=>new Date(b.training_date)-new Date(a.training_date));
+    let streak = 0;
+    let prev = null;
+    for (const rec of sorted) {
+      const d = new Date(rec.training_date);
+      if (!prev) { streak = 1; prev = d; continue; }
+      const diff = Math.round((prev - d) / 86400000);
+      if (diff <= 7) { streak++; prev = d; } else break;
+    }
+    document.getElementById('attStreak').textContent = streak;
+
+    // Group selector
+    renderCalGroupSelect();
+
+    // Check unexplained absences (last 30 days, no notification)
+    checkUnexplainedAbsences();
+
+    // Render calendar
+    renderCalendar();
+    renderAttTable();
+
+  } catch(e) { console.warn('Attendance:', e); }
+}
+
+function renderCalGroupSelect() {
+  const groups = athleteGroupIds.map(gid => allGroups.find(g=>g.id===gid)).filter(Boolean);
+  if (groups.length <= 1) { document.getElementById('calGroupSelect').innerHTML = ''; return; }
+  const btns = `<button class="cal-group-btn ${calSelectedGroup==='all'?'active':''}" onclick="calSelectGroup('all')">Все группы</button>`
+    + groups.map(g=>`<button class="cal-group-btn ${calSelectedGroup==g.id?'active':''}" onclick="calSelectGroup(${g.id})">${g.name}</button>`).join('');
+  document.getElementById('calGroupSelect').innerHTML = btns;
+}
+
+function calSelectGroup(gid) {
+  calSelectedGroup = gid;
+  renderCalGroupSelect();
+  renderCalendar();
+}
+
+function calPrevMonth() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calNextMonth() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+
+function getScheduledDaysSet(year, month) {
+  // Returns Set of dateStr for days that have training per group schedule
+  // Schedule format: [{day: 0, time: "..."}, ...] where day 0=Mon ... 6=Sun
+  const groupsToCheck = calSelectedGroup === 'all'
+    ? athleteGroupIds.map(gid => allGroups.find(g => g.id == gid)).filter(Boolean)
+    : [allGroups.find(g => g.id == calSelectedGroup)].filter(Boolean);
+
+  const scheduled = new Set();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(year, month, day);
+    const jsDay = date.getDay();
+    const schedDay = jsDay === 0 ? 6 : jsDay - 1; // Mon=0 ... Sun=6
+    for (const g of groupsToCheck) {
+      const sch = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
+      if (sch.some(s => s.day === schedDay)) {
+        const dateStr = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+        scheduled.add(dateStr);
+        break;
+      }
+    }
+  }
+  return scheduled;
+}
+
+function renderCalendar() {
+  const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  document.getElementById('calMonthLabel').textContent = `${months[calMonth]} ${calYear}`;
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+
+  // --- Scheduled training days from group schedule ---
+  const scheduledDays = getScheduledDaysSet(calYear, calMonth);
+
+  // --- Attendance records map: dateStr → {present, reason} ---
+  const attMap = {};
+  calAttendanceRecords
+    .filter(r => calSelectedGroup === 'all' || r.group_id == calSelectedGroup)
+    .forEach(r => {
+      const k = r.training_date?.split('T')[0];
+      if (k) attMap[k] = { present: r.was_present, reason: r.reason || null };
+    });
+
+  // --- Absence notification dates ---
+  const notifDates = new Set();
+  calAbsenceNotifs.forEach(n => {
+    const from = new Date(n.date_from), to = new Date(n.date_to);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate()+1)) {
+      notifDates.add(d.toISOString().split('T')[0]);
+    }
+  });
+
+  // --- Build grid ---
+  const firstDay = new Date(calYear, calMonth, 1);
+  const startOffset = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  // Empty cells
+  for (let i = 0; i < startOffset; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    grid.appendChild(el);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const date = new Date(calYear, calMonth, day);
+    date.setHours(0,0,0,0);
+    const dateStr = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+    const isPast = date < today;
+    const isToday = dateStr === todayStr;
+    const isScheduled = scheduledDays.has(dateStr);
+    const att = attMap[dateStr];
+    const isNotif = notifDates.has(dateStr);
+
+    const el = document.createElement('div');
+    let cls = 'cal-day';
+    let tooltip = '';
+
+    // Only style training days (scheduled) or days with attendance records
+    if (isScheduled || att) {
+      if (att) {
+        if (att.present) {
+          cls += ' present';
+          tooltip = '✅ Присутствовал';
+        } else if (isNotif) {
+          cls += ' absent explained';
+          const notif = calAbsenceNotifs.find(n => {
+            const from = n.date_from?.split('T')[0];
+            const to = n.date_to?.split('T')[0];
+            return dateStr >= from && dateStr <= to;
+          });
+          const reasonText = notif ? (notif.reason || '') + (notif.comment ? ': ' + notif.comment : '') : '';
+          tooltip = '🟡 ' + (reasonText || 'Причина указана');
+        } else {
+          cls += ' absent';
+          tooltip = '❌ Пропустил' + (att.reason ? ': ' + att.reason : '');
+          // Clickable — add reason
+          el.style.cursor = 'pointer';
+          el.onclick = () => openExplainDay(dateStr, day);
+        }
+      } else if (isScheduled) {
+        if (isPast) {
+          // Scheduled in past, no attendance record = missing stats
+          cls += ' missing';
+          tooltip = '❓ Нет данных о посещении';
+        } else {
+          // Future scheduled training
+          cls += ' upcoming';
+          tooltip = '📅 Тренировка';
+        }
+      }
+      // Notif on scheduled day without absence record = yellow
+      if (isNotif && !att) {
+        cls = 'cal-day notif';
+        // Find the actual notification for this date and show real reason
+        const notif = calAbsenceNotifs.find(n => {
+          const from = n.date_from?.split('T')[0];
+          const to = n.date_to?.split('T')[0];
+          return dateStr >= from && dateStr <= to;
+        });
+        const reasonText = notif ? (notif.reason || '') + (notif.comment ? ': ' + notif.comment : '') : '';
+        tooltip = '🟡 ' + (reasonText || 'Предупреждение об отсутствии');
+      }
+    }
+    // Non-training days: no class, just show number
+
+    if (isToday) cls += ' today';
+    el.className = cls;
+    el.innerHTML = `<span>${day}</span>${tooltip ? `<div class="cal-tooltip">${tooltip}</div>` : ''}`;
+    grid.appendChild(el);
+  }
+}
+function checkUnexplainedAbsences() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const thirtyDaysAgo = new Date(today); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate()-30);
+
+  const notifDates = new Set();
+  calAbsenceNotifs.forEach(n => {
+    const from = new Date(n.date_from), to = new Date(n.date_to);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate()+1)) notifDates.add(d.toISOString().split('T')[0]);
+  });
+
+  const unexplained = calAttendanceRecords.filter(r => {
+    if (r.was_present) return false;
+    const k = r.training_date?.split('T')[0];
+    if (!k) return false;
+    const d = new Date(k);
+    return d >= thirtyDaysAgo && d < today && !notifDates.has(k);
+  });
+
+  if (unexplained.length > 0) {
+    const sorted = unexplained.sort((a,b)=>new Date(a.training_date)-new Date(b.training_date));
+
+    // Save dates for pre-filling form
+    _absenceAlertDateFrom = sorted[0].training_date.split('T')[0];
+    _absenceAlertDateTo = sorted[sorted.length-1].training_date.split('T')[0];
+
+    const first = new Date(sorted[0].training_date).toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+    const last = new Date(sorted[sorted.length-1].training_date).toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+    const name = athlete.first_name;
+    const txt = sorted.length === 1
+      ? `${name} не был(а) на тренировке ${first}. Пожалуйста, проинформируйте тренера о причине — тренер переживает за каждого ученика! 🙏`
+      : `${name} не был(а) на тренировках с ${first} по ${last} (${sorted.length} занятий). Пожалуйста, проинформируйте тренера о причине — тренер переживает за каждого ученика! 🙏`;
+
+    document.getElementById('absenceAlertText').textContent = txt;
+    document.getElementById('absenceAlert').style.display = 'block';
+  } else {
+    _absenceAlertDateFrom = null;
+    _absenceAlertDateTo = null;
+    document.getElementById('absenceAlert').style.display = 'none';
+  }
+}
+
+function openAbsenceExplain() {
+  // Switch to attendance tab
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-attendance').classList.add('active');
+  document.querySelector('.tab-btn[onclick*="attendance"]')?.classList.add('active');
+
+  // Pre-fill dates from alert
+  if (_absenceAlertDateFrom) document.getElementById('absFrom').value = _absenceAlertDateFrom;
+  if (_absenceAlertDateTo)   document.getElementById('absTo').value   = _absenceAlertDateTo;
+
+  // Scroll to form smoothly
+  setTimeout(() => {
+    document.getElementById('absFrom').scrollIntoView({behavior:'smooth', block:'center'});
+    document.getElementById('absFrom').focus();
+  }, 100);
+}
+
+function openExplainDay(dateKey, day) {
+  // Switch to attendance tab
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-attendance').classList.add('active');
+  document.querySelector('.tab-btn[onclick*="attendance"]')?.classList.add('active');
+
+  document.getElementById('absFrom').value = dateKey;
+  document.getElementById('absTo').value = dateKey;
+
+  setTimeout(() => {
+    document.getElementById('absFrom').scrollIntoView({behavior:'smooth', block:'center'});
+    document.getElementById('absFrom').focus();
+  }, 100);
+}
+
+async function submitAbsenceNotif() {
+  const from = document.getElementById('absFrom').value;
+  const to = document.getElementById('absTo').value || from;
+  const reason = document.getElementById('absReason').value;
+  const comment = document.getElementById('absComment').value;
+  if (!from) { alert('Укажите дату начала'); return; }
+  if (!reason) { alert('Укажите причину'); return; }
+  try {
+    await apiFetch('absence_notifications','create',{
+      child_id: athleteId, date_from: from, date_to: to, reason, comment
+    });
+    // Reset
+    document.getElementById('absFrom').value = '';
+    document.getElementById('absTo').value = '';
+    document.getElementById('absReason').value = '';
+    document.getElementById('absComment').value = '';
+    document.getElementById('absenceAlert').style.display = 'none';
+    alert('✅ Тренер получил уведомление!');
+    // Reload
+    const r2 = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'absence_notifications', action:'list', data:{child_id:athleteId}})});
+    const d2 = await r2.json();
+    calAbsenceNotifs = d2.merged || d2 || [];
+    renderCalendar();
+    checkUnexplainedAbsences();
+  } catch(e) { alert('Ошибка: ' + e.message); }
+}
+
+// ============================
+// COMPETITIONS
+// ============================
+async function loadCompetitions() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_competitions', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    competitions = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+
+    const past = competitions.filter(c => !c.event_date || new Date(c.event_date) <= new Date());
+    const wins = past.filter(c => c.is_win === true).length;
+    const losses = past.filter(c => c.is_win === false).length;
+    const wr = past.length > 0 ? Math.round(wins/past.length*100) : 0;
+
+    document.getElementById('statWins').textContent = wins;
+    document.getElementById('statLosses').textContent = losses;
+    document.getElementById('cTotal').textContent = past.length;
+    document.getElementById('cWins').textContent = wins;
+    document.getElementById('cLosses').textContent = losses;
+    document.getElementById('cWinRate').textContent = wr + '%';
+
+    filteredComps = [...competitions];
+    renderComps('past');
+
+    // Load upcoming from events
+    await loadUpcomingEvents();
+  } catch(e) { console.warn('Competitions:', e); }
+}
+
+async function loadUpcomingEvents() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'events', action:'list'})});
+    const d = await r.json();
+    const events = (d.merged||d||[]).filter(e => e.event_date && new Date(e.event_date) > new Date() && e.is_active);
+    if (events.length > 0) {
+      document.getElementById('compList').dataset.upcomingEvents = JSON.stringify(events);
+    }
+  } catch(e) {}
+}
+
+function switchCompTab(tab) {
+  document.getElementById('compTab-past').classList.toggle('active', tab==='past');
+  document.getElementById('compTab-upcoming').classList.toggle('active', tab==='upcoming');
+  document.getElementById('compSearchRow').style.display = tab==='past' ? 'flex' : 'none';
+  renderComps(tab);
+}
+
+function filterComps() {
+  const q = document.getElementById('compSearch').value.toLowerCase();
+  const df = document.getElementById('compDateFrom').value;
+  const dt = document.getElementById('compDateTo').value;
+  filteredComps = competitions.filter(c => {
+    const matchQ = !q || (c.title||'').toLowerCase().includes(q) || (c.opponent||'').toLowerCase().includes(q);
+    const matchDf = !df || (c.event_date && c.event_date >= df);
+    const matchDt = !dt || (c.event_date && c.event_date <= dt);
+    return matchQ && matchDf && matchDt;
+  });
+  compPage = 1;
+  renderComps('past');
+}
+
+function getMethodStats(comps) {
+  const wins = {}, losses = {};
+  for (const c of comps) {
+    const r = (c.result || '').toLowerCase();
+    let method = 'Other';
+    if (r.includes('walkover') || r.includes('w/o')) method = 'By Walkover';
+    else if (r.includes('submission') || r.includes('sub')) method = 'By Submission';
+    else if (r.includes('decision') || r.includes('referee')) method = 'By Decision';
+    else if (r.includes('point') || r.includes('pts') || /\d[–\-]\d/.test(c.result||'')) method = 'By Points';
+    else if (r.includes('dq') || r.includes('disqualif')) method = 'By DQ';
+    if (c.is_win === true) wins[method] = (wins[method]||0)+1;
+    else if (c.is_win === false) losses[method] = (losses[method]||0)+1;
+  }
+  return {wins, losses};
+}
+
+function renderMethodPills(obj, color) {
+  return Object.entries(obj).sort((a,b)=>b[1]-a[1])
+    .map(([m,n]) => `<span style="display:inline-flex;align-items:center;gap:.25rem;margin:.15rem .15rem;font-size:.75rem;background:${color}18;color:${color};padding:.15rem .5rem;border-radius:20px;font-weight:600">${n} ${m}</span>`).join('');
+}
+
+function getBracketLink(c) {
+  // Returns direct link to bracket: /event/{event_id}/bracket/{bracket_id}
+  const raw = c.raw_data || {};
+  const eid = raw.event_id;
+  const bid = raw.bracket_id;
+  if (!eid || !bid) return null;
+  if (c.source === 'smoothcomp') return 'https://smoothcomp.com/ru/event/' + eid + '/bracket/' + bid;
+  if (c.source === 'ajp') return 'https://ajptour.com/ru/event/' + eid + '/bracket/' + bid;
+  return null;
+}
+
+function getEventLink(c) {
+  // Fallback — just event page without bracket
+  const raw = c.raw_data || {};
+  const eid = raw.event_id;
+  if (!eid) return null;
+  if (c.source === 'smoothcomp') return 'https://smoothcomp.com/ru/event/' + eid;
+  if (c.source === 'ajp') return 'https://ajptour.com/ru/event/' + eid;
+  return null;
+}
+
+function getCatLink(c) {
+  return getBracketLink(c);
+}
+
+function renderComps(tab) {
+  const list = document.getElementById('compList');
+  const pagination = document.getElementById('compPagination');
+
+  if (tab === 'upcoming') {
+    const stored = list.dataset.upcomingEvents;
+    const events = stored ? JSON.parse(stored) : [];
+    if (!events.length) { list.innerHTML = '<p style="color:var(--muted);text-align:center;padding:2rem">Предстоящих мероприятий нет</p>'; pagination.innerHTML=''; return; }
+    list.innerHTML = events.map(e => `
+      <div class="upcoming-card">
+        <div class="upcoming-title">⚡ ${e.title}</div>
+        <div class="upcoming-meta">📅 ${new Date(e.event_date).toLocaleDateString('ru-RU')} ${e.location ? '· 📍 ' + e.location : ''} ${e.entry_fee ? '· 💰 ' + e.entry_fee + ' грн' : ''}</div>
+        <div class="upcoming-actions">
+          <button class="btn btn-sm btn-orange" onclick="registerForEvent(${e.id})">📝 Подать заявку</button>
+          ${e.description ? `<button class="btn btn-sm btn-ghost" onclick="alert('${(e.description||'').replace(/'/g,"\\'")}')">ℹ️ Подробнее</button>` : ''}
         </div>
-      </td>
-      <td>
-        <div style="display:flex;align-items:center;gap:.4rem">
-          <input
-            type="number"
-            class="fee-input"
-            id="fee_${reg.id}"
-            value="${fee}"
-            min="0"
-            onchange="onFeeChange(${reg.id}, this)"
-            oninput="onFeeChange(${reg.id}, this)"
-          >
-          <button class="fee-save-btn" id="feebtn_${reg.id}" onclick="saveFee(${reg.id})">✓</button>
+      </div>`).join('');
+    pagination.innerHTML = '';
+    return;
+  }
+
+  const past = filteredComps
+    .filter(c => !c.event_date || new Date(c.event_date) <= new Date())
+    .sort((a,b) => new Date(b.event_date)-new Date(a.event_date));
+
+  // Method stats
+  const {wins: wStats, losses: lStats} = getMethodStats(past);
+  const statsEl = document.getElementById('compMethodStats');
+  if (statsEl) {
+    const wHtml = renderMethodPills(wStats, '#16a34a');
+    const lHtml = renderMethodPills(lStats, '#dc2626');
+    statsEl.innerHTML = (wHtml||lHtml) ? `
+      <div style="padding:.5rem 0;border-top:1px solid var(--border);margin-top:.5rem">
+        ${wHtml ? `<div style="margin-bottom:.25rem"><span style="font-size:.7rem;font-weight:700;color:#16a34a;margin-right:.3rem;text-transform:uppercase">✅ Победы:</span>${wHtml}</div>` : ''}
+        ${lHtml ? `<div><span style="font-size:.7rem;font-weight:700;color:#dc2626;margin-right:.3rem;text-transform:uppercase">❌ Поражения:</span>${lHtml}</div>` : ''}
+      </div>` : '';
+  }
+
+  const perPage = 10;
+  const totalPages = Math.ceil(past.length / perPage);
+  const page = past.slice((compPage-1)*perPage, compPage*perPage);
+
+  list.innerHTML = page.length ? page.map(c => {
+    const raw = (() => { try { return typeof c.raw_data === 'string' ? JSON.parse(c.raw_data) : (c.raw_data||{}); } catch(e){ return {}; } })();
+    c.raw_data = raw;
+    const catLink = getCatLink(c);
+    const catHtml = c.category
+      ? catLink
+        ? `<a href="${catLink}" target="_blank" rel="noopener" class="comp-tag cat" style="text-decoration:none;cursor:pointer" title="Открыть сетку">🏷️ ${c.category} <span style="opacity:.6;font-size:.8em">↗</span></a>`
+        : `<span class="comp-tag cat">🏷️ ${c.category}</span>`
+      : '';
+    const srcBadge = c.source && c.source!=='manual'
+      ? `<span style="font-size:.65rem;background:#ede9fe;color:#7c3aed;padding:.1rem .35rem;border-radius:4px;font-weight:600;margin-left:.3rem">${c.source.toUpperCase()}</span>`
+      : '';
+    const eventLink = getEventLink(c);
+    const titleHtml = eventLink
+      ? `<a href="${eventLink}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1.5px dashed var(--primary);cursor:pointer" title="Открыть страницу турнира">${c.title||'—'}</a>`
+      : (c.title||'—');
+    return `
+    <div class="comp-card">
+      <div class="comp-header">
+        <div class="comp-title">${titleHtml}${srcBadge}</div>
+        <div style="display:flex;align-items:center;gap:.4rem;flex-shrink:0">
+          <span class="comp-date">${c.event_date ? new Date(c.event_date).toLocaleDateString('ru-RU') : '—'}</span>
+          <button onclick="deleteComp(${c.id})" title="Удалить" style="background:none;border:1px solid #fca5a5;color:#dc2626;cursor:pointer;font-size:.8rem;padding:.15rem .4rem;border-radius:4px;line-height:1;transition:all .15s" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">🗑 Удалить</button>
         </div>
-      </td>
-      <td>
-        <label class="paid-label ${isPaid ? 'is-paid' : 'not-paid'}" id="paidlabel_${reg.id}">
-          <input
-            type="checkbox"
-            class="paid-checkbox"
-            id="paid_${reg.id}"
-            ${isPaid ? 'checked' : ''}
-            onchange="togglePaid(${reg.id}, this)"
-          >
-          ${isPaid ? '✅ Оплатил' : 'Не оплатил'}
-        </label>
-      </td>
-    `;
-    tbody.appendChild(tr);
+      </div>
+      <div class="comp-meta">
+        ${catHtml}
+        ${c.placement ? `<span class="comp-tag place">🥇 Место: ${c.placement}</span>` : ''}
+        ${c.is_win === true ? '<span class="comp-tag win">✅ Победа</span>' : ''}
+        ${c.is_win === false ? '<span class="comp-tag loss">❌ Поражение</span>' : ''}
+        ${c.result ? `<span class="comp-tag" style="background:#f8fafc;color:#475569;font-size:.75rem">⚡ ${c.result}</span>` : ''}
+        ${c.opponent ? `<span class="comp-tag" style="background:#f1f5f9">⚔️ ${c.opponent}</span>` : ''}
+        ${c.location ? `<span class="comp-tag" style="background:#f0fdf4;color:#16a34a">📍 ${c.location}</span>` : ''}
+        ${catLink
+          ? `<a href="${catLink}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:#eff6ff;color:#2563eb;padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid #bfdbfe;font-weight:500;margin:.15rem">🔗 Перейти на сетку ↗</a>`
+          : ''
+        }
+      </div>
+    </div>`;
+  }).join('') : '<p style="color:var(--muted);text-align:center;padding:2rem">Нет соревнований</p>';
+
+  pagination.innerHTML = totalPages > 1 ? Array.from({length:totalPages},(_,i)=>`<button class="page-btn ${i+1===compPage?'active':''}" onclick="compPage=${i+1};renderComps('past')">${i+1}</button>`).join('') : '';
+}
+
+async function deleteComp(id) {
+  if (!confirm('Удалить этот результат?')) return;
+  try {
+    await apiFetch('athlete_competitions','delete',{id, child_id:athleteId});
+    await loadCompetitions();
+    showToast('Удалено','success');
+  } catch(e) { showToast('Ошибка удаления','error'); }
+}
+
+async function saveComp() {
+  const title = document.getElementById('ac_title').value.trim();
+  const date = document.getElementById('ac_date').value;
+  if (!title) { alert('Введите название'); return; }
+  const res = document.getElementById('ac_result').value;
+  await apiFetch('athlete_competitions','create',{
+    child_id: athleteId, title, event_date: date||null,
+    location: document.getElementById('ac_location').value,
+    category: document.getElementById('ac_category').value,
+    placement: document.getElementById('ac_placement').value,
+    opponent: document.getElementById('ac_opponent').value,
+    is_win: res==='win'?true:res==='loss'?false:null,
+    source:'manual'
+  });
+  closeModal('addCompModal');
+  await loadCompetitions();
+}
+
+async function registerForEvent(eventId) {
+  await apiFetch('event_registrations','create',{event_id:eventId, child_id:athleteId, status:'pending'});
+  alert('✅ Заявка подана!');
+}
+
+
+// ============================
+// PHYSICAL CHARTS
+// ============================
+let physChartInstance = null;
+let physChartMode = 'weight';
+
+function switchPhysChart(mode) {
+  physChartMode = mode;
+  document.getElementById('chartBtnWeight').className = mode === 'weight' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-ghost';
+  document.getElementById('chartBtnHeight').className = mode === 'height' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-ghost';
+  renderPhysChart();
+}
+
+function renderPhysChart() {
+  // Build history from attendance dates + current values
+  // Use athlete_extended history if available, otherwise show current point
+  const canvas = document.getElementById('physChartCanvas');
+  const emptyEl = document.getElementById('physChartEmpty');
+  
+  // Collect data points from physHistory (loaded separately) or fallback to single point
+  const history = window._physHistory || [];
+  const _pd = str => { const s=String(str||'').split('T')[0]; const [y,m,d]=s.split('-').map(Number); return (y&&m&&d)?new Date(y,m-1,d):new Date(NaN); };
+  const dataPoints = history.filter(h => physChartMode === 'weight' ? h.weight_kg : h.height_cm)
+    .map(h => ({ x: h.recorded_at ? String(h.recorded_at).split('T')[0] : h.date, y: physChartMode === 'weight' ? parseFloat(h.weight_kg) : parseFloat(h.height_cm) }))
+    .sort((a,b) => _pd(a.x) - _pd(b.x));
+
+  // Add current value as latest point if not in history
+  if (athlete) {
+    const val = physChartMode === 'weight' ? athlete.weight_kg : athlete.height_cm;
+    if (val) {
+      const today = new Date().toISOString().split('T')[0];
+      if (!dataPoints.length || dataPoints[dataPoints.length-1].x !== today) {
+        dataPoints.push({ x: today, y: parseFloat(val) });
+      }
+    }
+  }
+
+  if (dataPoints.length < 1) {
+    canvas.style.display = 'none';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  canvas.style.display = 'block';
+  emptyEl.style.display = 'none';
+
+  if (physChartInstance) physChartInstance.destroy();
+
+  const label = physChartMode === 'weight' ? 'Вес (кг)' : 'Рост (см)';
+  const color = physChartMode === 'weight' ? '#f97316' : '#2563eb';
+
+  // Safe parser: 'YYYY-MM-DD' → local Date (без UTC-сдвига / Invalid Date)
+  const parseLocalDate = str => {
+    if (!str) return new Date(NaN);
+    const s = String(str).split('T')[0];
+    const [y, m, d] = s.split('-').map(Number);
+    return (y && m && d) ? new Date(y, m - 1, d) : new Date(str);
+  };
+
+  physChartInstance = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: dataPoints.map(p => {
+        const d = parseLocalDate(p.x);
+        return isNaN(d) ? p.x : d.toLocaleDateString('ru-RU', {day:'2-digit', month:'short', year:'2-digit'});
+      }),
+      datasets: [{
+        label,
+        data: dataPoints.map(p => p.y),
+        borderColor: color,
+        backgroundColor: color + '22',
+        fill: true,
+        tension: 0.3,
+        pointRadius: dataPoints.length > 20 ? 3 : 5,
+        pointBackgroundColor: color,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: ctx => ctx.parsed.y + (physChartMode === 'weight' ? ' кг' : ' см') }
+      }},
+      scales: {
+        x: { ticks: { maxTicksLimit: 12, maxRotation: 45 } },
+        y: {
+          beginAtZero: false,
+          ticks: { callback: v => v + (physChartMode === 'weight' ? ' кг' : ' см') }
+        }
+      }
+    }
   });
 }
 
-// ── Fee change ────────────────────────────────────────────────────────────────
-function onFeeChange(regId, input) {
-  input.classList.add('changed');
-  const btn = document.getElementById(`feebtn_${regId}`);
-  btn.classList.add('visible');
+function openPhysChartModal() {
+  openModal('physChartModal');
+  // Load history then render
+  loadPhysHistory().then(() => renderPhysChart());
 }
 
-async function saveFee(regId) {
-  const input = document.getElementById(`fee_${regId}`);
-  const newFee = parseInt(input.value) || 0;
+async function loadPhysHistory() {
   try {
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token, resource: 'event_registrations', action: 'update',
-        data: { id: regId, entry_fee: newFee }
-      })
-    });
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'children_extended', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    const ok = (d.merged && d.merged[0]?.id) || d.id || d.success;
-    if (ok) {
-      input.classList.remove('changed');
-      document.getElementById(`feebtn_${regId}`).classList.remove('visible');
-      // update local data
-      const reg = registrations.find(r => r.id === regId);
-      if (reg) reg.entry_fee = newFee;
-      // recalc total
-      const totalFee = registrations.reduce((s, r) => s + (parseFloat(r.entry_fee) || 0), 0);
-      document.getElementById('statTotal').textContent = totalFee > 0 ? totalFee + ' грн' : '0';
-      showToast('Взнос сохранён');
-    } else {
-      showToast('Ошибка сохранения', 'error');
+    let hist = [];
+    if (Array.isArray(d)) hist = d;
+    else if (Array.isArray(d.merged)) hist = d.merged;
+    else if (Array.isArray(d.data)) hist = d.data;
+    else if (d && typeof d === 'object') {
+      const arr = Object.values(d).find(v => Array.isArray(v));
+      if (arr) hist = arr;
     }
+    window._physHistory = hist.filter(h => h.weight_kg || h.height_cm);
+    console.log('_physHistory loaded:', window._physHistory.length, 'records');
+    return window._physHistory;
   } catch(e) {
-    showToast('Ошибка: ' + e.message, 'error');
+    console.error('loadPhysHistory error:', e);
+    window._physHistory = [];
+    return [];
   }
 }
 
-// ── Toggle paid ───────────────────────────────────────────────────────────────
-async function togglePaid(regId, checkbox) {
-  const isPaid = checkbox.checked;
-  const label = document.getElementById(`paidlabel_${regId}`);
+// ============================
+// TOAST NOTIFICATIONS
+// ============================
+function showToast(msg, type='info', duration=4000) {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.style.cssText = 'position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;';
+    document.body.appendChild(container);
+  }
+  const t = document.createElement('div');
+  const colors = {info:'#3b82f6', success:'#22c55e', error:'#ef4444', warning:'#f59e0b'};
+  t.style.cssText = `background:${colors[type]||'#3b82f6'};color:#fff;padding:.75rem 1.2rem;border-radius:8px;font-size:.9rem;box-shadow:0 4px 12px rgba(0,0,0,.3);max-width:320px;word-break:break-word;`;
+  t.textContent = msg;
+  container.appendChild(t);
+  setTimeout(() => t.remove(), duration);
+}
+
+// ============================
+// SYNC SMOOTHCOMP / AJP
+// ============================
+function detectPlatformId(input, platform) {}
+
+async function syncProfile(platform) {
+  const url = platform === 'smoothcomp'
+    ? document.getElementById('scUrl').value.trim()
+    : document.getElementById('ajpUrl').value.trim();
+  if (!url) { alert('Введите ссылку на профиль'); return; }
+
+  const idMatch = url.match(/\/profile\/(\d+)/);
+  if (!idMatch) { alert('Неверная ссылка. Пример: https://smoothcomp.com/en/profile/12345'); return; }
+  const profileId = idMatch[1];
+
+  // Show confirm modal immediately (no preview API call — sync takes time)
+  pendingSync = {platform, profileId, url};
+  const platformName = platform === 'smoothcomp' ? 'Smoothcomp' : 'AJP Tour';
+  document.getElementById('syncName').textContent = `Профиль #${profileId}`;
+  document.getElementById('syncPlatform').textContent = `${platformName} · ID ${profileId}`;
+  document.getElementById('syncStats').textContent = 'Нажмите "Импортировать" для загрузки данных';
+  openModal('syncConfirmModal');
+}
+
+async function confirmSync() {
+  if (!pendingSync) return;
+  closeModal('syncConfirmModal');
+  const btn = document.querySelector('[onclick="confirmSync()"]');
+  if (btn) btn.disabled = true;
+
+  // Show loading toast
+  showToast('Синхронизация... может занять до 30 сек', 'info', 30000);
 
   try {
-    const r = await fetch(API, {
+    // Call sync-external webhook directly
+    const SYNC_API = 'https://primary-production-4b93e.up.railway.app/webhook/sync-external';
+    const r = await fetch(SYNC_API, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        token, resource: 'event_registrations', action: 'update',
-        data: { id: regId, is_paid: isPaid }
+        token,
+        type: pendingSync.platform,
+        profile_id: pendingSync.profileId,
+        child_id: athleteId
+      })
+    });
+
+    if (!r.ok) {
+      const txt = await r.text();
+      throw new Error(`HTTP ${r.status}: ${txt.slice(0,200)}`);
+    }
+
+    const d = await r.json();
+    if (d.success) {
+      showToast(`✅ Импортировано ${d.inserted || 0} турниров. Побед: ${d.stats?.wins || 0}`, 'success');
+      await loadCompetitions();
+    } else {
+      throw new Error(d.error || 'Ошибка синхронизации');
+    }
+  } catch(e) {
+    showToast('Ошибка: ' + e.message, 'error');
+  } finally {
+    if (btn) btn.disabled = false;
+    pendingSync = null;
+  }
+}
+
+// ============================
+// CHAT
+// ============================
+let chatActiveUserId = null;
+
+async function loadChatContacts() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'messages', action:'trainers', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const contacts = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+    const btns = document.getElementById('chatContactBtns');
+    if (!btns) return;
+    if (!contacts.length) { btns.innerHTML = '<span style="color:var(--muted);font-size:.85rem">Нет доступных собеседников</span>'; return; }
+    btns.innerHTML = contacts.map(c => `
+      <button id="chatBtn_${c.id}" onclick="selectChatContact(${c.id}, '${c.first_name} ${c.last_name}')"
+        class="btn btn-ghost btn-sm" style="border:2px solid var(--border)">
+        ${c.role === 'director' ? '👔' : '🥋'} ${c.first_name} ${c.last_name}
+      </button>`).join('');
+    if (contacts.length > 0) selectChatContact(contacts[0].id, contacts[0].first_name + ' ' + contacts[0].last_name);
+  } catch(e) { console.error('loadChatContacts:', e); }
+}
+
+function selectChatContact(userId, name) {
+  chatActiveUserId = userId;
+  document.querySelectorAll('[id^="chatBtn_"]').forEach(b => {
+    b.style.borderColor = 'var(--border)';
+    b.style.background = '';
+    b.style.color = '';
+  });
+  const active = document.getElementById('chatBtn_' + userId);
+  if (active) { active.style.borderColor = 'var(--p)'; active.style.background = 'var(--p)'; active.style.color = '#fff'; }
+  loadMessages();
+}
+
+async function loadMessages() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'messages', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const allMsgs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+    const msgs = chatActiveUserId
+      ? allMsgs.filter(m => m.from_user_id == chatActiveUserId || m.to_user_id == chatActiveUserId)
+      : allMsgs;
+    const container = document.getElementById('chatMessages');
+    if (!msgs.length) {
+      container.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>';
+      const badge = document.getElementById('chatUnreadBadge');
+      if (badge) badge.style.display = 'none';
+      return;
+    }
+    container.innerHTML = msgs.map(m => {
+      const isFromAthlete = m.is_from_athlete===true||m.is_from_athlete==='true'||m.is_from_athlete==='t';
+      const isMine = (userRole==='athlete') ? isFromAthlete : m.from_user_id===userId;
+      const time = new Date(m.created_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+      return `<div class="msg ${isMine?'mine':'theirs'}" data-id="${m.id}"><div class="msg-bubble">${m.text}</div><div class="msg-time">${time} <span onclick="deleteMessage(${m.id})" style="cursor:pointer;margin-left:.5rem;opacity:.5;font-size:.75rem" title="Удалить">🗑</span></div></div>`;
+    }).join('');
+    container.scrollTop = container.scrollHeight;
+    const unread = allMsgs.filter(m => {
+      const isFromAthlete = m.is_from_athlete===true||m.is_from_athlete==='true'||m.is_from_athlete==='t';
+      return !isFromAthlete && (m.is_read === false || m.is_read === 'false' || m.is_read === 0);
+    }).length;
+    const badge = document.getElementById('chatUnreadBadge');
+    if (badge) {
+      if (unread > 0) { badge.textContent = unread > 99 ? '99+' : unread; badge.style.display = 'inline-block'; }
+      else badge.style.display = 'none';
+    }
+  } catch(e) {}
+}
+
+async function deleteMessage(id) {
+  if (!confirm('Удалить сообщение?')) return;
+  await apiFetch('messages', 'delete', {id});
+  await loadMessages();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  if (!chatActiveUserId) { alert('Выберите собеседника'); return; }
+  input.value = '';
+  const msgData = {child_id: athleteId, text, from_user_id: userId, is_from_athlete: true, to_user_id: chatActiveUserId};
+  await apiFetch('messages','create', msgData);
+  await loadMessages();
+}
+
+function startChatPolling() {
+  loadChatContacts();
+  chatInterval = setInterval(loadMessages, 15000);
+}
+
+// ============================
+// DOCUMENTS
+// ============================
+async function loadDocuments() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_documents', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const docs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+    const icons = {birth_cert:'📜', medical:'🏥', other:'📎'};
+    document.getElementById('docGrid').innerHTML = docs.map(doc => `
+      <div class="doc-card filled" onclick="window.open('${doc.file_url}','_blank')" style="cursor:pointer">
+        <button class="doc-delete" onclick="event.stopPropagation();deleteDocument(${doc.id},${doc.child_id})" title="Удалить">🗑</button>
+        <div class="doc-icon">${icons[doc.doc_type]||'📎'}</div>
+        <div class="doc-name" title="${doc.title || ''}">${doc.title || doc.doc_type || 'Документ'}</div>
+        <div class="doc-date">${doc.created_at ? new Date(doc.created_at).toLocaleDateString('ru-RU') : ''}</div>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
+
+async function deleteDocument(docId, childId) {
+  if (!confirm('Удалить документ?')) return;
+  try {
+    await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_documents', action:'delete', data:{id:docId, child_id:childId}})});
+    await loadDocuments();
+    showToast('Документ удалён', 'success');
+  } catch(e) { showToast('Ошибка удаления', 'error'); }
+}
+
+async function uploadDocument(input) {
+  const file = input.files[0]; if (!file) return;
+
+  const typeMap = {'1':'birth_cert','2':'medical','3':'other'};
+  const typeChoice = prompt('Тип документа:\n1 - Свидетельство о рождении\n2 - Медсправка\n3 - Другое\n\nВведите номер:', '3');
+  const doc_type = typeMap[typeChoice] || 'other';
+  const title = prompt('Название документа:', file.name.replace(/\.[^.]+$/,''));
+  if (!title) return;
+
+  showToast('⏳ Загрузка документа...', 'info', 10000);
+
+  // Конвертируем файл в base64
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  // mime — из file.type или из dataUrl
+  const file_mime = file.type || dataUrl.split(';')[0].replace('data:', '') || 'application/octet-stream';
+  // base64 — часть после запятой
+  const file_base64 = dataUrl.split(',')[1];
+
+  console.log('uploadDocument:', {file_mime, b64len: file_base64?.length, title, doc_type});
+
+  try {
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-athlete-doc', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        token,
+        child_id: athleteId,
+        doc_type,
+        title,
+        file_base64,
+        file_mime
       })
     });
     const d = await r.json();
-    const ok = (d.merged && d.merged[0]?.id) || d.id || d.success;
-    if (ok) {
-      label.className = `paid-label ${isPaid ? 'is-paid' : 'not-paid'}`;
-      label.innerHTML = `<input type="checkbox" class="paid-checkbox" id="paid_${regId}" ${isPaid ? 'checked' : ''} onchange="togglePaid(${regId}, this)">${isPaid ? '✅ Оплатил' : 'Не оплатил'}`;
-      // update local
-      const reg = registrations.find(r => r.id === regId);
-      if (reg) reg.is_paid = isPaid;
-      const totalPaid = registrations.filter(r => r.is_paid).length;
-      document.getElementById('statPaid').textContent = totalPaid;
-      showToast(isPaid ? 'Отмечен как оплативший' : 'Отметка снята');
+    if (d.success || d.url || (d.doc && d.doc.id)) {
+      await loadDocuments();
+      showToast('✅ Документ загружен!', 'success');
     } else {
-      checkbox.checked = !isPaid;
-      showToast('Ошибка сохранения', 'error');
+      showToast('Ошибка: ' + (d.error || 'Неизвестная ошибка'), 'error');
     }
   } catch(e) {
-    checkbox.checked = !isPaid;
-    showToast('Ошибка: ' + e.message, 'error');
+    console.error('uploadDocument error:', e);
+    showToast('Ошибка загрузки документа', 'error');
   }
+  input.value = '';
+}
+
+// ============================
+// MEDICAL
+// ============================
+async function loadMedical() {
+  const el = document.getElementById('medBlock');
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_documents', action:'list', data:{child_id: athleteId}})});
+    const d = await r.json();
+    const all = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+    const certs = all.filter(doc => doc.doc_type === 'medical');
+    if (!certs.length) {
+      el.innerHTML = '<p style="color:var(--muted)">Медсправки не добавлены</p>';
+      return;
+    }
+    el.innerHTML = certs.map(cert => {
+      let ai = {};
+      try { ai = JSON.parse(cert.notes || '{}'); } catch(e) {}
+
+      // Если notes нет — пробуем вытащить дату из title ("Медсправка от ... до 2024-06-11")
+      if (!ai.expires_date && cert.title) {
+        const m = cert.title.match(/до (\d{4}-\d{2}-\d{2})/);
+        if (m) ai.expires_date = m[1];
+      }
+
+      let statusHtml = '';
+      const expDate = ai.expires_date || null;
+      if (expDate) {
+        const exp = new Date(expDate);
+        const now = new Date();
+        const diff = Math.ceil((exp - now) / 86400000);
+        const status = diff < 0 ? 'expired' : diff < 30 ? 'warn' : 'ok';
+        const labels = {ok:'✅ Действует', warn:'⚠️ Истекает', expired:'❌ Истекла'};
+        statusHtml = `
+          <span class="med-status ${status}">${labels[status]}</span>
+          <span>До <b>${exp.toLocaleDateString('ru-RU')}</b></span>
+          ${diff > 0
+            ? `<span style="color:var(--muted);font-size:.8rem">осталось ${diff} дн.</span>`
+            : `<span style="color:var(--red);font-size:.8rem">просрочена ${Math.abs(diff)} дн. назад</span>`}`;
+      } else {
+        statusHtml = `<span class="med-status warn">⚠️ Дата не определена</span>`;
+      }
+
+      const details = [
+        ai.diagnosis       && `🩺 <b>Заключение:</b> ${ai.diagnosis}`,
+        ai.sport_clearance && `✅ <b>Допуск:</b> ${ai.sport_clearance}`,
+        ai.clinic_name     && `🏥 <b>Учреждение:</b> ${ai.clinic_name}`,
+        ai.doctor_name     && `👨‍⚕️ <b>Врач:</b> ${ai.doctor_name}`,
+        ai.sport_type      && `🥋 <b>Вид спорта:</b> ${ai.sport_type}`,
+        ai.issued_date     && `📅 <b>Выдана:</b> ${ai.issued_date}`,
+        ai.athlete_name    && `👤 <b>Спортсмен:</b> ${ai.athlete_name}`,
+      ].filter(Boolean);
+
+      return `<div style="border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.75rem">
+        <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:${details.length ? '.75rem' : '0'}">
+          ${statusHtml}
+          ${cert.file_url ? `<a href="${cert.file_url}" target="_blank" class="btn btn-sm btn-ghost">👁️ Просмотр</a>` : ''}
+          <button class="btn btn-sm btn-ghost" style="color:var(--red)" onclick="deleteMedicalCert(${cert.id},${cert.child_id})">🗑 Удалить</button>
+          <span style="color:var(--muted);font-size:.75rem;margin-left:auto">${cert.created_at ? new Date(cert.created_at).toLocaleDateString('ru-RU') : ''}</span>
+        </div>
+        ${details.length ? `<div style="font-size:.85rem;display:flex;flex-direction:column;gap:.25rem">${details.map(d => `<div>${d}</div>`).join('')}</div>` : ''}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<p style="color:var(--muted)">Ошибка загрузки</p>';
+  }
+}
+
+async function deleteMedicalCert(certId, childId) {
+  if (!confirm('Удалить медсправку?')) return;
+  try {
+    await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_documents', action:'delete', data:{id: certId, child_id: childId}})});
+    await loadMedical();
+    showToast('Медсправка удалена', 'success');
+  } catch(e) { showToast('Ошибка удаления', 'error'); }
+}
+
+async function uploadMedical(input) {
+  const file = input.files[0]; if (!file) return;
+
+  showToast('⏳ Загрузка и AI-распознавание...', 'info', 20000);
+
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const file_mime = file.type || dataUrl.split(';')[0].replace('data:', '') || 'image/jpeg';
+  const file_base64 = dataUrl.split(',')[1];
+
+  try {
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-medical-cert', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({token, child_id: athleteId, file_base64, file_mime})
+    });
+    const d = await r.json();
+    if (d.success || d.doc) {
+      await loadMedical();
+      const ai = d.ai_data || {};
+      const dateStr = ai.expires_date ? new Date(ai.expires_date).toLocaleDateString('ru-RU') : 'не определена';
+      let msg = `✅ Медсправка загружена!\n\nAI распознал:\n`;
+      if (ai.issued_date)     msg += `📅 Выдана: ${ai.issued_date}\n`;
+      if (ai.expires_date)    msg += `📅 Действует до: ${dateStr}\n`;
+      if (ai.athlete_name)    msg += `👤 Спортсмен: ${ai.athlete_name}\n`;
+      if (ai.birth_date)      msg += `🎂 Дата рождения: ${ai.birth_date}\n`;
+      if (ai.diagnosis)       msg += `🩺 Заключение: ${ai.diagnosis}\n`;
+      if (ai.sport_clearance) msg += `✅ Допуск: ${ai.sport_clearance}\n`;
+      if (ai.clinic_name)     msg += `🏥 Учреждение: ${ai.clinic_name}\n`;
+      if (ai.doctor_name)     msg += `👨‍⚕️ Врач: ${ai.doctor_name}\n`;
+      if (ai.sport_type)      msg += `🥋 Вид спорта: ${ai.sport_type}\n`;
+      showToast('✅ Медсправка загружена и распознана AI', 'success', 5000);
+      alert(msg);
+    } else {
+      showToast('Ошибка: ' + (d.error || 'Неизвестная ошибка'), 'error');
+    }
+  } catch(e) {
+    console.error('uploadMedical error:', e);
+    showToast('Ошибка загрузки медсправки', 'error');
+  }
+  input.value = '';
+}
+
+// ============================
+// INJURIES
+// ============================
+async function loadInjuries() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_injuries', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const injuries = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+    document.getElementById('injuryList').innerHTML = injuries.length ? injuries.map(i => `
+      <div class="injury-item" style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="flex:1">
+          <div class="injury-title">🩹 ${i.title}</div>
+          <div class="injury-dates">${i.injury_date ? '📅 ' + new Date(i.injury_date).toLocaleDateString('ru-RU') : ''} ${i.recovery_date ? '→ ' + new Date(i.recovery_date).toLocaleDateString('ru-RU') : ''}</div>
+          ${i.description ? `<div class="injury-desc">${i.description}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:.4rem;flex-shrink:0;margin-left:.75rem">
+          <button onclick="editInjury(${i.id})" style="background:none;border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem">✏️</button>
+          <button onclick="deleteInjury(${i.id})" style="background:none;border:1px solid #ffcdd2;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;color:#c62828">🗑️</button>
+        </div>
+      </div>
+    `).join('') : '<p style="color:var(--muted)">Травм не зафиксировано</p>';
+  } catch(e) {}
+}
+
+async function saveInjury() {
+  const title = document.getElementById('ai_title').value.trim();
+  if (!title) { alert('Введите название'); return; }
+  const editId = document.getElementById('addInjuryModal').dataset.editId;
+  if (editId) {
+    await apiFetch('athlete_injuries','update',{
+      id:parseInt(editId), child_id:athleteId, title,
+      injury_date: document.getElementById('ai_date').value||null,
+      recovery_date: document.getElementById('ai_recovery').value||null,
+      description: document.getElementById('ai_desc').value
+    });
+    delete document.getElementById('addInjuryModal').dataset.editId;
+  } else {
+    await apiFetch('athlete_injuries','create',{
+      child_id:athleteId, title,
+      injury_date: document.getElementById('ai_date').value||null,
+      recovery_date: document.getElementById('ai_recovery').value||null,
+      description: document.getElementById('ai_desc').value,
+      created_by: userId
+    });
+  }
+  closeModal('addInjuryModal');
+  await loadInjuries();
+}
+
+async function editInjury(id) {
+  const inj = calAttendanceRecords; // placeholder
+  const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'athlete_injuries', action:'list', data:{child_id:athleteId}})});
+  const d = await r.json();
+  const injuries = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+  const i = injuries.find(x => x.id === id);
+  if (!i) return;
+  document.getElementById('ai_title').value = i.title || '';
+  document.getElementById('ai_date').value = i.injury_date ? i.injury_date.split('T')[0] : '';
+  document.getElementById('ai_recovery').value = i.recovery_date ? i.recovery_date.split('T')[0] : '';
+  document.getElementById('ai_desc').value = i.description || '';
+  document.getElementById('addInjuryModal').dataset.editId = id;
+  openModal('addInjuryModal');
+}
+
+async function deleteInjury(id) {
+  if (!confirm('Удалить запись о травме?')) return;
+  await apiFetch('athlete_injuries','delete',{id, child_id:athleteId});
+  await loadInjuries();
+}
+
+async function deleteGoal(id) {
+  if (!confirm('Удалить цель?')) return;
+  await apiFetch('athlete_goals','delete',{id, child_id:athleteId});
+  await loadGoals();
+}
+
+// ============================
+// GOALS
+// ============================
+async function loadGoals() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'athlete_goals', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const goals = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+    document.getElementById('goalsList').innerHTML = goals.length ? goals.map(g => `
+      <div class="goal-item">
+        <div class="goal-check ${g.is_done?'done':''}" onclick="toggleGoal(${g.id},${!g.is_done})">${g.is_done?'✓':''}</div>
+        <div class="goal-text" style="flex:1">
+          <div class="goal-name" style="${g.is_done?'text-decoration:line-through;color:var(--muted)':''}">🎯 ${g.text}</div>
+          ${g.target_date ? `<div class="goal-date">Срок: ${new Date(g.target_date).toLocaleDateString('ru-RU')}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:.4rem;flex-shrink:0;margin-left:.75rem">
+          <button onclick="deleteGoal(${g.id})" style="background:none;border:1px solid #ffcdd2;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;color:#c62828">🗑️</button>
+        </div>
+      </div>
+    `).join('') : '<p style="color:var(--muted)">Целей нет. Тренер может добавить цели для спортсмена.</p>';
+  } catch(e) {}
+}
+
+async function saveGoal() {
+  const text = document.getElementById('ag_text').value.trim();
+  if (!text) { alert('Введите цель'); return; }
+  await apiFetch('athlete_goals','create',{child_id:athleteId, text, trainer_id:userId, target_date:document.getElementById('ag_date').value||null});
+  closeModal('addGoalModal');
+  await loadGoals();
+}
+
+async function toggleGoal(goalId, isDone) {
+  await apiFetch('athlete_goals','update',{id:goalId, is_done:isDone});
+  await loadGoals();
+}
+
+// ============================
+// NOTIFICATIONS
+// ============================
+async function loadNotifications() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'notifications', action:'unread', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const notifs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+    if (notifs.length > 0) {
+      const n = notifs[0];
+      document.getElementById('notifyTitle').textContent = '📢 ' + n.title;
+      document.getElementById('notifyText').textContent = n.text;
+      document.getElementById('notifyBanner').style.display = 'block';
+      document.getElementById('notifyBanner')._notifId = n.id;
+    }
+  } catch(e) {}
+}
+
+async function markNotificationRead() {
+  const id = document.getElementById('notifyBanner')._notifId;
+  if (id) await apiFetch('notification_reads','create',{notification_id:id, child_id:athleteId});
+  document.getElementById('notifyBanner').style.display = 'none';
+}
+
+// ============================
+// RATING
+// ============================
+async function loadRating() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'club_rating', action:'get', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const rating = d.merged || d;
+    if (rating && rating.position) {
+      document.getElementById('statRating').textContent = '#' + rating.position;
+      document.getElementById('ratingBlock').innerHTML = `
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.75rem">
+          <div style="font-size:2rem;font-weight:700;color:var(--p)">#${rating.position}</div>
+          <div>
+            <div style="font-size:.9rem;font-weight:600">из ${rating.total || '?'} спортсменов клуба</div>
+            <div style="font-size:.8rem;color:var(--muted)">Рейтинг рассчитан: посещаемость + результаты + пояс</div>
+          </div>
+        </div>
+        <div class="rating-bar"><div class="rating-fill" style="width:${rating.score||0}%"></div></div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:.35rem">Очков: ${rating.score || 0}</div>
+      `;
+      renderBadges(rating.badges || []);
+    } else {
+      document.getElementById('ratingBlock').innerHTML = '<p style="color:var(--muted)">Рейтинг рассчитывается...</p>';
+    }
+  } catch(e) {}
+}
+
+function renderBadges(badges) {
+  const defs = {
+    attendance_star:   {icon:'⭐', label:'Звезда посещений', cls:'gold'},
+    top_competitor:    {icon:'🥇', label:'Топ-турнирный', cls:'gold'},
+    iron_athlete:      {icon:'🔩', label:'Железный атлет', cls:'silver'},
+    first_win:         {icon:'🏅', label:'Первая победа', cls:'blue'},
+    unbeaten:          {icon:'🛡️', label:'Непобедимый', cls:'purple'},
+    club_champion:     {icon:'👑', label:'Чемпион клуба', cls:'gold'},
+    '10_trainings':    {icon:'🔟', label:'10 тренировок', cls:'green'},
+    '50_trainings':    {icon:'💪', label:'50 тренировок', cls:'blue'},
+    '100_trainings':   {icon:'🌟', label:'100 тренировок', cls:'gold'},
+    birthday_warrior:  {icon:'🎂', label:'Именинник', cls:'orange'},
+  };
+  const html = badges.map(b => {
+    const def = defs[b] || {icon:'🏷️', label:b, cls:'silver'};
+    return `<div class="badge-chip ${def.cls}">${def.icon} ${def.label}</div>`;
+  }).join('');
+  document.getElementById('heroBadges').innerHTML = html;
+}
+
+// ============================
+// ADDRESS & ROUTE
+// ============================
+function renderAddress() {
+  const el = document.getElementById('addressBlock');
+  if (!athlete.home_address) {
+    el.innerHTML = '<p style="color:var(--muted);font-size:.9rem">Адрес не указан</p>';
+    return;
+  }
+  el.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.75rem">
+      <span style="font-size:1.1rem">📍</span>
+      <span style="font-weight:500">${athlete.home_address}</span>
+    </div>
+    <div id="travelInfo" style="display:flex;flex-direction:column;gap:.6rem">
+      <div style="color:var(--muted);font-size:.85rem">⏳ Рассчитываем маршрут...</div>
+    </div>
+  `;
+  calculateRoutes();
+}
+
+async function geocodeAddress(address) {
+  const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`, {headers:{'Accept-Language':'ru'}});
+  const d = await r.json();
+  if (d[0]) return {lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon), display: d[0].display_name};
+  return null;
+}
+
+async function calculateRoutes() {
+  if (!athlete.home_lat || !athlete.home_lng) {
+    document.getElementById('travelInfo').innerHTML = '<div style="color:var(--muted);font-size:.85rem">📍 Координаты не определены — сохраните адрес заново</div>';
+    return;
+  }
+
+  try {
+    // Load clubs
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'clubs', action:'list', data:{child_id: athleteId}})});
+    const d = await r.json();
+    const clubs = ((Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []))).filter(c => c && c.address);
+
+    if (!clubs.length) {
+      document.getElementById('travelInfo').innerHTML = '<div style="color:var(--muted);font-size:.85rem">Адрес клуба не указан</div>';
+      return;
+    }
+
+    const travelEl = document.getElementById('travelInfo');
+    travelEl.innerHTML = '';
+
+    for (const club of clubs) {
+      // Create placeholder for this club
+      const clubEl = document.createElement('div');
+      clubEl.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.65rem .9rem';
+      clubEl.innerHTML = `<div style="font-weight:600;font-size:.85rem;margin-bottom:.3rem">🏟️ ${club.name}</div><div style="color:var(--muted);font-size:.8rem">⏳ Считаем...</div>`;
+      travelEl.appendChild(clubEl);
+
+      // Geocode club address then calculate route
+      (async () => {
+        const coords = await geocodeAddress(club.address);
+        if (!coords) {
+          clubEl.querySelector('div:last-child').textContent = '❌ Не удалось определить адрес клуба';
+          return;
+        }
+
+        try {
+          const url = `https://router.project-osrm.org/route/v1/driving/${athlete.home_lng},${athlete.home_lat};${coords.lng},${coords.lat}?overview=false`;
+          const rr = await fetch(url);
+          const dd = await rr.json();
+          if (dd.routes?.[0]) {
+            const secs = dd.routes[0].duration;
+            const dist = (dd.routes[0].distance / 1000).toFixed(1);
+            const carMins = Math.round(secs / 60);
+            const walkMins = Math.round(dist / 5 * 60);
+            const mapUrl = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${athlete.home_lat},${athlete.home_lng};${coords.lat},${coords.lng}`;
+            clubEl.innerHTML = `
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem">
+                <div style="font-weight:600;font-size:.85rem">🏟️ ${club.name}</div>
+                <a href="${mapUrl}" target="_blank" style="font-size:.75rem;color:var(--p);text-decoration:none">🗺️ Карта</a>
+              </div>
+              <div style="color:var(--muted);font-size:.75rem;margin-bottom:.4rem">📌 ${club.address}</div>
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                <span style="background:#e3f2fd;color:var(--p);border-radius:20px;padding:.2rem .7rem;font-size:.8rem;font-weight:600">🚗 ${carMins} мин · ${dist} км</span>
+                <span style="background:#f3e5f5;color:#7b1fa2;border-radius:20px;padding:.2rem .7rem;font-size:.8rem;font-weight:600">🚶 ~${walkMins} мин</span>
+              </div>`;
+          }
+        } catch(e) {
+          clubEl.querySelector('div:last-child').textContent = '❌ Ошибка маршрута';
+        }
+      })();
+    }
+  } catch(e) {
+    document.getElementById('travelInfo').innerHTML = '<div style="color:var(--muted);font-size:.85rem">❌ Ошибка загрузки клубов</div>';
+  }
+}
+
+// Address autocomplete using Nominatim
+let _acTimer = null;
+async function addressAutocomplete(val) {
+  const box = document.getElementById('addressSuggestions');
+  if (!val || val.length < 3) { box.style.display='none'; return; }
+  clearTimeout(_acTimer);
+  _acTimer = setTimeout(async () => {
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&format=json&limit=5&addressdetails=1&accept-language=ru`, {headers:{'Accept-Language':'ru'}});
+      const results = await r.json();
+      if (!results.length) { box.style.display='none'; return; }
+      box.style.display = 'block';
+      box.innerHTML = results.map((res, i) => `
+        <div onclick="selectAddress('${res.display_name.replace(/'/g,"\'")}', ${res.lat}, ${res.lon})"
+          style="padding:.6rem .9rem;cursor:pointer;font-size:.85rem;border-bottom:1px solid var(--border);transition:background .15s"
+          onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''"
+        >📍 ${res.display_name}</div>`).join('');
+    } catch(e) { box.style.display='none'; }
+  }, 350);
+}
+
+function selectAddress(displayName, lat, lng) {
+  document.getElementById('ea_address').value = displayName;
+  document.getElementById('ea_address')._selectedLat = lat;
+  document.getElementById('ea_address')._selectedLng = lng;
+  document.getElementById('addressSuggestions').style.display = 'none';
+}
+
+// ============================
+// SAVE FUNCTIONS
+// ============================
+async function saveInfo() {
+  const fn = document.getElementById('ei_firstName').value.trim();
+  const ln = document.getElementById('ei_lastName').value.trim();
+  if (!fn || !ln) { alert('Заполните имя и фамилию'); return; }
+  await apiFetch('children','update',{
+    id:athleteId, first_name:fn, last_name:ln,
+    birth_date: document.getElementById('ei_birthDate').value || null,
+    contact_name: document.getElementById('ei_contactName').value,
+    contact_phone: document.getElementById('ei_contactPhone').value,
+    training_start: document.getElementById('ei_trainingStart').value || null
+  });
+  closeModal('editInfoModal');
+  await loadAthlete();
+}
+
+async function saveAddress() {
+  const input = document.getElementById('ea_address');
+  const addr = input.value.trim();
+  if (!addr) { closeModal('editAddressModal'); return; }
+
+  // Use pre-selected coords from autocomplete, or geocode fresh
+  let lat = input._selectedLat ? parseFloat(input._selectedLat) : null;
+  let lng = input._selectedLng ? parseFloat(input._selectedLng) : null;
+
+  if (!lat || !lng) {
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addr)}&format=json&limit=1`, {headers:{'Accept-Language':'ru'}});
+      const d = await r.json();
+      if (d[0]) { lat = parseFloat(d[0].lat); lng = parseFloat(d[0].lon); }
+    } catch(e) {}
+  }
+
+  await apiFetch('children','update',{id:athleteId, home_address:addr, home_lat:lat, home_lng:lng});
+  athlete.home_address = addr; athlete.home_lat = lat; athlete.home_lng = lng;
+  // Clear cached coords
+  input._selectedLat = null; input._selectedLng = null;
+  closeModal('editAddressModal');
+  renderAddress();
+}
+
+async function savePhysical() {
+  await apiFetch('children','update',{
+    id:athleteId,
+    weight_kg: parseFloat(document.getElementById('ep_weight').value)||null,
+    height_cm: parseInt(document.getElementById('ep_height').value)||null,
+    weight_category: document.getElementById('ep_weightCat').value||null
+  });
+  closeModal('editPhysModal');
+  await loadAthlete();
+}
+
+// ============================
+// PHOTO
+// ============================
+document.getElementById('athletePhoto').onclick = () => {
+  document.getElementById('photoModalImg').src = document.getElementById('athletePhoto').src;
+  openModal('photoModal');
+};
+
+async function uploadAthletePhoto(input) {
+  const file = input.files[0]; if (!file) return;
+  if (file.size > 5*1024*1024) { alert('Макс 5МБ'); return; }
+  const formData = new FormData();
+  formData.append('token', token);
+  formData.append('photo', file);
+  formData.append('child_id', athleteId);
+  try {
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-child-photo-update', {method:'POST', body:formData});
+    const d = await r.json();
+    if (d.photo_url) { document.getElementById('athletePhoto').src = d.photo_url; closeModal('photoModal'); alert('✅ Фото обновлено!'); }
+  } catch(e) { alert('Ошибка загрузки'); }
+}
+
+// ============================
+// QR CODE (simple SVG)
+// ============================
+function renderQR() {
+  // Simple QR placeholder using SVG pattern
+  const svg = document.getElementById('qrSvg');
+  const data = `inskill:athlete:${athleteId}`;
+  // Generate a simple visual pattern based on id
+  let cells = '';
+  const grid = 10;
+  const size = 14;
+  for (let i = 0; i < grid; i++) {
+    for (let j = 0; j < grid; j++) {
+      const val = (athleteId * (i+1) * (j+1) * 7) % 17;
+      if (val > 8 || (i<2&&j<2) || (i<2&&j>grid-3) || (i>grid-3&&j<2)) {
+        cells += `<rect x="${j*size+7}" y="${i*size+7}" width="${size-1}" height="${size-1}" fill="#0f1923" rx="1"/>`;
+      }
+    }
+  }
+  svg.innerHTML = `<rect width="140" height="140" fill="white" rx="8"/>${cells}`;
+}
+
+function downloadQR() {
+  const svg = document.getElementById('qrSvg');
+  const blob = new Blob([svg.outerHTML], {type:'image/svg+xml'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `qr-athlete-${athleteId}.svg`; a.click();
+}
+
+// ============================
+// FREEZE
+// ============================
+function renderFreezeStatus() {
+  const el = document.getElementById('freezeStatus');
+  if (athlete.is_frozen) {
+    el.innerHTML = `
+      <div class="frozen-notice">🧊 Спортсмен заморожен${athlete.frozen_reason ? ': ' + athlete.frozen_reason : ''}</div>
+      <button class="btn btn-green" onclick="setFreeze(false)">▶️ Разморозить</button>
+    `;
+  } else {
+    el.innerHTML = `
+      <p style="color:var(--muted);font-size:.9rem;margin-bottom:1rem">Спортсмен активен. Заморозка — временное отключение без потери данных.</p>
+      <button class="btn btn-ghost" onclick="promptFreeze()">🧊 Заморозить</button>
+    `;
+  }
+}
+
+async function promptFreeze() {
+  const reason = prompt('Причина заморозки (необязательно):', 'Травма / Отпуск');
+  await apiFetch('children','update',{id:athleteId, is_frozen:true, frozen_reason:reason||null, frozen_at:new Date().toISOString()});
+  athlete.is_frozen = true; athlete.frozen_reason = reason;
+  document.getElementById('frozenBadge').style.display = 'block';
+  renderFreezeStatus();
+}
+
+async function setFreeze(state) {
+  await apiFetch('children','update',{id:athleteId, is_frozen:state});
+  athlete.is_frozen = state;
+  document.getElementById('frozenBadge').style.display = state ? 'block' : 'none';
+  renderFreezeStatus();
+}
+
+// ============================
+// HELPERS
+// ============================
+async function apiFetch(resource, action, data={}) {
+  const endpoint = ATHLETE_RESOURCES.has(resource) ? API2 : API;
+  const r = await fetch(endpoint, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource, action, data})});
+  return await r.json();
+}
+
+
+
+
+
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'chat') loadMessages();
+}
+
+function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow='auto'; }
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if(e.target===m) closeModal(m.id); }));
+
+// ============================
+// EVENTS
+// ============================
+let allEvents = [];
+let evCurrentFilter = 'all';
+
+function evSetFilter(filter) {
+  evCurrentFilter = filter;
+  document.getElementById('evFilterAll').className = filter === 'all' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('evFilterAttending').className = filter === 'attending' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('evFilterUpcoming').className = filter === 'upcoming' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('evFilterPast').className = filter === 'past' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  renderEvents();
+}
+
+async function loadEvents() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'events', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    allEvents = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+    renderEvents();
+  } catch(e) { console.error('loadEvents:', e); }
+}
+
+function renderEvents() {
+  const el = document.getElementById('eventsList');
+  if (!el) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  let filtered = allEvents.filter(function(e) {
+    const eDate = new Date(e.event_date); eDate.setHours(0,0,0,0);
+    if (evCurrentFilter === 'attending') return e.reg_status === 'attending';
+    if (evCurrentFilter === 'upcoming') return eDate >= today;
+    if (evCurrentFilter === 'past') return eDate < today;
+    return true;
+  });
+
+  if (!filtered.length) {
+    el.innerHTML = '<div class="card"><p style="color:var(--muted);text-align:center;padding:2rem">Нет мероприятий</p></div>';
+    return;
+  }
+
+  el.innerHTML = filtered.map(function(e) {
+    const eDate = new Date(e.event_date);
+    const isPast = eDate < today;
+    const dateFmt = eDate.toLocaleDateString('ru-RU', {day:'2-digit', month:'long', year:'numeric'});
+    const deadline = e.registration_deadline ? new Date(e.registration_deadline).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric'}) : null;
+
+    var statusHtml = '';
+    if (e.reg_status === 'attending') {
+      statusHtml = '<span style="background:#dcfce7;color:#16a34a;padding:.25rem .75rem;border-radius:20px;font-size:.8rem;font-weight:600">✅ Записан</span>';
+    } else if (e.reg_status === 'declined') {
+      statusHtml = '<span style="background:#fee2e2;color:#dc2626;padding:.25rem .75rem;border-radius:20px;font-size:.8rem;font-weight:600">❌ Отказался</span>';
+      if (e.reg_reason) statusHtml += ' <span style="color:var(--muted);font-size:.8rem">(' + e.reg_reason + ')</span>';
+    }
+
+    var btnsHtml = '';
+    if (!isPast) {
+      if (e.reg_status === 'attending') {
+        btnsHtml = '<button class="btn btn-sm btn-ghost" onclick="evDecline(' + e.id + ',' + (e.reg_id||0) + ')">&#x274C; Отказаться</button>';
+      } else {
+        btnsHtml = '<button class="btn btn-sm btn-primary" onclick="evAttend(' + e.id + ',' + (e.reg_id||0) + ')">&#x2705; Участвую</button>'
+          + ' <button class="btn btn-sm btn-ghost" onclick="evDecline(' + e.id + ',' + (e.reg_id||0) + ')">&#x274C; Не смогу</button>';
+      }
+    }
+
+    return '<div class="card" style="margin-bottom:1rem">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">'
+      + '<div style="flex:1">'
+      + '<div style="font-weight:700;font-size:1rem;margin-bottom:.4rem">' + e.title + '</div>'
+      + '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">📅 ' + dateFmt + (isPast ? ' <span style="color:#94a3b8">(прошло)</span>' : '') + '</div>'
+      + (e.location ? '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">📍 ' + e.location + '</div>' : '')
+      + (e.entry_fee ? '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">💰 Взнос: ' + e.entry_fee + ' грн</div>' : '')
+      + (deadline ? '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">⏰ Регистрация до: ' + deadline + '</div>' : '')
+      + (e.description ? '<div style="font-size:.85rem;color:var(--text);margin-top:.5rem">' + e.description + '</div>' : '')
+      + '</div>'
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;flex-shrink:0">'
+      + statusHtml
+      + btnsHtml
+      + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+async function evAttend(eventId, regId) {
+  try {
+    if (regId && regId > 0) {
+      await apiFetch('event_registrations', 'update', {id: regId, child_id: athleteId, status: 'attending', reason: null});
+    } else {
+      await apiFetch('event_registrations', 'create', {event_id: eventId, child_id: athleteId, status: 'attending'});
+    }
+    await loadEvents();
+  } catch(e) { alert('Ошибка: ' + e.message); }
+}
+
+async function evDecline(eventId, regId) {
+  const reason = prompt('Укажите причину (необязательно):');
+  if (reason === null) return;
+  try {
+    if (regId && regId > 0) {
+      await apiFetch('event_registrations', 'update', {id: regId, child_id: athleteId, status: 'declined', reason: reason || null});
+    } else {
+      await apiFetch('event_registrations', 'create', {event_id: eventId, child_id: athleteId, status: 'declined', reason: reason || null});
+    }
+    await loadEvents();
+  } catch(e) { alert('Ошибка: ' + e.message); }
 }
 
 init();
 </script>
+
+<!-- Edit Groups Modal -->
+<div class="modal" id="editGroupsModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">🏟️ Группы спортсмена</div>
+      <button class="modal-close" onclick="closeModal('editGroupsModal')">✕</button>
+    </div>
+    <div id="editGroupsCheckboxes" style="max-height:300px;overflow-y:auto;padding:.5rem 0;border:1px solid var(--border);border-radius:8px;padding:.75rem"></div>
+    <div style="display:flex;gap:.75rem;margin-top:1.5rem">
+      <button class="btn btn-primary" style="flex:1" onclick="saveGroups()">💾 Сохранить</button>
+      <button class="btn btn-outline" onclick="closeModal('editGroupsModal')">Отмена</button>
+    </div>
+  </div>
+</div>
+<div class="modal" id="physChartModal">
+  <div class="modal-box" style="max-width:720px;width:95vw">
+    <button class="modal-close" onclick="closeModal('physChartModal')">×</button>
+    <h2 class="modal-title">📊 Динамика веса и роста</h2>
+    <div style="display:flex;gap:.75rem;margin-bottom:1rem">
+      <button class="btn btn-sm btn-primary" onclick="switchPhysChart('weight')" id="chartBtnWeight">⚖️ Вес</button>
+      <button class="btn btn-sm btn-ghost" onclick="switchPhysChart('height')" id="chartBtnHeight">📏 Рост</button>
+    </div>
+    <canvas id="physChartCanvas" height="260"></canvas>
+    <p id="physChartEmpty" style="display:none;text-align:center;color:var(--muted);padding:2rem">Данных пока нет. Добавляйте физические данные — они сохраняются в историю автоматически.</p>
+  </div>
+</div>
+
 </body>
 </html>
