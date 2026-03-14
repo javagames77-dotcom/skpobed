@@ -2893,6 +2893,7 @@ async function loadEvents() {
       body: JSON.stringify({token, resource:'events', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     allEvents = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+    console.log('[EVENTS] first event:', JSON.stringify(allEvents[0]));
     renderEvents();
   } catch(e) { console.error('loadEvents:', e); }
 }
