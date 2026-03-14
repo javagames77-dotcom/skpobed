@@ -1290,7 +1290,7 @@ function renderAttTable() {
       } else {
         status = '<span style="color:#dc2626;font-weight:600">&#x274C; Пропустил</span>';
         bg = '#fef2f2';
-        btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay('' + item.dateStr + '',' + item.date.getDate() + ')">&#x1F4DD; Причина</button>';
+        btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay(&apos;' + item.dateStr + '&apos;,' + item.date.getDate() + ')">&#x1F4DD; Причина</button>';
       }
     } else if (item.notif) {
       var r2 = item.notif.reason || '';
@@ -1300,7 +1300,7 @@ function renderAttTable() {
     } else if (item.isPast) {
       status = '<span style="color:#94a3b8">&#x2B1C; Нет данных</span>';
       bg = '#f8fafc';
-      btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay('' + item.dateStr + '',' + item.date.getDate() + ')">&#x1F4DD; Причина</button>';
+      btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay(&apos;' + item.dateStr + '&apos;,' + item.date.getDate() + ')">&#x1F4DD; Причина</button>';
     } else {
       status = '<span style="color:#64748b">&#x1F4C5; Предстоящая</span>';
       bg = '#f1f5f9';
