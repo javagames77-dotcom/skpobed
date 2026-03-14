@@ -316,9 +316,9 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <div class="tabs-bar">
     <button class="tab-btn active" onclick="switchTab('info')">👤 Данные</button>
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
-    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения2</button>
+    <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
     <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
-    <button class="tab-btn" onclick="switchTab('chat')">💬 Чат</button>
+    <button class="tab-btn" onclick="switchTab('chat')">💬 Чат<span id="chatUnreadBadge" style="display:none;background:#ef4444;color:#fff;border-radius:9px;font-size:.7rem;font-weight:700;padding:0 5px;margin-left:.35rem;vertical-align:middle;min-width:18px;height:18px;display:none;align-items:center;justify-content:center"></span></button>
     <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
     <button class="tab-btn" onclick="switchTab('medical')">🏥 Медицина</button>
     <button class="tab-btn" onclick="switchTab('injuries')">🩹 Травмы</button>
@@ -1030,7 +1030,7 @@ async function loadBeltHistory() {
       document.getElementById('heroBeltName').textContent = 'Без пояса';
     }
 
-    const canEdit = userRole === 'director' || userRole === 'trainer' || userRole === 'athlete';
+    const canEdit = userRole === 'director' || userRole === 'trainer';
     // Sort by date ascending to calculate durations
     const sortedAsc = [...belts].sort((a,b) => new Date(a.awarded_at) - new Date(b.awarded_at));
     
@@ -1919,6 +1919,21 @@ async function loadMessages() {
       return `<div class="msg ${isMine?'mine':'theirs'}"><div class="msg-bubble">${m.text}</div><div class="msg-time">${time}</div></div>`;
     }).join('');
     container.scrollTop = container.scrollHeight;
+
+    // Бейдж — непрочитанные сообщения не от спортсмена
+    const unread = msgs.filter(m => {
+      const isFromAthlete = m.is_from_athlete===true||m.is_from_athlete==='true'||m.is_from_athlete==='t';
+      return !isFromAthlete && m.is_read === false;
+    }).length;
+    const badge = document.getElementById('chatUnreadBadge');
+    if (badge) {
+      if (unread > 0) {
+        badge.textContent = unread > 99 ? '99+' : unread;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
   } catch(e) {}
 }
 
