@@ -1030,7 +1030,7 @@ async function loadBeltHistory() {
       document.getElementById('heroBeltName').textContent = 'Без пояса';
     }
 
-    const canEdit = userRole === 'director' || userRole === 'trainer';
+    const canEdit = userRole === 'director' || userRole === 'trainer' || userRole === 'athlete';
     // Sort by date ascending to calculate durations
     const sortedAsc = [...belts].sort((a,b) => new Date(a.awarded_at) - new Date(b.awarded_at));
     
