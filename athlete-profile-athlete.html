@@ -436,6 +436,35 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <div class="stat-box"><div class="val" id="attStreak">0</div><div class="lbl">Серия подряд</div></div>
     </div>
 
+    <!-- View switcher -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+      <button id="attViewTable" class="btn btn-primary btn-sm" onclick="switchAttView('table')">📋 Таблица</button>
+      <button id="attViewCal" class="btn btn-ghost btn-sm" onclick="switchAttView('calendar')">📅 Календарь</button>
+    </div>
+
+    <!-- TABLE view (default) -->
+    <div id="attTableView" class="card">
+      <div id="calGroupSelectTable"></div>
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="attTablePrevMonth()">←</button>
+        <div class="cal-month-label" id="attTableMonthLabel"></div>
+        <button class="cal-nav-btn" onclick="attTableNextMonth()">→</button>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border)">
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Дата</th>
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Группа</th>
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Статус</th>
+            <th style="padding:.6rem .8rem"></th>
+          </tr>
+        </thead>
+        <tbody id="attTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- CALENDAR view (hidden) -->
+    <div id="attCalView" style="display:none">
     <!-- Calendar card -->
     <div class="card">
       <!-- Group selector -->
@@ -465,6 +494,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
         <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#f1f5f9;border:1px dashed #cbd5e1"></div> Предстоящая тренировка</div>
       </div>
     </div>
+    </div><!-- /attCalView -->
 
     <!-- Notify absence -->
     <div class="card">
@@ -1144,6 +1174,113 @@ async function saveBelt() {
 // ATTENDANCE
 // ============================
 // ============================
+// ATTENDANCE TABLE
+// ============================
+let attTableYear = new Date().getFullYear();
+let attTableMonth = new Date().getMonth();
+
+function switchAttView(view) {
+  document.getElementById('attTableView').style.display = view === 'table' ? '' : 'none';
+  document.getElementById('attCalView').style.display = view === 'calendar' ? '' : 'none';
+  document.getElementById('attViewTable').className = view === 'table' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('attViewCal').className = view === 'calendar' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  if (view === 'table') renderAttTable();
+  else renderCalendar();
+}
+
+function attTablePrevMonth() { attTableMonth--; if(attTableMonth<0){attTableMonth=11;attTableYear--;} renderAttTable(); }
+function attTableNextMonth() { attTableMonth++; if(attTableMonth>11){attTableMonth=0;attTableYear++;} renderAttTable(); }
+
+function calSelectGroupTable(gid) {
+  calSelectedGroup = gid;
+  renderAttGroupSelect();
+  renderAttTable();
+}
+
+function renderAttGroupSelect() {
+  const groups = athleteGroupIds.map(gid => allGroups.find(g=>g.id===gid)).filter(Boolean);
+  const el = document.getElementById('calGroupSelectTable');
+  if (!el) return;
+  if (groups.length <= 1) { el.innerHTML = ''; return; }
+  el.innerHTML = '<button class="cal-group-btn ' + (calSelectedGroup==='all'?'active':'') + '" onclick="calSelectGroupTable('all')">Все группы</button>'
+    + groups.map(g => '<button class="cal-group-btn ' + (calSelectedGroup==g.id?'active':'') + '" onclick="calSelectGroupTable(' + g.id + ')">' + g.name + '</button>').join('');
+}
+
+function renderAttTable() {
+  const tbody = document.getElementById('attTableBody');
+  if (!tbody) return;
+  const MN = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const DN = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const lbl = document.getElementById('attTableMonthLabel');
+  if (lbl) lbl.textContent = MN[attTableMonth] + ' ' + attTableYear;
+  renderAttGroupSelect();
+
+  const notifMap = {};
+  calAbsenceNotifs.forEach(function(n) {
+    const f = new Date(n.date_from), t = new Date(n.date_to);
+    for (var d = new Date(f); d <= t; d.setDate(d.getDate()+1))
+      notifMap[d.toISOString().split('T')[0]] = n;
+  });
+
+  const attMap = {};
+  calAttendanceRecords
+    .filter(function(r) { return calSelectedGroup === 'all' || r.group_id == calSelectedGroup; })
+    .forEach(function(r) { var k = r.training_date && r.training_date.split('T')[0]; if(k) attMap[k]=r; });
+
+  const daysInMonth = new Date(attTableYear, attTableMonth+1, 0).getDate();
+  const rows = [];
+  for (var day = 1; day <= daysInMonth; day++) {
+    var date = new Date(attTableYear, attTableMonth, day); date.setHours(0,0,0,0);
+    var dateStr = date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+    var jsDay = date.getDay(), schedDay = jsDay===0?6:jsDay-1;
+    var groups = calSelectedGroup==='all'
+      ? athleteGroupIds.map(function(gid){return allGroups.find(function(g){return g.id==gid;});}).filter(Boolean)
+      : [allGroups.find(function(g){return g.id==calSelectedGroup;})].filter(Boolean);
+    var isScheduled = groups.some(function(g) {
+      var sch = typeof g.schedule==='string' ? JSON.parse(g.schedule||'[]') : (g.schedule||[]);
+      return sch.some(function(s){return s.day===schedDay;});
+    });
+    var att = attMap[dateStr], notif = notifMap[dateStr];
+    if (isScheduled || att || notif) rows.push({dateStr:dateStr,date:date,att:att,notif:notif,isPast:date<today});
+  }
+
+  if (!rows.length) { tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Нет тренировок в '+MN[attTableMonth]+'</td></tr>'; return; }
+  rows.sort(function(a,b){return b.dateStr.localeCompare(a.dateStr);});
+
+  tbody.innerHTML = rows.map(function(item) {
+    var dayName = DN[item.date.getDay()];
+    var dateFmt = item.date.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+    var groupName = item.att ? (item.att.group_name||'—') : '—';
+    var status='', bg='', btn='';
+    if (item.att) {
+      if (item.att.was_present) { status='<span style="color:#16a34a;font-weight:600">✅ Присутствовал</span>'; bg='#f0fdf4'; }
+      else if (item.notif) {
+        var r=item.notif.reason||''; if(item.notif.comment) r+=': '+item.notif.comment;
+        status='<span style="color:#92400e;font-weight:600">🟡 '+(r||'Причина указана')+'</span>'; bg='#fefce8';
+      } else {
+        status='<span style="color:#dc2626;font-weight:600">❌ Пропустил</span>'; bg='#fef2f2';
+        btn='<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay(''+item.dateStr+'','+item.date.getDate()+')">📝 Причина</button>';
+      }
+    } else if (item.notif) {
+      var r2=item.notif.reason||''; if(item.notif.comment) r2+=': '+item.notif.comment;
+      status='<span style="color:#92400e;font-weight:600">🟡 '+(r2||'Предупреждение')+'</span>'; bg='#fefce8';
+    } else if (item.isPast) {
+      status='<span style="color:#94a3b8">⬜ Нет данных</span>'; bg='#f8fafc';
+      btn='<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay(''+item.dateStr+'','+item.date.getDate()+')">📝 Причина</button>';
+    } else {
+      status='<span style="color:#64748b">📅 Предстоящая</span>'; bg='#f1f5f9';
+    }
+    return '<tr style="border-bottom:1px solid var(--border);background:'+bg+'">'
+      +'<td style="padding:.6rem .8rem;white-space:nowrap">'+dateFmt+' <span style="color:var(--muted);font-size:.8rem">'+dayName+'</span></td>'
+      +'<td style="padding:.6rem .8rem">'+groupName+'</td>'
+      +'<td style="padding:.6rem .8rem">'+status+'</td>'
+      +'<td style="padding:.4rem .8rem">'+btn+'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+// ============================
 // CALENDAR STATE
 // ============================
 let calYear = new Date().getFullYear();
@@ -1208,6 +1345,7 @@ async function loadAttendance() {
 
     // Render calendar
     renderCalendar();
+    renderAttTable();
 
   } catch(e) { console.warn('Attendance:', e); }
 }
