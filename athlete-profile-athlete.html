@@ -1195,7 +1195,7 @@ function renderAttTable() {
       status = '<span style="color:#16a34a;font-weight:600">✅ Присутствовал</span>'; bg = '#f0fdf4';
     } else {
       status = '<span style="color:#dc2626;font-weight:600">❌ Пропустил</span>'; bg = '#fef2f2';
-      btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay('' + r.training_date.split('T')[0] + '',' + date.getDate() + ')">📝 Причина</button>';
+      btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay(&apos;' + r.training_date.split('T')[0] + '&apos;,' + date.getDate() + ')">📝 Причина</button>';
     }
     return '<tr style="border-bottom:1px solid var(--border);background:'+bg+'">'
       +'<td style="padding:.6rem .8rem;white-space:nowrap">'+dateFmt+' <span style="color:var(--muted);font-size:.8rem">'+dayName+'</span></td>'
