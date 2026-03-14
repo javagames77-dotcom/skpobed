@@ -356,7 +356,7 @@ body {
     <div class="alert alert-success" id="successAlert"></div>
 
     <div class="role-switcher">
-      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор1</button>
+      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор</button>
       <button type="button" class="role-btn" id="btnAthlete" onclick="switchRole('athlete')">🥋 Спортсмен</button>
     </div>
 
@@ -520,6 +520,7 @@ async function handleLogin(event) {
         showSuccess('Успешный вход!');
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify({ role: 'athlete', id: data.child.id, first_name: data.child.first_name, last_name: data.child.last_name }));
+        localStorage.setItem('role', 'athlete');
         localStorage.setItem('user_id', data.child.id);
         localStorage.setItem('athlete_id', data.child.id);
         setTimeout(() => {
