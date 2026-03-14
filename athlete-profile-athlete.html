@@ -1261,8 +1261,8 @@ function renderAttTable() {
     });
     var att = attMap[dateStr];
     var notif = notifMap[dateStr];
-    if (isScheduled || att || notif) {
-      rows.push({dateStr:dateStr, date:date, att:att, notif:notif, isPast:date<today});
+    if (isScheduled || att) {
+      rows.push({dateStr:dateStr, date:date, att:att, notif:notif, isPast:date<today, isScheduled:isScheduled});
     }
   }
 
