@@ -450,7 +450,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
           <tr style="border-bottom:2px solid var(--border)">
             <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Дата</th>
             <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Группа</th>
-            <th style="padding:.6rem .8rem;text-align:center;color:var(--muted);font-weight:600">Статус</th>
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Статус</th>
           </tr>
         </thead>
         <tbody id="attTableBody">
@@ -1184,27 +1184,122 @@ function switchAttView(view) {
 function renderAttTable() {
   const tbody = document.getElementById('attTableBody');
   if (!tbody) return;
-  const records = calSelectedGroup === 'all'
-    ? calAttendanceRecords
-    : calAttendanceRecords.filter(r => r.group_id == calSelectedGroup);
 
-  if (!records.length) {
-    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--muted)">Нет данных</td></tr>';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+  // Absence notifications map
+  const notifDates = {};
+  calAbsenceNotifs.forEach(n => {
+    const from = new Date(n.date_from), to = new Date(n.date_to);
+    for (let d = new Date(from); d <= to; d.setDate(d.getDate()+1)) {
+      const k = d.toISOString().split('T')[0];
+      notifDates[k] = n;
+    }
+  });
+
+  // Attendance records map
+  const attMap = {};
+  calAttendanceRecords
+    .filter(r => calSelectedGroup === 'all' || r.group_id == calSelectedGroup)
+    .forEach(r => {
+      const k = r.training_date?.split('T')[0];
+      if (k) attMap[k] = r;
+    });
+
+  // Collect all scheduled days across all months with records
+  // Find date range: from earliest record to today
+  const allDates = new Set();
+
+  // Add all attendance record dates
+  Object.keys(attMap).forEach(k => allDates.add(k));
+
+  // Add all scheduled days from group schedule (past 6 months)
+  const sixMonthsAgo = new Date(today);
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  for (let d = new Date(sixMonthsAgo); d <= today; d.setDate(d.getDate()+1)) {
+    const dateStr = d.toISOString().split('T')[0];
+    const jsDay = d.getDay();
+    const schedDay = jsDay === 0 ? 6 : jsDay - 1;
+    const groupsToCheck = calSelectedGroup === 'all'
+      ? athleteGroupIds.map(gid => allGroups.find(g => g.id == gid)).filter(Boolean)
+      : [allGroups.find(g => g.id == calSelectedGroup)].filter(Boolean);
+    for (const g of groupsToCheck) {
+      const sch = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
+      if (sch.some(s => s.day === schedDay)) { allDates.add(dateStr); break; }
+    }
+  }
+
+  // Sort descending
+  const sorted = [...allDates].sort((a,b) => b.localeCompare(a));
+
+  if (!sorted.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Нет данных</td></tr>';
     return;
   }
 
-  const sorted = [...records].sort((a,b) => new Date(b.training_date) - new Date(a.training_date));
-  tbody.innerHTML = sorted.map(r => {
-    const date = new Date(r.training_date).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric'});
-    const status = r.was_present
-      ? '<span style="color:#16a34a;font-weight:600">✅ Присутствовал</span>'
-      : '<span style="color:#dc2626;font-weight:600">❌ Пропустил</span>';
-    return `<tr style="border-bottom:1px solid var(--border)">
-      <td style="padding:.6rem .8rem">${date}</td>
-      <td style="padding:.6rem .8rem">${r.group_name || '—'}</td>
-      <td style="padding:.6rem .8rem;text-align:center">${status}</td>
+  // Group by month
+  let lastMonth = '';
+  let html = '';
+
+  sorted.forEach(dateStr => {
+    const date = new Date(dateStr + 'T00:00:00');
+    const monthKey = `${months[date.getMonth()]} ${date.getFullYear()}`;
+    const att = attMap[dateStr];
+    const isNotif = notifDates[dateStr];
+    const isPast = date < today;
+    const dayName = days[date.getDay()];
+    const dateFormatted = date.toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric'});
+
+    // Determine status and row color
+    let statusHtml = '';
+    let rowBg = '';
+    let clickable = '';
+
+    if (att) {
+      if (att.was_present) {
+        statusHtml = '<span style="color:#16a34a;font-weight:600">✅ Присутствовал</span>';
+        rowBg = '#f0fdf4';
+      } else if (isNotif) {
+        const notif = notifDates[dateStr];
+        const reason = notif ? (notif.reason || '') + (notif.comment ? ': ' + notif.comment : '') : '';
+        statusHtml = `<span style="color:#92400e;font-weight:600">🟡 ${reason || 'Причина указана'}</span>`;
+        rowBg = '#fefce8';
+      } else {
+        statusHtml = '<span style="color:#dc2626;font-weight:600">❌ Пропустил</span>';
+        rowBg = '#fef2f2';
+        clickable = `onclick="openExplainDay('${dateStr}', ${date.getDate()})" style="cursor:pointer"`;
+      }
+    } else if (isNotif) {
+      const notif = notifDates[dateStr];
+      const reason = notif ? (notif.reason || '') + (notif.comment ? ': ' + notif.comment : '') : '';
+      statusHtml = `<span style="color:#92400e;font-weight:600">🟡 ${reason || 'Предупреждение'}</span>`;
+      rowBg = '#fefce8';
+    } else if (isPast) {
+      statusHtml = '<span style="color:#94a3b8">⬜ Нет данных</span>';
+      rowBg = '#f8fafc';
+    } else {
+      statusHtml = '<span style="color:#64748b">📅 Предстоящая</span>';
+      rowBg = '#f1f5f9';
+    }
+
+    // Month separator
+    if (monthKey !== lastMonth) {
+      lastMonth = monthKey;
+      html += `<tr><td colspan="4" style="padding:.5rem .8rem;background:var(--l);font-weight:700;font-size:.85rem;color:var(--p)">${monthKey}</td></tr>`;
+    }
+
+    const groupName = att ? (att.group_name || '—') : '—';
+
+    html += `<tr ${clickable} style="border-bottom:1px solid var(--border);background:${rowBg}">
+      <td style="padding:.6rem .8rem;white-space:nowrap">${dateFormatted} <span style="color:var(--muted);font-size:.8rem">${dayName}</span></td>
+      <td style="padding:.6rem .8rem">${groupName}</td>
+      <td style="padding:.6rem .8rem">${statusHtml}</td>
     </tr>`;
-  }).join('');
+  });
+
+  tbody.innerHTML = html;
 }
 
 
