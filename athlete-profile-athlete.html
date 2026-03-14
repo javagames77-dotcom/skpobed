@@ -300,7 +300,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед1</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -436,8 +436,31 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <div class="stat-box"><div class="val" id="attStreak">0</div><div class="lbl">Серия подряд</div></div>
     </div>
 
+    <!-- View switcher -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+      <button id="attViewTable" class="btn btn-primary btn-sm" onclick="switchAttView('table')">📋 Таблица</button>
+      <button id="attViewCal" class="btn btn-ghost btn-sm" onclick="switchAttView('calendar')">📅 Календарь</button>
+    </div>
+
+    <!-- TABLE view -->
+    <div id="attTableView" class="card">
+      <div class="cal-group-select" id="calGroupSelectTable"></div>
+      <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border)">
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Дата</th>
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Группа</th>
+            <th style="padding:.6rem .8rem;text-align:center;color:var(--muted);font-weight:600">Статус</th>
+          </tr>
+        </thead>
+        <tbody id="attTableBody">
+          <tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--muted)">Загрузка...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- Calendar card -->
-    <div class="card">
+    <div id="attCalView" class="card" style="display:none">
       <!-- Group selector -->
       <div class="cal-group-select" id="calGroupSelect"></div>
 
@@ -1144,8 +1167,47 @@ async function saveBelt() {
 // ATTENDANCE
 // ============================
 // ============================
-// CALENDAR STATE
+// ATTENDANCE VIEW SWITCHER
 // ============================
+let attCurrentView = 'table';
+
+function switchAttView(view) {
+  attCurrentView = view;
+  document.getElementById('attTableView').style.display = view === 'table' ? '' : 'none';
+  document.getElementById('attCalView').style.display = view === 'calendar' ? '' : 'none';
+  document.getElementById('attViewTable').className = view === 'table' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('attViewCal').className = view === 'calendar' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  if (view === 'table') renderAttTable();
+  if (view === 'calendar') renderCalendar();
+}
+
+function renderAttTable() {
+  const tbody = document.getElementById('attTableBody');
+  if (!tbody) return;
+  const records = calSelectedGroup === 'all'
+    ? calAttendanceRecords
+    : calAttendanceRecords.filter(r => r.group_id == calSelectedGroup);
+
+  if (!records.length) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--muted)">Нет данных</td></tr>';
+    return;
+  }
+
+  const sorted = [...records].sort((a,b) => new Date(b.training_date) - new Date(a.training_date));
+  tbody.innerHTML = sorted.map(r => {
+    const date = new Date(r.training_date).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric'});
+    const status = r.was_present
+      ? '<span style="color:#16a34a;font-weight:600">✅ Присутствовал</span>'
+      : '<span style="color:#dc2626;font-weight:600">❌ Пропустил</span>';
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:.6rem .8rem">${date}</td>
+      <td style="padding:.6rem .8rem">${r.group_name || '—'}</td>
+      <td style="padding:.6rem .8rem;text-align:center">${status}</td>
+    </tr>`;
+  }).join('');
+}
+
+
 let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth(); // 0-based
 let calAttendanceRecords = [];   // {training_date, was_present, group_id, reason}
@@ -1202,6 +1264,9 @@ async function loadAttendance() {
 
     // Group selector
     renderCalGroupSelect();
+
+    // Render default table view
+    renderAttTable();
 
     // Check unexplained absences (last 30 days, no notification)
     checkUnexplainedAbsences();
@@ -1951,7 +2016,7 @@ async function loadMessages() {
 
     // Фильтруем по активному собеседнику
     const msgs = chatActiveUserId
-      ? allMsgs.filter(m => m.from_user_id == chatActiveUserId || m.to_user_id == chatActiveUserId || (!m.to_user_id && !chatActiveUserId))
+      ? allMsgs.filter(m => m.from_user_id == chatActiveUserId || m.to_user_id == chatActiveUserId)
       : allMsgs;
 
     const container = document.getElementById('chatMessages');
