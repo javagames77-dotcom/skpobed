@@ -356,7 +356,7 @@ body {
     <div class="alert alert-success" id="successAlert"></div>
 
     <div class="role-switcher">
-      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор</button>
+      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор1</button>
       <button type="button" class="role-btn" id="btnAthlete" onclick="switchRole('athlete')">🥋 Спортсмен</button>
     </div>
 
@@ -438,30 +438,28 @@ function switchRole(role) {
 // Check if already logged in
 const token = localStorage.getItem('token');
 if (token) {
-  // Verify token
-  fetch(AUTH_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'me', token })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success !== false) {
-      // Token valid, redirect to children list
-      const u = JSON.parse(localStorage.getItem('user')||'{}');
-      if (u.role === 'athlete') {
-        const aid = localStorage.getItem('athlete_id');
-        window.location.href = '/athlete-profile.html?id=' + aid;
-      } else if (u.role === 'director') {
-        window.location.href = '/director-dashboard.html';
-      } else if (u.role === 'superadmin') {
-        window.location.href = '/superadmin-dashboard.html';
-      } else {
-        window.location.href = 'children-list.html';
+  const u = JSON.parse(localStorage.getItem('user')||'{}');
+  // Спортсмен — токен не проверяем через me, просто редиректим
+  if (u.role === 'athlete') {
+    const aid = localStorage.getItem('athlete_id');
+    if (aid) { window.location.href = '/athlete-profile.html?id=' + aid; }
+  } else {
+    // Тренер/директор — проверяем токен
+    fetch(AUTH_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'me', token })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success !== false) {
+        if (u.role === 'director') window.location.href = '/director-dashboard.html';
+        else if (u.role === 'superadmin') window.location.href = '/superadmin-dashboard.html';
+        else window.location.href = 'children-list.html';
       }
-    }
-  })
-  .catch(err => console.error('Token verification error:', err));
+    })
+    .catch(err => console.error('Token verification error:', err));
+  }
 }
 
 function togglePassword() {
