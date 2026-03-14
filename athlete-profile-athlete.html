@@ -300,7 +300,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед3</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -2962,7 +2962,7 @@ function renderEvents() {
 async function evAttend(eventId, regId) {
   try {
     if (regId && regId > 0) {
-      await apiFetch('event_registrations', 'update', {id: regId, child_id: athleteId, status: 'attending', reason: null});
+      await apiFetch('event_registrations', 'update_status', {id: regId, child_id: athleteId, status: 'attending', reason: null});
     } else {
       await apiFetch('event_registrations', 'create', {event_id: eventId, child_id: athleteId, status: 'attending'});
     }
@@ -2975,7 +2975,7 @@ async function evDecline(eventId, regId) {
   if (reason === null) return;
   try {
     if (regId && regId > 0) {
-      await apiFetch('event_registrations', 'update', {id: regId, child_id: athleteId, status: 'declined', reason: reason || null});
+      await apiFetch('event_registrations', 'update_status', {id: regId, child_id: athleteId, status: 'declined', reason: reason || null});
     } else {
       await apiFetch('event_registrations', 'create', {event_id: eventId, child_id: athleteId, status: 'declined', reason: reason || null});
     }
