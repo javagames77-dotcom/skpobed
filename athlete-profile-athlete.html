@@ -323,6 +323,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
     <button class="tab-btn" onclick="switchTab('medical')">🏥 Медицина</button>
     <button class="tab-btn" onclick="switchTab('injuries')">🩹 Травмы</button>
     <button class="tab-btn" onclick="switchTab('goals')">🎯 Цели</button>
+    <button class="tab-btn" onclick="switchTab('events')">🏅 Мероприятия</button>
   </div>
 
   <!-- TAB: INFO -->
@@ -629,6 +630,21 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
     </div>
   </div>
 
+
+  <!-- TAB: EVENTS -->
+  <div class="tab-pane" id="tab-events">
+
+    <!-- Фильтры -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
+      <button id="evFilterAll" class="btn btn-primary btn-sm" onclick="evSetFilter(&apos;all&apos;)">Все</button>
+      <button id="evFilterAttending" class="btn btn-ghost btn-sm" onclick="evSetFilter(&apos;attending&apos;)">✅ Записался</button>
+      <button id="evFilterUpcoming" class="btn btn-ghost btn-sm" onclick="evSetFilter(&apos;upcoming&apos;)">⚡ Предстоящие</button>
+      <button id="evFilterPast" class="btn btn-ghost btn-sm" onclick="evSetFilter(&apos;past&apos;)">📋 Прошедшие</button>
+    </div>
+
+    <div id="eventsList"></div>
+  </div>
+
 </div><!-- /main -->
 
 <!-- LOADING -->
@@ -856,6 +872,7 @@ async function init() {
     await loadDocuments();
     await loadInjuries();
     await loadGoals();
+    await loadEvents();
     await loadMedical();
     await loadRating();
     await loadNotifications();
@@ -2854,6 +2871,116 @@ function switchTab(name) {
 function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow='hidden'; }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow='auto'; }
 document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if(e.target===m) closeModal(m.id); }));
+
+// ============================
+// EVENTS
+// ============================
+let allEvents = [];
+let evCurrentFilter = 'all';
+
+function evSetFilter(filter) {
+  evCurrentFilter = filter;
+  document.getElementById('evFilterAll').className = filter === 'all' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('evFilterAttending').className = filter === 'attending' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('evFilterUpcoming').className = filter === 'upcoming' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('evFilterPast').className = filter === 'past' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  renderEvents();
+}
+
+async function loadEvents() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'events', action:'list', data:{child_id:athleteId}})});
+    const d = await r.json();
+    allEvents = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+    renderEvents();
+  } catch(e) { console.error('loadEvents:', e); }
+}
+
+function renderEvents() {
+  const el = document.getElementById('eventsList');
+  if (!el) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  let filtered = allEvents.filter(function(e) {
+    const eDate = new Date(e.event_date); eDate.setHours(0,0,0,0);
+    if (evCurrentFilter === 'attending') return e.reg_status === 'attending';
+    if (evCurrentFilter === 'upcoming') return eDate >= today;
+    if (evCurrentFilter === 'past') return eDate < today;
+    return true;
+  });
+
+  if (!filtered.length) {
+    el.innerHTML = '<div class="card"><p style="color:var(--muted);text-align:center;padding:2rem">Нет мероприятий</p></div>';
+    return;
+  }
+
+  el.innerHTML = filtered.map(function(e) {
+    const eDate = new Date(e.event_date);
+    const isPast = eDate < today;
+    const dateFmt = eDate.toLocaleDateString('ru-RU', {day:'2-digit', month:'long', year:'numeric'});
+    const deadline = e.registration_deadline ? new Date(e.registration_deadline).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric'}) : null;
+
+    var statusHtml = '';
+    if (e.reg_status === 'attending') {
+      statusHtml = '<span style="background:#dcfce7;color:#16a34a;padding:.25rem .75rem;border-radius:20px;font-size:.8rem;font-weight:600">✅ Записан</span>';
+    } else if (e.reg_status === 'declined') {
+      statusHtml = '<span style="background:#fee2e2;color:#dc2626;padding:.25rem .75rem;border-radius:20px;font-size:.8rem;font-weight:600">❌ Отказался</span>';
+      if (e.reg_reason) statusHtml += ' <span style="color:var(--muted);font-size:.8rem">(' + e.reg_reason + ')</span>';
+    }
+
+    var btnsHtml = '';
+    if (!isPast) {
+      if (e.reg_status === 'attending') {
+        btnsHtml = '<button class="btn btn-sm btn-ghost" onclick="evDecline(' + e.id + ',' + (e.reg_id||0) + ')">&#x274C; Отказаться</button>';
+      } else {
+        btnsHtml = '<button class="btn btn-sm btn-primary" onclick="evAttend(' + e.id + ',' + (e.reg_id||0) + ')">&#x2705; Участвую</button>'
+          + ' <button class="btn btn-sm btn-ghost" onclick="evDecline(' + e.id + ',' + (e.reg_id||0) + ')">&#x274C; Не смогу</button>';
+      }
+    }
+
+    return '<div class="card" style="margin-bottom:1rem">'
+      + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">'
+      + '<div style="flex:1">'
+      + '<div style="font-weight:700;font-size:1rem;margin-bottom:.4rem">' + e.title + '</div>'
+      + '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">📅 ' + dateFmt + (isPast ? ' <span style="color:#94a3b8">(прошло)</span>' : '') + '</div>'
+      + (e.location ? '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">📍 ' + e.location + '</div>' : '')
+      + (e.entry_fee ? '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">💰 Взнос: ' + e.entry_fee + ' грн</div>' : '')
+      + (deadline ? '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">⏰ Регистрация до: ' + deadline + '</div>' : '')
+      + (e.description ? '<div style="font-size:.85rem;color:var(--text);margin-top:.5rem">' + e.description + '</div>' : '')
+      + '</div>'
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;flex-shrink:0">'
+      + statusHtml
+      + btnsHtml
+      + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+async function evAttend(eventId, regId) {
+  try {
+    if (regId && regId > 0) {
+      await apiFetch('event_registrations', 'update', {id: regId, child_id: athleteId, status: 'attending', reason: null});
+    } else {
+      await apiFetch('event_registrations', 'create', {event_id: eventId, child_id: athleteId, status: 'attending'});
+    }
+    await loadEvents();
+  } catch(e) { alert('Ошибка: ' + e.message); }
+}
+
+async function evDecline(eventId, regId) {
+  const reason = prompt('Укажите причину (необязательно):');
+  if (reason === null) return;
+  try {
+    if (regId && regId > 0) {
+      await apiFetch('event_registrations', 'update', {id: regId, child_id: athleteId, status: 'declined', reason: reason || null});
+    } else {
+      await apiFetch('event_registrations', 'create', {event_id: eventId, child_id: athleteId, status: 'declined', reason: reason || null});
+    }
+    await loadEvents();
+  } catch(e) { alert('Ошибка: ' + e.message); }
+}
 
 init();
 </script>
