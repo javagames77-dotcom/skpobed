@@ -300,7 +300,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед3</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -2947,6 +2947,7 @@ function renderEvents() {
       + '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">📅 ' + dateFmt + (isPast ? ' <span style="color:#94a3b8">(прошло)</span>' : '') + '</div>'
       + (e.location ? '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">📍 ' + e.location + '</div>' : '')
       + (e.entry_fee ? '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">💰 Взнос: ' + e.entry_fee + ' грн</div>' : '')
+      + (e.budget ? '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">💵 Бюджет: ' + e.budget + ' грн</div>' : '')
       + (deadline ? '<div style="color:var(--muted);font-size:.85rem;margin-bottom:.3rem">⏰ Регистрация до: ' + deadline + '</div>' : '')
       + (e.description ? '<div style="font-size:.85rem;color:var(--text);margin-top:.5rem">' + e.description + '</div>' : '')
       + '</div>'
