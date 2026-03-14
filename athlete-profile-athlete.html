@@ -300,7 +300,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед5</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -540,10 +540,14 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <!-- TAB: CHAT -->
   <div class="tab-pane" id="tab-chat">
     <div class="card">
-      <div class="card-title"><div class="card-title-left">💬 Личный чат с тренером</div></div>
+      <div class="card-title"><div class="card-title-left">💬 Чат с тренером / директором</div></div>
+      <div id="chatContactsRow" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+        <span style="font-size:.85rem;color:var(--muted);align-self:center">Написать:</span>
+        <div id="chatContactBtns" style="display:flex;gap:.5rem;flex-wrap:wrap"></div>
+      </div>
       <div class="chat-wrap">
         <div class="chat-messages" id="chatMessages">
-          <p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>
+          <p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Выберите собеседника выше</p>
         </div>
         <div class="chat-input-row">
           <input class="chat-input" id="chatInput" placeholder="Написать сообщение..." onkeydown="if(event.key==='Enter')sendMessage()">
@@ -1904,18 +1908,58 @@ async function confirmSync() {
 // ============================
 // CHAT
 // ============================
+let chatActiveUserId = null;
+
+async function loadChatContacts() {
+  try {
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'messages', action:'trainers', data:{child_id:athleteId}})});
+    const d = await r.json();
+    const contacts = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+    const btns = document.getElementById('chatContactBtns');
+    if (!btns) return;
+    if (!contacts.length) { btns.innerHTML = '<span style="color:var(--muted);font-size:.85rem">Нет доступных собеседников</span>'; return; }
+    btns.innerHTML = contacts.map(c => `
+      <button id="chatBtn_${c.id}" onclick="selectChatContact(${c.id}, '${c.first_name} ${c.last_name}')"
+        class="btn btn-ghost btn-sm" style="border:2px solid var(--border)">
+        ${c.role === 'director' ? '👔' : '🥋'} ${c.first_name} ${c.last_name}
+      </button>`).join('');
+    // Автовыбор первого
+    if (contacts.length > 0) selectChatContact(contacts[0].id, contacts[0].first_name + ' ' + contacts[0].last_name);
+  } catch(e) { console.error('loadChatContacts:', e); }
+}
+
+function selectChatContact(userId, name) {
+  chatActiveUserId = userId;
+  // Подсвечиваем активную кнопку
+  document.querySelectorAll('[id^="chatBtn_"]').forEach(b => {
+    b.style.borderColor = 'var(--border)';
+    b.style.background = '';
+    b.style.color = '';
+  });
+  const active = document.getElementById('chatBtn_' + userId);
+  if (active) { active.style.borderColor = 'var(--p)'; active.style.background = 'var(--p)'; active.style.color = '#fff'; }
+  loadMessages();
+}
+
 async function loadMessages() {
   try {
     const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'messages', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
-    const msgs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+    const allMsgs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+
+    // Фильтруем по активному собеседнику
+    const msgs = chatActiveUserId
+      ? allMsgs.filter(m => m.from_user_id == chatActiveUserId || m.to_user_id == chatActiveUserId || (!m.to_user_id && !chatActiveUserId))
+      : allMsgs;
+
     const container = document.getElementById('chatMessages');
-    if (!msgs.length) { 
-      container.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет</p>';
+    if (!msgs.length) {
+      container.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>';
       const badge = document.getElementById('chatUnreadBadge');
       if (badge) badge.style.display = 'none';
-      return; 
+      return;
     }
     container.innerHTML = msgs.map(m => {
       const isFromAthlete = m.is_from_athlete===true||m.is_from_athlete==='true'||m.is_from_athlete==='t';
@@ -1925,20 +1969,16 @@ async function loadMessages() {
     }).join('');
     container.scrollTop = container.scrollHeight;
 
-    // Бейдж — непрочитанные сообщения не от спортсмена
-    const unread = msgs.filter(m => {
+    // Бейдж
+    const unread = allMsgs.filter(m => {
       const isFromAthlete = m.is_from_athlete===true||m.is_from_athlete==='true'||m.is_from_athlete==='t';
       return !isFromAthlete && (m.is_read === false || m.is_read === 'false' || m.is_read === 0);
     }).length;
-    console.log('[BADGE] unread:', unread, 'msgs sample is_read:', msgs.slice(0,3).map(m=>({is_read:m.is_read, is_from_athlete:m.is_from_athlete})));
+    console.log('[BADGE] unread:', unread, 'msgs sample is_read:', allMsgs.slice(0,3).map(m=>({is_read:m.is_read, is_from_athlete:m.is_from_athlete})));
     const badge = document.getElementById('chatUnreadBadge');
     if (badge) {
-      if (unread > 0) {
-        badge.textContent = unread > 99 ? '99+' : unread;
-        badge.style.display = 'inline-flex';
-      } else {
-        badge.style.display = 'none';
-      }
+      if (unread > 0) { badge.textContent = unread > 99 ? '99+' : unread; badge.style.display = 'inline-block'; }
+      else badge.style.display = 'none';
     }
   } catch(e) {}
 }
@@ -1953,16 +1993,15 @@ async function sendMessage() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
   if (!text) return;
+  if (!chatActiveUserId) { alert('Выберите собеседника'); return; }
   input.value = '';
-  const msgData = userRole === 'athlete'
-    ? {child_id:athleteId, text, from_user_id:userId, is_from_athlete:true}
-    : {child_id:athleteId, text, from_user_id:userId};
+  const msgData = {child_id: athleteId, text, from_user_id: userId, is_from_athlete: true, to_user_id: chatActiveUserId};
   await apiFetch('messages','create', msgData);
   await loadMessages();
 }
 
 function startChatPolling() {
-  loadMessages();
+  loadChatContacts();
   chatInterval = setInterval(loadMessages, 15000);
 }
 
