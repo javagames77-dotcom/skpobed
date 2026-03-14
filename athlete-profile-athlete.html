@@ -300,7 +300,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед2</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -318,7 +318,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
     <button class="tab-btn" onclick="switchTab('belts')">🥋 Пояса</button>
     <button class="tab-btn" onclick="switchTab('attendance')">📅 Посещения</button>
     <button class="tab-btn" onclick="switchTab('competitions')">🏆 Соревнования</button>
-    <button class="tab-btn" onclick="switchTab('chat')" style="position:relative">💬 Чат <span id="chatUnreadBadge" style="display:inline-block;position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:50%;font-size:.65rem;font-weight:700;width:18px;height:18px;line-height:18px;text-align:center;">7</span></button>
+    <button class="tab-btn" onclick="switchTab('chat')" style="position:relative">💬 Чат <span id="chatUnreadBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:50%;font-size:.65rem;font-weight:700;width:18px;height:18px;line-height:18px;text-align:center;"></span></button>
     <button class="tab-btn" onclick="switchTab('documents')">📄 Документы</button>
     <button class="tab-btn" onclick="switchTab('medical')">🏥 Медицина</button>
     <button class="tab-btn" onclick="switchTab('injuries')">🩹 Травмы</button>
@@ -436,37 +436,8 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <div class="stat-box"><div class="val" id="attStreak">0</div><div class="lbl">Серия подряд</div></div>
     </div>
 
-    <!-- View switcher -->
-    <div style="display:flex;gap:.5rem;margin-bottom:1rem">
-      <button id="attViewTable" class="btn btn-primary btn-sm" onclick="switchAttView('table')">📋 Таблица</button>
-      <button id="attViewCal" class="btn btn-ghost btn-sm" onclick="switchAttView('calendar')">📅 Календарь</button>
-    </div>
-
-    <!-- TABLE view -->
-    <div id="attTableView" class="card">
-      <div class="cal-group-select" id="calGroupSelectTable"></div>
-      <div class="cal-nav">
-        <button class="cal-nav-btn" onclick="attTablePrevMonth()">←</button>
-        <div class="cal-month-label" id="attTableMonthLabel"></div>
-        <button class="cal-nav-btn" onclick="attTableNextMonth()">→</button>
-      </div>
-      <table style="width:100%;border-collapse:collapse;font-size:.9rem">
-        <thead>
-          <tr style="border-bottom:2px solid var(--border)">
-            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Дата</th>
-            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Группа</th>
-            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Статус</th>
-            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600"></th>
-          </tr>
-        </thead>
-        <tbody id="attTableBody">
-          <tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Загрузка...</td></tr>
-        </tbody>
-      </table>
-    </div>
-
     <!-- Calendar card -->
-    <div id="attCalView" class="card" style="display:none">
+    <div class="card">
       <!-- Group selector -->
       <div class="cal-group-select" id="calGroupSelect"></div>
 
@@ -576,7 +547,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="chat-wrap">
         <div class="chat-messages" id="chatMessages">
-          <p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Выберите собеседника выше</p>
+          <p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>
         </div>
         <div class="chat-input-row">
           <input class="chat-input" id="chatInput" placeholder="Написать сообщение..." onkeydown="if(event.key==='Enter')sendMessage()">
@@ -1173,145 +1144,14 @@ async function saveBelt() {
 // ATTENDANCE
 // ============================
 // ============================
-// ATTENDANCE VIEW SWITCHER
+// CALENDAR STATE
 // ============================
-let attCurrentView = 'table';
-let attTableYear = new Date().getFullYear();
-let attTableMonth = new Date().getMonth();
-
-function switchAttView(view) {
-  attCurrentView = view;
-  document.getElementById('attTableView').style.display = view === 'table' ? '' : 'none';
-  document.getElementById('attCalView').style.display = view === 'calendar' ? '' : 'none';
-  document.getElementById('attViewTable').className = view === 'table' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
-  document.getElementById('attViewCal').className = view === 'calendar' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
-  if (view === 'table') renderAttTable();
-  if (view === 'calendar') renderCalendar();
-}
-
-function attTablePrevMonth() {
-  attTableMonth--;
-  if (attTableMonth < 0) { attTableMonth = 11; attTableYear--; }
-  renderAttTable();
-}
-function attTableNextMonth() {
-  attTableMonth++;
-  if (attTableMonth > 11) { attTableMonth = 0; attTableYear++; }
-  renderAttTable();
-}
-
-function renderAttTable() {
-  const tbody = document.getElementById('attTableBody');
-  if (!tbody) return;
-
-  const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-  const today = new Date(); today.setHours(0,0,0,0);
-
-  const label = document.getElementById('attTableMonthLabel');
-  if (label) label.textContent = months[attTableMonth] + ' ' + attTableYear;
-
-  const notifDates = {};
-  calAbsenceNotifs.forEach(n => {
-    const from = new Date(n.date_from), to = new Date(n.date_to);
-    for (let d = new Date(from); d <= to; d.setDate(d.getDate()+1)) {
-      notifDates[d.toISOString().split('T')[0]] = n;
-    }
-  });
-
-  const attMap = {};
-  calAttendanceRecords
-    .filter(r => calSelectedGroup === 'all' || r.group_id == calSelectedGroup)
-    .forEach(r => {
-      const k = r.training_date && r.training_date.split('T')[0];
-      if (k) attMap[k] = r;
-    });
-
-  const daysInMonth = new Date(attTableYear, attTableMonth + 1, 0).getDate();
-  const allDates = [];
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(attTableYear, attTableMonth, day);
-    date.setHours(0,0,0,0);
-    const mm = String(date.getMonth()+1).padStart(2,'0');
-    const dd = String(date.getDate()).padStart(2,'0');
-    const dateStr = date.getFullYear() + '-' + mm + '-' + dd;
-    const jsDay = date.getDay();
-    const schedDay = jsDay === 0 ? 6 : jsDay - 1;
-
-    const groupsToCheck = calSelectedGroup === 'all'
-      ? athleteGroupIds.map(gid => allGroups.find(g => g.id == gid)).filter(Boolean)
-      : [allGroups.find(g => g.id == calSelectedGroup)].filter(Boolean);
-
-    let isScheduled = false;
-    for (const g of groupsToCheck) {
-      const sch = typeof g.schedule === 'string' ? JSON.parse(g.schedule || '[]') : (g.schedule || []);
-      if (sch.some(s => s.day === schedDay)) { isScheduled = true; break; }
-    }
-
-    const att = attMap[dateStr];
-    const isNotif = notifDates[dateStr];
-    if (isScheduled || att || isNotif) {
-      allDates.push({ dateStr, date, att, isNotif, isScheduled });
-    }
-  }
-
-  if (!allDates.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Нет тренировок в ' + months[attTableMonth] + '</td></tr>';
-    return;
-  }
-
-  allDates.sort((a,b) => b.dateStr.localeCompare(a.dateStr));
-
-  let html = '';
-  allDates.forEach(function(item) {
-    const dateStr = item.dateStr, date = item.date, att = item.att, isNotif = item.isNotif;
-    const isPast = date < today;
-    const dayName = days[date.getDay()];
-    const dateFormatted = date.toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric'});
-    const groupName = att ? (att.group_name || '—') : '—';
-
-    let statusHtml = '', rowBg = '', reasonBtn = '';
-
-    if (att) {
-      if (att.was_present) {
-        statusHtml = '<span style="color:#16a34a;font-weight:600">\u2705 Присутствовал</span>';
-        rowBg = '#f0fdf4';
-      } else if (isNotif) {
-        const notif = notifDates[dateStr];
-        const reason = notif ? (notif.reason || '') + (notif.comment ? ': ' + notif.comment : '') : '';
-        statusHtml = '<span style="color:#92400e;font-weight:600">\uD83D\uDFE1 ' + (reason || 'Причина указана') + '</span>';
-        rowBg = '#fefce8';
-      } else {
-        statusHtml = '<span style="color:#dc2626;font-weight:600">\u274C Пропустил</span>';
-        rowBg = '#fef2f2';
-        reasonBtn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem;padding:.2rem .6rem" onclick="openExplainDay(\'' + dateStr + '\', ' + date.getDate() + ')">\uD83D\uDCDD Причина</button>';
-      }
-    } else if (isNotif) {
-      const notif = notifDates[dateStr];
-      const reason = notif ? (notif.reason || '') + (notif.comment ? ': ' + notif.comment : '') : '';
-      statusHtml = '<span style="color:#92400e;font-weight:600">\uD83D\uDFE1 ' + (reason || 'Предупреждение') + '</span>';
-      rowBg = '#fefce8';
-    } else if (isPast) {
-      statusHtml = '<span style="color:#94a3b8">\u2B1C Нет данных</span>';
-      rowBg = '#f8fafc';
-      reasonBtn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem;padding:.2rem .6rem" onclick="openExplainDay(\'' + dateStr + '\', ' + date.getDate() + ')">\uD83D\uDCDD Причина</button>';
-    } else {
-      statusHtml = '<span style="color:#64748b">\uD83D\uDCC5 Предстоящая</span>';
-      rowBg = '#f1f5f9';
-    }
-
-    html += '<tr style="border-bottom:1px solid var(--border);background:' + rowBg + '">' +
-      '<td style="padding:.6rem .8rem;white-space:nowrap">' + dateFormatted + ' <span style="color:var(--muted);font-size:.8rem">' + dayName + '</span></td>' +
-      '<td style="padding:.6rem .8rem">' + groupName + '</td>' +
-      '<td style="padding:.6rem .8rem">' + statusHtml + '</td>' +
-      '<td style="padding:.4rem .8rem">' + reasonBtn + '</td>' +
-      '</tr>';
-  });
-
-  tbody.innerHTML = html;
-}
-
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth(); // 0-based
+let calAttendanceRecords = [];   // {training_date, was_present, group_id, reason}
+let calAbsenceNotifs = [];       // {date_from, date_to, reason, comment}
+let calScheduleDays = [];        // upcoming training dates from group schedule
+let calSelectedGroup = 'all';    // 'all' or group_id
 
 async function loadAttendance() {
   try {
@@ -1363,9 +1203,6 @@ async function loadAttendance() {
     // Group selector
     renderCalGroupSelect();
 
-    // Render default table view
-    renderAttTable();
-
     // Check unexplained absences (last 30 days, no notification)
     checkUnexplainedAbsences();
 
@@ -1377,35 +1214,16 @@ async function loadAttendance() {
 
 function renderCalGroupSelect() {
   const groups = athleteGroupIds.map(gid => allGroups.find(g=>g.id===gid)).filter(Boolean);
-  const elCal = document.getElementById('calGroupSelect');
-  const elTable = document.getElementById('calGroupSelectTable');
-  if (groups.length <= 1) {
-    if (elCal) elCal.innerHTML = '';
-    if (elTable) elTable.innerHTML = '';
-    return;
-  }
-  const btnsCalendar = `<button class="cal-group-btn ${calSelectedGroup==='all'?'active':''}" onclick="calSelectGroup('all')">Все группы</button>`
+  if (groups.length <= 1) { document.getElementById('calGroupSelect').innerHTML = ''; return; }
+  const btns = `<button class="cal-group-btn ${calSelectedGroup==='all'?'active':''}" onclick="calSelectGroup('all')">Все группы</button>`
     + groups.map(g=>`<button class="cal-group-btn ${calSelectedGroup==g.id?'active':''}" onclick="calSelectGroup(${g.id})">${g.name}</button>`).join('');
-  if (elCal) elCal.innerHTML = btnsCalendar;
-
-  const btnsTable = `<button class="cal-group-btn ${calSelectedGroup==='all'?'active':''}" onclick="calSelectGroupTable('all')">Все группы</button>`
-    + groups.map(g=>`<button class="cal-group-btn ${calSelectedGroup==g.id?'active':''}" onclick="calSelectGroupTable(${g.id})">${g.name}</button>`).join('');
-  if (elTable) elTable.innerHTML = btnsTable;
-}">Все группы</button>`
-    + groups.map(g=>`<button class="cal-group-btn ${calSelectedGroup==g.id?'active':''}" onclick="calSelectGroupTable(${g.id})">${g.name}</button>`).join('');
-  document.getElementById('calGroupSelectTable').innerHTML = btnsTable;
+  document.getElementById('calGroupSelect').innerHTML = btns;
 }
 
 function calSelectGroup(gid) {
   calSelectedGroup = gid;
   renderCalGroupSelect();
   renderCalendar();
-}
-
-function calSelectGroupTable(gid) {
-  calSelectedGroup = gid;
-  renderCalGroupSelect();
-  renderAttTable();
 }
 
 function calPrevMonth() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
@@ -2106,14 +1924,12 @@ async function loadChatContacts() {
         class="btn btn-ghost btn-sm" style="border:2px solid var(--border)">
         ${c.role === 'director' ? '👔' : '🥋'} ${c.first_name} ${c.last_name}
       </button>`).join('');
-    // Автовыбор первого
     if (contacts.length > 0) selectChatContact(contacts[0].id, contacts[0].first_name + ' ' + contacts[0].last_name);
   } catch(e) { console.error('loadChatContacts:', e); }
 }
 
 function selectChatContact(userId, name) {
   chatActiveUserId = userId;
-  // Подсвечиваем активную кнопку
   document.querySelectorAll('[id^="chatBtn_"]').forEach(b => {
     b.style.borderColor = 'var(--border)';
     b.style.background = '';
@@ -2130,12 +1946,9 @@ async function loadMessages() {
       body: JSON.stringify({token, resource:'messages', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     const allMsgs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
-
-    // Фильтруем по активному собеседнику
     const msgs = chatActiveUserId
       ? allMsgs.filter(m => m.from_user_id == chatActiveUserId || m.to_user_id == chatActiveUserId)
       : allMsgs;
-
     const container = document.getElementById('chatMessages');
     if (!msgs.length) {
       container.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>';
@@ -2150,13 +1963,10 @@ async function loadMessages() {
       return `<div class="msg ${isMine?'mine':'theirs'}" data-id="${m.id}"><div class="msg-bubble">${m.text}</div><div class="msg-time">${time} <span onclick="deleteMessage(${m.id})" style="cursor:pointer;margin-left:.5rem;opacity:.5;font-size:.75rem" title="Удалить">🗑</span></div></div>`;
     }).join('');
     container.scrollTop = container.scrollHeight;
-
-    // Бейдж
     const unread = allMsgs.filter(m => {
       const isFromAthlete = m.is_from_athlete===true||m.is_from_athlete==='true'||m.is_from_athlete==='t';
       return !isFromAthlete && (m.is_read === false || m.is_read === 'false' || m.is_read === 0);
     }).length;
-    console.log('[BADGE] unread:', unread, 'msgs sample is_read:', allMsgs.slice(0,3).map(m=>({is_read:m.is_read, is_from_athlete:m.is_from_athlete})));
     const badge = document.getElementById('chatUnreadBadge');
     if (badge) {
       if (unread > 0) { badge.textContent = unread > 99 ? '99+' : unread; badge.style.display = 'inline-block'; }
