@@ -280,7 +280,8 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 
 <div class="header">
   <a href="/" class="logo">InSkill<span>.online</span></a>
-  <a href="javascript:history.back()" class="btn-back">← Назад</a>
+  <a href="javascript:history.back()" class="btn-back" id="btnBack">← Назад</a>
+  <button onclick="athleteLogout()" class="btn-back" id="btnLogout" style="display:none">Выход из профиля</button>
 </div>
 
 <!-- NOTIFICATIONS BANNER -->
@@ -812,6 +813,21 @@ const userId = parseInt(localStorage.getItem('user_id')) || 0;
 
 if (!token || !athleteId) { location.href = '/'; }
 
+// Show correct header button based on role
+if (userRole === 'athlete') {
+  document.getElementById('btnBack').style.display = 'none';
+  document.getElementById('btnLogout').style.display = '';
+}
+
+function athleteLogout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('role');
+  localStorage.removeItem('user_id');
+  localStorage.removeItem('athlete_id');
+  location.href = '/';
+}
+
 let athlete = null, allGroups = [], athleteGroupIds = [], allBelts = [];
 let competitions = [], filteredComps = [], compPage = 1;
 let pendingSync = null, pendingSyncPlatform = null;
@@ -921,8 +937,8 @@ async function loadAthlete() {
   if (athlete.smoothcomp_id) document.getElementById('scUrl').value = `https://smoothcomp.com/en/profile/${athlete.smoothcomp_id}`;
   if (athlete.ajp_id) document.getElementById('ajpUrl').value = `https://ajptour.com/ru/profile/${athlete.ajp_id}`;
 
-  // Role-based visibility
-  if (userRole === 'trainer' || userRole === 'director') {
+  // Role-based visibility — athlete can edit everything except groups
+  if (userRole === 'trainer' || userRole === 'director' || userRole === 'athlete') {
     document.getElementById('addBeltBtn').style.display = 'inline-flex';
     document.getElementById('addInjuryBtn').style.display = 'inline-flex';
     document.getElementById('addGoalBtn').style.display = 'inline-flex';
@@ -933,24 +949,27 @@ async function loadAthlete() {
 // GROUPS
 // ============================
 async function loadGroups() {
-  // Load all groups for club (for edit modal + calendar schedule)
+  // Load all groups for club (for edit modal checkboxes)
   const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'groups', action:'list'})});
   const d = await r.json();
   allGroups = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
 
-  // athlete.groups comes from children_profile as array [{id, name, schedule, club_id}]
-  let athleteGroups = [];
+  // athlete.groups comes from children_profile — ALL groups of this athlete
   let rawGroups = athlete.groups;
-  console.log('[loadGroups] athlete.groups raw:', rawGroups, typeof rawGroups);
   if (typeof rawGroups === 'string') {
     try { rawGroups = JSON.parse(rawGroups); } catch(e) { rawGroups = []; }
   }
-  if (Array.isArray(rawGroups)) {
-    athleteGroups = rawGroups.filter(g => g && g.id && g.name);
-  }
-  console.log('[loadGroups] athleteGroups after filter:', athleteGroups);
+  const athleteGroups = Array.isArray(rawGroups) ? rawGroups.filter(g => g && g.id && g.name) : [];
   athleteGroupIds = athleteGroups.map(g => g.id);
+
+  // Merge athlete groups into allGroups so schedule/attendance works for ALL athlete groups
+  // even if trainer only sees some groups via Main API
+  athleteGroups.forEach(ag => {
+    if (!allGroups.find(g => g.id === ag.id)) {
+      allGroups.push(ag);
+    }
+  });
 
   // Render group chips
   const html = athleteGroups.length
@@ -958,10 +977,9 @@ async function loadGroups() {
     : '<p style="color:var(--muted);font-size:.9rem">Нет групп</p>';
   document.getElementById('infoGroups').innerHTML = html;
 
-  // Show edit button for director and trainer
+  // Show edit button for director and trainer only
   if (userRole === 'director' || userRole === 'trainer') {
     document.getElementById('groupsEditBtn').style.display = 'inline-flex';
-    // Populate edit modal checkboxes
     renderGroupsEditModal(athleteGroups);
   }
 }
@@ -1163,16 +1181,14 @@ let calSelectedGroup = 'all';    // 'all' or group_id
 
 async function loadAttendance() {
   try {
-    // Load attendance records
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    // Load attendance records - use athlete-api for athlete role (Main API doesn't accept athlete tokens)
+    const attendanceAPI = userRole === 'athlete' ? API2 : API;
+    const r = await fetch(attendanceAPI, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'attendance', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     const allRecords = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     // Filter by this athlete's child_id (API returns all group members)
     calAttendanceRecords = allRecords.filter(r => r.child_id == athleteId);
-    console.log('[ATT] total:', allRecords.length, '→ filtered for child', athleteId, ':', calAttendanceRecords.length);
-    console.log('[ATT] raw[0]:', JSON.stringify(allRecords[0]));
-    console.log('[ATT] athleteId typeof:', typeof athleteId, athleteId);
     const uniqIds = [...new Set(allRecords.map(r=>r.child_id))];
     console.log('[ATT] unique child_ids in response:', JSON.stringify(uniqIds.slice(0,15)));
     console.log('[ATT] present sample:', JSON.stringify(calAttendanceRecords.filter(r=>r.was_present).slice(0,2)));
