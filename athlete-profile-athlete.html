@@ -444,6 +444,11 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 
     <!-- TABLE view -->
     <div id="attTableView" class="card">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="attTablePrevMonth()">&#8592;</button>
+        <div class="cal-month-label" id="attTableMonthLabel"></div>
+        <button class="cal-nav-btn" onclick="attTableNextMonth()">&#8594;</button>
+      </div>
       <table style="width:100%;border-collapse:collapse;font-size:.9rem">
         <thead>
           <tr style="border-bottom:2px solid var(--border)">
@@ -1177,13 +1182,35 @@ function switchAttView(view) {
   if (view === 'calendar') renderCalendar();
 }
 
+let attTableYear = new Date().getFullYear();
+let attTableMonth = new Date().getMonth();
+
+function attTablePrevMonth() {
+  attTableMonth--;
+  if (attTableMonth < 0) { attTableMonth = 11; attTableYear--; }
+  renderAttTable();
+}
+function attTableNextMonth() {
+  attTableMonth++;
+  if (attTableMonth > 11) { attTableMonth = 0; attTableYear++; }
+  renderAttTable();
+}
+
 function renderAttTable() {
   const tbody = document.getElementById('attTableBody');
   if (!tbody) return;
+  const MN = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   const DN = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-  const records = [...calAttendanceRecords].sort(function(a,b){ return b.training_date.localeCompare(a.training_date); });
+  const lbl = document.getElementById('attTableMonthLabel');
+  if (lbl) lbl.textContent = MN[attTableMonth] + ' ' + attTableYear;
+  const records = [...calAttendanceRecords]
+    .filter(function(r) {
+      var d = new Date(r.training_date);
+      return d.getFullYear() === attTableYear && d.getMonth() === attTableMonth;
+    })
+    .sort(function(a,b){ return b.training_date.localeCompare(a.training_date); });
   if (!records.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Нет данных</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Нет тренировок в ' + MN[attTableMonth] + ' ' + attTableYear + '</td></tr>';
     return;
   }
   tbody.innerHTML = records.map(function(r) {
