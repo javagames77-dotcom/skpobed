@@ -2389,10 +2389,16 @@ async function loadInjuries() {
     const d = await r.json();
     const injuries = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     document.getElementById('injuryList').innerHTML = injuries.length ? injuries.map(i => `
-      <div class="injury-item">
-        <div class="injury-title">🩹 ${i.title}</div>
-        <div class="injury-dates">${i.injury_date ? '📅 ' + new Date(i.injury_date).toLocaleDateString('ru-RU') : ''} ${i.recovery_date ? '→ ' + new Date(i.recovery_date).toLocaleDateString('ru-RU') : ''}</div>
-        ${i.description ? `<div class="injury-desc">${i.description}</div>` : ''}
+      <div class="injury-item" style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="flex:1">
+          <div class="injury-title">🩹 ${i.title}</div>
+          <div class="injury-dates">${i.injury_date ? '📅 ' + new Date(i.injury_date).toLocaleDateString('ru-RU') : ''} ${i.recovery_date ? '→ ' + new Date(i.recovery_date).toLocaleDateString('ru-RU') : ''}</div>
+          ${i.description ? `<div class="injury-desc">${i.description}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:.4rem;flex-shrink:0;margin-left:.75rem">
+          <button onclick="editInjury(${i.id})" style="background:none;border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem">✏️</button>
+          <button onclick="deleteInjury(${i.id})" style="background:none;border:1px solid #ffcdd2;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;color:#c62828">🗑️</button>
+        </div>
       </div>
     `).join('') : '<p style="color:var(--muted)">Травм не зафиксировано</p>';
   } catch(e) {}
@@ -2401,15 +2407,54 @@ async function loadInjuries() {
 async function saveInjury() {
   const title = document.getElementById('ai_title').value.trim();
   if (!title) { alert('Введите название'); return; }
-  await apiFetch('athlete_injuries','create',{
-    child_id:athleteId, title,
-    injury_date: document.getElementById('ai_date').value||null,
-    recovery_date: document.getElementById('ai_recovery').value||null,
-    description: document.getElementById('ai_desc').value,
-    created_by: userId
-  });
+  const editId = document.getElementById('addInjuryModal').dataset.editId;
+  if (editId) {
+    await apiFetch('athlete_injuries','update',{
+      id:parseInt(editId), child_id:athleteId, title,
+      injury_date: document.getElementById('ai_date').value||null,
+      recovery_date: document.getElementById('ai_recovery').value||null,
+      description: document.getElementById('ai_desc').value
+    });
+    delete document.getElementById('addInjuryModal').dataset.editId;
+  } else {
+    await apiFetch('athlete_injuries','create',{
+      child_id:athleteId, title,
+      injury_date: document.getElementById('ai_date').value||null,
+      recovery_date: document.getElementById('ai_recovery').value||null,
+      description: document.getElementById('ai_desc').value,
+      created_by: userId
+    });
+  }
   closeModal('addInjuryModal');
   await loadInjuries();
+}
+
+async function editInjury(id) {
+  const inj = calAttendanceRecords; // placeholder
+  const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'athlete_injuries', action:'list', data:{child_id:athleteId}})});
+  const d = await r.json();
+  const injuries = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
+  const i = injuries.find(x => x.id === id);
+  if (!i) return;
+  document.getElementById('ai_title').value = i.title || '';
+  document.getElementById('ai_date').value = i.injury_date ? i.injury_date.split('T')[0] : '';
+  document.getElementById('ai_recovery').value = i.recovery_date ? i.recovery_date.split('T')[0] : '';
+  document.getElementById('ai_desc').value = i.description || '';
+  document.getElementById('addInjuryModal').dataset.editId = id;
+  openModal('addInjuryModal');
+}
+
+async function deleteInjury(id) {
+  if (!confirm('Удалить запись о травме?')) return;
+  await apiFetch('athlete_injuries','delete',{id, child_id:athleteId});
+  await loadInjuries();
+}
+
+async function deleteGoal(id) {
+  if (!confirm('Удалить цель?')) return;
+  await apiFetch('athlete_goals','delete',{id, child_id:athleteId});
+  await loadGoals();
 }
 
 // ============================
@@ -2424,9 +2469,12 @@ async function loadGoals() {
     document.getElementById('goalsList').innerHTML = goals.length ? goals.map(g => `
       <div class="goal-item">
         <div class="goal-check ${g.is_done?'done':''}" onclick="toggleGoal(${g.id},${!g.is_done})">${g.is_done?'✓':''}</div>
-        <div class="goal-text">
+        <div class="goal-text" style="flex:1">
           <div class="goal-name" style="${g.is_done?'text-decoration:line-through;color:var(--muted)':''}">🎯 ${g.text}</div>
           ${g.target_date ? `<div class="goal-date">Срок: ${new Date(g.target_date).toLocaleDateString('ru-RU')}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:.4rem;flex-shrink:0;margin-left:.75rem">
+          <button onclick="deleteGoal(${g.id})" style="background:none;border:1px solid #ffcdd2;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;color:#c62828">🗑️</button>
         </div>
       </div>
     `).join('') : '<p style="color:var(--muted)">Целей нет. Тренер может добавить цели для спортсмена.</p>';
