@@ -1202,7 +1202,7 @@ function renderAttGroupSelect() {
   var el = document.getElementById('calGroupSelectTable');
   if (!el) return;
   if (groups.length <= 1) { el.innerHTML = ''; return; }
-  el.innerHTML = '<button class="cal-group-btn ' + (calSelectedGroup==='all'?'active':'') + '" onclick="calSelectGroupTable('all')">Все группы</button>'
+  el.innerHTML = '<button class="cal-group-btn ' + (calSelectedGroup==='all'?'active':'') + '" onclick="calSelectGroupTable(&apos;all&apos;)">Все группы</button>'
     + groups.map(function(g) {
         return '<button class="cal-group-btn ' + (calSelectedGroup==g.id?'active':'') + '" onclick="calSelectGroupTable(' + g.id + ')">' + g.name + '</button>';
       }).join('');
