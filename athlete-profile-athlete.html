@@ -444,6 +444,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 
     <!-- TABLE view -->
     <div id="attTableView" class="card">
+      <div id="calGroupSelectTable" class="cal-group-select"></div>
       <div class="cal-nav">
         <button class="cal-nav-btn" onclick="attTablePrevMonth()">&#8592;</button>
         <div class="cal-month-label" id="attTableMonthLabel"></div>
@@ -1196,40 +1197,120 @@ function attTableNextMonth() {
   renderAttTable();
 }
 
+function renderAttGroupSelect() {
+  var groups = athleteGroupIds.map(function(gid) { return allGroups.find(function(g) { return g.id == gid; }); }).filter(Boolean);
+  var el = document.getElementById('calGroupSelectTable');
+  if (!el) return;
+  if (groups.length <= 1) { el.innerHTML = ''; return; }
+  el.innerHTML = '<button class="cal-group-btn ' + (calSelectedGroup==='all'?'active':'') + '" onclick="calSelectGroupTable('all')">Все группы</button>'
+    + groups.map(function(g) {
+        return '<button class="cal-group-btn ' + (calSelectedGroup==g.id?'active':'') + '" onclick="calSelectGroupTable(' + g.id + ')">' + g.name + '</button>';
+      }).join('');
+}
+
+function calSelectGroupTable(gid) {
+  calSelectedGroup = gid;
+  renderAttGroupSelect();
+  renderAttTable();
+}
+
 function renderAttTable() {
-  const tbody = document.getElementById('attTableBody');
+  var tbody = document.getElementById('attTableBody');
   if (!tbody) return;
-  const MN = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  const DN = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-  const lbl = document.getElementById('attTableMonthLabel');
+  var MN = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  var DN = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  var lbl = document.getElementById('attTableMonthLabel');
   if (lbl) lbl.textContent = MN[attTableMonth] + ' ' + attTableYear;
-  const records = [...calAttendanceRecords]
-    .filter(function(r) {
-      var d = new Date(r.training_date);
-      return d.getFullYear() === attTableYear && d.getMonth() === attTableMonth;
-    })
-    .sort(function(a,b){ return b.training_date.localeCompare(a.training_date); });
-  if (!records.length) {
+  renderAttGroupSelect();
+
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  // Notif map
+  var notifMap = {};
+  calAbsenceNotifs.forEach(function(n) {
+    var f = new Date(n.date_from), t = new Date(n.date_to);
+    for (var d = new Date(f); d <= t; d.setDate(d.getDate()+1)) {
+      notifMap[d.toISOString().split('T')[0]] = n;
+    }
+  });
+
+  // Attendance map для текущего месяца и группы
+  var attMap = {};
+  calAttendanceRecords
+    .filter(function(r) { return calSelectedGroup === 'all' || r.group_id == calSelectedGroup; })
+    .forEach(function(r) {
+      var k = r.training_date && r.training_date.split('T')[0];
+      if (k) attMap[k] = r;
+    });
+
+  // Собираем все дни месяца с тренировками по расписанию
+  var daysInMonth = new Date(attTableYear, attTableMonth+1, 0).getDate();
+  var rows = [];
+  for (var day = 1; day <= daysInMonth; day++) {
+    var date = new Date(attTableYear, attTableMonth, day);
+    date.setHours(0,0,0,0);
+    var dateStr = date.getFullYear() + '-' + String(date.getMonth()+1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0');
+    var jsDay = date.getDay();
+    var schedDay = jsDay === 0 ? 6 : jsDay - 1;
+    var groupsToCheck = calSelectedGroup === 'all'
+      ? athleteGroupIds.map(function(gid){return allGroups.find(function(g){return g.id==gid;});}).filter(Boolean)
+      : [allGroups.find(function(g){return g.id==calSelectedGroup;})].filter(Boolean);
+    var isScheduled = groupsToCheck.some(function(g) {
+      var sch = typeof g.schedule==='string' ? JSON.parse(g.schedule||'[]') : (g.schedule||[]);
+      return sch.some(function(s){return s.day===schedDay;});
+    });
+    var att = attMap[dateStr];
+    var notif = notifMap[dateStr];
+    if (isScheduled || att || notif) {
+      rows.push({dateStr:dateStr, date:date, att:att, notif:notif, isPast:date<today});
+    }
+  }
+
+  if (!rows.length) {
     tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Нет тренировок в ' + MN[attTableMonth] + ' ' + attTableYear + '</td></tr>';
     return;
   }
-  tbody.innerHTML = records.map(function(r) {
-    var date = new Date(r.training_date); 
-    var dateFmt = date.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
-    var dayName = DN[date.getDay()];
-    var status, bg, btn = '';
-    if (r.was_present) {
-      status = '<span style="color:#16a34a;font-weight:600">✅ Присутствовал</span>'; bg = '#f0fdf4';
+
+  rows.sort(function(a,b){ return b.dateStr.localeCompare(a.dateStr); });
+
+  tbody.innerHTML = rows.map(function(item) {
+    var dayName = DN[item.date.getDay()];
+    var dateFmt = item.date.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+    var groupName = item.att ? (item.att.group_name||'—') : '—';
+    var status = '', bg = '', btn = '';
+    if (item.att) {
+      if (item.att.was_present) {
+        status = '<span style="color:#16a34a;font-weight:600">&#x2705; Присутствовал</span>';
+        bg = '#f0fdf4';
+      } else if (item.notif) {
+        var r = item.notif.reason || '';
+        if (item.notif.comment) r += ': ' + item.notif.comment;
+        status = '<span style="color:#92400e;font-weight:600">&#x1F7E1; ' + (r||'Причина указана') + '</span>';
+        bg = '#fefce8';
+      } else {
+        status = '<span style="color:#dc2626;font-weight:600">&#x274C; Пропустил</span>';
+        bg = '#fef2f2';
+        btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay('' + item.dateStr + '',' + item.date.getDate() + ')">&#x1F4DD; Причина</button>';
+      }
+    } else if (item.notif) {
+      var r2 = item.notif.reason || '';
+      if (item.notif.comment) r2 += ': ' + item.notif.comment;
+      status = '<span style="color:#92400e;font-weight:600">&#x1F7E1; ' + (r2||'Предупреждение') + '</span>';
+      bg = '#fefce8';
+    } else if (item.isPast) {
+      status = '<span style="color:#94a3b8">&#x2B1C; Нет данных</span>';
+      bg = '#f8fafc';
+      btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay('' + item.dateStr + '',' + item.date.getDate() + ')">&#x1F4DD; Причина</button>';
     } else {
-      status = '<span style="color:#dc2626;font-weight:600">❌ Пропустил</span>'; bg = '#fef2f2';
-      btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay(&apos;' + r.training_date.split('T')[0] + '&apos;,' + date.getDate() + ')">📝 Причина</button>';
+      status = '<span style="color:#64748b">&#x1F4C5; Предстоящая</span>';
+      bg = '#f1f5f9';
     }
-    return '<tr style="border-bottom:1px solid var(--border);background:'+bg+'">'
-      +'<td style="padding:.6rem .8rem;white-space:nowrap">'+dateFmt+' <span style="color:var(--muted);font-size:.8rem">'+dayName+'</span></td>'
-      +'<td style="padding:.6rem .8rem">'+(r.group_name||'—')+'</td>'
-      +'<td style="padding:.6rem .8rem">'+status+'</td>'
-      +'<td style="padding:.4rem .8rem">'+btn+'</td>'
-      +'</tr>';
+    return '<tr style="border-bottom:1px solid var(--border);background:' + bg + '">'
+      + '<td style="padding:.6rem .8rem;white-space:nowrap">' + dateFmt + ' <span style="color:var(--muted);font-size:.8rem">' + dayName + '</span></td>'
+      + '<td style="padding:.6rem .8rem">' + groupName + '</td>'
+      + '<td style="padding:.6rem .8rem">' + status + '</td>'
+      + '<td style="padding:.4rem .8rem">' + btn + '</td>'
+      + '</tr>';
   }).join('');
 }
 
