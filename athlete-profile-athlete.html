@@ -436,7 +436,29 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <div class="stat-box"><div class="val" id="attStreak">0</div><div class="lbl">Серия подряд</div></div>
     </div>
 
+    <!-- View switcher -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+      <button id="attViewTable" class="btn btn-primary btn-sm" onclick="switchAttView('table')">📋 Таблица</button>
+      <button id="attViewCal" class="btn btn-ghost btn-sm" onclick="switchAttView('calendar')">📅 Календарь</button>
+    </div>
+
+    <!-- TABLE view -->
+    <div id="attTableView" class="card">
+      <table style="width:100%;border-collapse:collapse;font-size:.9rem">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border)">
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Дата</th>
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Группа</th>
+            <th style="padding:.6rem .8rem;text-align:left;color:var(--muted);font-weight:600">Статус</th>
+            <th style="padding:.6rem .8rem"></th>
+          </tr>
+        </thead>
+        <tbody id="attTableBody"></tbody>
+      </table>
+    </div>
+
     <!-- Calendar card -->
+    <div id="attCalView" style="display:none">
     <div class="card">
       <!-- Group selector -->
       <div class="cal-group-select" id="calGroupSelect"></div>
@@ -465,6 +487,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
         <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#f1f5f9;border:1px dashed #cbd5e1"></div> Предстоящая тренировка</div>
       </div>
     </div>
+    </div><!-- /attCalView -->
 
     <!-- Notify absence -->
     <div class="card">
@@ -1144,6 +1167,46 @@ async function saveBelt() {
 // ATTENDANCE
 // ============================
 // ============================
+// ATTENDANCE TABLE
+// ============================
+function switchAttView(view) {
+  document.getElementById('attTableView').style.display = view === 'table' ? '' : 'none';
+  document.getElementById('attCalView').style.display = view === 'calendar' ? '' : 'none';
+  document.getElementById('attViewTable').className = view === 'table' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  document.getElementById('attViewCal').className = view === 'calendar' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm';
+  if (view === 'calendar') renderCalendar();
+}
+
+function renderAttTable() {
+  const tbody = document.getElementById('attTableBody');
+  if (!tbody) return;
+  const DN = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  const records = [...calAttendanceRecords].sort(function(a,b){ return b.training_date.localeCompare(a.training_date); });
+  if (!records.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--muted)">Нет данных</td></tr>';
+    return;
+  }
+  tbody.innerHTML = records.map(function(r) {
+    var date = new Date(r.training_date); 
+    var dateFmt = date.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+    var dayName = DN[date.getDay()];
+    var status, bg, btn = '';
+    if (r.was_present) {
+      status = '<span style="color:#16a34a;font-weight:600">✅ Присутствовал</span>'; bg = '#f0fdf4';
+    } else {
+      status = '<span style="color:#dc2626;font-weight:600">❌ Пропустил</span>'; bg = '#fef2f2';
+      btn = '<button class="btn btn-sm btn-ghost" style="font-size:.75rem" onclick="openExplainDay('' + r.training_date.split('T')[0] + '',' + date.getDate() + ')">📝 Причина</button>';
+    }
+    return '<tr style="border-bottom:1px solid var(--border);background:'+bg+'">'
+      +'<td style="padding:.6rem .8rem;white-space:nowrap">'+dateFmt+' <span style="color:var(--muted);font-size:.8rem">'+dayName+'</span></td>'
+      +'<td style="padding:.6rem .8rem">'+(r.group_name||'—')+'</td>'
+      +'<td style="padding:.6rem .8rem">'+status+'</td>'
+      +'<td style="padding:.4rem .8rem">'+btn+'</td>'
+      +'</tr>';
+  }).join('');
+}
+
+// ============================
 // CALENDAR STATE
 // ============================
 let calYear = new Date().getFullYear();
@@ -1208,6 +1271,7 @@ async function loadAttendance() {
 
     // Render calendar
     renderCalendar();
+    renderAttTable();
 
   } catch(e) { console.warn('Attendance:', e); }
 }
