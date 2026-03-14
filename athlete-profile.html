@@ -782,7 +782,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
 <script>
 const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
 const API2 = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
-const ATHLETE_RESOURCES = new Set(['absence_notifications','athlete_belts','athlete_documents','athlete_injuries','athlete_goals','athlete_competitions','messages','notifications','notification_reads','club_rating','children_profile','children_extended']);
+const ATHLETE_RESOURCES = new Set(['absence_notifications','athlete_belts','athlete_documents','athlete_injuries','athlete_goals','athlete_competitions','messages','notifications','notification_reads','club_rating','children_profile','children_extended','belt_grades','groups','clubs','attendance','children']);
 const token = localStorage.getItem('token');
 const athleteId = parseInt(new URLSearchParams(location.search).get('id'));
 const userRole = localStorage.getItem('role') || 'director';
