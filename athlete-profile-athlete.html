@@ -302,7 +302,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед1</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -2610,8 +2610,9 @@ function renderAddress() {
 }
 
 async function geocodeAddress(address) {
-  const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`, {headers:{'Accept-Language':'ru'}});
-  const d = await r.json();
+  const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/geocode', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address})});
+  const rd = await r.json();
+  const d = rd.results || rd;
   if (d[0]) return {lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon), display: d[0].display_name};
   return null;
 }
