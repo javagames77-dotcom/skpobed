@@ -159,7 +159,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы1</button>
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
@@ -697,11 +697,32 @@ function initClubMap(lat, lng) {
   _clubMap.on('click', function(e) {
     const la=e.latlng.lat, ln=e.latlng.lng;
     if (_clubMarker) _clubMarker.setLatLng([la, ln]);
-    else _clubMarker = L.marker([la, ln]).addTo(_clubMap);
+    else { _clubMarker = L.marker([la, ln], {draggable:true}).addTo(_clubMap); _clubMarker.on('dragend', onMarkerDrag); }
     document.getElementById('clubAddress')._lat = la;
     document.getElementById('clubAddress')._lng = ln;
+    reverseGeocode(la, ln);
   });
+  if (_clubMarker) { _clubMarker.options.draggable=true; _clubMarker.dragging && _clubMarker.dragging.enable(); _clubMarker.on('dragend', onMarkerDrag); }
   setTimeout(() => _clubMap.invalidateSize(), 100);
+}
+
+async function reverseGeocode(lat, lng) {
+  try {
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/geocode', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({lat:lat, lon:lng})});
+    const rd = await r.json();
+    const results = rd.results || rd;
+    if (results && results[0]) {
+      document.getElementById('clubAddress').value = results[0].display_name;
+      document.getElementById('clubAddress')._lat = lat;
+      document.getElementById('clubAddress')._lng = lng;
+    }
+  } catch(e) {}
+}
+function onMarkerDrag(e) {
+  const la = e.target.getLatLng().lat, ln = e.target.getLatLng().lng;
+  document.getElementById('clubAddress')._lat = la;
+  document.getElementById('clubAddress')._lng = ln;
+  reverseGeocode(la, ln);
 }
 
 async function clubAddressInput(val) {
