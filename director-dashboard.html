@@ -157,7 +157,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы1</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
@@ -834,8 +834,8 @@ async function previewMap(){
   mapTimer=setTimeout(async()=>{
     try{
       // Nominatim geocoding (бесплатно, без ключа)
-      const res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(loc)}&format=json&limit=1`,{headers:{'Accept-Language':'ru'}});
-      const data=await res.json();
+      const res=await fetch('https://primary-production-4b93e.up.railway.app/webhook/geocode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:loc})});
+      const rd=await res.json();const data=rd.results||rd;
       if(data&&data[0]){
         const lat=parseFloat(data[0].lat),lon=parseFloat(data[0].lon);
         const d=0.01;
