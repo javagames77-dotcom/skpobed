@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Профиль спортсмена — InSkill</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -352,7 +354,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
         </div>
       </div>
       <div class="card">
-        <div class="card-title"><div class="card-title-left">📍 Адрес и маршрут</div><button class="btn btn-sm btn-ghost" onclick="openModal('editAddressModal')">✏️ Редактировать</button></div>
+        <div class="card-title"><div class="card-title-left">📍 Адрес и маршрут</div><button class="btn btn-sm btn-ghost" onclick="openEditAddressModal()">✏️ Редактировать</button></div>
         <div id="addressBlock">
           <p style="color:var(--muted);font-size:.9rem">Адрес не указан</p>
         </div>
@@ -682,6 +684,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <input id="ea_address" class="form-input" placeholder="Начните вводить адрес..." autocomplete="off" oninput="addressAutocomplete(this.value)">
       <div id="addressSuggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:999;max-height:220px;overflow-y:auto"></div>
     </div>
+    <div id="addressMapDiv" style="height:220px;margin-bottom:.75rem;border-radius:8px;border:1px solid var(--border);overflow:hidden"></div>
     <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">После сохранения система рассчитает время до зала</p>
     <div style="display:flex;gap:.75rem">
       <button class="btn btn-ghost" onclick="closeModal('editAddressModal')">Отмена</button>
@@ -2646,6 +2649,57 @@ async function calculateRoutes() {
 
 // Address autocomplete using Nominatim
 let _acTimer = null;
+function openEditAddressModal() {
+  openModal('editAddressModal');
+  const lat = athlete.home_lat ? parseFloat(athlete.home_lat) : null;
+  const lng = athlete.home_lng ? parseFloat(athlete.home_lng) : null;
+  setTimeout(() => initAddressMap(lat, lng), 100);
+}
+
+let _addrMap = null, _addrMarker = null;
+
+function initAddressMap(lat, lng) {
+  const container = document.getElementById('addressMapDiv');
+  if (_addrMap) { _addrMap.remove(); _addrMap = null; _addrMarker = null; }
+  const center = (lat && lng) ? [parseFloat(lat), parseFloat(lng)] : [49.588, 34.551];
+  const zoom = (lat && lng) ? 16 : 12;
+  _addrMap = L.map(container).setView(center, zoom);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap'}).addTo(_addrMap);
+  if (lat && lng) {
+    _addrMarker = L.marker([parseFloat(lat), parseFloat(lng)], {draggable:true}).addTo(_addrMap);
+    _addrMarker.on('dragend', onAddrMarkerDrag);
+  }
+  _addrMap.on('click', function(e) {
+    const la = e.latlng.lat, ln = e.latlng.lng;
+    if (_addrMarker) _addrMarker.setLatLng([la, ln]);
+    else { _addrMarker = L.marker([la, ln], {draggable:true}).addTo(_addrMap); _addrMarker.on('dragend', onAddrMarkerDrag); }
+    document.getElementById('ea_address')._selectedLat = la;
+    document.getElementById('ea_address')._selectedLng = ln;
+    addrReverseGeocode(la, ln);
+  });
+  setTimeout(() => _addrMap.invalidateSize(), 100);
+}
+
+function onAddrMarkerDrag(e) {
+  const la = e.target.getLatLng().lat, ln = e.target.getLatLng().lng;
+  document.getElementById('ea_address')._selectedLat = la;
+  document.getElementById('ea_address')._selectedLng = ln;
+  addrReverseGeocode(la, ln);
+}
+
+async function addrReverseGeocode(lat, lng) {
+  try {
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/geocode', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({lat, lon:lng})});
+    const rd = await r.json();
+    const results = rd.results || rd;
+    if (results && results[0]) {
+      document.getElementById('ea_address').value = results[0].display_name;
+      document.getElementById('ea_address')._selectedLat = lat;
+      document.getElementById('ea_address')._selectedLng = lng;
+    }
+  } catch(e) {}
+}
+
 async function addressAutocomplete(val) {
   const box = document.getElementById('addressSuggestions');
   if (!val || val.length < 3) { box.style.display='none'; return; }
@@ -2657,20 +2711,31 @@ async function addressAutocomplete(val) {
       const results = rd.results || rd;
       if (!results.length) { box.style.display='none'; return; }
       box.style.display = 'block';
-      box.innerHTML = results.map((res, i) => `
-        <div onclick="selectAddress('${res.display_name.replace(/'/g,"\'")}', ${res.lat}, ${res.lon})"
-          style="padding:.6rem .9rem;cursor:pointer;font-size:.85rem;border-bottom:1px solid var(--border);transition:background .15s"
-          onmouseover="this.style.background='#f5f5f5'" onmouseout="this.style.background=''"
-        >📍 ${res.display_name}</div>`).join('');
+      box.innerHTML = '';
+      results.forEach(res => {
+        const div = document.createElement('div');
+        div.innerHTML = '📍 ' + res.display_name;
+        div.style.cssText = 'padding:.6rem .9rem;cursor:pointer;font-size:.85rem;border-bottom:1px solid var(--border)';
+        div.onmouseover = () => div.style.background = '#f5f5f5';
+        div.onmouseout = () => div.style.background = '';
+        div.onclick = () => selectAddress(res.display_name, res.lat, res.lon);
+        box.appendChild(div);
+      });
     } catch(e) { box.style.display='none'; }
   }, 350);
 }
 
 function selectAddress(displayName, lat, lng) {
+  const la = parseFloat(lat), ln = parseFloat(lng);
   document.getElementById('ea_address').value = displayName;
-  document.getElementById('ea_address')._selectedLat = lat;
-  document.getElementById('ea_address')._selectedLng = lng;
+  document.getElementById('ea_address')._selectedLat = la;
+  document.getElementById('ea_address')._selectedLng = ln;
   document.getElementById('addressSuggestions').style.display = 'none';
+  if (_addrMap) {
+    _addrMap.setView([la, ln], 17);
+    if (_addrMarker) _addrMarker.setLatLng([la, ln]);
+    else { _addrMarker = L.marker([la, ln], {draggable:true}).addTo(_addrMap); _addrMarker.on('dragend', onAddrMarkerDrag); }
+  }
 }
 
 // ============================
@@ -2713,6 +2778,7 @@ async function saveAddress() {
   athlete.home_address = addr; athlete.home_lat = lat; athlete.home_lng = lng;
   // Clear cached coords
   input._selectedLat = null; input._selectedLng = null;
+  if(_addrMap){_addrMap.remove();_addrMap=null;_addrMarker=null;}
   closeModal('editAddressModal');
   renderAddress();
 }
