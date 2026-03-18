@@ -300,7 +300,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед33</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -383,7 +383,6 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       <div class="card">
         <div class="card-title">
           <div class="card-title-left">🏟️ Группы</div>
-          <button id="groupsEditBtn" class="btn btn-sm btn-outline" onclick="openModal('editGroupsModal')" style="display:none">✏️ Изменить</button>
         </div>
         <div id="infoGroups"></div>
       </div>
@@ -988,9 +987,7 @@ async function loadGroups() {
 
   // Show edit button for director and trainer
   renderGroupsEditModal(athleteGroups);
-  if (userRole === 'director') {
-    document.getElementById('groupsEditBtn').style.display = 'inline-flex';
-  }
+
 }
 
 function renderGroupsEditModal(currentGroups) {
