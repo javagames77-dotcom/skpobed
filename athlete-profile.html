@@ -300,7 +300,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед22</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -828,7 +828,6 @@ const ATHLETE_RESOURCES = new Set([
   'absence_notifications','athlete_belts','athlete_documents','athlete_injuries',
   'athlete_goals','athlete_competitions','messages','notifications','notification_reads',
   'club_rating','children_profile','children_extended','events','event_registrations',
-  'groups','clubs','children_groups',
 ]);
 const token = localStorage.getItem('token');
 const athleteId = parseInt(new URLSearchParams(location.search).get('id'));
@@ -965,8 +964,10 @@ async function loadAthlete() {
 // GROUPS
 // ============================
 async function loadGroups() {
-  // Load all groups (via API2 which works for both director and trainer)
-  const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+  // trainer uses API2 (groups not filtered by director_id there)
+  // director and athlete use API (main)
+  const groupsEndpoint = userRole === 'trainer' ? API2 : API;
+  const r = await fetch(groupsEndpoint, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'groups', action:'list', data:{child_id: athleteId}})});
   const d = await r.json();
   allGroups = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
@@ -1014,17 +1015,18 @@ async function saveGroups() {
   const newGroupIds = Array.from(checks).filter(c => c.checked).map(c => parseInt(c.value));
   const oldGroupIds = athleteGroupIds;
 
+  // trainer uses API2, director/athlete use API (main)
+  const cgEndpoint = userRole === 'trainer' ? API2 : API;
+  const cgFetch = (action, gid) => fetch(cgEndpoint, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'children_groups', action, data:{child_id: athleteId, group_id: gid}})});
+
   // Remove from unchecked groups
   for (const gid of oldGroupIds) {
-    if (!newGroupIds.includes(gid)) {
-      await apiFetch('children_groups', 'remove', {child_id: athleteId, group_id: gid});
-    }
+    if (!newGroupIds.includes(gid)) await cgFetch('remove', gid);
   }
   // Add to new groups
   for (const gid of newGroupIds) {
-    if (!oldGroupIds.includes(gid)) {
-      await apiFetch('children_groups', 'assign', {child_id: athleteId, group_id: gid});
-    }
+    if (!oldGroupIds.includes(gid)) await cgFetch('assign', gid);
   }
 
   closeModal('editGroupsModal');
@@ -2556,8 +2558,9 @@ async function calculateRoutes() {
   }
 
   try {
-    // Load clubs (via API2 — works for both director and trainer)
-    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    // trainer uses API2 for clubs, director/athlete use API
+    const clubsEndpoint = userRole === 'trainer' ? API2 : API;
+    const r = await fetch(clubsEndpoint, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'clubs', action:'list', data:{child_id: athleteId}})});
     const d = await r.json();
     const clubs = ((Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []))).filter(c => c.address);
