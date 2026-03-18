@@ -917,10 +917,9 @@ async function loadAthlete() {
 // GROUPS
 // ============================
 async function loadGroups() {
-  // director/athlete: main API (filtered by club); trainer: API2 (all active groups)
-  const groupsApi = (userRole === 'trainer') ? API2 : API;
-  const r = await fetch(groupsApi, {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({token, resource:'groups', action:'list', data:{child_id: athleteId}})});
+  // Load all groups for club (for edit modal + calendar schedule)
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'groups', action:'list'})});
   const d = await r.json();
   allGroups = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
 
@@ -945,7 +944,7 @@ async function loadGroups() {
 
   // Show edit button for director and trainer
   renderGroupsEditModal(athleteGroups);
-  if (userRole === 'director' || userRole === 'trainer') {
+  if (userRole === 'director') {
     document.getElementById('groupsEditBtn').style.display = 'inline-flex';
   }
 }
@@ -967,16 +966,17 @@ async function saveGroups() {
   const newGroupIds = Array.from(checks).filter(c => c.checked).map(c => parseInt(c.value));
   const oldGroupIds = athleteGroupIds;
 
-  // director/athlete use main API; trainer uses API2
-  const cgApi = (userRole === 'trainer') ? API2 : API;
-  const cgPost = (action, gid) => fetch(cgApi, {method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({token, resource:'children_groups', action, data:{child_id: athleteId, group_id: gid}})});
+  // Remove from unchecked groups
   for (const gid of oldGroupIds) {
-    if (!newGroupIds.includes(gid)) await cgPost('remove', gid);
+    if (!newGroupIds.includes(gid)) {
+      await apiFetch('children_groups', 'remove', {child_id: athleteId, group_id: gid});
+    }
   }
+  // Add to new groups
   for (const gid of newGroupIds) {
-    if (!oldGroupIds.includes(gid)) await cgPost('assign', gid);
+    if (!oldGroupIds.includes(gid)) {
+      await apiFetch('children_groups', 'assign', {child_id: athleteId, group_id: gid});
+    }
   }
 
   closeModal('editGroupsModal');
@@ -2320,10 +2320,9 @@ async function calculateRoutes() {
   }
 
   try {
-    // director/athlete: main API; trainer: API2 with child_id
-    const clubsApi = (userRole === 'trainer') ? API2 : API;
-    const r = await fetch(clubsApi, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'clubs', action:'list', data:{child_id: athleteId}})});
+    // Load clubs
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'clubs', action:'list'})});
     const d = await r.json();
     const clubs = ((Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []))).filter(c => c.address);
 
