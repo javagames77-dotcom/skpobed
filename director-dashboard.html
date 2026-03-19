@@ -1360,6 +1360,9 @@ async function initChat() {
   _chatInterval = setInterval(() => {
     if (_chatActiveId) loadChatMessages(_chatActiveId, false);
   }, 8000);
+  setInterval(() => {
+    loadChatContacts();
+  }, 20000);
 }
 
 async function loadChatContacts() {
@@ -1384,7 +1387,7 @@ async function loadChatContacts() {
     _chatContacts = athletes.map(a => {
       const msgs = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
       const last = msgs[msgs.length - 1] || null;
-      const unread = msgs.filter(m => !m.is_read && m.is_from_athlete).length;
+      const unread = msgs.filter(m => !m.is_read && m.from_child_id !== null).length;
       return {...a, _lastMsg: last, _unread: unread};
     });
 
