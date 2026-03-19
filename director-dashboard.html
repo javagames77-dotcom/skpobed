@@ -163,7 +163,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы7</button>
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
@@ -1440,6 +1440,9 @@ function openChat(childId, name) {
   document.getElementById('chatMainHdr').textContent = name;
   renderChatContacts();
   loadChatMessages(childId, true);
+  // Помечаем прочитанными сразу при открытии диалога
+  fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'messages', action:'read', data:{child_id: childId}})});
 }
 
 async function loadChatMessages(childId, scrollDown) {
@@ -1493,8 +1496,7 @@ async function loadChatMessages(childId, scrollDown) {
     renderChatContacts();
     const unread = msgs.filter(m => !m.is_read && m.is_from_athlete).length;
     updateDirChatBadge(_chatContacts.reduce((s,c)=>s+(c._unread||0),0));
-    if (unread > 0) fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'messages', action:'read', data:{child_id: childId}})});
+    // read вызывается только в openChat, не при polling
   } catch(e) { console.error(e); }
 }
 
