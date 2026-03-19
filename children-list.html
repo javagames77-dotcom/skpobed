@@ -469,7 +469,7 @@ async function loadChatContacts() {
     _chatContacts = athletes.map(a => {
       const msgs = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
       const last = msgs[msgs.length - 1] || null;
-      const unread = msgs.filter(m => !m.is_read && m.from_child_id !== null).length;
+      const unread = msgs.filter(m => !m.is_read && m.from_child_id !== null && (m.to_user_id == user.id || !m.to_user_id)).length;
       return {...a, _lastMsg: last, _unread: unread};
     });
 
@@ -547,10 +547,16 @@ async function loadChatMessages(childId, scrollDown) {
       return;
     }
 
-    const lastMsg = msgs[msgs.length - 1];
-    const hasNewMsgs = lastMsg.id !== _chatLastMsgId || msgs.length !== _chatLastMsgCount;
+    // Фильтруем — только сообщения тренера и спортсмена к тренеру
+    const filteredMsgs = msgs.filter(m =>
+      m.from_user_id == user.id ||
+      m.to_user_id == user.id
+    );
+
+    const lastMsg = filteredMsgs[filteredMsgs.length - 1] || msgs[msgs.length - 1];
+    const hasNewMsgs = lastMsg.id !== _chatLastMsgId || filteredMsgs.length !== _chatLastMsgCount;
     if (!hasNewMsgs && !scrollDown) {
-      msgs.forEach(m => {
+      filteredMsgs.forEach(m => {
         if (m.is_from_athlete === false) {
           const meta = container.querySelector(`.msg[data-id="${m.id}"] .msg-read`);
           if (meta) meta.textContent = m.is_read ? '✓✓' : '✓';
@@ -559,10 +565,10 @@ async function loadChatMessages(childId, scrollDown) {
       return;
     }
     _chatLastMsgId = lastMsg.id;
-    _chatLastMsgCount = msgs.length;
+    _chatLastMsgCount = filteredMsgs.length;
 
     let lastDate = '';
-    container.innerHTML = msgs.map(m => {
+    container.innerHTML = filteredMsgs.map(m => {
       const isMine = !m.is_from_athlete;
       const dt = new Date(m.created_at);
       const dk = dt.toLocaleDateString('ru-RU');
@@ -601,7 +607,7 @@ async function loadChatMessages(childId, scrollDown) {
     const contact = _chatContacts.find(c => c.id === childId);
     if (contact) { contact._lastMsg = msgs[msgs.length-1]; contact._unread = 0; }
     if (hasNewMsgs || scrollDown) renderChatContacts();
-    const unread = msgs.filter(m => !m.is_read && m.is_from_athlete).length;
+    const unread = filteredMsgs.filter(m => !m.is_read && m.is_from_athlete).length;
     updateTrainerChatBadge(_chatContacts.reduce((s,c)=>s+(c._unread||0),0));
   } catch(e) { console.error(e); }
 }
