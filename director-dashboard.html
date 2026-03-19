@@ -163,7 +163,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы3</button>
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
@@ -1463,12 +1463,19 @@ async function loadChatMessages(childId, scrollDown) {
       return;
     }
 
+    // Фильтруем — только сообщения директора и спортсмена к директору
+    const filteredMsgs = msgs.filter(m =>
+      m.from_user_id == user.id ||
+      m.to_user_id == user.id ||
+      (m.is_from_athlete && !m.to_user_id)
+    );
+
     // Если сообщений не прибавилось и последний id не изменился — не трогаем DOM
-    const lastMsg = msgs[msgs.length - 1];
-    const hasNewMsgs = lastMsg.id !== _chatLastMsgId || msgs.length !== _chatLastMsgCount;
+    const lastMsg = filteredMsgs[filteredMsgs.length - 1] || msgs[msgs.length - 1];
+    const hasNewMsgs = lastMsg.id !== _chatLastMsgId || filteredMsgs.length !== _chatLastMsgCount;
     if (!hasNewMsgs && !scrollDown) {
       // Только обновляем галочки is_read без перерисовки
-      msgs.forEach(m => {
+      filteredMsgs.forEach(m => {
         if (m.is_from_athlete === false) {
           const meta = container.querySelector(`.msg[data-id="${m.id}"] .msg-read`);
           if (meta) meta.textContent = m.is_read ? '✓✓' : '✓';
@@ -1477,10 +1484,10 @@ async function loadChatMessages(childId, scrollDown) {
       return;
     }
     _chatLastMsgId = lastMsg.id;
-    _chatLastMsgCount = msgs.length;
+    _chatLastMsgCount = filteredMsgs.length;
 
     let lastDate = '';
-    container.innerHTML = msgs.map(m => {
+    container.innerHTML = filteredMsgs.map(m => {
       const isMine = !m.is_from_athlete;
       const dt = new Date(m.created_at);
       const dk = dt.toLocaleDateString('ru-RU');
@@ -1518,9 +1525,9 @@ async function loadChatMessages(childId, scrollDown) {
 
     // Обновляем превью и unread только если были новые сообщения
     const contact = _chatContacts.find(c => c.id === childId);
-    if (contact) { contact._lastMsg = msgs[msgs.length-1]; contact._unread = 0; }
+    if (contact) { contact._lastMsg = filteredMsgs[filteredMsgs.length-1] || msgs[msgs.length-1]; contact._unread = 0; }
     if (hasNewMsgs || scrollDown) renderChatContacts();
-    const unread = msgs.filter(m => !m.is_read && m.is_from_athlete).length;
+    const unread = filteredMsgs.filter(m => !m.is_read && m.is_from_athlete).length;
     updateDirChatBadge(_chatContacts.reduce((s,c)=>s+(c._unread||0),0));
     // read вызывается только в openChat, не при polling
   } catch(e) { console.error(e); }
