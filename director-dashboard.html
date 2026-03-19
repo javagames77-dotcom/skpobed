@@ -163,7 +163,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы77</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
@@ -1344,7 +1344,7 @@ async function runParsing(){
 // ============================
 const API2 = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
 let _chatContacts = [], _chatFiltered = [], _chatActiveId = null;
-let _chatInterval = null, _chatAttachFile = null, _chatInited = false;
+let _chatInterval = null, _chatAttachFile = null, _chatInited = false, _chatLastMsgId = null, _chatLastMsgCount = 0;
 
 function updateDirChatBadge(n) {
   const b = document.getElementById('dirChatUnread');
@@ -1432,6 +1432,8 @@ function filterChatContacts(q) {
 
 function openChat(childId, name) {
   _chatActiveId = childId;
+  _chatLastMsgId = null;
+  _chatLastMsgCount = 0;
   document.getElementById('chatEmpty').style.display = 'none';
   const area = document.getElementById('chatActiveArea');
   area.style.display = 'flex';
@@ -1460,6 +1462,22 @@ async function loadChatMessages(childId, scrollDown) {
       container.innerHTML = '<div style="text-align:center;padding:2rem;color:#bbb;font-size:.83rem">Нет сообщений. Напишите первым!</div>';
       return;
     }
+
+    // Если сообщений не прибавилось и последний id не изменился — не трогаем DOM
+    const lastMsg = msgs[msgs.length - 1];
+    const hasNewMsgs = lastMsg.id !== _chatLastMsgId || msgs.length !== _chatLastMsgCount;
+    if (!hasNewMsgs && !scrollDown) {
+      // Только обновляем галочки is_read без перерисовки
+      msgs.forEach(m => {
+        if (m.is_from_athlete === false) {
+          const meta = container.querySelector(`.msg[data-id="${m.id}"] .msg-read`);
+          if (meta) meta.textContent = m.is_read ? '✓✓' : '✓';
+        }
+      });
+      return;
+    }
+    _chatLastMsgId = lastMsg.id;
+    _chatLastMsgCount = msgs.length;
 
     let lastDate = '';
     container.innerHTML = msgs.map(m => {
@@ -1490,10 +1508,10 @@ async function loadChatMessages(childId, scrollDown) {
 
     if (scrollDown || wasBottom) container.scrollTop = container.scrollHeight;
 
-    // Обновляем превью и unread
+    // Обновляем превью и unread только если были новые сообщения
     const contact = _chatContacts.find(c => c.id === childId);
     if (contact) { contact._lastMsg = msgs[msgs.length-1]; contact._unread = 0; }
-    renderChatContacts();
+    if (hasNewMsgs || scrollDown) renderChatContacts();
     const unread = msgs.filter(m => !m.is_read && m.is_from_athlete).length;
     updateDirChatBadge(_chatContacts.reduce((s,c)=>s+(c._unread||0),0));
     // read вызывается только в openChat, не при polling
