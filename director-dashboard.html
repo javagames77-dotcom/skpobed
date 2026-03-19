@@ -1360,9 +1360,6 @@ async function initChat() {
   _chatInterval = setInterval(() => {
     if (_chatActiveId) loadChatMessages(_chatActiveId, false);
   }, 8000);
-  setInterval(() => {
-    loadChatContacts();
-  }, 20000);
 }
 
 async function loadChatContacts() {
@@ -1493,6 +1490,7 @@ async function loadChatMessages(childId, scrollDown) {
     // Обновляем превью и unread
     const contact = _chatContacts.find(c => c.id === childId);
     if (contact) { contact._lastMsg = msgs[msgs.length-1]; contact._unread = 0; }
+    renderChatContacts();
     const unread = msgs.filter(m => !m.is_read && m.is_from_athlete).length;
     updateDirChatBadge(_chatContacts.reduce((s,c)=>s+(c._unread||0),0));
     if (unread > 0) fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
@@ -1579,6 +1577,9 @@ async function sendBroadcast() {
 
 function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/'}
 loadUserInfo();loadClubs();
+// Загружаем счётчики чата сразу при старте, не ждём открытия вкладки
+loadChatContacts();
+setInterval(() => { loadChatContacts(); }, 20000);
 if(location.hash==='#groups'){setTimeout(()=>{document.querySelector('.tab:nth-child(2)').click()},100);}
 if(location.hash==='#trainers'){setTimeout(()=>{document.querySelector('.tab:nth-child(3)').click()},100);}
 </script>
