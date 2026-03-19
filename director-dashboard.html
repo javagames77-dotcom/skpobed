@@ -163,7 +163,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы3</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
@@ -1555,12 +1555,12 @@ async function sendChatMsg() {
       const du = await new Promise((res,rej) => { const rd=new FileReader(); rd.onload=()=>res(rd.result); rd.onerror=rej; rd.readAsDataURL(_chatAttachFile); });
       const mime = _chatAttachFile.type || 'application/octet-stream';
       const b64 = du.split(',')[1];
-      const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-athlete-doc', {
+      const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-chat-photo', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({token, child_id:_chatActiveId, doc_type:'chat_file', title:_chatAttachFile.name, file_base64:b64, file_mime:mime})
+        body: JSON.stringify({token, file_base64:b64, file_mime:mime})
       });
       const rd = await r.json();
-      file_url = rd.doc?.file_url || rd.url || null;
+      file_url = rd.url || null;
       clearChatAttach();
     } catch(e) { alert('Ошибка загрузки файла'); return; }
   }
