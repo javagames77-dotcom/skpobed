@@ -309,7 +309,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед3</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -2163,15 +2163,35 @@ async function loadMessages() {
       : allMsgs;
     const container = document.getElementById('chatMessages');
     // Считаем unread из ВСЕХ сообщений — до любых фильтров
-    const unreadCount = allMsgs.filter(m => {
+    const unreadMsgs = allMsgs.filter(m => {
       const isFromAthlete = m.is_from_athlete===true||m.is_from_athlete==='true'||m.is_from_athlete==='t';
       return !isFromAthlete && (m.is_read === false || m.is_read === 'false' || m.is_read === 0);
-    }).length;
+    });
+    const unreadCount = unreadMsgs.length;
     const badge = document.getElementById('chatUnreadBadge');
     if (badge) {
       if (unreadCount > 0) { badge.textContent = unreadCount > 99 ? '99+' : unreadCount; badge.style.display = 'inline-block'; }
       else badge.style.display = 'none';
     }
+    // Кружочки у кнопок собеседников
+    const unreadBySender = unreadMsgs.reduce((acc, m) => {
+      if (m.from_user_id) acc[m.from_user_id] = (acc[m.from_user_id]||0) + 1;
+      return acc;
+    }, {});
+    document.querySelectorAll('[id^="chatBtn_"]').forEach(btn => {
+      const uid = btn.id.replace('chatBtn_', '');
+      const cnt = unreadBySender[uid] || 0;
+      // Убираем старый кружочек если есть
+      const old = btn.querySelector('.contact-unread');
+      if (old) old.remove();
+      if (cnt > 0) {
+        const dot = document.createElement('span');
+        dot.className = 'contact-unread';
+        dot.textContent = cnt;
+        dot.style.cssText = 'min-width:16px;height:16px;background:#ef4444;color:#fff;border-radius:9px;font-size:.6rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;padding:0 4px;margin-left:.35rem;vertical-align:middle';
+        btn.appendChild(dot);
+      }
+    });
     if (!msgs.length) {
       container.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>';
       return;
