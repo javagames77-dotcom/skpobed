@@ -309,7 +309,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед3</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -2146,6 +2146,9 @@ function selectChatContact(userId, name, markRead) {
   if (active) { active.style.borderColor = 'var(--p)'; active.style.background = 'var(--p)'; active.style.color = '#fff'; }
   // Помечаем прочитанными только если спортсмен явно кликнул (markRead=true)
   if (markRead) {
+    // Убираем кружочек мгновенно у этой кнопки
+    const dot = document.getElementById('chatBtn_' + userId)?.querySelector('.contact-unread');
+    if (dot) dot.remove();
     fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'messages', action:'read_by_athlete', data:{child_id: athleteId}})});
   }
