@@ -309,7 +309,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед3</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -2127,15 +2127,15 @@ async function loadChatContacts() {
     if (!btns) return;
     if (!contacts.length) { btns.innerHTML = '<span style="color:var(--muted);font-size:.85rem">Нет доступных собеседников</span>'; return; }
     btns.innerHTML = contacts.map(c => `
-      <button id="chatBtn_${c.id}" onclick="selectChatContact(${c.id}, '${c.first_name} ${c.last_name}')"
+      <button id="chatBtn_${c.id}" onclick="selectChatContact(${c.id}, '${c.first_name} ${c.last_name}', true)"
         class="btn btn-ghost btn-sm" style="border:2px solid var(--border)">
         ${c.role === 'director' ? '👔' : '🥋'} ${c.first_name} ${c.last_name}
       </button>`).join('');
-    if (contacts.length > 0) selectChatContact(contacts[0].id, contacts[0].first_name + ' ' + contacts[0].last_name);
+    if (contacts.length > 0) selectChatContact(contacts[0].id, contacts[0].first_name + ' ' + contacts[0].last_name, false);
   } catch(e) { console.error('loadChatContacts:', e); }
 }
 
-function selectChatContact(userId, name) {
+function selectChatContact(userId, name, markRead) {
   chatActiveUserId = userId;
   document.querySelectorAll('[id^="chatBtn_"]').forEach(b => {
     b.style.borderColor = 'var(--border)';
@@ -2144,9 +2144,11 @@ function selectChatContact(userId, name) {
   });
   const active = document.getElementById('chatBtn_' + userId);
   if (active) { active.style.borderColor = 'var(--p)'; active.style.background = 'var(--p)'; active.style.color = '#fff'; }
-  // Помечаем входящие прочитанными — спортсмен явно открыл этот чат
-  fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({token, resource:'messages', action:'read_by_athlete', data:{child_id: athleteId}})});
+  // Помечаем прочитанными только если спортсмен явно кликнул (markRead=true)
+  if (markRead) {
+    fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'messages', action:'read_by_athlete', data:{child_id: athleteId}})});
+  }
   loadMessages();
 }
 
@@ -2160,10 +2162,18 @@ async function loadMessages() {
       ? allMsgs.filter(m => m.from_user_id == chatActiveUserId || m.to_user_id == chatActiveUserId)
       : allMsgs;
     const container = document.getElementById('chatMessages');
+    // Считаем unread из ВСЕХ сообщений — до любых фильтров
+    const unreadCount = allMsgs.filter(m => {
+      const isFromAthlete = m.is_from_athlete===true||m.is_from_athlete==='true'||m.is_from_athlete==='t';
+      return !isFromAthlete && (m.is_read === false || m.is_read === 'false' || m.is_read === 0);
+    }).length;
+    const badge = document.getElementById('chatUnreadBadge');
+    if (badge) {
+      if (unreadCount > 0) { badge.textContent = unreadCount > 99 ? '99+' : unreadCount; badge.style.display = 'inline-block'; }
+      else badge.style.display = 'none';
+    }
     if (!msgs.length) {
       container.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:2rem">Сообщений нет. Напишите первыми!</p>';
-      const badge = document.getElementById('chatUnreadBadge');
-      if (badge) badge.style.display = 'none';
       return;
     }
     container.innerHTML = msgs.map(m => {
@@ -2180,16 +2190,6 @@ async function loadMessages() {
       return `<div class="msg ${isMine?'mine':'theirs'}" data-id="${m.id}"><div class="msg-bubble">${bubble}</div><div class="msg-time">${time} <span onclick="deleteMessage(${m.id})" style="cursor:pointer;margin-left:.5rem;opacity:.5;font-size:.75rem" title="Удалить">🗑</span></div></div>`;
     }).join('');
     container.scrollTop = container.scrollHeight;
-    // Считаем непрочитанные от тренера/директора (входящие для спортсмена)
-    const unread = allMsgs.filter(m => {
-      const isFromAthlete = m.is_from_athlete===true||m.is_from_athlete==='true'||m.is_from_athlete==='t';
-      return !isFromAthlete && (m.is_read === false || m.is_read === 'false' || m.is_read === 0);
-    }).length;
-    const badge = document.getElementById('chatUnreadBadge');
-    if (badge) {
-      if (unread > 0) { badge.textContent = unread > 99 ? '99+' : unread; badge.style.display = 'inline-block'; }
-      else badge.style.display = 'none';
-    }
     // read_by_athlete вызывается только при явном открытии чата (switchTab/selectChatUser)
   } catch(e) {}
 }
