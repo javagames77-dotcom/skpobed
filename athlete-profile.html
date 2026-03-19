@@ -2587,9 +2587,11 @@ async function calculateRoutes() {
   }
 
   try {
-    // Load clubs
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'clubs', action:'list'})});
+    // Load clubs - trainer uses API2 with child_id, others use main API
+    const clubsApi = (userRole === 'trainer') ? API2 : API;
+    const clubsData = (userRole === 'trainer') ? {token, resource:'clubs', action:'list', data:{child_id: athleteId}} : {token, resource:'clubs', action:'list'};
+    const r = await fetch(clubsApi, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(clubsData)});
     const d = await r.json();
     const clubs = ((Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []))).filter(c => c.address);
 
