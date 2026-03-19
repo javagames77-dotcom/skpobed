@@ -159,7 +159,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы1</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
@@ -1380,7 +1380,7 @@ async function loadChatContacts() {
     _chatContacts = athletes.map(a => {
       const msgs = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
       const last = msgs[msgs.length - 1] || null;
-      const unread = msgs.filter(m => !m.is_read && m.from_user_id !== user.id).length;
+      const unread = msgs.filter(m => !m.is_read && m.is_from_athlete).length;
       return {...a, _lastMsg: last, _unread: unread};
     });
 
@@ -1456,7 +1456,7 @@ async function loadChatMessages(childId, scrollDown) {
 
     let lastDate = '';
     container.innerHTML = msgs.map(m => {
-      const isMine = (m.to_user_id !== -1);
+      const isMine = !m.is_from_athlete;
       const dt = new Date(m.created_at);
       const dk = dt.toLocaleDateString('ru-RU');
       const time = dt.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
@@ -1485,7 +1485,7 @@ async function loadChatMessages(childId, scrollDown) {
     // Обновляем превью и unread
     const contact = _chatContacts.find(c => c.id === childId);
     if (contact) { contact._lastMsg = msgs[msgs.length-1]; contact._unread = 0; }
-    const unread = msgs.filter(m => !m.is_read && m.from_user_id !== user.id).length;
+    const unread = msgs.filter(m => !m.is_read && m.is_from_athlete).length;
     updateDirChatBadge(_chatContacts.reduce((s,c)=>s+(c._unread||0),0));
     if (unread > 0) fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({token, resource:'messages', action:'read', data:{child_id: childId}})});
