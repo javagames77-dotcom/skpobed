@@ -302,7 +302,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
       </div>
       <div class="hero-badges" id="heroBadges"></div>
       <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед</div></div>
+        <div class="hstat"><div class="hstat-val" id="statWins">0</div><div class="hstat-lbl">Побед22</div></div>
         <div class="hstat"><div class="hstat-val" id="statLosses">0</div><div class="hstat-lbl">Поражений</div></div>
         <div class="hstat"><div class="hstat-val" id="statAttendance">0%</div><div class="hstat-lbl">Посещаемость</div></div>
         <div class="hstat"><div class="hstat-val" id="statRating">—</div><div class="hstat-lbl">Рейтинг</div></div>
@@ -1033,7 +1033,8 @@ async function saveGroups() {
 // BELT HISTORY
 // ============================
 async function loadBelts() {
-  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+  const beltsApi = (userRole === 'trainer') ? API2 : API;
+  const r = await fetch(beltsApi, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'belt_grades', action:'list'})});
   const d = await r.json();
   allBelts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
