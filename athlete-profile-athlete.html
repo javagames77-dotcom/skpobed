@@ -2144,6 +2144,9 @@ function selectChatContact(userId, name) {
   });
   const active = document.getElementById('chatBtn_' + userId);
   if (active) { active.style.borderColor = 'var(--p)'; active.style.background = 'var(--p)'; active.style.color = '#fff'; }
+  // Помечаем входящие прочитанными — спортсмен явно открыл этот чат
+  fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'messages', action:'read_by_athlete', data:{child_id: athleteId}})});
   loadMessages();
 }
 
@@ -2187,11 +2190,7 @@ async function loadMessages() {
       if (unread > 0) { badge.textContent = unread > 99 ? '99+' : unread; badge.style.display = 'inline-block'; }
       else badge.style.display = 'none';
     }
-    // Помечаем входящие прочитанными если чат открыт
-    if (unread > 0) {
-      fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({token, resource:'messages', action:'read_by_athlete', data:{child_id: athleteId}})});
-    }
+    // read_by_athlete вызывается только при явном открытии чата (switchTab/selectChatUser)
   } catch(e) {}
 }
 
@@ -2997,7 +2996,13 @@ function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   event.currentTarget.classList.add('active');
-  if (name === 'chat') loadMessages();
+  if (name === 'chat') {
+    loadMessages();
+    if (chatActiveUserId) {
+      fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token, resource:'messages', action:'read_by_athlete', data:{child_id: athleteId}})});
+    }
+  }
 }
 
 function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow='hidden'; }
