@@ -163,7 +163,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы77</button>
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
 <button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
 <button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
@@ -1506,7 +1506,15 @@ async function loadChatMessages(childId, scrollDown) {
       return `${sep}<div class="msg ${isMine?'mine':'theirs'}">${sender}<div class="msg-wrap"><div class="msg-bubble">${bubble}</div>${delBtn}</div><div class="msg-meta"><span class="msg-time">${time}</span>${rm}</div></div>`;
     }).join('');
 
-    if (scrollDown || wasBottom) container.scrollTop = container.scrollHeight;
+    if (scrollDown || wasBottom) {
+      const imgs = container.querySelectorAll('img');
+      if (imgs.length) {
+        Promise.all([...imgs].map(img => img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })))
+          .then(() => { container.scrollTop = container.scrollHeight; });
+      } else {
+        container.scrollTop = container.scrollHeight;
+      }
+    }
 
     // Обновляем превью и unread только если были новые сообщения
     const contact = _chatContacts.find(c => c.id === childId);
