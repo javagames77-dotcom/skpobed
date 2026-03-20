@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти</button>
+      <button class="btn-logout" onclick="logout()">Выйти33</button>
     </div>
   </div>
 </header>
@@ -553,8 +553,13 @@ function renderTable() {
     const pd = groupPayments[cid];
     if (!pd.history || !pd.history.length) return;
     
-    const sorted = pd.history.filter(p => p.child_id).sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
-    const last = sorted[0]; // последний платёж для last_type и paid_until
+    // Для выбранного месяца берём последний платёж который был до конца этого месяца
+    const monthEndDate = new Date(currentYear, currentMonth, 0, 23, 59, 59);
+    const sorted = pd.history
+      .filter(p => p.child_id && new Date(p.paid_at) <= monthEndDate)
+      .sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
+    if (!sorted.length) return; // нет платежей до конца выбранного месяца
+    const last = sorted[0]; // последний платёж до конца выбранного месяца
     
     // Суммируем все sessions_paid (общий кошелёк тренировок)
     const totalSessionsPaid = sorted.reduce((sum, p) => sum + (parseInt(p.sessions_paid) || 0), 0);
