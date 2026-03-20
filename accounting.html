@@ -225,6 +225,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
     <div style="display:flex;align-items:center;gap:1rem">
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
+      <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
       <button class="btn-logout" onclick="logout()">Выйти</button>
     </div>
   </div>
@@ -310,10 +311,11 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
                 <th style="width:32px"></th>
                 <th>Спортсмен</th>
                 <th>Статус</th>
-                <th>Оплачен до</th>
+                <th>Период/Остаток</th>
+                <th>Тариф</th>
                 <th>Сумма</th>
                 <th>Тип</th>
-                <th>Комментарий</th>
+                <th>Коммент</th>
                 <th></th>
               </tr>
             </thead>
@@ -541,81 +543,128 @@ function renderTable() {
   const today = new Date();
   today.setHours(0,0,0,0);
 
-  tbody.innerHTML = groupAthletes.map(athlete => {
-    const pd = groupPayments[athlete.id];
-    const paidUntil = pd?.paid_until ? new Date(pd.paid_until) : null;
-    const lastType = pd?.last_type || 'cash';
+  // Строим map: child_id -> последний актуальный платёж
+  const lastPayMap = {};
+  Object.keys(groupPayments).forEach(cid => {
+    const pd = groupPayments[cid];
+    if (pd.history && pd.history.length) {
+      // Последний платёж по paid_at
+      lastPayMap[cid] = pd.history.sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at))[0];
+    }
+  });
 
-    // Статус
-    let statusHtml = '', paidUntilHtml = '';
-    if (!paidUntil) {
+  // Тарифные опции для каждого спортсмена
+  const tariffOptions = '<option value="">— тариф —</option>' +
+    groupTariffs.map(t => {
+      const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
+      return `<option value="${t.id}">${icon} ${t.name} — ${t.price}грн</option>`;
+    }).join('');
+
+  // Общий тариф выбранный сверху
+  const globalTariffId = document.getElementById('activeTariff')?.value;
+
+  tbody.innerHTML = groupAthletes.map(athlete => {
+    const lastPay = lastPayMap[athlete.id];
+    const lastType = lastPay?.payment_type || 'cash';
+    const lastTariffId = athlete._lastTariffId || globalTariffId || '';
+
+    // ---- СТАТУС и ПЕРИОД ----
+    let statusHtml = '', periodHtml = '';
+
+    if (!lastPay) {
       statusHtml = '<span class="status-badge status-none">⚫ Нет оплат</span>';
-      paidUntilHtml = '<span class="paid-until">—</span>';
-    } else {
-      const diffDays = Math.ceil((paidUntil - today) / (1000*60*60*24));
+      periodHtml = '<span class="paid-until">—</span>';
+    } else if (lastPay.sessions_paid) {
+      // Потренировочный тариф
+      const sessionsLeft = Math.max(0, lastPay.sessions_paid - (parseInt(lastPay.sessions_used) || 0));
+      if (sessionsLeft > 0) {
+        statusHtml = '<span class="status-badge status-active">🎯 По тренировкам</span>';
+        periodHtml = `<span class="paid-until">Осталось: <b>${sessionsLeft}</b> из ${lastPay.sessions_paid}</span>`;
+      } else {
+        statusHtml = '<span class="status-badge status-overdue">🔴 Закончились</span>';
+        periodHtml = `<span class="paid-until overdue">0 из ${lastPay.sessions_paid}</span>`;
+      }
+    } else if (lastPay.paid_until) {
+      // Месячный / по дням
+      const paidUntilDate = new Date(lastPay.paid_until);
+      const diffDays = Math.ceil((paidUntilDate - today) / (1000*60*60*24));
       if (diffDays >= 0) {
         statusHtml = '<span class="status-badge status-active">🟢 Активен</span>';
         const cls = diffDays <= 7 ? 'soon' : '';
-        paidUntilHtml = `<span class="paid-until ${cls}">${formatDate(pd.paid_until)}</span>`;
+        periodHtml = `<span class="paid-until ${cls}">до ${formatDate(lastPay.paid_until)}</span>`;
       } else {
-        statusHtml = '<span class="status-badge status-overdue">🔴 Долг</span>';
-        paidUntilHtml = `<span class="paid-until overdue">${formatDate(pd.paid_until)}</span>`;
+        statusHtml = '<span class="status-badge status-overdue">🔴 Просрочен</span>';
+        periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
       }
+    } else {
+      statusHtml = '<span class="status-badge status-trial">🟡 Оплата есть</span>';
+      periodHtml = '<span class="paid-until">—</span>';
     }
 
+    // ---- ЗАЩИТА ОТ ДВОЙНОЙ ОПЛАТЫ ----
+    // Если monthly и paid_until >= конец текущего месяца — блокируем
+    const endOfMonth = new Date(currentYear, currentMonth, 0);
+    const isMonthlyPaid = lastPay?.paid_until && !lastPay.sessions_paid &&
+      new Date(lastPay.paid_until) >= endOfMonth;
+    // Если sessions и sessions_left > 0 — предупреждаем
+    const hasActiveSessions = lastPay?.sessions_paid &&
+      (lastPay.sessions_paid - (parseInt(lastPay.sessions_used) || 0)) > 0;
+
+    let acceptBtn = '';
+    if (isMonthlyPaid) {
+      acceptBtn = `<button class="btn-accepted" onclick="confirmDoublePayment(${athlete.id})" title="Уже оплачен. Нажмите для доп. платежа">✅ Оплачен</button>`;
+    } else if (hasActiveSessions) {
+      const left = lastPay.sessions_paid - (parseInt(lastPay.sessions_used) || 0);
+      acceptBtn = `<button class="btn-accept" style="background:#f59e0b" id="btn_${athlete.id}" onclick="acceptPayment(${athlete.id})" title="Есть ${left} тренировок. Всё равно принять?">⚠️ Принять</button>`;
+    } else {
+      acceptBtn = `<button class="btn-accept" id="btn_${athlete.id}" onclick="acceptPayment(${athlete.id})">✅ Принять</button>`;
+    }
+
+    // ---- ФОТО ----
     const photo = athlete.photo_url
       ? `<img class="athlete-photo" src="${athlete.photo_url}" loading="lazy">`
       : `<div class="athlete-photo" style="background:var(--p);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.75rem">${(athlete.first_name||'')[0]}${(athlete.last_name||'')[0]}</div>`;
 
+    // ---- ТИП ОПЛАТЫ ----
     const typeOptions = ['cash','card','bank'].map(t =>
       `<option value="${t}" ${t === lastType ? 'selected' : ''}>${t === 'cash' ? '💵 Нал' : t === 'card' ? '💳 Карта' : '🏦 Банк'}</option>`
     ).join('');
 
-    // Сумма по умолчанию из выбранного тарифа
-    const selTariff = document.getElementById('activeTariff');
-    const defAmount = selTariff?.value ? (groupTariffs.find(t => t.id == selTariff.value)?.price || '') : '';
-    const selPrice = document.getElementById(`amount_${athlete.id}`)?.value || defAmount;
-
-    // Цена одной тренировки
-    const singlePrice = getSinglePrice();
+    // ---- ТАРИФ В СТРОКЕ ----
+    const rowTariffSel = `<select class="pay-type-select" id="tariff_${athlete.id}" 
+      onchange="onRowTariffChange(${athlete.id})" style="min-width:130px">
+      ${groupTariffs.map(t => {
+        const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
+        return `<option value="${t.id}" ${t.id == lastTariffId ? 'selected' : ''}>${icon} ${t.name}</option>`;
+      }).join('')}
+      <option value="" ${!lastTariffId ? 'selected' : ''}>— тариф —</option>
+    </select>`;
 
     return `<tr id="row_${athlete.id}">
-      <td>
-        <button class="btn-icon" onclick="toggleHistory(${athlete.id})" title="История платежей">📋</button>
-      </td>
+      <td><button class="btn-icon" onclick="toggleHistory(${athlete.id})" title="История">📋</button></td>
       <td>
         <div class="athlete-info">
           ${photo}
-          <div>
-            <div class="athlete-name">${athlete.last_name} ${athlete.first_name}</div>
-          </div>
+          <div><div class="athlete-name">${athlete.last_name} ${athlete.first_name}</div></div>
         </div>
       </td>
       <td>${statusHtml}</td>
-      <td>${paidUntilHtml}</td>
+      <td>${periodHtml}</td>
+      <td>${rowTariffSel}</td>
       <td>
         <div class="pay-row">
-          <div class="sessions-ctrl">
-            <button class="sessions-btn" onclick="addSessions(${athlete.id}, -1)">−</button>
-            <button class="sessions-btn" onclick="addSessions(${athlete.id}, 1)">+</button>
-          </div>
-          <input class="amount-input ${selPrice ? 'filled' : ''}" type="number" id="amount_${athlete.id}"
-            value="${selPrice}" min="0" placeholder="грн"
-            oninput="onAmountInput(${athlete.id})">
+          <button class="sessions-btn" onclick="addSessions(${athlete.id}, -1)">−</button>
+          <input class="amount-input" type="number" id="amount_${athlete.id}"
+            value="" min="0" placeholder="грн" oninput="onAmountInput(${athlete.id})">
+          <button class="sessions-btn" onclick="addSessions(${athlete.id}, 1)">+</button>
         </div>
       </td>
-      <td>
-        <select class="pay-type-select" id="type_${athlete.id}">${typeOptions}</select>
-      </td>
-      <td>
-        <input class="comment-input" type="text" id="comment_${athlete.id}" placeholder="Комментарий">
-      </td>
-      <td>
-        <button class="btn-accept" id="btn_${athlete.id}" onclick="acceptPayment(${athlete.id})">✅ Принять</button>
-      </td>
+      <td><select class="pay-type-select" id="type_${athlete.id}">${typeOptions}</select></td>
+      <td><input class="comment-input" type="text" id="comment_${athlete.id}" placeholder="..."></td>
+      <td>${acceptBtn}</td>
     </tr>
     <tr id="history_${athlete.id}" class="history-row" style="display:none">
-      <td colspan="8">
+      <td colspan="9">
         <div class="history-inner">
           <div class="history-title">История платежей</div>
           ${renderHistory(athlete.id)}
@@ -623,6 +672,24 @@ function renderTable() {
       </td>
     </tr>`;
   }).join('');
+}
+
+function onRowTariffChange(childId) {
+  // Запоминаем выбранный тариф для этого спортсмена
+  const tariffId = document.getElementById(`tariff_${childId}`)?.value;
+  const athlete = groupAthletes.find(a => a.id === childId);
+  if (athlete) athlete._lastTariffId = tariffId;
+  // Обнуляем сумму чтобы пересчитал
+  const inp = document.getElementById(`amount_${childId}`);
+  if (inp) { inp.value = ''; inp.classList.remove('filled'); }
+}
+
+function confirmDoublePayment(childId) {
+  if (confirm('Спортсмен уже оплатил этот месяц. Всё равно добавить платёж?')) {
+    const btn = document.getElementById(`btn_${childId}`);
+    if (btn) btn.onclick = () => acceptPayment(childId);
+    acceptPayment(childId);
+  }
 }
 
 function renderHistory(childId) {
@@ -676,27 +743,28 @@ function onTariffChange() {
   if (groupAthletes.length) renderTable();
 }
 
-function getSinglePrice() {
-  const sel = document.getElementById('activeTariff');
-  if (!sel?.value) return 0;
-  const t = groupTariffs.find(t => t.id == sel.value);
+function getSinglePrice(childId) {
+  // Берём тариф из строки спортсмена, или глобальный
+  const rowSel = childId ? document.getElementById(`tariff_${childId}`) : null;
+  const tariffId = rowSel?.value || document.getElementById('activeTariff')?.value;
+  if (!tariffId) return 0;
+  const t = groupTariffs.find(t => t.id == tariffId);
   if (!t) return 0;
   if (t.plan_type === 'single') return t.price;
   if (t.plan_type === 'sessions' && t.sessions_limit) return Math.round(t.price / t.sessions_limit);
-  // monthly — делим на кол-во тренировок в месяц из расписания
+  // monthly — делим на кол-во тренировок в месяц
   const schedule = currentGroupData?.schedule;
   if (schedule && schedule.length) {
-    const perWeek = schedule.length;
-    const perMonth = Math.round(perWeek * 4.3);
+    const perMonth = Math.round(schedule.length * 4.3);
     return Math.round(t.price / perMonth);
   }
-  return Math.round(t.price / 12); // fallback
+  return Math.round(t.price / 12);
 }
 
 function addSessions(childId, delta) {
   const inp = document.getElementById(`amount_${childId}`);
-  const singlePrice = getSinglePrice();
-  if (!singlePrice) return;
+  const singlePrice = getSinglePrice(childId);
+  if (!singlePrice) { alert('Выберите тариф'); return; }
   const current = parseFloat(inp.value) || 0;
   const newVal = Math.max(0, current + delta * singlePrice);
   inp.value = newVal || '';
@@ -710,12 +778,21 @@ function onAmountInput(childId) {
 
 function fillByTariff() {
   const sel = document.getElementById('activeTariff');
-  if (!sel.value) { alert('Выберите тариф'); return; }
+  if (!sel.value) { alert('Выберите тариф сверху'); return; }
   const t = groupTariffs.find(t => t.id == sel.value);
   if (!t) return;
   groupAthletes.forEach(a => {
+    // Пропускаем тех кто уже оплачен (monthly)
+    const lastPay = Object.values(groupPayments[a.id]?.history || [])
+      .sort((x,y) => new Date(y.paid_at) - new Date(x.paid_at))[0];
+    const endOfMonth = new Date(currentYear, currentMonth, 0);
+    if (lastPay?.paid_until && !lastPay.sessions_paid && new Date(lastPay.paid_until) >= endOfMonth) return;
+    // Проставляем тариф и сумму
+    const tariffSel = document.getElementById(`tariff_${a.id}`);
+    if (tariffSel) tariffSel.value = t.id;
     const inp = document.getElementById(`amount_${a.id}`);
     if (inp) { inp.value = t.price; inp.classList.add('filled'); }
+    a._lastTariffId = t.id;
   });
 }
 
@@ -730,18 +807,18 @@ async function acceptPayment(childId) {
   const comment = document.getElementById(`comment_${childId}`)?.value || '';
   const btn = document.getElementById(`btn_${childId}`);
 
-  // Рассчитываем paid_until
-  const sel = document.getElementById('activeTariff');
-  const tariff = sel?.value ? groupTariffs.find(t => t.id == sel.value) : null;
+  // Берём тариф из строки спортсмена
+  const rowTariffId = document.getElementById(`tariff_${childId}`)?.value;
+  const tariff = rowTariffId ? groupTariffs.find(t => t.id == rowTariffId) : null;
   const paidUntil = calcPaidUntil(tariff);
   const periodLabel = buildPeriodLabel(tariff);
+  const sessionsPaid = tariff?.plan_type === 'sessions' ? (tariff.sessions_limit || calcSessionsPaid(amount, tariff)) : null;
   const clubId = currentGroupData?.club_id;
 
-  btn.disabled = true;
-  btn.textContent = '⏳';
+  if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
 
   try {
-    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, resource: 'payments', action: 'create', data: {
         child_id: childId,
         club_id: clubId,
@@ -749,22 +826,28 @@ async function acceptPayment(childId) {
         payment_type: payType,
         paid_until: paidUntil,
         period_label: periodLabel,
-        sessions_paid: tariff?.plan_type === 'sessions' ? calcSessionsPaid(amount, tariff) : null,
+        sessions_paid: sessionsPaid,
         comment: comment
       }})});
+    const res = await r.json();
 
-    // Сбрасываем поле
+    // Сбрасываем поля
     const inp = document.getElementById(`amount_${childId}`);
     if (inp) { inp.value = ''; inp.classList.remove('filled'); }
-    if (document.getElementById(`comment_${childId}`)) document.getElementById(`comment_${childId}`).value = '';
+    const commInp = document.getElementById(`comment_${childId}`);
+    if (commInp) commInp.value = '';
 
-    // Перезагружаем
-    await loadGroupAthletes();
-    if (user.role === 'director' || user.role === 'accountant') await loadStats();
+    // Визуальная обратная связь — кнопка зеленеет
+    if (btn) { btn.textContent = '✅ Принято!'; btn.style.background = '#1e7e34'; }
+    setTimeout(async () => {
+      await loadGroupAthletes();
+      if (user.role === 'director' || user.role === 'accountant') await loadStats();
+    }, 800);
+
   } catch(e) {
     console.error(e);
-    btn.disabled = false;
-    btn.textContent = '✅ Принять';
+    if (btn) { btn.disabled = false; btn.textContent = '✅ Принять'; }
+    alert('Ошибка сохранения');
   }
 }
 
@@ -1042,6 +1125,13 @@ function formatDateTime(str) {
 
 function formatMoney(n) {
   return Math.round(n).toLocaleString('ru-RU') + ' грн';
+}
+
+function goBack() {
+  const role = user?.role;
+  if (role === 'director') window.location.href = '/director-dashboard.html';
+  else if (role === 'trainer') window.location.href = '/children-list.html';
+  else window.location.href = '/';
 }
 
 function logout() {
