@@ -250,29 +250,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .btn-calendar:hover {
   background: #f8f9ff;
 }
-
-/* CHAT */
-.msg{max-width:78%;display:flex;flex-direction:column}
-.msg.mine{align-self:flex-end;align-items:flex-end}
-.msg.theirs{align-self:flex-start;align-items:flex-start}
-.msg-sender{font-size:.72rem;color:#888;margin-bottom:.2rem;padding:0 .25rem}
-.msg-bubble{padding:.65rem 1rem;border-radius:18px;font-size:.9rem;line-height:1.5;word-break:break-word}
-.msg.mine .msg-bubble{background:#dbeafe;color:#1e3a8a;border-bottom-right-radius:4px;overflow:hidden}
-.msg.theirs .msg-bubble{background:#f0f2f5;color:#1a1a2e;border-bottom-left-radius:4px;overflow:hidden}
-.msg-bubble img{max-width:220px;border-radius:10px;display:block;cursor:pointer;border:none;outline:none;margin:-.65rem -1rem;width:calc(100% + 2rem);max-width:240px}
-.msg-file-link{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:rgba(255,255,255,.25);border-radius:8px;font-size:.82rem;text-decoration:none;color:inherit;margin-top:.25rem}
-.msg.theirs .msg-file-link{background:rgba(0,0,0,.07)}
-.msg-meta{display:flex;align-items:center;gap:.4rem;margin-top:.2rem;padding:0 .25rem}
-.msg-time{font-size:.68rem;color:#aaa}
-.msg-read{font-size:.7rem;color:#1e3a8a}
-.msg-date-sep{text-align:center;font-size:.75rem;color:#aaa;padding:.5rem 0;position:relative;margin:.25rem 0;align-self:center;width:100%}
-.msg-date-sep span{background:#fff;padding:0 .75rem;position:relative;z-index:1}
-.msg-date-sep::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#e5e7eb}
-.unread-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:9px;font-size:.7rem;font-weight:700;padding:0 5px;margin-left:.35rem;vertical-align:middle}
-.msg-wrap{display:flex;align-items:flex-end;gap:.35rem;max-width:100%}
-.msg.mine .msg-wrap{flex-direction:row-reverse}
-.msg-del{background:none;border:none;cursor:pointer;font-size:.8rem;opacity:.35;padding:2px 4px;border-radius:4px;line-height:1;transition:opacity .15s,background .15s;flex-shrink:0}
-.msg-del:hover{opacity:1;background:#fee2e2}
 </style>
 </head>
 <body>
@@ -285,6 +262,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </a>
 <div style="display:flex;align-items:center;gap:1rem">
 <span id="userName">—</span>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -292,8 +270,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('children')">👶 Спортсмены1</button>
-<button class="tab" onclick="switchTab('chat')" id="tabBtnChat">💬 Чат<span class="unread-badge" id="trainerChatUnread" style="display:none"></span></button>
+<button class="tab active" onclick="switchTab('children')">👶 Спортсмены</button>
 </div>
 
 <div class="tab-content active" id="tab-children">
@@ -425,245 +402,6 @@ let token=localStorage.getItem('token');
 let children=[],groups=[],filtered=[],user=null;
 if(!token)window.location.href='/';
 
-
-// ============================
-// CHAT
-// ============================
-const API2 = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
-let _chatInterval = null, _chatAttachFile = null, _chatInited = false, _chatLastMsgId = null, _chatLastMsgCount = 0;
-let _chatActiveId = null, _chatContacts = [], _chatFiltered = [];
-
-function updateTrainerChatBadge(n) {
-  const b = document.getElementById('trainerChatUnread');
-  if (!b) return;
-  if (n > 0) { b.textContent = n > 99 ? '99+' : n; b.style.display = ''; }
-  else b.style.display = 'none';
-}
-
-async function initChat() {
-  if (_chatInited) return;
-  _chatInited = true;
-  await loadChatContacts();
-  _chatInterval = setInterval(() => {
-    if (_chatActiveId) loadChatMessages(_chatActiveId, false);
-  }, 8000);
-}
-
-async function loadChatContacts() {
-  try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'children', action:'list'})});
-    const text = await r.text();
-    const d = text ? JSON.parse(text) : [];
-    const athletes = Array.isArray(d) ? d : (d.merged || []);
-
-    let allMsgs = [];
-    try {
-      const mr = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({token, resource:'messages', action:'list_all', data:{limit:500}})});
-      const mt = await mr.text();
-      const md = mt ? JSON.parse(mt) : [];
-      allMsgs = Array.isArray(md) ? md : (md.merged || []);
-    } catch(e) {}
-
-    _chatContacts = athletes.map(a => {
-      const msgs = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
-      const last = msgs[msgs.length - 1] || null;
-      const unread = msgs.filter(m => !m.is_read && m.from_child_id !== null && (m.to_user_id == user.id || !m.to_user_id)).length;
-      return {...a, _lastMsg: last, _unread: unread};
-    });
-
-    _chatFiltered = [..._chatContacts];
-    const total = _chatContacts.reduce((s,c) => s + (c._unread||0), 0);
-    updateTrainerChatBadge(total);
-    const tot = document.getElementById('trainerChatTotalUnread');
-    if (tot) tot.textContent = total ? total + ' непрочитанных' : '';
-    renderChatContacts();
-  } catch(e) { console.error(e); }
-}
-
-function renderChatContacts() {
-  const el = document.getElementById('trainerChatContactList');
-  if (!el) return;
-  if (!_chatFiltered.length) {
-    el.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa;font-size:.82rem">Нет спортсменов</div>';
-    return;
-  }
-  el.innerHTML = _chatFiltered.map(c => {
-    const name = c.first_name + ' ' + c.last_name;
-    const ini = (c.first_name||'')[0] + (c.last_name||'')[0];
-    const av = c.photo_url
-      ? `<img src="${c.photo_url}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0">`
-      : `<div style="width:36px;height:36px;border-radius:50%;background:#4361ee;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0">${ini}</div>`;
-    const prev = c._lastMsg ? (c._lastMsg.text || '📎 файл') : 'Нет сообщений';
-    const badge = c._unread ? `<span style="min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:9px;font-size:.65rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;padding:0 4px">${c._unread}</span>` : '';
-    const bg = c.id === _chatActiveId ? 'background:#e8eeff;border-left:3px solid #4361ee;' : '';
-    return `<div style="padding:.6rem .85rem;cursor:pointer;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid #f0f0f0;${bg}" onclick="openChat(${c.id},'${name.replace(/'/g,"\'")}')">
-      ${av}
-      <div style="flex:1;min-width:0">
-        <div style="font-size:.83rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
-        <div style="font-size:.73rem;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${prev.toString().substring(0,35)}</div>
-      </div>
-      ${badge}
-    </div>`;
-  }).join('');
-}
-
-function filterChatContacts(q) {
-  const s = q.toLowerCase();
-  _chatFiltered = s ? _chatContacts.filter(c => (c.first_name+' '+c.last_name).toLowerCase().includes(s)) : [..._chatContacts];
-  renderChatContacts();
-}
-
-function openChat(childId, name) {
-  _chatActiveId = childId;
-  _chatLastMsgId = null;
-  _chatLastMsgCount = 0;
-  document.getElementById('trainerChatEmpty').style.display = 'none';
-  const area = document.getElementById('trainerChatActiveArea');
-  area.style.display = 'flex';
-  area.style.flexDirection = 'column';
-  area.style.flex = '1';
-  document.getElementById('trainerChatMainHdr').textContent = name;
-  renderChatContacts();
-  loadChatMessages(childId, true);
-  fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({token, resource:'messages', action:'read', data:{child_id: childId}})});
-}
-
-async function loadChatMessages(childId, scrollDown) {
-  try {
-    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'messages', action:'list', data:{child_id: childId}})});
-    const text = await r.text();
-    const d = text ? JSON.parse(text) : [];
-    const msgs = Array.isArray(d) ? d : (d.merged || []);
-    const container = document.getElementById('trainerChatMsgList');
-    if (!container) return;
-    const wasBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 80;
-
-    if (!msgs.length) {
-      container.innerHTML = '<div style="text-align:center;padding:2rem;color:#bbb;font-size:.83rem">Нет сообщений. Напишите первым!</div>';
-      return;
-    }
-
-    // Фильтруем — только сообщения тренера и спортсмена к тренеру
-    const filteredMsgs = msgs.filter(m =>
-      m.from_user_id == user.id ||
-      m.to_user_id == user.id
-    );
-
-    const lastMsg = filteredMsgs[filteredMsgs.length - 1] || msgs[msgs.length - 1];
-    const hasNewMsgs = lastMsg.id !== _chatLastMsgId || filteredMsgs.length !== _chatLastMsgCount;
-    if (!hasNewMsgs && !scrollDown) {
-      filteredMsgs.forEach(m => {
-        if (m.is_from_athlete === false) {
-          const meta = container.querySelector(`.msg[data-id="${m.id}"] .msg-read`);
-          if (meta) meta.textContent = m.is_read ? '✓✓' : '✓';
-        }
-      });
-      return;
-    }
-    _chatLastMsgId = lastMsg.id;
-    _chatLastMsgCount = filteredMsgs.length;
-
-    let lastDate = '';
-    container.innerHTML = filteredMsgs.map(m => {
-      const isMine = !m.is_from_athlete;
-      const dt = new Date(m.created_at);
-      const dk = dt.toLocaleDateString('ru-RU');
-      const time = dt.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
-      let sep = '';
-      if (dk !== lastDate) {
-        lastDate = dk;
-        const today = new Date().toLocaleDateString('ru-RU');
-        const yest = new Date(Date.now()-86400000).toLocaleDateString('ru-RU');
-        const lbl = dk === today ? 'Сегодня' : dk === yest ? 'Вчера' : dk;
-        sep = `<div class="msg-date-sep"><span>${lbl}</span></div>`;
-      }
-      let bubble = '';
-      if (m.file_url) {
-        const isImg = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(m.file_url);
-        bubble = isImg
-          ? `${m.text?'<div>'+m.text+'</div>':''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy">`
-          : `${m.text?'<div style="margin-bottom:.3rem">'+m.text+'</div>':''}<a href="${m.file_url}" target="_blank" class="msg-file-link">📎 ${m.file_url.split('/').pop().split('?')[0]}</a>`;
-      } else { bubble = m.text || ''; }
-      const sender = !isMine ? `<div class="msg-sender">${document.getElementById('trainerChatMainHdr').textContent||'Спортсмен'}</div>` : '';
-      const rm = isMine ? `<span class="msg-read">${m.is_read?'✓✓':'✓'}</span>` : '';
-      const delBtn = `<button class="msg-del" onclick="trainerDeleteChatMsg(${m.id})" title="Удалить">🗑</button>`;
-      return `${sep}<div class="msg ${isMine?'mine':'theirs'}" data-id="${m.id}">${sender}<div class="msg-wrap"><div class="msg-bubble">${bubble}</div>${delBtn}</div><div class="msg-meta"><span class="msg-time">${time}</span>${rm}</div></div>`;
-    }).join('');
-
-    if (scrollDown || wasBottom) {
-      const imgs = container.querySelectorAll('img');
-      if (imgs.length) {
-        Promise.all([...imgs].map(img => img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })))
-          .then(() => { container.scrollTop = container.scrollHeight; });
-      } else {
-        container.scrollTop = container.scrollHeight;
-      }
-    }
-
-    const contact = _chatContacts.find(c => c.id === childId);
-    if (contact) { contact._lastMsg = msgs[msgs.length-1]; contact._unread = 0; }
-    if (hasNewMsgs || scrollDown) renderChatContacts();
-    const unread = filteredMsgs.filter(m => !m.is_read && m.is_from_athlete).length;
-    updateTrainerChatBadge(_chatContacts.reduce((s,c)=>s+(c._unread||0),0));
-  } catch(e) { console.error(e); }
-}
-
-function trainerHandleChatFile(input) {
-  const file = input.files[0]; if (!file) return;
-  _chatAttachFile = file;
-  const bar = document.getElementById('trainerChatPreviewBar');
-  const thumb = document.getElementById('trainerChatPreviewThumb');
-  const nm = document.getElementById('trainerChatPreviewName');
-  bar.style.display = 'flex'; nm.textContent = file.name;
-  if (file.type.startsWith('image/')) { thumb.src = URL.createObjectURL(file); thumb.style.display = 'block'; }
-  else thumb.style.display = 'none';
-}
-
-function trainerClearChatAttach() {
-  _chatAttachFile = null;
-  document.getElementById('trainerChatFileInp').value = '';
-  document.getElementById('trainerChatPreviewBar').style.display = 'none';
-}
-
-async function trainerSendChatMsg() {
-  if (!_chatActiveId) return;
-  const inp = document.getElementById('trainerChatTextarea');
-  const text = inp.value.trim();
-  if (!text && !_chatAttachFile) return;
-  inp.value = '';
-  let file_url = null;
-  if (_chatAttachFile) {
-    try {
-      const du = await new Promise((res,rej) => { const rd=new FileReader(); rd.onload=()=>res(rd.result); rd.onerror=rej; rd.readAsDataURL(_chatAttachFile); });
-      const mime = _chatAttachFile.type || 'application/octet-stream';
-      const b64 = du.split(',')[1];
-      const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-chat-photo', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({token, file_base64:b64, file_mime:mime})
-      });
-      const rd = await r.json();
-      file_url = rd.url || null;
-      trainerClearChatAttach();
-    } catch(e) { alert('Ошибка загрузки файла'); return; }
-  }
-  await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({token, resource:'messages', action:'create', data:{child_id:_chatActiveId, text:text||'', file_url, from_user_id:user.id}})});
-  await loadChatMessages(_chatActiveId, true);
-}
-
-async function trainerDeleteChatMsg(id) {
-  if (!confirm('Удалить сообщение?')) return;
-  try {
-    await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'messages', action:'delete', data:{id}})});
-    await loadChatMessages(_chatActiveId, false);
-  } catch(e) { console.error(e); }
-}
-
 function loadUserInfo(){
 user=JSON.parse(localStorage.getItem('user')||'{}');
 document.getElementById('userName').textContent=user.first_name?`${user.first_name} ${user.last_name||''}`.trim():user.email||'Пользователь';
@@ -677,7 +415,6 @@ document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'
 event.target.classList.add('active');
 document.getElementById(`tab-${t}`).classList.add('active');
 if(t==='groups'&&groups.length===0)loadGroups();
-if(t==='chat')initChat();
 }
 
 function initDateDropdowns(){
@@ -1183,8 +920,6 @@ window.location.href='/';
 loadUserInfo();
 initDateDropdowns();
 loadChildren();
-loadChatContacts();
-setInterval(() => { loadChatContacts(); }, 20000);
 
 // ===== ATTENDANCE SYSTEM =====
 
@@ -1820,52 +1555,6 @@ style="width:100%;padding:.65rem .75rem;border:2px solid var(--b);border-radius:
 <div class="legend-item"><div class="legend-dot" style="background:#f8d7da;border-color:#dc3545"></div><span>Статистика не сохранена</span></div>
 </div>
 </div>
-</div>
-</div>
-
-<div class="tab-content" id="tab-chat">
-<div style="max-width:1200px;margin:0 auto 2rem;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden">
-  <div style="display:flex;height:560px">
-    <!-- Сайдбар -->
-    <div style="width:250px;flex-shrink:0;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;background:#fafafa">
-      <div style="padding:.6rem .75rem;border-bottom:1px solid #e5e7eb;font-weight:600;font-size:.85rem;display:flex;justify-content:space-between;align-items:center">
-        <span>Контакты</span>
-        <span id="trainerChatTotalUnread" style="font-size:.75rem;color:#ef4444;font-weight:700"></span>
-      </div>
-      <div style="padding:.4rem .6rem;border-bottom:1px solid #e5e7eb">
-        <input type="text" placeholder="🔍 Поиск..." oninput="filterChatContacts(this.value)"
-          style="width:100%;padding:.35rem .6rem;border:1px solid #e5e7eb;border-radius:6px;font-size:.8rem;box-sizing:border-box;outline:none">
-      </div>
-      <div id="trainerChatContactList" style="flex:1;overflow-y:auto">
-        <div style="text-align:center;padding:2rem;color:#aaa;font-size:.82rem">Загрузка...</div>
-      </div>
-    </div>
-    <!-- Основная область -->
-    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
-      <div id="trainerChatEmpty" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;color:#aaa">
-        <div style="font-size:2.5rem">💬</div>
-        <div style="font-size:.9rem">Выберите контакт</div>
-      </div>
-      <div id="trainerChatActiveArea" style="display:none;flex:1;flex-direction:column;overflow:hidden">
-        <div id="trainerChatMainHdr" style="padding:.7rem 1rem;border-bottom:1px solid #e5e7eb;font-weight:700;font-size:.92rem;flex-shrink:0;background:#fff"></div>
-        <div id="trainerChatMsgList" style="flex:1;min-height:0;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.35rem;background:#f9fafb"></div>
-        <div id="trainerChatPreviewBar" style="display:none;padding:.4rem .7rem;background:#f0f2ff;border-top:1px solid #dde0f5;align-items:center;gap:.55rem;font-size:.8rem;flex-shrink:0">
-          <img id="trainerChatPreviewThumb" style="width:36px;height:36px;object-fit:cover;border-radius:6px;display:none">
-          <span id="trainerChatPreviewName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-          <button onclick="trainerClearChatAttach()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:#aaa">✕</button>
-        </div>
-        <div style="padding:.6rem .75rem;border-top:1px solid #e5e7eb;display:flex;gap:.45rem;align-items:center;background:#fff;flex-shrink:0">
-          <label style="padding:.5rem .65rem;border:1.5px solid #e5e7eb;border-radius:8px;cursor:pointer;font-size:.95rem;line-height:1;background:#fff">
-            📎<input type="file" id="trainerChatFileInp" accept="image/*,application/pdf" style="display:none" onchange="trainerHandleChatFile(this)">
-          </label>
-          <input type="text" id="trainerChatTextarea" placeholder="Написать сообщение..."
-            style="flex:1;padding:.55rem .85rem;border:1.5px solid #e5e7eb;border-radius:9px;font-size:.87rem;font-family:inherit;outline:none"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();trainerSendChatMsg()}">
-          <button onclick="trainerSendChatMsg()" style="padding:.55rem 1rem;background:#4361ee;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600">➤</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 </div>
 </body>
