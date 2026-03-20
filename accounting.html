@@ -1113,7 +1113,7 @@ async function saveTariff() {
   const sessions = parseInt(document.getElementById('tariffSessions').value) || null;
   const editId = document.getElementById('tariffEditId').value;
 
-  if (!name || !price) { alert('Заполните название и цену'); return; }
+  if (!name || price === null || price === undefined || isNaN(price)) { alert('Заполните название и цену'); return; }
   if (!currentGroupData?.club_id) { alert('Нет клуба'); return; }
 
   const data = { name, plan_type: planType, price, club_id: currentGroupData.club_id,
