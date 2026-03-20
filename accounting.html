@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти2</button>
+      <button class="btn-logout" onclick="logout()">Выйти</button>
     </div>
   </div>
 </header>
@@ -826,13 +826,13 @@ async function acceptPayment(childId) {
   const tariff = rowTariffId ? groupTariffs.find(t => t.id == rowTariffId) : null;
   // paid_until считается автоматически по типу тарифа
   const paidUntil = calcPaidUntil(tariff);
-  const periodLabel = buildPeriodLabel(tariff);
   // sessions_paid — для потренировочного тарифа считаем по сумме
   let sessionsPaid = null;
   if (tariff?.plan_type === 'sessions' && tariff.sessions_limit && tariff.price) {
     const pricePerSession = Math.round(tariff.price / tariff.sessions_limit);
     sessionsPaid = pricePerSession > 0 ? Math.round(amount / pricePerSession) : tariff.sessions_limit;
   }
+  const periodLabel = buildPeriodLabel(tariff, sessionsPaid);
   const clubId = currentGroupData?.club_id;
 
   if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
@@ -936,12 +936,12 @@ function calcSessionsPaid(amount, tariff) {
   return single ? Math.round(amount / single) : null;
 }
 
-function buildPeriodLabel(tariff) {
+function buildPeriodLabel(tariff, sessionsPaid) {
   if (!tariff) return `${getMonthName(currentMonth)} ${currentYear}`;
   const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   if (tariff.plan_type === 'monthly') return `${months[currentMonth-1]} ${currentYear}`;
   if (tariff.plan_type === 'days') return `${tariff.duration_days || '?'} дней`;
-  if (tariff.plan_type === 'sessions') return `${tariff.sessions_limit} тренировок`;
+  if (tariff.plan_type === 'sessions') return `${sessionsPaid || tariff.sessions_limit} тренировок`;
   if (tariff.plan_type === 'single') return '1 тренировка';
   return `${months[currentMonth-1]} ${currentYear}`;
 }
