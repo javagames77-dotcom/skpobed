@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти</button>
+      <button class="btn-logout" onclick="logout()">Выйти2</button>
     </div>
   </div>
 </header>
@@ -546,14 +546,28 @@ function renderTable() {
   const today = new Date();
   today.setHours(0,0,0,0);
 
-  // Строим map: child_id -> последний актуальный платёж
+  // Строим map: child_id -> агрегированные данные по всем платежам
   const lastPayMap = {};
   Object.keys(groupPayments).forEach(cid => {
     const pd = groupPayments[cid];
-    if (pd.history && pd.history.length) {
-      // Последний платёж по paid_at
-      lastPayMap[cid] = pd.history.sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at))[0];
-    }
+    if (!pd.history || !pd.history.length) return;
+    
+    const sorted = pd.history.filter(p => p.child_id).sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
+    const last = sorted[0]; // последний платёж для last_type и paid_until
+    
+    // Суммируем все sessions_paid (общий кошелёк тренировок)
+    const totalSessionsPaid = sorted.reduce((sum, p) => sum + (parseInt(p.sessions_paid) || 0), 0);
+    // sessions_used берём из последнего платежа (там считается с первой оплаты)
+    const sessionsUsed = parseInt(last.sessions_used) || 0;
+    
+    // Если есть хоть один потренировочный платёж — используем суммарный счётчик
+    const hasSessionsPay = sorted.some(p => p.sessions_paid);
+    
+    lastPayMap[cid] = {
+      ...last,
+      sessions_paid: hasSessionsPay ? totalSessionsPaid : null,
+      sessions_used: hasSessionsPay ? sessionsUsed : null,
+    };
   });
 
   // Тарифные опции для каждого спортсмена
@@ -813,8 +827,12 @@ async function acceptPayment(childId) {
   // paid_until считается автоматически по типу тарифа
   const paidUntil = calcPaidUntil(tariff);
   const periodLabel = buildPeriodLabel(tariff);
-  // sessions_paid — для потренировочного тарифа
-  const sessionsPaid = tariff?.plan_type === 'sessions' ? (tariff.sessions_limit || calcSessionsPaid(amount, tariff)) : null;
+  // sessions_paid — для потренировочного тарифа считаем по сумме
+  let sessionsPaid = null;
+  if (tariff?.plan_type === 'sessions' && tariff.sessions_limit && tariff.price) {
+    const pricePerSession = Math.round(tariff.price / tariff.sessions_limit);
+    sessionsPaid = pricePerSession > 0 ? Math.round(amount / pricePerSession) : tariff.sessions_limit;
+  }
   const clubId = currentGroupData?.club_id;
 
   if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
