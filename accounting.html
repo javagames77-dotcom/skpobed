@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти</button>
+      <button class="btn-logout" onclick="logout()">Выйти77</button>
     </div>
   </div>
 </header>
@@ -819,8 +819,11 @@ function fillByTariff() {
 // ACCEPT PAYMENT
 // ============================
 async function acceptPayment(childId) {
-  const amount = parseFloat(document.getElementById(`amount_${childId}`)?.value);
-  if (!amount || amount <= 0) { alert('Введите сумму'); return; }
+  const amount = parseFloat(document.getElementById(`amount_${childId}`)?.value) || 0;
+  const rowTariffIdCheck = document.getElementById(`tariff_${childId}`)?.value;
+  const tariffCheck = rowTariffIdCheck ? groupTariffs.find(t => t.id == rowTariffIdCheck) : null;
+  const isFree = tariffCheck?.plan_type === 'free';
+  if (!isFree && amount <= 0) { alert('Введите сумму'); return; }
 
   const payType = document.getElementById(`type_${childId}`)?.value || 'cash';
   const comment = document.getElementById(`comment_${childId}`)?.value || '';
