@@ -354,7 +354,8 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
           <div class="form-group">
             <label class="form-label">Тип *</label>
             <select class="form-select" id="tariffType" onchange="onTariffTypeChange()">
-              <option value="monthly">📅 Месячный</option>
+              <option value="monthly">📅 Месячный (до конца месяца)</option>
+              <option value="days">📆 По дням (напр. 30 дней)</option>
               <option value="sessions">🎯 По тренировкам</option>
               <option value="single">1️⃣ Разовый</option>
             </select>
@@ -748,8 +749,9 @@ function getSinglePrice(childId) {
   if (!tariffId) return 0;
   const t = groupTariffs.find(t => t.id == tariffId);
   if (!t) return 0;
-  // monthly и single — кнопка +/- добавляет полную сумму тарифа
+  // monthly, days, single — кнопка +/- добавляет полную сумму тарифа
   if (t.plan_type === 'monthly') return t.price;
+  if (t.plan_type === 'days') return t.price;
   if (t.plan_type === 'single') return t.price;
   // sessions — цена одной тренировки
   if (t.plan_type === 'sessions' && t.sessions_limit) return Math.round(t.price / t.sessions_limit);
@@ -878,6 +880,10 @@ function calcPaidUntil(tariff) {
     const sessions = tariff.sessions_limit || 1;
     return calcDateAfterNSessions(sessions);
   }
+  if (tariff.plan_type === 'days' && tariff.duration_days) {
+    const d = new Date(today.getTime() + tariff.duration_days * 86400000);
+    return d.toISOString().split('T')[0];
+  }
   if (tariff.plan_type === 'single') {
     return today.toISOString().split('T')[0];
   }
@@ -913,6 +919,7 @@ function buildPeriodLabel(tariff) {
   if (!tariff) return `${getMonthName(currentMonth)} ${currentYear}`;
   const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   if (tariff.plan_type === 'monthly') return `${months[currentMonth-1]} ${currentYear}`;
+  if (tariff.plan_type === 'days') return `${tariff.duration_days} дней`;
   if (tariff.plan_type === 'sessions') return `${tariff.sessions_limit} тренировок`;
   if (tariff.plan_type === 'single') return '1 тренировка';
   return `${months[currentMonth-1]} ${currentYear}`;
@@ -1047,8 +1054,11 @@ function editTariff(id) {
 
 function onTariffTypeChange() {
   const type = document.getElementById('tariffType').value;
-  document.getElementById('tariffDurationWrap').style.display = type === 'monthly' ? 'block' : 'none';
+  document.getElementById('tariffDurationWrap').style.display = (type === 'monthly' || type === 'days') ? 'block' : 'none';
   document.getElementById('tariffSessionsWrap').style.display = type === 'sessions' ? 'block' : 'none';
+  // Подсказка для дней
+  const durLabel = document.querySelector('#tariffDurationWrap .form-label');
+  if (durLabel) durLabel.textContent = type === 'days' ? 'Количество дней *' : 'Дней действия';
 }
 
 function closeTariffForm() {
