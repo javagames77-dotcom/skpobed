@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти33</button>
+      <button class="btn-logout" onclick="logout()">Выйти</button>
     </div>
   </div>
 </header>
@@ -666,9 +666,16 @@ function renderTable() {
     ).join('');
 
     // ---- ТАРИФ В СТРОКЕ ----
+    // Для прошлых месяцев — только monthly и free
+    const nowMonthCheck = new Date().getMonth() + 1;
+    const nowYearCheck = new Date().getFullYear();
+    const isPastMonth = (currentYear < nowYearCheck) || (currentYear === nowYearCheck && currentMonth < nowMonthCheck);
+    const allowedTariffs = isPastMonth
+      ? groupTariffs.filter(t => t.plan_type === 'monthly' || t.plan_type === 'free')
+      : groupTariffs;
     const rowTariffSel = `<select class="pay-type-select" id="tariff_${athlete.id}" 
       onchange="onRowTariffChange(${athlete.id})" style="max-width:140px;font-size:.78rem">
-      ${groupTariffs.map(t => {
+      ${allowedTariffs.map(t => {
         const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
         return `<option value="${t.id}" ${t.id == lastTariffId ? 'selected' : ''}>${icon} ${t.name}</option>`;
       }).join('')}
@@ -923,16 +930,26 @@ function calcPaidUntil(tariff, currentPaidUntil) {
   if (!tariff) return null;
   if (tariff.plan_type === 'free') return null;
   const today = new Date(); today.setHours(0,0,0,0);
+  const nowMonth = new Date().getMonth() + 1;
+  const nowYear = new Date().getFullYear();
+  const isPast = (currentYear < nowYear) || (currentYear === nowYear && currentMonth < nowMonth);
+
+  if (isPast) {
+    // Прошлый месяц — paid_until всегда конец выбранного месяца
+    const d = new Date(currentYear, currentMonth, 0);
+    return d.toISOString().split('T')[0];
+  }
+
+  // Текущий или будущий месяц
   // Базовая дата: если уже активен — продлеваем от текущего paid_until
   const base = (currentPaidUntil && new Date(currentPaidUntil) > today)
     ? new Date(currentPaidUntil) : today;
+
   if (tariff.plan_type === 'monthly') {
-    // Конец следующего месяца от базовой даты
     const d = new Date(base.getFullYear(), base.getMonth() + 2, 0);
     return d.toISOString().split('T')[0];
   }
   if (tariff.plan_type === 'sessions') {
-    // Для потренировочного — дата не продлевается, считаем тренировки
     return null;
   }
   if (tariff.plan_type === 'days' && tariff.duration_days) {
