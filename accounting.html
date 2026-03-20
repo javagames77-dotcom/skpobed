@@ -556,13 +556,20 @@ function renderTable() {
     const mStart = new Date(currentYear, currentMonth - 1, 1);
     const mEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59);
 
-    // Платёж активен в месяце если paid_from <= конец месяца И paid_until >= начало месяца
+    // Платёж активен в месяце если:
+    // - обычный: paid_from <= конец месяца И paid_until >= начало месяца
+    // - льгота (paid_until=null): paid_from в этом месяце
     const monthPays = pd.history.filter(p => {
       if (!p.child_id) return false;
-      if (p.sessions_paid) return false; // потренировочные обрабатываем отдельно
-      if (!p.paid_from || !p.paid_until) return false;
-      return new Date(p.paid_from) <= mEnd && new Date(p.paid_until) >= mStart;
-    }).sort((a,b) => new Date(b.paid_until) - new Date(a.paid_until));
+      if (p.sessions_paid) return false;
+      if (!p.paid_from) return false;
+      const pf = new Date(p.paid_from);
+      if (!p.paid_until) {
+        // Льгота — paid_from должен попадать в выбранный месяц
+        return pf >= mStart && pf <= mEnd;
+      }
+      return pf <= mEnd && new Date(p.paid_until) >= mStart;
+    }).sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
 
     // Потренировочные — берём все (общий кошелёк)
     const sessionPays = pd.history.filter(p => p.child_id && p.sessions_paid)
@@ -649,6 +656,9 @@ function renderTable() {
         statusHtml = '<span class="status-badge status-overdue">🔴 Не оплачен</span>';
         periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
       }
+    } else if (lastPay.period_label === 'Льгота') {
+      statusHtml = '<span class="status-badge" style="background:#dbeafe;color:#1e40af">🎁 Льгота</span>';
+      periodHtml = '<span class="paid-until">Бесплатно</span>';
     } else {
       statusHtml = '<span class="status-badge status-trial">🟡 Оплата есть</span>';
       periodHtml = '<span class="paid-until">—</span>';
@@ -946,13 +956,11 @@ function getDefaultPaidUntil() {
 }
 
 function calcPaidFrom(tariff) {
-  // paid_from = начало выбранного периода
   if (!tariff) return null;
-  const nowM = new Date().getMonth() + 1;
-  const nowY = new Date().getFullYear();
-  // Всегда начало выбранного месяца
-  const d = new Date(currentYear, currentMonth - 1, 1);
-  return d.toISOString().split('T')[0];
+  // Начало выбранного месяца — форматируем без UTC чтобы не сдвинуть дату
+  const y = currentYear;
+  const m = String(currentMonth).padStart(2, '0');
+  return `${y}-${m}-01`;
 }
 
 function calcPaidUntil(tariff, currentPaidUntil) {
