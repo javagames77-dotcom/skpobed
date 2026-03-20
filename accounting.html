@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти11</button>
+      <button class="btn-logout" onclick="logout()">Выйти</button>
     </div>
   </div>
 </header>
@@ -553,28 +553,22 @@ function renderTable() {
     const pd = groupPayments[cid];
     if (!pd.history || !pd.history.length) return;
     
-    // Для выбранного месяца ищем платёж по paid_until попадающий в этот месяц
     const mStart = new Date(currentYear, currentMonth - 1, 1);
     const mEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59);
 
-    // Сначала ищем платёж у которого paid_until попадает в выбранный месяц
+    // Платёж активен в месяце если paid_from <= конец месяца И paid_until >= начало месяца
     const monthPays = pd.history.filter(p => {
-      if (!p.child_id || !p.paid_until) return false;
-      const pu = new Date(p.paid_until);
-      return pu >= mStart && pu <= mEnd;
-    }).sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
-
-    // Если нет — ищем платёж у которого paid_until >= начало месяца (активен в этом месяце)
-    const activePays = pd.history.filter(p => {
-      if (!p.child_id || !p.paid_until) return false;
-      return new Date(p.paid_until) >= mStart;
+      if (!p.child_id) return false;
+      if (p.sessions_paid) return false; // потренировочные обрабатываем отдельно
+      if (!p.paid_from || !p.paid_until) return false;
+      return new Date(p.paid_from) <= mEnd && new Date(p.paid_until) >= mStart;
     }).sort((a,b) => new Date(b.paid_until) - new Date(a.paid_until));
 
-    // Для потренировочных — берём все
+    // Потренировочные — берём все (общий кошелёк)
     const sessionPays = pd.history.filter(p => p.child_id && p.sessions_paid)
       .sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
 
-    const sorted = monthPays.length ? monthPays : (activePays.length ? activePays : sessionPays);
+    const sorted = monthPays.length ? monthPays : sessionPays;
     if (!sorted.length) return;
     const last = sorted[0];
     
@@ -625,26 +619,33 @@ function renderTable() {
         periodHtml = `<span class="paid-until overdue">0 из ${lastPay.sessions_paid}</span>`;
       }
     } else if (lastPay.paid_until) {
-      // Месячный / по дням — статус относительно выбранного месяца
       const paidUntilDate = new Date(lastPay.paid_until);
-      // Начало выбранного месяца
       const monthStart = new Date(currentYear, currentMonth - 1, 1);
-      // Конец выбранного месяца
       const monthEnd = new Date(currentYear, currentMonth, 0);
+      const nowM = new Date().getMonth() + 1;
+      const nowY = new Date().getFullYear();
+      const isPastM = (currentYear < nowY) || (currentYear === nowY && currentMonth < nowM);
+
       if (paidUntilDate >= monthStart) {
-        // Оплачен в выбранном месяце или позже
-        const diffDaysToday = Math.ceil((paidUntilDate - today) / (1000*60*60*24));
-        const cls = diffDaysToday >= 0 && diffDaysToday <= 7 ? 'soon' : '';
-        const overdue = paidUntilDate < today;
-        if (overdue) {
-          statusHtml = '<span class="status-badge status-overdue">🔴 Просрочен</span>';
-          periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
-        } else {
+        // Платёж покрывает выбранный месяц
+        if (isPastM) {
+          // Прошлый месяц — всегда "Активен" если paid_until >= начала месяца
           statusHtml = '<span class="status-badge status-active">🟢 Активен</span>';
-          periodHtml = `<span class="paid-until ${cls}">до ${formatDate(lastPay.paid_until)}</span>`;
+          periodHtml = `<span class="paid-until">до ${formatDate(lastPay.paid_until)}</span>`;
+        } else {
+          // Текущий/будущий — сравниваем с сегодня
+          const diffDays = Math.ceil((paidUntilDate - today) / (1000*60*60*24));
+          const cls = diffDays >= 0 && diffDays <= 7 ? 'soon' : '';
+          if (diffDays >= 0) {
+            statusHtml = '<span class="status-badge status-active">🟢 Активен</span>';
+            periodHtml = `<span class="paid-until ${cls}">до ${formatDate(lastPay.paid_until)}</span>`;
+          } else {
+            statusHtml = '<span class="status-badge status-overdue">🔴 Просрочен</span>';
+            periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
+          }
         }
       } else {
-        // paid_until раньше начала выбранного месяца — не оплачен за этот месяц
+        // paid_until раньше начала выбранного месяца
         statusHtml = '<span class="status-badge status-overdue">🔴 Не оплачен</span>';
         periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
       }
@@ -897,6 +898,7 @@ async function acceptPayment(childId) {
         club_id: clubId,
         amount: amount,
         payment_type: payType,
+        paid_from: calcPaidFrom(tariff),
         paid_until: paidUntil,
         period_label: periodLabel,
         sessions_paid: sessionsPaid,
@@ -940,6 +942,16 @@ function getDefaultPaidUntil() {
   // По умолчанию +1 месяц от сегодня
   const d = new Date();
   d.setMonth(d.getMonth() + 1);
+  return d.toISOString().split('T')[0];
+}
+
+function calcPaidFrom(tariff) {
+  // paid_from = начало выбранного периода
+  if (!tariff) return null;
+  const nowM = new Date().getMonth() + 1;
+  const nowY = new Date().getFullYear();
+  // Всегда начало выбранного месяца
+  const d = new Date(currentYear, currentMonth - 1, 1);
   return d.toISOString().split('T')[0];
 }
 
