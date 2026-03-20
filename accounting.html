@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Бухгалтерия — InSkill Online</title>
+<style>
+:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0;--green:#28a745;--red:#dc3545;--yellow:#ffc107}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
+
+/* HEADER */
+.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
+.logo-icon{width:40px;height:40px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-bars{display:flex;gap:3px;align-items:flex-end}
+.logo-bar{width:6px;background:#fff;border-radius:2px}
+.logo-bar:nth-child(1){height:12px}
+.logo-bar:nth-child(2){height:18px;background:var(--s)}
+.logo-bar:nth-child(3){height:24px;background:var(--s)}
+.badge-role{padding:.25rem .75rem;background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
+.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer;font-size:.9rem}
+.btn-logout:hover{background:#fee2e2;border-color:#dc3545;color:#dc3545}
+
+/* LAYOUT */
+.container{max-width:1400px;margin:0 auto;padding:1.5rem 2rem}
+.layout{display:flex;gap:1.5rem;align-items:flex-start}
+
+/* STATS BAR - только для director/accountant */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.stat-card{background:#fff;border-radius:12px;padding:1.25rem;box-shadow:0 2px 8px rgba(0,0,0,.05);text-align:center}
+.stat-value{font-size:1.8rem;font-weight:800;color:var(--p)}
+.stat-value.red{color:var(--red)}
+.stat-value.green{color:var(--green)}
+.stat-label{font-size:.78rem;color:#888;margin-top:.25rem;font-weight:500;text-transform:uppercase}
+
+/* SIDEBAR — группы */
+.sidebar{width:260px;flex-shrink:0;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
+.sidebar-title{padding:.85rem 1rem;font-weight:700;font-size:.9rem;background:linear-gradient(135deg,var(--p),#0052a3);color:#fff;display:flex;justify-content:space-between;align-items:center}
+.group-item{padding:.75rem 1rem;cursor:pointer;border-bottom:1px solid #f0f0f0;transition:background .15s;display:flex;flex-direction:column;gap:.2rem}
+.group-item:hover{background:#f0f4ff}
+.group-item.active{background:#e8eeff;border-left:3px solid var(--p)}
+.group-item-name{font-size:.88rem;font-weight:600}
+.group-item-club{font-size:.75rem;color:#888}
+.group-item-stats{display:flex;gap:.5rem;margin-top:.2rem}
+.group-badge-mini{font-size:.7rem;padding:.1rem .4rem;border-radius:8px;font-weight:600}
+.group-badge-green{background:#d4edda;color:#155724}
+.group-badge-red{background:#f8d7da;color:#721c24}
+
+/* MAIN CONTENT */
+.main{flex:1;min-width:0}
+.main-header{background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+.main-title{font-size:1.1rem;font-weight:700;color:var(--p)}
+.main-actions{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+
+/* MONTH SELECTOR */
+.month-nav{display:flex;align-items:center;gap:.5rem;background:#f0f4ff;border-radius:8px;padding:.35rem .6rem}
+.month-btn{background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--p);padding:0 .2rem;line-height:1}
+.month-label{font-size:.85rem;font-weight:600;color:var(--p);min-width:110px;text-align:center}
+
+/* TARIFF SELECTOR */
+.tariff-select-wrap{display:flex;align-items:center;gap:.5rem}
+.tariff-select-wrap label{font-size:.82rem;color:#666;white-space:nowrap}
+.tariff-select{padding:.4rem .65rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;font-family:inherit;outline:none;cursor:pointer}
+.tariff-select:focus{border-color:var(--p)}
+
+/* BUTTONS */
+.btn{padding:.5rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--p);color:#fff}
+.btn-primary:hover{background:#0052a3}
+.btn-orange{background:var(--s);color:#fff}
+.btn-orange:hover{background:#e68a00}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:#1e7e34}
+.btn-ghost{background:#f0f4ff;color:var(--p);border:1.5px solid #c8d8f0}
+.btn-ghost:hover{background:#e0eaff}
+.btn-sm{padding:.35rem .7rem;font-size:.78rem}
+.btn-icon{background:none;border:none;cursor:pointer;padding:.25rem .4rem;border-radius:4px;font-size:.85rem;transition:background .15s}
+.btn-icon:hover{background:#f0f0f0}
+
+/* ACCEPT ALL BUTTON */
+.btn-accept-all{background:linear-gradient(135deg,var(--green),#1e7e34);color:#fff;padding:.5rem 1.1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-accept-all:hover{opacity:.9;transform:translateY(-1px)}
+
+/* TABLE */
+.table-wrap{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
+.acc-table{width:100%;border-collapse:collapse}
+.acc-table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
+.acc-table th{padding:.75rem .85rem;text-align:left;font-size:.78rem;font-weight:600;text-transform:uppercase;white-space:nowrap}
+.acc-table td{padding:.6rem .85rem;border-bottom:1px solid #f0f2f5;vertical-align:middle}
+.acc-table tbody tr:hover{background:#f8f9ff}
+
+/* ATHLETE ROW */
+.athlete-info{display:flex;align-items:center;gap:.6rem}
+.athlete-photo{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--b);flex-shrink:0}
+.athlete-name{font-size:.88rem;font-weight:600}
+.athlete-sub{font-size:.73rem;color:#888}
+
+/* STATUS BADGE */
+.status-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .6rem;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap}
+.status-active{background:#d4edda;color:#155724}
+.status-overdue{background:#f8d7da;color:#721c24}
+.status-trial{background:#fff3cd;color:#856404}
+.status-expired{background:#e2e3e5;color:#383d41}
+.status-none{background:#f0f0f0;color:#888}
+
+/* PAID UNTIL */
+.paid-until{font-size:.8rem;color:#666;white-space:nowrap}
+.paid-until.soon{color:var(--yellow);font-weight:700}
+.paid-until.overdue{color:var(--red);font-weight:700}
+
+/* PAYMENT ROW INPUT */
+.pay-row{display:flex;align-items:center;gap:.4rem}
+.sessions-ctrl{display:flex;align-items:center;gap:.2rem}
+.sessions-btn{width:24px;height:24px;border-radius:6px;border:1.5px solid var(--b);background:#fff;cursor:pointer;font-size:.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.sessions-btn:hover{border-color:var(--p);background:#f0f4ff}
+.amount-input{width:90px;padding:.4rem .5rem;border:1.5px solid var(--b);border-radius:8px;font-size:.88rem;text-align:center;font-family:inherit;outline:none;transition:border-color .15s}
+.amount-input:focus{border-color:var(--p)}
+.amount-input.filled{border-color:var(--green);background:#f0fff4}
+.pay-type-select{padding:.4rem .5rem;border:1.5px solid var(--b);border-radius:8px;font-size:.78rem;font-family:inherit;outline:none;cursor:pointer}
+.pay-type-select:focus{border-color:var(--p)}
+.comment-input{width:110px;padding:.4rem .5rem;border:1.5px solid var(--b);border-radius:8px;font-size:.78rem;font-family:inherit;outline:none}
+.comment-input:focus{border-color:var(--p)}
+
+/* ACCEPT BTN per row */
+.btn-accept{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.4rem .7rem;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s}
+.btn-accept:hover{background:#1e7e34}
+.btn-accept:disabled{background:#ccc;cursor:not-allowed}
+.btn-accepted{background:#e9f7ef;color:var(--green);border:1.5px solid #a8d5b5;border-radius:8px;padding:.4rem .7rem;font-size:.78rem;font-weight:700;cursor:default;white-space:nowrap}
+
+/* PAYMENT HISTORY */
+.history-row{background:#f8f9ff}
+.history-inner{padding:.5rem .85rem .75rem 3.5rem}
+.history-title{font-size:.75rem;font-weight:700;color:#666;margin-bottom:.4rem;text-transform:uppercase}
+.history-item{display:flex;align-items:center;gap:.75rem;padding:.3rem 0;border-bottom:1px solid #eef;font-size:.8rem}
+.history-item:last-child{border-bottom:none}
+.history-date{color:#666;min-width:80px}
+.history-amount{font-weight:700;color:var(--green);min-width:80px}
+.history-type{color:#888;min-width:60px}
+.history-period{color:var(--p);min-width:100px}
+.history-comment{color:#999;font-style:italic}
+.history-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:.8rem;padding:.1rem .3rem;border-radius:3px}
+.history-del:hover{color:var(--red);background:#fee2e2}
+.no-history{color:#bbb;font-size:.8rem;font-style:italic}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:3rem;color:#aaa}
+.empty-icon{font-size:3rem;margin-bottom:.75rem}
+.empty-text{font-size:.95rem}
+
+/* LOADING */
+.loading{text-align:center;padding:2.5rem;color:var(--p);font-size:.9rem}
+
+/* MODAL */
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-box{background:#fff;border-radius:16px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-hdr{padding:1.25rem 1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:1.1rem;font-weight:700;color:var(--p)}
+.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;line-height:1}
+.modal-close:hover{color:var(--red)}
+.modal-body{padding:1.25rem 1.5rem}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--b);display:flex;justify-content:flex-end;gap:.75rem}
+
+/* FORM */
+.form-group{margin-bottom:1rem}
+.form-label{display:block;font-size:.85rem;font-weight:600;color:#555;margin-bottom:.35rem}
+.form-input,.form-select{width:100%;padding:.7rem .9rem;border:1.5px solid var(--b);border-radius:8px;font-size:.9rem;font-family:inherit;outline:none}
+.form-input:focus,.form-select:focus{border-color:var(--p)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+
+/* TARIFF LIST */
+.tariff-list{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem}
+.tariff-item{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;background:#f8f9ff;border-radius:10px;border:1.5px solid #e0e8f0}
+.tariff-item-info{flex:1}
+.tariff-item-name{font-size:.9rem;font-weight:600}
+.tariff-item-details{font-size:.78rem;color:#888;margin-top:.15rem}
+.tariff-item-price{font-size:1rem;font-weight:800;color:var(--p);margin:0 1rem}
+.tariff-actions{display:flex;gap:.4rem}
+
+/* PLAN TYPE BADGES */
+.plan-monthly{background:#dbeafe;color:#1e3a8a;padding:.15rem .5rem;border-radius:6px;font-size:.72rem;font-weight:700}
+.plan-sessions{background:#dcfce7;color:#14532d;padding:.15rem .5rem;border-radius:6px;font-size:.72rem;font-weight:700}
+.plan-single{background:#fef9c3;color:#713f12;padding:.15rem .5rem;border-radius:6px;font-size:.72rem;font-weight:700}
+
+/* PAID UNTIL SELECTOR in modal */
+.period-options{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem}
+.period-option{display:flex;align-items:center;gap:.6rem;padding:.6rem .85rem;border:1.5px solid var(--b);border-radius:8px;cursor:pointer;transition:all .15s}
+.period-option:hover{border-color:var(--p);background:#f0f4ff}
+.period-option.selected{border-color:var(--p);background:#e8eeff}
+.period-option input[type=radio]{accent-color:var(--p)}
+.period-label{font-size:.88rem;font-weight:500;flex:1}
+.period-date{font-size:.82rem;color:var(--p);font-weight:700}
+
+/* TOOLTIP */
+.tooltip{position:relative;display:inline-block}
+.tooltip-text{visibility:hidden;background:#333;color:#fff;font-size:.75rem;border-radius:6px;padding:.3rem .6rem;position:absolute;bottom:125%;left:50%;transform:translateX(-50%);white-space:nowrap;z-index:10}
+.tooltip:hover .tooltip-text{visibility:visible}
+
+@media(max-width:900px){
+  .layout{flex-direction:column}
+  .sidebar{width:100%}
+  .stats-bar{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+  .stats-bar{grid-template-columns:1fr 1fr}
+  .pay-row{flex-wrap:wrap}
+  .comment-input{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-content">
+    <a class="logo" href="#">
+      <div class="logo-icon">
+        <div class="logo-bars">
+          <div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div>
+        </div>
+      </div>
+      InSkill.online
+    </a>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
+      <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
+      <button class="btn-logout" onclick="logout()">Выйти</button>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STATS BAR (только director/accountant) -->
+  <div class="stats-bar" id="statsBar" style="display:none">
+    <div class="stat-card">
+      <div class="stat-value green" id="statCollected">—</div>
+      <div class="stat-label">💰 Собрано за месяц</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value red" id="statDebt">—</div>
+      <div class="stat-label">🔴 Общий долг</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value red" id="statDebtors">—</div>
+      <div class="stat-label">👥 Должников</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="statActive">—</div>
+      <div class="stat-label">✅ Активных</div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- SIDEBAR — группы -->
+    <div class="sidebar">
+      <div class="sidebar-title">
+        <span>📋 Группы</span>
+        <span id="groupCount" style="font-size:.75rem;opacity:.8"></span>
+      </div>
+      <div id="groupList">
+        <div class="loading">Загрузка...</div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div id="mainEmpty" class="empty-state">
+        <div class="empty-icon">💰</div>
+        <div class="empty-text">Выберите группу слева</div>
+      </div>
+
+      <div id="mainContent" style="display:none">
+
+        <!-- Header группы -->
+        <div class="main-header">
+          <div>
+            <div class="main-title" id="groupTitle">—</div>
+            <div style="font-size:.78rem;color:#888;margin-top:.2rem" id="groupSubtitle"></div>
+          </div>
+          <div class="main-actions">
+            <!-- Навигация по месяцам -->
+            <div class="month-nav">
+              <button class="month-btn" onclick="changeMonth(-1)">‹</button>
+              <span class="month-label" id="monthLabel"></span>
+              <button class="month-btn" onclick="changeMonth(1)">›</button>
+            </div>
+            <!-- Выбор тарифа -->
+            <div class="tariff-select-wrap">
+              <label>Тариф:</label>
+              <select class="tariff-select" id="activeTariff" onchange="onTariffChange()">
+                <option value="">— выберите —</option>
+              </select>
+            </div>
+            <!-- Кнопки -->
+            <button class="btn btn-ghost btn-sm" onclick="fillByTariff()" id="btnFill">📋 По тарифу</button>
+            <button class="btn-accept-all" onclick="acceptAll()" id="btnAcceptAll">✅ Принять все</button>
+            <button class="btn btn-primary btn-sm" onclick="openTariffsModal()" id="btnTariffs">⚙️ Тарифы</button>
+          </div>
+        </div>
+
+        <!-- Таблица спортсменов -->
+        <div class="table-wrap">
+          <div id="tableLoading" class="loading" style="display:none">Загрузка...</div>
+          <table class="acc-table" id="accTable" style="display:none">
+            <thead>
+              <tr>
+                <th style="width:32px"></th>
+                <th>Спортсмен</th>
+                <th>Статус</th>
+                <th>Оплачен до</th>
+                <th>Сумма</th>
+                <th>Тип</th>
+                <th>Комментарий</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="accTableBody"></tbody>
+          </table>
+          <div id="tableEmpty" class="empty-state" style="display:none">
+            <div class="empty-icon">👥</div>
+            <div class="empty-text">В группе нет спортсменов</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Тарифные планы -->
+<div class="modal" id="tariffsModal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <span class="modal-title">⚙️ Тарифные планы</span>
+      <button class="modal-close" onclick="closeTariffsModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="tariffsList" class="tariff-list"></div>
+      <button class="btn btn-primary" onclick="openAddTariff()">➕ Добавить тариф</button>
+
+      <!-- Форма добавления/редактирования -->
+      <div id="tariffForm" style="display:none;margin-top:1.25rem;padding-top:1.25rem;border-top:1.5px solid var(--b)">
+        <div style="font-size:.9rem;font-weight:700;color:var(--p);margin-bottom:.85rem" id="tariffFormTitle">Новый тариф</div>
+        <input type="hidden" id="tariffEditId">
+        <div class="form-group">
+          <label class="form-label">Название *</label>
+          <input class="form-input" id="tariffName" placeholder="Напр: Месячный абонемент">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Тип *</label>
+            <select class="form-select" id="tariffType" onchange="onTariffTypeChange()">
+              <option value="monthly">📅 Месячный</option>
+              <option value="sessions">🎯 По тренировкам</option>
+              <option value="single">1️⃣ Разовый</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Цена (грн) *</label>
+            <input class="form-input" id="tariffPrice" type="number" min="0" placeholder="1200">
+          </div>
+        </div>
+        <div class="form-row" id="tariffExtraFields">
+          <div class="form-group" id="tariffDurationWrap">
+            <label class="form-label">Дней действия</label>
+            <input class="form-input" id="tariffDuration" type="number" min="1" placeholder="30">
+          </div>
+          <div class="form-group" id="tariffSessionsWrap" style="display:none">
+            <label class="form-label">Количество тренировок</label>
+            <input class="form-input" id="tariffSessions" type="number" min="1" placeholder="10">
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;justify-content:flex-end">
+          <button class="btn btn-ghost" onclick="closeTariffForm()">Отмена</button>
+          <button class="btn btn-primary" onclick="saveTariff()">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
+const token = localStorage.getItem('token');
+let user = null;
+let currentGroupId = null;
+let currentGroupData = null;
+let allGroups = [];
+let groupAthletes = [];
+let groupPayments = {};  // child_id -> last paid_until
+let groupTariffs = [];
+let currentMonth = new Date().getMonth() + 1;
+let currentYear = new Date().getFullYear();
+
+// ============================
+// INIT
+// ============================
+if (!token) window.location.href = '/';
+
+async function init() {
+  user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!user || !user.role) { window.location.href = '/'; return; }
+
+  const allowed = ['director', 'accountant', 'trainer'];
+  if (!allowed.includes(user.role)) { window.location.href = '/'; return; }
+
+  // UI по роли
+  document.getElementById('userName').textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+  const roleLabels = { director: '👔 ДИРЕКТОР', accountant: '💰 БУХГАЛТЕР', trainer: '🥋 ТРЕНЕР' };
+  document.getElementById('userBadge').textContent = roleLabels[user.role] || user.role;
+
+  // Статистика только для director/accountant
+  if (user.role === 'director' || user.role === 'accountant') {
+    document.getElementById('statsBar').style.display = 'grid';
+    document.getElementById('btnTariffs').style.display = '';
+  } else {
+    document.getElementById('btnTariffs').style.display = 'none';
+  }
+
+  updateMonthLabel();
+  await loadGroups();
+}
+
+// ============================
+// GROUPS
+// ============================
+async function loadGroups() {
+  try {
+    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'groups', action: 'list' }) });
+    const d = await r.json();
+    allGroups = Array.isArray(d) ? d : (d.merged || []);
+    document.getElementById('groupCount').textContent = allGroups.length + ' групп';
+    renderGroupList();
+    if (user.role === 'director' || user.role === 'accountant') {
+      await loadStats();
+    }
+  } catch(e) { console.error(e); }
+}
+
+function renderGroupList() {
+  const el = document.getElementById('groupList');
+  if (!allGroups.length) {
+    el.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#aaa;font-size:.85rem">Нет групп</div>';
+    return;
+  }
+  el.innerHTML = allGroups.map(g => `
+    <div class="group-item ${g.id === currentGroupId ? 'active' : ''}" onclick="openGroup(${g.id})">
+      <div class="group-item-name">${g.name}</div>
+      <div class="group-item-club">${g.club_name || '—'}</div>
+    </div>`).join('');
+}
+
+// ============================
+// OPEN GROUP
+// ============================
+async function openGroup(groupId) {
+  currentGroupId = groupId;
+  currentGroupData = allGroups.find(g => g.id === groupId);
+  renderGroupList();
+
+  document.getElementById('mainEmpty').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('groupTitle').textContent = currentGroupData?.name || '—';
+  document.getElementById('groupSubtitle').textContent = currentGroupData?.club_name || '';
+
+  await Promise.all([
+    loadGroupAthletes(),
+    loadGroupTariffs()
+  ]);
+}
+
+// ============================
+// ATHLETES
+// ============================
+async function loadGroupAthletes() {
+  document.getElementById('tableLoading').style.display = 'block';
+  document.getElementById('accTable').style.display = 'none';
+  document.getElementById('tableEmpty').style.display = 'none';
+
+  try {
+    // Загружаем спортсменов группы
+    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'children', action: 'list' }) });
+    const d = await r.json();
+    const all = Array.isArray(d) ? d : (d.merged || []);
+    // Фильтруем по группе
+    groupAthletes = all.filter(c => {
+      if (!c.group_names || c.group_names === 'Без группы') return false;
+      return c.group_names.split(', ').includes(currentGroupData?.name);
+    });
+
+    // Загружаем платежи за текущий месяц
+    const rp = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'payments', action: 'list',
+        data: { group_id: currentGroupId, month: currentMonth, year: currentYear } }) });
+    const dp = await rp.json();
+    const payments = Array.isArray(dp) ? dp : (dp.merged || []);
+
+    // Загружаем paid_until для каждого спортсмена (последний платёж)
+    const rpAll = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: { group_id: currentGroupId } }) });
+    const dpAll = await rpAll.json();
+    const allPayments = Array.isArray(dpAll) ? dpAll : (dpAll.merged || []);
+
+    // Строим map child_id -> { paid_until, history, last_type }
+    groupPayments = {};
+    allPayments.forEach(p => {
+      if (!p.child_id) return;
+      if (!groupPayments[p.child_id]) groupPayments[p.child_id] = { history: [], last_type: 'cash' };
+      groupPayments[p.child_id].history.push(p);
+      if (p.paid_until) {
+        if (!groupPayments[p.child_id].paid_until || p.paid_until > groupPayments[p.child_id].paid_until) {
+          groupPayments[p.child_id].paid_until = p.paid_until;
+          groupPayments[p.child_id].last_type = p.payment_type || 'cash';
+        }
+      }
+    });
+
+    document.getElementById('tableLoading').style.display = 'none';
+
+    if (!groupAthletes.length) {
+      document.getElementById('tableEmpty').style.display = 'block';
+      return;
+    }
+
+    document.getElementById('accTable').style.display = 'table';
+    renderTable();
+
+  } catch(e) {
+    console.error(e);
+    document.getElementById('tableLoading').style.display = 'none';
+  }
+}
+
+function renderTable() {
+  const tbody = document.getElementById('accTableBody');
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  tbody.innerHTML = groupAthletes.map(athlete => {
+    const pd = groupPayments[athlete.id];
+    const paidUntil = pd?.paid_until ? new Date(pd.paid_until) : null;
+    const lastType = pd?.last_type || 'cash';
+
+    // Статус
+    let statusHtml = '', paidUntilHtml = '';
+    if (!paidUntil) {
+      statusHtml = '<span class="status-badge status-none">⚫ Нет оплат</span>';
+      paidUntilHtml = '<span class="paid-until">—</span>';
+    } else {
+      const diffDays = Math.ceil((paidUntil - today) / (1000*60*60*24));
+      if (diffDays >= 0) {
+        statusHtml = '<span class="status-badge status-active">🟢 Активен</span>';
+        const cls = diffDays <= 7 ? 'soon' : '';
+        paidUntilHtml = `<span class="paid-until ${cls}">${formatDate(pd.paid_until)}</span>`;
+      } else {
+        statusHtml = '<span class="status-badge status-overdue">🔴 Долг</span>';
+        paidUntilHtml = `<span class="paid-until overdue">${formatDate(pd.paid_until)}</span>`;
+      }
+    }
+
+    const photo = athlete.photo_url
+      ? `<img class="athlete-photo" src="${athlete.photo_url}" loading="lazy">`
+      : `<div class="athlete-photo" style="background:var(--p);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.75rem">${(athlete.first_name||'')[0]}${(athlete.last_name||'')[0]}</div>`;
+
+    const typeOptions = ['cash','card','bank'].map(t =>
+      `<option value="${t}" ${t === lastType ? 'selected' : ''}>${t === 'cash' ? '💵 Нал' : t === 'card' ? '💳 Карта' : '🏦 Банк'}</option>`
+    ).join('');
+
+    // Сумма по умолчанию из выбранного тарифа
+    const selTariff = document.getElementById('activeTariff');
+    const defAmount = selTariff?.value ? (groupTariffs.find(t => t.id == selTariff.value)?.price || '') : '';
+    const selPrice = document.getElementById(`amount_${athlete.id}`)?.value || defAmount;
+
+    // Цена одной тренировки
+    const singlePrice = getSinglePrice();
+
+    return `<tr id="row_${athlete.id}">
+      <td>
+        <button class="btn-icon" onclick="toggleHistory(${athlete.id})" title="История платежей">📋</button>
+      </td>
+      <td>
+        <div class="athlete-info">
+          ${photo}
+          <div>
+            <div class="athlete-name">${athlete.last_name} ${athlete.first_name}</div>
+          </div>
+        </div>
+      </td>
+      <td>${statusHtml}</td>
+      <td>${paidUntilHtml}</td>
+      <td>
+        <div class="pay-row">
+          <div class="sessions-ctrl">
+            <button class="sessions-btn" onclick="addSessions(${athlete.id}, -1)">−</button>
+            <button class="sessions-btn" onclick="addSessions(${athlete.id}, 1)">+</button>
+          </div>
+          <input class="amount-input ${selPrice ? 'filled' : ''}" type="number" id="amount_${athlete.id}"
+            value="${selPrice}" min="0" placeholder="грн"
+            oninput="onAmountInput(${athlete.id})">
+        </div>
+      </td>
+      <td>
+        <select class="pay-type-select" id="type_${athlete.id}">${typeOptions}</select>
+      </td>
+      <td>
+        <input class="comment-input" type="text" id="comment_${athlete.id}" placeholder="Комментарий">
+      </td>
+      <td>
+        <button class="btn-accept" id="btn_${athlete.id}" onclick="acceptPayment(${athlete.id})">✅ Принять</button>
+      </td>
+    </tr>
+    <tr id="history_${athlete.id}" class="history-row" style="display:none">
+      <td colspan="8">
+        <div class="history-inner">
+          <div class="history-title">История платежей</div>
+          ${renderHistory(athlete.id)}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderHistory(childId) {
+  const pd = groupPayments[childId];
+  if (!pd?.history?.length) return '<div class="no-history">Нет платежей</div>';
+  return pd.history
+    .sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at))
+    .slice(0, 10)
+    .map(p => `
+      <div class="history-item">
+        <span class="history-date">${formatDateTime(p.paid_at)}</span>
+        <span class="history-amount">${p.amount} грн</span>
+        <span class="history-type">${p.payment_type === 'cash' ? '💵 Нал' : p.payment_type === 'card' ? '💳 Карта' : '🏦 Банк'}</span>
+        <span class="history-period">${p.period_label || '—'}</span>
+        <span class="history-comment">${p.comment || ''}</span>
+        <button class="history-del" onclick="deletePayment(${p.id}, ${childId})" title="Удалить">🗑</button>
+      </div>`).join('');
+}
+
+function toggleHistory(childId) {
+  const row = document.getElementById(`history_${childId}`);
+  row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+}
+
+// ============================
+// TARIFFS
+// ============================
+async function loadGroupTariffs() {
+  if (!currentGroupData?.club_id) return;
+  try {
+    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'payment_plans', action: 'list', data: {} }) });
+    const d = await r.json();
+    const all = Array.isArray(d) ? d : (d.merged || []);
+    groupTariffs = all.filter(t => t.club_id == currentGroupData.club_id && t.is_active !== false);
+
+    const sel = document.getElementById('activeTariff');
+    sel.innerHTML = '<option value="">— выберите тариф —</option>' +
+      groupTariffs.map(t => {
+        const typeLabel = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
+        return `<option value="${t.id}">${typeLabel} ${t.name} — ${t.price} грн</option>`;
+      }).join('');
+
+    // Если один тариф — выбираем автоматически
+    if (groupTariffs.length === 1) sel.value = groupTariffs[0].id;
+  } catch(e) { console.error(e); }
+}
+
+function onTariffChange() {
+  // Обновляем суммы в строках если таблица заполнена
+  if (groupAthletes.length) renderTable();
+}
+
+function getSinglePrice() {
+  const sel = document.getElementById('activeTariff');
+  if (!sel?.value) return 0;
+  const t = groupTariffs.find(t => t.id == sel.value);
+  if (!t) return 0;
+  if (t.plan_type === 'single') return t.price;
+  if (t.plan_type === 'sessions' && t.sessions_limit) return Math.round(t.price / t.sessions_limit);
+  // monthly — делим на кол-во тренировок в месяц из расписания
+  const schedule = currentGroupData?.schedule;
+  if (schedule && schedule.length) {
+    const perWeek = schedule.length;
+    const perMonth = Math.round(perWeek * 4.3);
+    return Math.round(t.price / perMonth);
+  }
+  return Math.round(t.price / 12); // fallback
+}
+
+function addSessions(childId, delta) {
+  const inp = document.getElementById(`amount_${childId}`);
+  const singlePrice = getSinglePrice();
+  if (!singlePrice) return;
+  const current = parseFloat(inp.value) || 0;
+  const newVal = Math.max(0, current + delta * singlePrice);
+  inp.value = newVal || '';
+  onAmountInput(childId);
+}
+
+function onAmountInput(childId) {
+  const inp = document.getElementById(`amount_${childId}`);
+  inp.classList.toggle('filled', !!inp.value);
+}
+
+function fillByTariff() {
+  const sel = document.getElementById('activeTariff');
+  if (!sel.value) { alert('Выберите тариф'); return; }
+  const t = groupTariffs.find(t => t.id == sel.value);
+  if (!t) return;
+  groupAthletes.forEach(a => {
+    const inp = document.getElementById(`amount_${a.id}`);
+    if (inp) { inp.value = t.price; inp.classList.add('filled'); }
+  });
+}
+
+// ============================
+// ACCEPT PAYMENT
+// ============================
+async function acceptPayment(childId) {
+  const amount = parseFloat(document.getElementById(`amount_${childId}`)?.value);
+  if (!amount || amount <= 0) { alert('Введите сумму'); return; }
+
+  const payType = document.getElementById(`type_${childId}`)?.value || 'cash';
+  const comment = document.getElementById(`comment_${childId}`)?.value || '';
+  const btn = document.getElementById(`btn_${childId}`);
+
+  // Рассчитываем paid_until
+  const sel = document.getElementById('activeTariff');
+  const tariff = sel?.value ? groupTariffs.find(t => t.id == sel.value) : null;
+  const paidUntil = calcPaidUntil(tariff);
+  const periodLabel = buildPeriodLabel(tariff);
+  const clubId = currentGroupData?.club_id;
+
+  btn.disabled = true;
+  btn.textContent = '⏳';
+
+  try {
+    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'payments', action: 'create', data: {
+        child_id: childId,
+        club_id: clubId,
+        amount: amount,
+        payment_type: payType,
+        paid_until: paidUntil,
+        period_label: periodLabel,
+        sessions_paid: tariff?.plan_type === 'sessions' ? calcSessionsPaid(amount, tariff) : null,
+        comment: comment
+      }})});
+
+    // Сбрасываем поле
+    const inp = document.getElementById(`amount_${childId}`);
+    if (inp) { inp.value = ''; inp.classList.remove('filled'); }
+    if (document.getElementById(`comment_${childId}`)) document.getElementById(`comment_${childId}`).value = '';
+
+    // Перезагружаем
+    await loadGroupAthletes();
+    if (user.role === 'director' || user.role === 'accountant') await loadStats();
+  } catch(e) {
+    console.error(e);
+    btn.disabled = false;
+    btn.textContent = '✅ Принять';
+  }
+}
+
+async function acceptAll() {
+  const toAccept = groupAthletes.filter(a => {
+    const v = parseFloat(document.getElementById(`amount_${a.id}`)?.value);
+    return v && v > 0;
+  });
+  if (!toAccept.length) { alert('Нет заполненных сумм'); return; }
+  if (!confirm(`Принять оплату от ${toAccept.length} спортсменов?`)) return;
+  for (const a of toAccept) {
+    await acceptPayment(a.id);
+  }
+}
+
+function calcPaidUntil(tariff) {
+  if (!tariff) return null;
+  const today = new Date();
+  if (tariff.plan_type === 'monthly') {
+    const d = new Date(today.getFullYear(), today.getMonth() + 1, 0); // конец месяца
+    return d.toISOString().split('T')[0];
+  }
+  if (tariff.plan_type === 'sessions' && currentGroupData?.schedule?.length) {
+    const sessions = tariff.sessions_limit || 1;
+    return calcDateAfterNSessions(sessions);
+  }
+  if (tariff.plan_type === 'single') {
+    return today.toISOString().split('T')[0];
+  }
+  if (tariff.duration_days) {
+    const d = new Date(today.getTime() + tariff.duration_days * 86400000);
+    return d.toISOString().split('T')[0];
+  }
+  return null;
+}
+
+function calcDateAfterNSessions(n) {
+  const schedule = currentGroupData?.schedule || [];
+  if (!schedule.length) return null;
+  const days = schedule.map(s => s.day).sort();
+  let count = 0;
+  let d = new Date();
+  d.setHours(0,0,0,0);
+  for (let i = 0; i < 365 && count < n; i++) {
+    if (days.includes(d.getDay())) count++;
+    if (count < n) d.setDate(d.getDate() + 1);
+  }
+  return d.toISOString().split('T')[0];
+}
+
+function calcSessionsPaid(amount, tariff) {
+  if (tariff.plan_type === 'sessions') return tariff.sessions_limit;
+  if (tariff.plan_type === 'single') return 1;
+  const single = getSinglePrice();
+  return single ? Math.round(amount / single) : null;
+}
+
+function buildPeriodLabel(tariff) {
+  if (!tariff) return `${getMonthName(currentMonth)} ${currentYear}`;
+  const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  if (tariff.plan_type === 'monthly') return `${months[currentMonth-1]} ${currentYear}`;
+  if (tariff.plan_type === 'sessions') return `${tariff.sessions_limit} тренировок`;
+  if (tariff.plan_type === 'single') return '1 тренировка';
+  return `${months[currentMonth-1]} ${currentYear}`;
+}
+
+// ============================
+// DELETE PAYMENT
+// ============================
+async function deletePayment(paymentId, childId) {
+  if (!confirm('Удалить платёж?')) return;
+  try {
+    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'payments', action: 'update',
+        data: { id: paymentId, status: 'deleted' } }) });
+    await loadGroupAthletes();
+    if (user.role === 'director' || user.role === 'accountant') await loadStats();
+  } catch(e) { console.error(e); }
+}
+
+// ============================
+// STATS
+// ============================
+async function loadStats() {
+  try {
+    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'payments', action: 'list',
+        data: { month: currentMonth, year: currentYear } }) });
+    const d = await r.json();
+    const payments = Array.isArray(d) ? d : (d.merged || []);
+    const valid = payments.filter(p => p.status !== 'deleted' && p.amount);
+
+    const collected = valid.reduce((s, p) => s + parseFloat(p.amount || 0), 0);
+    document.getElementById('statCollected').textContent = formatMoney(collected);
+
+    // Считаем должников — спортсмены у которых paid_until < сегодня или нет оплат
+    const today = new Date(); today.setHours(0,0,0,0);
+    const paidMap = {};
+    const allPay = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: {} }) });
+    const allPayD = await allPay.json();
+    const allPayArr = Array.isArray(allPayD) ? allPayD : (allPayD.merged || []);
+    allPayArr.filter(p => p.status !== 'deleted' && p.paid_until).forEach(p => {
+      if (!paidMap[p.child_id] || p.paid_until > paidMap[p.child_id]) paidMap[p.child_id] = p.paid_until;
+    });
+
+    // Все спортсмены директора
+    const rc = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'children', action: 'list' }) });
+    const dc = await rc.json();
+    const children = Array.isArray(dc) ? dc : (dc.merged || []);
+
+    let debtors = 0, active = 0, debtAmount = 0;
+    children.forEach(c => {
+      const pu = paidMap[c.id];
+      if (!pu || new Date(pu) < today) {
+        debtors++;
+      } else {
+        active++;
+      }
+    });
+
+    document.getElementById('statDebt').textContent = formatMoney(debtAmount);
+    document.getElementById('statDebtors').textContent = debtors;
+    document.getElementById('statActive').textContent = active;
+  } catch(e) { console.error(e); }
+}
+
+// ============================
+// TARIFFS MODAL
+// ============================
+function openTariffsModal() {
+  renderTariffsList();
+  document.getElementById('tariffsModal').classList.add('open');
+}
+
+function closeTariffsModal() {
+  document.getElementById('tariffsModal').classList.remove('open');
+  closeTariffForm();
+}
+
+function renderTariffsList() {
+  const el = document.getElementById('tariffsList');
+  if (!groupTariffs.length) {
+    el.innerHTML = '<div style="color:#aaa;font-size:.85rem;padding:.5rem 0">Нет тарифов для этого клуба</div>';
+    return;
+  }
+  const typeLabels = { monthly: '<span class="plan-monthly">📅 Месячный</span>', sessions: '<span class="plan-sessions">🎯 По тренировкам</span>', single: '<span class="plan-single">1️⃣ Разовый</span>' };
+  el.innerHTML = groupTariffs.map(t => `
+    <div class="tariff-item">
+      <div class="tariff-item-info">
+        <div class="tariff-item-name">${t.name} ${typeLabels[t.plan_type] || ''}</div>
+        <div class="tariff-item-details">
+          ${t.duration_days ? `${t.duration_days} дней` : ''}
+          ${t.sessions_limit ? `${t.sessions_limit} тренировок` : ''}
+        </div>
+      </div>
+      <div class="tariff-item-price">${t.price} грн</div>
+      <div class="tariff-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editTariff(${t.id})">✏️</button>
+        <button class="btn-icon" onclick="deleteTariff(${t.id})" title="Удалить">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+function openAddTariff() {
+  document.getElementById('tariffEditId').value = '';
+  document.getElementById('tariffName').value = '';
+  document.getElementById('tariffType').value = 'monthly';
+  document.getElementById('tariffPrice').value = '';
+  document.getElementById('tariffDuration').value = '30';
+  document.getElementById('tariffSessions').value = '';
+  document.getElementById('tariffFormTitle').textContent = 'Новый тариф';
+  onTariffTypeChange();
+  document.getElementById('tariffForm').style.display = 'block';
+  document.getElementById('tariffForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function editTariff(id) {
+  const t = groupTariffs.find(t => t.id == id);
+  if (!t) return;
+  document.getElementById('tariffEditId').value = t.id;
+  document.getElementById('tariffName').value = t.name;
+  document.getElementById('tariffType').value = t.plan_type;
+  document.getElementById('tariffPrice').value = t.price;
+  document.getElementById('tariffDuration').value = t.duration_days || '';
+  document.getElementById('tariffSessions').value = t.sessions_limit || '';
+  document.getElementById('tariffFormTitle').textContent = 'Редактировать тариф';
+  onTariffTypeChange();
+  document.getElementById('tariffForm').style.display = 'block';
+  document.getElementById('tariffForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function onTariffTypeChange() {
+  const type = document.getElementById('tariffType').value;
+  document.getElementById('tariffDurationWrap').style.display = type === 'monthly' ? 'block' : 'none';
+  document.getElementById('tariffSessionsWrap').style.display = type === 'sessions' ? 'block' : 'none';
+}
+
+function closeTariffForm() {
+  document.getElementById('tariffForm').style.display = 'none';
+}
+
+async function saveTariff() {
+  const name = document.getElementById('tariffName').value.trim();
+  const price = parseFloat(document.getElementById('tariffPrice').value);
+  const planType = document.getElementById('tariffType').value;
+  const duration = parseInt(document.getElementById('tariffDuration').value) || null;
+  const sessions = parseInt(document.getElementById('tariffSessions').value) || null;
+  const editId = document.getElementById('tariffEditId').value;
+
+  if (!name || !price) { alert('Заполните название и цену'); return; }
+  if (!currentGroupData?.club_id) { alert('Нет клуба'); return; }
+
+  const data = { name, plan_type: planType, price, club_id: currentGroupData.club_id,
+    duration_days: planType === 'monthly' ? (duration || 30) : null,
+    sessions_limit: planType === 'sessions' ? sessions : null };
+
+  if (editId) data.id = parseInt(editId);
+
+  try {
+    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'payment_plans', action: editId ? 'update' : 'create', data }) });
+    closeTariffForm();
+    await loadGroupTariffs();
+    renderTariffsList();
+  } catch(e) { console.error(e); alert('Ошибка сохранения'); }
+}
+
+async function deleteTariff(id) {
+  if (!confirm('Удалить тариф?')) return;
+  try {
+    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, resource: 'payment_plans', action: 'delete', data: { id } }) });
+    await loadGroupTariffs();
+    renderTariffsList();
+  } catch(e) { console.error(e); }
+}
+
+// ============================
+// MONTH NAVIGATION
+// ============================
+function changeMonth(delta) {
+  currentMonth += delta;
+  if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+  if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+  updateMonthLabel();
+  if (currentGroupId) loadGroupAthletes();
+  if (user.role === 'director' || user.role === 'accountant') loadStats();
+}
+
+function updateMonthLabel() {
+  document.getElementById('monthLabel').textContent = `${getMonthName(currentMonth)} ${currentYear}`;
+}
+
+function getMonthName(m) {
+  return ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][m-1];
+}
+
+// ============================
+// HELPERS
+// ============================
+function formatDate(str) {
+  if (!str) return '—';
+  const d = new Date(str);
+  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function formatDateTime(str) {
+  if (!str) return '—';
+  const d = new Date(str);
+  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit' }) + ' ' +
+    d.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
+}
+
+function formatMoney(n) {
+  return Math.round(n).toLocaleString('ru-RU') + ' грн';
+}
+
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '/';
+}
+
+// ============================
+// START
+// ============================
+init();
+</script>
+</body>
+</html>
