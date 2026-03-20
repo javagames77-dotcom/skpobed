@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти</button>
+      <button class="btn-logout" onclick="logout()">Выйти3</button>
     </div>
   </div>
 </header>
@@ -971,6 +971,10 @@ async function acceptPayment(childId) {
 
 async function acceptAll() {
   const toAccept = groupAthletes.filter(a => {
+    const tariffId = document.getElementById(`tariff_${a.id}`)?.value;
+    const t = tariffId ? groupTariffs.find(t => t.id == tariffId) : null;
+    const isFree = t?.plan_type === 'free';
+    if (isFree) return true; // бесплатные всегда включаем
     const v = parseFloat(document.getElementById(`amount_${a.id}`)?.value);
     return v && v > 0;
   });
@@ -1022,8 +1026,8 @@ function calcPaidUntil(tariff, currentPaidUntil, currentPaidFrom) {
     ? new Date(currentPaidUntil) : today;
 
   if (tariff.plan_type === 'monthly') {
-    // Конец текущего месяца от base
-    const d = new Date(base.getFullYear(), base.getMonth() + 1, 0);
+    // Конец выбранного месяца (currentMonth/currentYear)
+    const d = new Date(currentYear, currentMonth, 0);
     const dy = d.getFullYear();
     const dm = String(d.getMonth()+1).padStart(2,'0');
     const dd = String(d.getDate()).padStart(2,'0');
