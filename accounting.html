@@ -361,6 +361,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
               <option value="days">📆 По дням (напр. 30 дней)</option>
               <option value="sessions">🎯 По тренировкам</option>
               <option value="single">1️⃣ Разовый</option>
+              <option value="free">🎁 Бесплатно (льгота)</option>
             </select>
           </div>
           <div class="form-group">
@@ -573,7 +574,7 @@ function renderTable() {
   // Тарифные опции для каждого спортсмена
   const tariffOptions = '<option value="">— тариф —</option>' +
     groupTariffs.map(t => {
-      const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
+      const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
       return `<option value="${t.id}">${icon} ${t.name} — ${t.price}грн</option>`;
     }).join('');
 
@@ -651,13 +652,16 @@ function renderTable() {
     const rowTariffSel = `<select class="pay-type-select" id="tariff_${athlete.id}" 
       onchange="onRowTariffChange(${athlete.id})" style="max-width:140px;font-size:.78rem">
       ${groupTariffs.map(t => {
-        const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
+        const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
         return `<option value="${t.id}" ${t.id == lastTariffId ? 'selected' : ''}>${icon} ${t.name}</option>`;
       }).join('')}
       <option value="" ${!lastTariffId ? 'selected' : ''}>— тариф —</option>
     </select>`;
 
-    return `<tr id="row_${athlete.id}">
+    // Определяем есть ли активная льгота
+    const hasFreeActive = lastPay && groupTariffs.find(t => t.id == (document.getElementById(`tariff_${athlete.id}`)?.value))?.plan_type === 'free';
+    const rowBg = hasFreeActive ? 'background:#e8f4fd;' : '';
+    return `<tr id="row_${athlete.id}" style="${rowBg}">
       <td><button class="btn-icon" onclick="toggleHistory(${athlete.id})" title="История">📋</button></td>
       <td>
         <div class="athlete-info">
@@ -746,7 +750,7 @@ async function loadGroupTariffs() {
     const sel = document.getElementById('activeTariff');
     sel.innerHTML = '<option value="">— выберите тариф —</option>' +
       groupTariffs.map(t => {
-        const typeLabel = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
+        const typeLabel = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
         return `<option value="${t.id}">${typeLabel} ${t.name} — ${t.price} грн</option>`;
       }).join('');
 
@@ -770,6 +774,7 @@ function getSinglePrice(childId) {
   if (t.plan_type === 'monthly') return t.price;
   if (t.plan_type === 'days') return t.price;
   if (t.plan_type === 'single') return t.price;
+  if (t.plan_type === 'free') return 0;
   // sessions — цена одной тренировки
   if (t.plan_type === 'sessions' && t.sessions_limit) return Math.round(t.price / t.sessions_limit);
   return t.price;
@@ -824,8 +829,12 @@ async function acceptPayment(childId) {
   // Берём тариф из строки спортсмена
   const rowTariffId = document.getElementById(`tariff_${childId}`)?.value;
   const tariff = rowTariffId ? groupTariffs.find(t => t.id == rowTariffId) : null;
-  // paid_until считается автоматически по типу тарифа
-  const paidUntil = calcPaidUntil(tariff);
+  // paid_until считается с учётом текущего срока (продление)
+  const lastPayData = Object.values(groupPayments[childId]?.history || [])
+    .filter(p => p.paid_until && !p.sessions_paid)
+    .sort((a,b) => new Date(b.paid_until) - new Date(a.paid_until))[0];
+  const currentPaidUntil = lastPayData?.paid_until || null;
+  const paidUntil = calcPaidUntil(tariff, currentPaidUntil);
   // sessions_paid — для потренировочного тарифа считаем по сумме
   let sessionsPaid = null;
   if (tariff?.plan_type === 'sessions' && tariff.sessions_limit && tariff.price) {
@@ -890,26 +899,31 @@ function getDefaultPaidUntil() {
   return d.toISOString().split('T')[0];
 }
 
-function calcPaidUntil(tariff) {
+function calcPaidUntil(tariff, currentPaidUntil) {
   if (!tariff) return null;
-  const today = new Date();
+  if (tariff.plan_type === 'free') return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  // Базовая дата: если уже активен — продлеваем от текущего paid_until
+  const base = (currentPaidUntil && new Date(currentPaidUntil) > today)
+    ? new Date(currentPaidUntil) : today;
   if (tariff.plan_type === 'monthly') {
-    const d = new Date(today.getFullYear(), today.getMonth() + 1, 0); // конец месяца
+    // Конец следующего месяца от базовой даты
+    const d = new Date(base.getFullYear(), base.getMonth() + 2, 0);
     return d.toISOString().split('T')[0];
   }
-  if (tariff.plan_type === 'sessions' && currentGroupData?.schedule?.length) {
-    const sessions = tariff.sessions_limit || 1;
-    return calcDateAfterNSessions(sessions);
+  if (tariff.plan_type === 'sessions') {
+    // Для потренировочного — дата не продлевается, считаем тренировки
+    return null;
   }
   if (tariff.plan_type === 'days' && tariff.duration_days) {
-    const d = new Date(today.getTime() + tariff.duration_days * 86400000);
+    const d = new Date(base.getTime() + tariff.duration_days * 86400000);
     return d.toISOString().split('T')[0];
   }
   if (tariff.plan_type === 'single') {
     return today.toISOString().split('T')[0];
   }
   if (tariff.duration_days) {
-    const d = new Date(today.getTime() + tariff.duration_days * 86400000);
+    const d = new Date(base.getTime() + tariff.duration_days * 86400000);
     return d.toISOString().split('T')[0];
   }
   return null;
@@ -943,6 +957,7 @@ function buildPeriodLabel(tariff, sessionsPaid) {
   if (tariff.plan_type === 'days') return `${tariff.duration_days || '?'} дней`;
   if (tariff.plan_type === 'sessions') return `${sessionsPaid || tariff.sessions_limit} тренировок`;
   if (tariff.plan_type === 'single') return '1 тренировка';
+  if (tariff.plan_type === 'free') return 'Льгота';
   return `${months[currentMonth-1]} ${currentYear}`;
 }
 
@@ -1077,6 +1092,10 @@ function onTariffTypeChange() {
   const type = document.getElementById('tariffType').value;
   document.getElementById('tariffDurationWrap').style.display = (type === 'monthly' || type === 'days') ? 'block' : 'none';
   document.getElementById('tariffSessionsWrap').style.display = type === 'sessions' ? 'block' : 'none';
+  // Для бесплатного — цена 0
+  const priceInp = document.getElementById('tariffPrice');
+  if (type === 'free') { priceInp.value = '0'; priceInp.readOnly = true; }
+  else { priceInp.readOnly = false; }
   // Подсказка для дней
   const durLabel = document.querySelector('#tariffDurationWrap .form-label');
   if (durLabel) durLabel.textContent = type === 'days' ? 'Количество дней *' : 'Дней действия';
