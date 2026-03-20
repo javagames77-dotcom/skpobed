@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти</button>
+      <button class="btn-logout" onclick="logout()">Выйти11</button>
     </div>
   </div>
 </header>
@@ -553,13 +553,30 @@ function renderTable() {
     const pd = groupPayments[cid];
     if (!pd.history || !pd.history.length) return;
     
-    // Для выбранного месяца берём последний платёж который был до конца этого месяца
-    const monthEndDate = new Date(currentYear, currentMonth, 0, 23, 59, 59);
-    const sorted = pd.history
-      .filter(p => p.child_id && new Date(p.paid_at) <= monthEndDate)
+    // Для выбранного месяца ищем платёж по paid_until попадающий в этот месяц
+    const mStart = new Date(currentYear, currentMonth - 1, 1);
+    const mEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59);
+
+    // Сначала ищем платёж у которого paid_until попадает в выбранный месяц
+    const monthPays = pd.history.filter(p => {
+      if (!p.child_id || !p.paid_until) return false;
+      const pu = new Date(p.paid_until);
+      return pu >= mStart && pu <= mEnd;
+    }).sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
+
+    // Если нет — ищем платёж у которого paid_until >= начало месяца (активен в этом месяце)
+    const activePays = pd.history.filter(p => {
+      if (!p.child_id || !p.paid_until) return false;
+      return new Date(p.paid_until) >= mStart;
+    }).sort((a,b) => new Date(b.paid_until) - new Date(a.paid_until));
+
+    // Для потренировочных — берём все
+    const sessionPays = pd.history.filter(p => p.child_id && p.sessions_paid)
       .sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
-    if (!sorted.length) return; // нет платежей до конца выбранного месяца
-    const last = sorted[0]; // последний платёж до конца выбранного месяца
+
+    const sorted = monthPays.length ? monthPays : (activePays.length ? activePays : sessionPays);
+    if (!sorted.length) return;
+    const last = sorted[0];
     
     // Суммируем все sessions_paid (общий кошелёк тренировок)
     const totalSessionsPaid = sorted.reduce((sum, p) => sum + (parseInt(p.sessions_paid) || 0), 0);
