@@ -308,14 +308,13 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
           <table class="acc-table" id="accTable" style="display:none">
             <thead>
               <tr>
-                <th style="width:32px"></th>
+                <th style="width:28px"></th>
                 <th>Спортсмен</th>
                 <th>Статус</th>
-                <th>Период/Остаток</th>
+                <th>Период</th>
                 <th>Тариф</th>
                 <th>Сумма</th>
                 <th>Тип</th>
-                <th>Коммент</th>
                 <th></th>
               </tr>
             </thead>
@@ -632,7 +631,7 @@ function renderTable() {
 
     // ---- ТАРИФ В СТРОКЕ ----
     const rowTariffSel = `<select class="pay-type-select" id="tariff_${athlete.id}" 
-      onchange="onRowTariffChange(${athlete.id})" style="min-width:130px">
+      onchange="onRowTariffChange(${athlete.id})" style="max-width:140px;font-size:.78rem">
       ${groupTariffs.map(t => {
         const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
         return `<option value="${t.id}" ${t.id == lastTariffId ? 'selected' : ''}>${icon} ${t.name}</option>`;
@@ -655,12 +654,12 @@ function renderTable() {
         <div class="pay-row">
           <button class="sessions-btn" onclick="addSessions(${athlete.id}, -1)">−</button>
           <input class="amount-input" type="number" id="amount_${athlete.id}"
-            value="" min="0" placeholder="грн" oninput="onAmountInput(${athlete.id})">
+            value="" min="0" placeholder="грн" oninput="onAmountInput(${athlete.id})" style="width:75px">
           <button class="sessions-btn" onclick="addSessions(${athlete.id}, 1)">+</button>
         </div>
       </td>
       <td><select class="pay-type-select" id="type_${athlete.id}">${typeOptions}</select></td>
-      <td><input class="comment-input" type="text" id="comment_${athlete.id}" placeholder="..."></td>
+      <input type="hidden" id="comment_${athlete.id}" value="">
       <td>${acceptBtn}</td>
     </tr>
     <tr id="history_${athlete.id}" class="history-row" style="display:none">
@@ -744,21 +743,17 @@ function onTariffChange() {
 }
 
 function getSinglePrice(childId) {
-  // Берём тариф из строки спортсмена, или глобальный
   const rowSel = childId ? document.getElementById(`tariff_${childId}`) : null;
   const tariffId = rowSel?.value || document.getElementById('activeTariff')?.value;
   if (!tariffId) return 0;
   const t = groupTariffs.find(t => t.id == tariffId);
   if (!t) return 0;
+  // monthly и single — кнопка +/- добавляет полную сумму тарифа
+  if (t.plan_type === 'monthly') return t.price;
   if (t.plan_type === 'single') return t.price;
+  // sessions — цена одной тренировки
   if (t.plan_type === 'sessions' && t.sessions_limit) return Math.round(t.price / t.sessions_limit);
-  // monthly — делим на кол-во тренировок в месяц
-  const schedule = currentGroupData?.schedule;
-  if (schedule && schedule.length) {
-    const perMonth = Math.round(schedule.length * 4.3);
-    return Math.round(t.price / perMonth);
-  }
-  return Math.round(t.price / 12);
+  return t.price;
 }
 
 function addSessions(childId, delta) {
