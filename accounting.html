@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти</button>
+      <button class="btn-logout" onclick="logout()">Выйти1</button>
     </div>
   </div>
 </header>
@@ -701,14 +701,27 @@ function renderTable() {
     const allowedTariffs = isPastMonth
       ? groupTariffs.filter(t => t.plan_type === 'monthly' || t.plan_type === 'free')
       : groupTariffs;
-    const rowTariffSel = `<select class="pay-type-select" id="tariff_${athlete.id}" 
-      onchange="onRowTariffChange(${athlete.id})" style="max-width:140px;font-size:.78rem">
-      ${allowedTariffs.map(t => {
-        const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
-        return `<option value="${t.id}" ${t.id == lastTariffId ? 'selected' : ''}>${icon} ${t.name}</option>`;
-      }).join('')}
-      <option value="" ${!lastTariffId ? 'selected' : ''}>— тариф —</option>
-    </select>`;
+    // Определяем выбранный тариф для этой строки
+    const rowTariffObj = lastTariffId ? groupTariffs.find(t => t.id == lastTariffId) : null;
+    const isDays = rowTariffObj?.plan_type === 'days';
+    // Дата начала по умолчанию — сегодня
+    const defaultFrom = new Date().toISOString().split('T')[0];
+    const rowTariffSel = `<div style="display:flex;align-items:center;gap:.3rem">
+      <select class="pay-type-select" id="tariff_${athlete.id}" 
+        onchange="onRowTariffChange(${athlete.id})" style="max-width:140px;font-size:.78rem">
+        ${allowedTariffs.map(t => {
+          const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
+          return `<option value="${t.id}" ${t.id == lastTariffId ? 'selected' : ''}>${icon} ${t.name}</option>`;
+        }).join('')}
+        <option value="" ${!lastTariffId ? 'selected' : ''}>— тариф —</option>
+      </select>
+      <div id="datebtn_wrap_${athlete.id}" style="display:${isDays ? 'flex' : 'none'};align-items:center;gap:.2rem">
+        <button class="btn-icon" onclick="toggleDatePicker(${athlete.id})" title="Дата начала" style="font-size:.9rem">📅</button>
+        <input type="date" id="paid_from_${athlete.id}" value="${defaultFrom}"
+          onchange="onPaidFromChange(${athlete.id})"
+          style="display:none;padding:.3rem .4rem;border:1.5px solid var(--p);border-radius:6px;font-size:.73rem;width:115px">
+      </div>
+    </div>`;
 
     // Определяем есть ли активная льгота
     const hasFreeActive = lastPay && groupTariffs.find(t => t.id == (document.getElementById(`tariff_${athlete.id}`)?.value))?.plan_type === 'free';
@@ -748,13 +761,32 @@ function renderTable() {
 }
 
 function onRowTariffChange(childId) {
-  // Запоминаем выбранный тариф для этого спортсмена
   const tariffId = document.getElementById(`tariff_${childId}`)?.value;
   const athlete = groupAthletes.find(a => a.id === childId);
   if (athlete) athlete._lastTariffId = tariffId;
-  // Обнуляем сумму чтобы пересчитал
+  // Показываем кнопку 📅 только для days
+  const tariff = tariffId ? groupTariffs.find(t => t.id == tariffId) : null;
+  const wrap = document.getElementById(`datebtn_wrap_${childId}`);
+  if (wrap) wrap.style.display = tariff?.plan_type === 'days' ? 'flex' : 'none';
+  // Скрываем датапикер при смене тарифа
+  const dp = document.getElementById(`paid_from_${childId}`);
+  if (dp) dp.style.display = 'none';
+  // Обнуляем сумму
   const inp = document.getElementById(`amount_${childId}`);
   if (inp) { inp.value = ''; inp.classList.remove('filled'); }
+}
+
+function toggleDatePicker(childId) {
+  const dp = document.getElementById(`paid_from_${childId}`);
+  if (!dp) return;
+  dp.style.display = dp.style.display === 'none' ? 'block' : 'none';
+  if (dp.style.display !== 'none') dp.focus();
+}
+
+function onPaidFromChange(childId) {
+  // При изменении даты начала — скрываем пикер
+  const dp = document.getElementById(`paid_from_${childId}`);
+  if (dp) dp.style.display = 'none';
 }
 
 function confirmDoublePayment(childId) {
@@ -889,7 +921,8 @@ async function acceptPayment(childId) {
     .filter(p => p.paid_until && !p.sessions_paid)
     .sort((a,b) => new Date(b.paid_until) - new Date(a.paid_until))[0];
   const currentPaidUntil = lastPayData?.paid_until || null;
-  const paidUntil = calcPaidUntil(tariff, currentPaidUntil);
+  const paidFrom = calcPaidFrom(tariff, childId);
+  const paidUntil = calcPaidUntil(tariff, currentPaidUntil, paidFrom);
   // sessions_paid — для потренировочного тарифа считаем по сумме
   let sessionsPaid = null;
   if (tariff?.plan_type === 'sessions' && tariff.sessions_limit && tariff.price) {
@@ -908,7 +941,7 @@ async function acceptPayment(childId) {
         club_id: clubId,
         amount: amount,
         payment_type: payType,
-        paid_from: calcPaidFrom(tariff),
+        paid_from: paidFrom,
         paid_until: paidUntil,
         period_label: periodLabel,
         sessions_paid: sessionsPaid,
@@ -955,15 +988,21 @@ function getDefaultPaidUntil() {
   return d.toISOString().split('T')[0];
 }
 
-function calcPaidFrom(tariff) {
+function calcPaidFrom(tariff, childId) {
   if (!tariff) return null;
-  // Начало выбранного месяца — форматируем без UTC чтобы не сдвинуть дату
+  if (tariff.plan_type === 'days' && childId) {
+    // Для days — берём дату из поля (или сегодня)
+    const dp = document.getElementById(`paid_from_${childId}`);
+    if (dp?.value) return dp.value;
+    return new Date().toISOString().split('T')[0];
+  }
+  // Для monthly/free — начало выбранного месяца
   const y = currentYear;
   const m = String(currentMonth).padStart(2, '0');
   return `${y}-${m}-01`;
 }
 
-function calcPaidUntil(tariff, currentPaidUntil) {
+function calcPaidUntil(tariff, currentPaidUntil, currentPaidFrom) {
   if (!tariff) return null;
   if (tariff.plan_type === 'free') return null;
   const today = new Date(); today.setHours(0,0,0,0);
@@ -990,8 +1029,14 @@ function calcPaidUntil(tariff, currentPaidUntil) {
     return null;
   }
   if (tariff.plan_type === 'days' && tariff.duration_days) {
-    const d = new Date(base.getTime() + tariff.duration_days * 86400000);
-    return d.toISOString().split('T')[0];
+    // Для days — считаем от paid_from (не от base)
+    const pf = currentPaidFrom ? new Date(currentPaidFrom) : base;
+    const d = new Date(pf.getTime() + tariff.duration_days * 86400000);
+    // Форматируем без UTC
+    const dy = d.getFullYear();
+    const dm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    return `${dy}-${dm}-${dd}`;
   }
   if (tariff.plan_type === 'single') {
     return today.toISOString().split('T')[0];
@@ -1054,25 +1099,58 @@ async function deletePayment(paymentId, childId) {
 // ============================
 async function loadStats() {
   try {
+    // Загружаем ВСЕ платежи директора (без фильтра месяца — считаем пропорционально)
     const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'list',
-        data: { month: currentMonth, year: currentYear } }) });
+      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: {} }) });
     const d = await r.json();
-    const payments = Array.isArray(d) ? d : (d.merged || []);
-    const valid = payments.filter(p => p.status !== 'deleted' && p.amount);
+    const allPayments = (Array.isArray(d) ? d : (d.merged || [])).filter(p => p.status !== 'deleted' && p.child_id);
 
-    const collected = valid.reduce((s, p) => s + parseFloat(p.amount || 0), 0);
+    // Границы выбранного месяца
+    const mStart = new Date(currentYear, currentMonth - 1, 1);
+    const mEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59);
+
+    // Пропорциональный расчёт собранного за месяц
+    let collected = 0;
+    allPayments.forEach(p => {
+      if (!p.amount) return;
+      const amount = parseFloat(p.amount);
+      if (!p.paid_from || !p.paid_until) {
+        // Нет дат — проверяем попадает ли paid_at в месяц
+        const pa = new Date(p.paid_at);
+        if (pa >= mStart && pa <= mEnd) collected += amount;
+        return;
+      }
+      const pf = new Date(p.paid_from);
+      const pu = new Date(p.paid_until);
+      // Пересечение периода платежа с выбранным месяцем
+      const overlapStart = Math.max(pf.getTime(), mStart.getTime());
+      const overlapEnd = Math.min(pu.getTime(), mEnd.getTime());
+      if (overlapEnd < overlapStart) return; // нет пересечения
+      const totalDays = Math.round((pu - pf) / 86400000) + 1;
+      const overlapDays = Math.round((overlapEnd - overlapStart) / 86400000) + 1;
+      collected += Math.round(amount * overlapDays / totalDays);
+    });
     document.getElementById('statCollected').textContent = formatMoney(collected);
 
-    // Считаем должников — спортсмены у которых paid_until < сегодня или нет оплат
+    // Должники и активные — относительно выбранного месяца
     const today = new Date(); today.setHours(0,0,0,0);
-    const paidMap = {};
-    const allPay = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: {} }) });
-    const allPayD = await allPay.json();
-    const allPayArr = Array.isArray(allPayD) ? allPayD : (allPayD.merged || []);
-    allPayArr.filter(p => p.status !== 'deleted' && p.paid_until).forEach(p => {
-      if (!paidMap[p.child_id] || p.paid_until > paidMap[p.child_id]) paidMap[p.child_id] = p.paid_until;
+    const nowM = today.getMonth() + 1;
+    const nowY = today.getFullYear();
+    const isCurrentMonth = (currentMonth === nowM && currentYear === nowY);
+
+    // Строим map child_id -> активен ли в выбранном месяце
+    const activeMap = {};
+    allPayments.forEach(p => {
+      if (!p.paid_from) return;
+      const pf = new Date(p.paid_from);
+      // Льгота
+      if (!p.paid_until && p.period_label === 'Льгота') {
+        if (pf >= mStart && pf <= mEnd) activeMap[p.child_id] = true;
+        return;
+      }
+      if (!p.paid_until) return;
+      const pu = new Date(p.paid_until);
+      if (pf <= mEnd && pu >= mStart) activeMap[p.child_id] = true;
     });
 
     // Все спортсмены директора
@@ -1081,17 +1159,13 @@ async function loadStats() {
     const dc = await rc.json();
     const children = Array.isArray(dc) ? dc : (dc.merged || []);
 
-    let debtors = 0, active = 0, debtAmount = 0;
+    let debtors = 0, active = 0;
     children.forEach(c => {
-      const pu = paidMap[c.id];
-      if (!pu || new Date(pu) < today) {
-        debtors++;
-      } else {
-        active++;
-      }
+      if (activeMap[c.id]) active++;
+      else debtors++;
     });
 
-    document.getElementById('statDebt').textContent = formatMoney(debtAmount);
+    document.getElementById('statDebt').textContent = '—';
     document.getElementById('statDebtors').textContent = debtors;
     document.getElementById('statActive').textContent = active;
   } catch(e) { console.error(e); }
