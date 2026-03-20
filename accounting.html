@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти1</button>
+      <button class="btn-logout" onclick="logout()">Выйти</button>
     </div>
   </div>
 </header>
@@ -1022,8 +1022,12 @@ function calcPaidUntil(tariff, currentPaidUntil, currentPaidFrom) {
     ? new Date(currentPaidUntil) : today;
 
   if (tariff.plan_type === 'monthly') {
-    const d = new Date(base.getFullYear(), base.getMonth() + 2, 0);
-    return d.toISOString().split('T')[0];
+    // Конец текущего месяца от base
+    const d = new Date(base.getFullYear(), base.getMonth() + 1, 0);
+    const dy = d.getFullYear();
+    const dm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    return `${dy}-${dm}-${dd}`;
   }
   if (tariff.plan_type === 'sessions') {
     return null;
