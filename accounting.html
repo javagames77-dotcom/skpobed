@@ -502,9 +502,9 @@ async function loadGroupAthletes() {
     const dp = await rp.json();
     const payments = Array.isArray(dp) ? dp : (dp.merged || []);
 
-    // Загружаем paid_until для каждого спортсмена (последний платёж)
+    // Загружаем ВСЕ платежи спортсменов клуба (общий кошелёк — без фильтра группы)
     const rpAll = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: { group_id: currentGroupId } }) });
+      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: { club_id: currentGroupData?.club_id } }) });
     const dpAll = await rpAll.json();
     const allPayments = Array.isArray(dpAll) ? dpAll : (dpAll.merged || []);
 
@@ -556,7 +556,7 @@ function renderTable() {
   // Тарифные опции для каждого спортсмена
   const tariffOptions = '<option value="">— тариф —</option>' +
     groupTariffs.map(t => {
-      const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
+      const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
       return `<option value="${t.id}">${icon} ${t.name} — ${t.price}грн</option>`;
     }).join('');
 
@@ -634,7 +634,7 @@ function renderTable() {
     const rowTariffSel = `<select class="pay-type-select" id="tariff_${athlete.id}" 
       onchange="onRowTariffChange(${athlete.id})" style="max-width:140px;font-size:.78rem">
       ${groupTariffs.map(t => {
-        const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
+        const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
         return `<option value="${t.id}" ${t.id == lastTariffId ? 'selected' : ''}>${icon} ${t.name}</option>`;
       }).join('')}
       <option value="" ${!lastTariffId ? 'selected' : ''}>— тариф —</option>
@@ -729,7 +729,7 @@ async function loadGroupTariffs() {
     const sel = document.getElementById('activeTariff');
     sel.innerHTML = '<option value="">— выберите тариф —</option>' +
       groupTariffs.map(t => {
-        const typeLabel = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
+        const typeLabel = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : '1️⃣';
         return `<option value="${t.id}">${typeLabel} ${t.name} — ${t.price} грн</option>`;
       }).join('');
 
@@ -919,7 +919,7 @@ function buildPeriodLabel(tariff) {
   if (!tariff) return `${getMonthName(currentMonth)} ${currentYear}`;
   const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   if (tariff.plan_type === 'monthly') return `${months[currentMonth-1]} ${currentYear}`;
-  if (tariff.plan_type === 'days') return `${tariff.duration_days} дней`;
+  if (tariff.plan_type === 'days') return `${tariff.duration_days || '?'} дней`;
   if (tariff.plan_type === 'sessions') return `${tariff.sessions_limit} тренировок`;
   if (tariff.plan_type === 'single') return '1 тренировка';
   return `${months[currentMonth-1]} ${currentYear}`;
@@ -1077,7 +1077,7 @@ async function saveTariff() {
   if (!currentGroupData?.club_id) { alert('Нет клуба'); return; }
 
   const data = { name, plan_type: planType, price, club_id: currentGroupData.club_id,
-    duration_days: planType === 'monthly' ? (duration || 30) : null,
+    duration_days: (planType === 'monthly' || planType === 'days') ? (duration || 30) : null,
     sessions_limit: planType === 'sessions' ? sessions : null };
 
   if (editId) data.id = parseInt(editId);
