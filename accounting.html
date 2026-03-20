@@ -313,6 +313,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
                 <th>Статус</th>
                 <th>Период</th>
                 <th>Тариф</th>
+                <th>До</th>
                 <th>Сумма</th>
                 <th>Тип</th>
                 <th></th>
@@ -600,12 +601,12 @@ function renderTable() {
       periodHtml = '<span class="paid-until">—</span>';
     }
 
-    // ---- ЗАЩИТА ОТ ДВОЙНОЙ ОПЛАТЫ ----
-    // Если monthly и paid_until >= конец текущего месяца — блокируем
-    const endOfMonth = new Date(currentYear, currentMonth, 0);
+    // ---- ЗАЩИТА ОТ ДВОЙНОЙ ОПЛАТЫ (глобальная по спортсмену) ----
+    const today2 = new Date(); today2.setHours(0,0,0,0);
+    // Месячный: есть платёж с paid_until >= сегодня
     const isMonthlyPaid = lastPay?.paid_until && !lastPay.sessions_paid &&
-      new Date(lastPay.paid_until) >= endOfMonth;
-    // Если sessions и sessions_left > 0 — предупреждаем
+      new Date(lastPay.paid_until) >= today2;
+    // Потренировочный: есть остаток тренировок
     const hasActiveSessions = lastPay?.sessions_paid &&
       (lastPay.sessions_paid - (parseInt(lastPay.sessions_used) || 0)) > 0;
 
@@ -650,6 +651,11 @@ function renderTable() {
       <td>${statusHtml}</td>
       <td>${periodHtml}</td>
       <td>${rowTariffSel}</td>
+      <td>
+        <input type="date" id="paiduntil_${athlete.id}" 
+          value="${getDefaultPaidUntil()}"
+          style="padding:.35rem .4rem;border:1.5px solid var(--b);border-radius:8px;font-size:.75rem;width:120px;outline:none">
+      </td>
       <td>
         <div class="pay-row">
           <button class="sessions-btn" onclick="addSessions(${athlete.id}, -1)">−</button>
@@ -805,8 +811,11 @@ async function acceptPayment(childId) {
   // Берём тариф из строки спортсмена
   const rowTariffId = document.getElementById(`tariff_${childId}`)?.value;
   const tariff = rowTariffId ? groupTariffs.find(t => t.id == rowTariffId) : null;
-  const paidUntil = calcPaidUntil(tariff);
+  // paid_until берём из поля в строке (пользователь мог изменить)
+  const paidUntilField = document.getElementById(`paiduntil_${childId}`)?.value;
+  const paidUntil = paidUntilField || calcPaidUntil(tariff);
   const periodLabel = buildPeriodLabel(tariff);
+  // sessions_paid — для потренировочного тарифа
   const sessionsPaid = tariff?.plan_type === 'sessions' ? (tariff.sessions_limit || calcSessionsPaid(amount, tariff)) : null;
   const clubId = currentGroupData?.club_id;
 
@@ -856,6 +865,13 @@ async function acceptAll() {
   for (const a of toAccept) {
     await acceptPayment(a.id);
   }
+}
+
+function getDefaultPaidUntil() {
+  // По умолчанию +1 месяц от сегодня
+  const d = new Date();
+  d.setMonth(d.getMonth() + 1);
+  return d.toISOString().split('T')[0];
 }
 
 function calcPaidUntil(tariff) {
