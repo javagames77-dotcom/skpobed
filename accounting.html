@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти</button>
+      <button class="btn-logout" onclick="logout()">Выйти33</button>
     </div>
   </div>
 </header>
@@ -505,9 +505,9 @@ async function loadGroupAthletes() {
     const dp = await rp.json();
     const payments = Array.isArray(dp) ? dp : (dp.merged || []);
 
-    // Загружаем ВСЕ платежи спортсменов клуба (общий кошелёк — без фильтра группы)
+    // Загружаем ВСЕ платежи спортсменов группы (общий кошелёк — без фильтра клуба)
     const rpAll = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: { club_id: currentGroupData?.club_id } }) });
+      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: { group_id: currentGroupId } }) });
     const dpAll = await rpAll.json();
     const allPayments = Array.isArray(dpAll) ? dpAll : (dpAll.merged || []);
 
