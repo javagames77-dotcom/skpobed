@@ -313,7 +313,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
                 <th>Статус</th>
                 <th>Период</th>
                 <th>Тариф</th>
-                <th>До</th>
                 <th>Сумма</th>
                 <th>Тип</th>
                 <th></th>
@@ -652,11 +651,6 @@ function renderTable() {
       <td>${periodHtml}</td>
       <td>${rowTariffSel}</td>
       <td>
-        <input type="date" id="paiduntil_${athlete.id}" 
-          value="${getDefaultPaidUntil()}"
-          style="padding:.35rem .4rem;border:1.5px solid var(--b);border-radius:8px;font-size:.75rem;width:120px;outline:none">
-      </td>
-      <td>
         <div class="pay-row">
           <button class="sessions-btn" onclick="addSessions(${athlete.id}, -1)">−</button>
           <input class="amount-input" type="number" id="amount_${athlete.id}"
@@ -811,9 +805,8 @@ async function acceptPayment(childId) {
   // Берём тариф из строки спортсмена
   const rowTariffId = document.getElementById(`tariff_${childId}`)?.value;
   const tariff = rowTariffId ? groupTariffs.find(t => t.id == rowTariffId) : null;
-  // paid_until берём из поля в строке (пользователь мог изменить)
-  const paidUntilField = document.getElementById(`paiduntil_${childId}`)?.value;
-  const paidUntil = paidUntilField || calcPaidUntil(tariff);
+  // paid_until считается автоматически по типу тарифа
+  const paidUntil = calcPaidUntil(tariff);
   const periodLabel = buildPeriodLabel(tariff);
   // sessions_paid — для потренировочного тарифа
   const sessionsPaid = tariff?.plan_type === 'sessions' ? (tariff.sessions_limit || calcSessionsPaid(amount, tariff)) : null;
