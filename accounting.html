@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти77</button>
+      <button class="btn-logout" onclick="logout()">Выйти</button>
     </div>
   </div>
 </header>
@@ -603,15 +603,27 @@ function renderTable() {
         periodHtml = `<span class="paid-until overdue">0 из ${lastPay.sessions_paid}</span>`;
       }
     } else if (lastPay.paid_until) {
-      // Месячный / по дням
+      // Месячный / по дням — статус относительно выбранного месяца
       const paidUntilDate = new Date(lastPay.paid_until);
-      const diffDays = Math.ceil((paidUntilDate - today) / (1000*60*60*24));
-      if (diffDays >= 0) {
-        statusHtml = '<span class="status-badge status-active">🟢 Активен</span>';
-        const cls = diffDays <= 7 ? 'soon' : '';
-        periodHtml = `<span class="paid-until ${cls}">до ${formatDate(lastPay.paid_until)}</span>`;
+      // Начало выбранного месяца
+      const monthStart = new Date(currentYear, currentMonth - 1, 1);
+      // Конец выбранного месяца
+      const monthEnd = new Date(currentYear, currentMonth, 0);
+      if (paidUntilDate >= monthStart) {
+        // Оплачен в выбранном месяце или позже
+        const diffDaysToday = Math.ceil((paidUntilDate - today) / (1000*60*60*24));
+        const cls = diffDaysToday >= 0 && diffDaysToday <= 7 ? 'soon' : '';
+        const overdue = paidUntilDate < today;
+        if (overdue) {
+          statusHtml = '<span class="status-badge status-overdue">🔴 Просрочен</span>';
+          periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
+        } else {
+          statusHtml = '<span class="status-badge status-active">🟢 Активен</span>';
+          periodHtml = `<span class="paid-until ${cls}">до ${formatDate(lastPay.paid_until)}</span>`;
+        }
       } else {
-        statusHtml = '<span class="status-badge status-overdue">🔴 Просрочен</span>';
+        // paid_until раньше начала выбранного месяца — не оплачен за этот месяц
+        statusHtml = '<span class="status-badge status-overdue">🔴 Не оплачен</span>';
         periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
       }
     } else {
