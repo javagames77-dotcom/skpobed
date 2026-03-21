@@ -356,7 +356,7 @@ body {
     <div class="alert alert-success" id="successAlert"></div>
 
     <div class="role-switcher">
-      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор</button>
+      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор1</button>
       <button type="button" class="role-btn" id="btnAthlete" onclick="switchRole('athlete')">🥋 Спортсмен</button>
     </div>
 
@@ -454,6 +454,8 @@ if (token) {
         window.location.href = '/director-dashboard.html';
       } else if (u.role === 'superadmin') {
         window.location.href = '/superadmin-dashboard.html';
+      } else if (u.role === 'accountant') {
+        window.location.href = '/accounting.html';
       } else {
         window.location.href = '/children-list.html';
       }
@@ -551,6 +553,7 @@ async function handleLogin(event) {
           const role = data.user?.role || 'trainer';
           if (role === 'superadmin') window.location.href = '/superadmin-dashboard.html';
           else if (role === 'director') window.location.href = '/director-dashboard.html';
+          else if (role === 'accountant') window.location.href = '/accounting.html';
           else window.location.href = '/children-list.html';
         }, 1000);
       } else {
