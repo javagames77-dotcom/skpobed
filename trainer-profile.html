@@ -28,7 +28,7 @@ trainer=allUsers.find(t=>t.id==id);
 if(!trainer){alert('Не найден');location.href='/director-dashboard.html';return}
 document.getElementById('name').textContent=`${trainer.first_name} ${trainer.last_name}`;
 document.getElementById('email').textContent=trainer.email;
-if(trainer.qualification)document.getElementById('qualification').textContent=`🏆 ${trainer.qualification}`;
+if(trainer.qualification)document.getElementById('qualification').textContent=`1🏆 ${trainer.qualification}`;
 if(trainer.birth_date)document.getElementById('bd').textContent=new Date(trainer.birth_date).toLocaleDateString('ru-RU');
 if(trainer.photo_url)document.getElementById('photo').src=trainer.photo_url;else document.getElementById('photo').src='https://ui-avatars.com/api/?name='+encodeURIComponent(trainer.first_name+' '+trainer.last_name)+'&background=0066CC&color=fff';
 
