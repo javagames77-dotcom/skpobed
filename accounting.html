@@ -438,7 +438,21 @@ async function loadGroups() {
     const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, resource: 'groups', action: 'list' }) });
     const d = await r.json();
-    allGroups = Array.isArray(d) ? d : (d.merged || []);
+    const allFromServer = Array.isArray(d) ? d : (d.merged || []);
+
+    if (user.role === 'trainer' || user.role === 'accountant') {
+      // Для тренера/бухгалтера — показываем только группы из group_accountants
+      const ra = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, resource: 'group_accountants', action: 'list',
+          data: { user_id: user.id } }) });
+      const da = await ra.json();
+      const accGroups = Array.isArray(da) ? da : (da.merged || []);
+      const accGroupIds = accGroups.map(g => g.group_id).filter(Boolean);
+      allGroups = allFromServer.filter(g => accGroupIds.includes(g.id));
+    } else {
+      allGroups = allFromServer;
+    }
+
     document.getElementById('groupCount').textContent = allGroups.length + ' групп';
     renderGroupList();
     if (user.role === 'director' || user.role === 'accountant') {
