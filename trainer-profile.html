@@ -6,7 +6,7 @@
 <body>
 <div class="header"><div class="header-content"><a href="/" class="logo">InSkill<span style="color:var(--s)">.online</span></a><a href="/director-dashboard.html#trainers" class="btn-back">← Назад</a><a id="statsBtn" href="#" style="padding:.5rem 1rem;background:var(--p);color:#fff;border-radius:6px;text-decoration:none;margin-left:.5rem">📊 Статистика</a></div></div>
 <div class="container">
-<div class="card"><div id="loading" class="loading">Загрузка...</div><div id="content" style="display:none"><div class="profile-header"><div style="position:relative"><img src="https://ui-avatars.com/api/?name=Trainer&background=0066CC&color=fff" class="profile-photo" id="photo"><input type="file" id="photoInput" accept="image/*" style="display:none"><button onclick="document.getElementById('photoInput').click()" style="position:absolute;bottom:0;right:0;background:var(--p);color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.2rem">📷</button></div><div class="profile-info"><h1 id="name"></h1><div id="email" style="color:#666;font-size:1.1rem"></div><div id="qualification" style="color:#666;font-size:1rem;margin-top:0.5rem;font-weight:600"></div><div class="profile-meta"><div class="meta-item"><span class="meta-label">Групп</span><span class="meta-value" id="groupsCount">0</span></div><div class="meta-item"><span class="meta-label">Спортсменов</span><span class="meta-value" id="childrenCount">0</span></div><div class="meta-item"><span class="meta-label">Дата рождения</span><span class="meta-value" id="bd">—</span></div></div></div></div><h2 class="section-title">Группы</h2><div class="groups-grid" id="groups"></div><h2 class="section-title" style="margin-top:2rem">Спортсмены</h2><div style="background:#fff;border-radius:12px;overflow:hidden"><table class="table"><thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th></tr></thead><tbody id="children"></tbody></table></div></div></div>
+<div class="card"><div id="loading" class="loading">Загрузка...</div><div id="content" style="display:none"><div class="profile-header"><div style="position:relative"><img src="https://ui-avatars.com/api/?name=Trainer&background=0066CC&color=fff" class="profile-photo" id="photo"><input type="file" id="photoInput" accept="image/*" style="display:none"><button onclick="document.getElementById('photoInput').click()" style="position:absolute;bottom:0;right:0;background:var(--p);color:#fff;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:1.2rem">📷</button></div><div class="profile-info"><h1 id="name"></h1><div id="email" style="color:#666;font-size:1.1rem"></div><div id="qualification" style="color:#666;font-size:1rem;margin-top:0.5rem;font-weight:600"></div><div class="profile-meta"><div class="meta-item"><span class="meta-label">Групп</span><span class="meta-value" id="groupsCount">0</span></div><div class="meta-item"><span class="meta-label">Спортсменов</span><span class="meta-value" id="childrenCount">0</span></div><div class="meta-item"><span class="meta-label">Дата рождения</span><span class="meta-value" id="bd">—</span></div></div></div></div><h2 class="section-title" id="trainerGroupsTitle">Группы тренера</h2><div class="groups-grid" id="groups"></div><h2 class="section-title" id="accGroupsTitle" style="margin-top:2rem;display:none">Группы для бухгалтерии</h2><div class="groups-grid" id="accGroups" style="display:none"></div><h2 class="section-title" style="margin-top:2rem">Спортсмены</h2><div style="background:#fff;border-radius:12px;overflow:hidden"><table class="table"><thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th></tr></thead><tbody id="children"></tbody></table></div></div></div>
 </div>
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
@@ -17,25 +17,56 @@ document.getElementById('statsBtn').href='/trainer-statistics.html?id='+id;
 let trainer,groups=[],children=[];
 async function load(){
 try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});
-const d=await r.json();
-trainer=(d.merged||d||[]).find(t=>t.id==id);
+// Загружаем тренера или бухгалтера
+const [rT, rA] = await Promise.all([
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})}),
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'accountant'}})})
+]);
+const dT=await rT.json(); const dA=await rA.json();
+const allUsers=[...(dT.merged||dT||[]),...(dA.merged||dA||[])];
+trainer=allUsers.find(t=>t.id==id);
 if(!trainer){alert('Не найден');location.href='/director-dashboard.html';return}
 document.getElementById('name').textContent=`${trainer.first_name} ${trainer.last_name}`;
 document.getElementById('email').textContent=trainer.email;
 if(trainer.qualification)document.getElementById('qualification').textContent=`🏆 ${trainer.qualification}`;
 if(trainer.birth_date)document.getElementById('bd').textContent=new Date(trainer.birth_date).toLocaleDateString('ru-RU');
 if(trainer.photo_url)document.getElementById('photo').src=trainer.photo_url;else document.getElementById('photo').src='https://ui-avatars.com/api/?name='+encodeURIComponent(trainer.first_name+' '+trainer.last_name)+'&background=0066CC&color=fff';
-const rg=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:id}})});
-const dg=await rg.json();
-groups=dg.merged||dg||[];
-console.log('Groups:',groups);
-document.getElementById('groupsCount').textContent=groups.length;
-document.getElementById('groups').innerHTML=groups.length?groups.map(g=>`<div class="group-card"><h3>${g.group_name||g.name}</h3><div style="color:#666">Клуб: ${g.club_name||'—'}</div></div>`).join(''):'<div style="padding:2rem;text-align:center;color:#999">Группы не назначены</div>';
+
+// Загружаем тренерские группы (только для тренеров)
+let trainerGroups=[];
+if(trainer.role==='trainer'){
+  const rg=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:id}})});
+  const dg=await rg.json();
+  trainerGroups=dg.merged||dg||[];
+}
+
+// Загружаем бухгалтерские группы (для всех)
+const rga=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'group_accountants',action:'list',data:{user_id:parseInt(id)}})});
+const dga=await rga.json();
+const accGroups=dga.merged||dga||[];
+
+groups=trainerGroups; // для фильтрации спортсменов
+const totalGroups=trainerGroups.length+accGroups.length;
+document.getElementById('groupsCount').textContent=totalGroups;
+
+// Рендерим группы
+let groupsHtml='';
+if(trainer.role==='trainer'&&trainerGroups.length){
+  groupsHtml+=`<div style="grid-column:1/-1;font-weight:700;color:var(--p);margin-bottom:.5rem">🥋 Тренирует</div>`;
+  groupsHtml+=trainerGroups.map(g=>`<div class="group-card"><h3>${g.group_name||g.name}</h3><div style="color:#666">Клуб: ${g.club_name||'—'}</div></div>`).join('');
+}
+if(accGroups.length){
+  groupsHtml+=`<div style="grid-column:1/-1;font-weight:700;color:#0066CC;margin-top:${trainerGroups.length?'1rem':'0'};margin-bottom:.5rem">💰 Ведёт бухгалтерию</div>`;
+  groupsHtml+=accGroups.map(g=>`<div class="group-card" style="border-color:#cce5ff"><h3>${g.group_name||g.name}</h3><div style="color:#666">Клуб: ${g.club_name||'—'}</div></div>`).join('');
+}
+if(!groupsHtml)groupsHtml='<div style="padding:2rem;text-align:center;color:#999">Группы не назначены</div>';
+document.getElementById('groups').innerHTML=groupsHtml;
+
+// Спортсмены — только из тренерских групп
 const rc=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
 const dc=await rc.json();
 const all=dc.merged||dc||[];
-children=all.filter(c=>c.group_names&&c.group_names!=='Без группы'&&groups.some(g=>c.group_names.includes(g.group_name||g.name)));
+children=all.filter(c=>c.group_names&&c.group_names!=='Без группы'&&trainerGroups.some(g=>c.group_names.includes(g.group_name||g.name)));
 console.log('Children:',children);
 document.getElementById('childrenCount').textContent=children.length;
 document.getElementById('children').innerHTML=children.length?children.map(c=>`<tr><td><img src="${c.photo_url||'https://ui-avatars.com/api/?name='+encodeURIComponent(c.first_name+' '+c.last_name)+'&background=0066CC&color=fff'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${c.id}" style="color:var(--p);font-weight:600">${c.first_name} ${c.last_name}</a></td><td><span class="badge">${c.group_names}</span></td><td>${c.club_names||'—'}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;padding:2rem;color:#999">Спортсменов нет</td></tr>';
