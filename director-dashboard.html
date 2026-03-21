@@ -2,17 +2,14 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Бухгалтерия — InSkill Online</title>
+<title>Директор клуба — InSkill Online</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0;--green:#28a745;--red:#dc3545;--yellow:#ffc107}
+:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
-
-/* HEADER */
 .header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
 .header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
 .logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
@@ -22,1373 +19,1605 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .logo-bar:nth-child(1){height:12px}
 .logo-bar:nth-child(2){height:18px;background:var(--s)}
 .logo-bar:nth-child(3){height:24px;background:var(--s)}
-.badge-role{padding:.25rem .75rem;background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
-.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer;font-size:.9rem}
-.btn-logout:hover{background:#fee2e2;border-color:#dc3545;color:#dc3545}
+.badge-director{padding:.25rem .75rem;background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
+.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer}
+.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
+.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)}
+.tab{padding:1rem 2rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
+.tab.active{color:var(--p);border-bottom-color:var(--p)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
+.page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
+.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:.5rem}
+.filters{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;gap:1rem;flex-wrap:wrap}
+.filter-group{flex:1;min-width:200px}
+.filter-label{display:block;margin-bottom:.5rem;font-size:.85rem;font-weight:600;color:#555;text-transform:uppercase}
+.filter-input,.filter-select{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
+.table-container{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
+.table{width:100%;border-collapse:collapse}
+.table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
+.table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem}
+.table td{padding:1rem;border-bottom:1px solid var(--b)}
+.table tbody tr:hover{background:#f8f9ff}
+.table-actions{display:flex;gap:.5rem}
+.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.btn-edit{background:#e3f2fd;color:var(--p)}
+.btn-delete{background:#ffebee;color:#dc3545}
+.loading{text-align:center;padding:3rem;color:var(--p)}
+.child-photo{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--b)}
+.group-badge{display:inline-block;padding:.35rem .75rem;background:#e3f2fd;color:var(--p);border-radius:20px;font-size:.85rem;font-weight:500}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.modal.active{display:flex}
+.modal-content{background:#fff;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-header{padding:1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:1.5rem;font-weight:700;color:var(--p)}
+.modal-close{width:32px;height:32px;border:none;background:var(--l);border-radius:50%;cursor:pointer;font-size:1.2rem}
+.modal-body{padding:1.5rem}
+.form-group{margin-bottom:1.25rem}
+.form-label{display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem}
+.form-input{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
+.modal-footer{padding:1.5rem;border-top:2px solid var(--b);display:flex;gap:1rem;justify-content:flex-end}
+.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
+.btn-cancel{background:var(--l);color:var(--d)}
+.btn-save{background:var(--s);color:#fff}
+.group-checkbox{display:block;padding:0.5rem;cursor:pointer;border-bottom:1px solid var(--b)}
+.group-checkbox:last-child{border-bottom:none}
+.group-checkbox:hover{background:var(--l)}
+.group-checkbox input{margin-right:0.5rem}
+.tabs{flex-wrap:wrap}
+.color-dot{width:18px;height:18px;border-radius:50%;display:inline-block;border:2px solid rgba(0,0,0,.2);vertical-align:middle;margin-right:4px}
 
-/* LAYOUT */
-.container{max-width:1400px;margin:0 auto;padding:1.5rem 2rem}
-.layout{display:flex;gap:1.5rem;align-items:flex-start}
+.news-empty{padding:3rem;text-align:center;color:#aaa;background:#fff;border-radius:12px}
+.news-empty .big{font-size:3rem;margin-bottom:.5rem}
+.parse-log{background:#1a1a1a;color:#00ff88;border-radius:8px;padding:1rem;font-family:monospace;font-size:.8rem;max-height:200px;overflow-y:auto;margin-top:.75rem;display:none}
 
-/* STATS BAR - только для director/accountant */
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
-.stat-card{background:#fff;border-radius:12px;padding:1.25rem;box-shadow:0 2px 8px rgba(0,0,0,.05);text-align:center}
-.stat-value{font-size:1.8rem;font-weight:800;color:var(--p)}
-.stat-value.red{color:var(--red)}
-.stat-value.green{color:var(--green)}
-.stat-label{font-size:.78rem;color:#888;margin-top:.25rem;font-weight:500;text-transform:uppercase}
+/* ===== NEWS TAB STYLES ===== */
+.news-grid{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start}
+@media(max-width:960px){.news-grid{grid-template-columns:1fr}}
+.news-card{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:1.25rem 1.5rem;margin-bottom:.75rem;border-left:4px solid var(--p);transition:box-shadow .2s,transform .15s;position:relative}
+.news-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.1);transform:translateY(-1px)}
+.news-card.status-added{border-left-color:#28a745;opacity:.75}
+.news-card.status-dismissed{border-left-color:#ccc;opacity:.5}
+.news-card-title{font-size:1rem;font-weight:700;color:var(--d);line-height:1.35;margin-bottom:.5rem}
+.news-card-meta{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.6rem}
+.ntag{display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .6rem;border-radius:10px;font-size:.73rem;font-weight:600}
+.ntag-date{background:#e3f2fd;color:var(--p)}
+.ntag-loc{background:#e8f5e9;color:#2e7d32}
+.ntag-src{background:#f3e5f5;color:#7b1fa2}
+.ntag-fee{background:#fff8e1;color:#e65100}
+.ntag-type{background:#e0f2f1;color:#00695c}
+.ntag-status-new{background:#fff3e0;color:#e65100}
+.ntag-status-processed{background:#e8f5e9;color:#2e7d32}
+.ntag-status-added{background:#e3f2fd;color:var(--p)}
+.ntag-status-dismissed{background:#f5f5f5;color:#aaa}
+.news-card-desc{font-size:.88rem;color:#555;line-height:1.6;margin-bottom:.85rem}
+.news-card-actions{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.btn-make-event{padding:.45rem 1rem;background:var(--s);color:#fff;border:none;border-radius:7px;font-size:.83rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.3rem}
+.btn-make-event:hover{background:#e68900;transform:scale(1.02)}
+.btn-open-src{padding:.45rem .9rem;background:var(--l);border:1px solid var(--b);border-radius:7px;font-size:.83rem;font-weight:600;color:var(--p);text-decoration:none;display:inline-flex;align-items:center;gap:.3rem}
+.btn-open-src:hover{background:#e3ecf7}
+.btn-dismiss-news{padding:.45rem .75rem;background:#ffebee;border:none;border-radius:7px;font-size:.83rem;color:#dc3545;cursor:pointer;display:flex;align-items:center}
+.btn-dismiss-news:hover{background:#ffd0d0}
+.source-card{background:#fff;border-radius:10px;border:1px solid var(--b);padding:1rem 1.1rem;margin-bottom:.6rem;display:flex;align-items:flex-start;gap:.75rem;transition:border-color .2s}
+.source-card:hover{border-color:var(--p)}
+.source-card-body{flex:1;min-width:0}
+.source-card-url{font-size:.85rem;font-weight:700;color:var(--p);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.source-card-prompt{font-size:.78rem;color:#888;margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.source-card-meta{font-size:.75rem;color:#bbb;margin-top:.25rem}
+.source-icon{font-size:1.4rem;line-height:1;flex-shrink:0;margin-top:.1rem}
+.source-actions{display:flex;gap:.35rem;flex-shrink:0}
+.params-section{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:1.25rem}
+.parse-log{background:#111;color:#00e676;border-radius:8px;padding:.9rem;font-family:'Courier New',monospace;font-size:.77rem;max-height:160px;overflow-y:auto;margin-top:.75rem;display:none;line-height:1.5}
+.run-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.3rem;background:linear-gradient(135deg,var(--p),#0052a3);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:.9rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,102,204,.3)}
+.run-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,102,204,.4)}
+.run-btn:disabled{background:#aaa;cursor:not-allowed;box-shadow:none;transform:none}
+.spinner{width:14px;height:14px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:newspin .65s linear infinite;display:none}
+.run-btn.running .spinner{display:block}
+@keyframes newspin{to{transform:rotate(360deg)}}
+.news-stats-bar{display:flex;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap}
+.news-stat{background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.06);padding:.75rem 1.1rem;text-align:center;flex:1;min-width:80px}
+.news-stat-n{font-size:1.6rem;font-weight:800;color:var(--p);line-height:1}
+.news-stat-l{font-size:.72rem;color:#aaa;text-transform:uppercase;font-weight:600;margin-top:.2rem}
+.news-src-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:8px;font-size:.72rem;font-weight:700}
 
-/* SIDEBAR — группы */
-.sidebar{width:260px;flex-shrink:0;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
-.sidebar-title{padding:.85rem 1rem;font-weight:700;font-size:.9rem;background:linear-gradient(135deg,var(--p),#0052a3);color:#fff;display:flex;justify-content:space-between;align-items:center}
-.group-item{padding:.75rem 1rem;cursor:pointer;border-bottom:1px solid #f0f0f0;transition:background .15s;display:flex;flex-direction:column;gap:.2rem}
-.group-item:hover{background:#f0f4ff}
-.group-item.active{background:#e8eeff;border-left:3px solid var(--p)}
-.group-item-name{font-size:.88rem;font-weight:600}
-.group-item-club{font-size:.75rem;color:#888}
-.group-item-stats{display:flex;gap:.5rem;margin-top:.2rem}
-.group-badge-mini{font-size:.7rem;padding:.1rem .4rem;border-radius:8px;font-weight:600}
-.group-badge-green{background:#d4edda;color:#155724}
-.group-badge-red{background:#f8d7da;color:#721c24}
-
-/* MAIN CONTENT */
-.main{flex:1;min-width:0}
-.main-header{background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
-.main-title{font-size:1.1rem;font-weight:700;color:var(--p)}
-.main-actions{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
-
-/* MONTH SELECTOR */
-.month-nav{display:flex;align-items:center;gap:.5rem;background:#f0f4ff;border-radius:8px;padding:.35rem .6rem}
-.month-btn{background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--p);padding:0 .2rem;line-height:1}
-.month-label{font-size:.85rem;font-weight:600;color:var(--p);min-width:110px;text-align:center}
-
-/* TARIFF SELECTOR */
-.tariff-select-wrap{display:flex;align-items:center;gap:.5rem}
-.tariff-select-wrap label{font-size:.82rem;color:#666;white-space:nowrap}
-.tariff-select{padding:.4rem .65rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;font-family:inherit;outline:none;cursor:pointer}
-.tariff-select:focus{border-color:var(--p)}
-
-/* BUTTONS */
-.btn{padding:.5rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .15s}
-.btn-primary{background:var(--p);color:#fff}
-.btn-primary:hover{background:#0052a3}
-.btn-orange{background:var(--s);color:#fff}
-.btn-orange:hover{background:#e68a00}
-.btn-green{background:var(--green);color:#fff}
-.btn-green:hover{background:#1e7e34}
-.btn-ghost{background:#f0f4ff;color:var(--p);border:1.5px solid #c8d8f0}
-.btn-ghost:hover{background:#e0eaff}
-.btn-sm{padding:.35rem .7rem;font-size:.78rem}
-.btn-icon{background:none;border:none;cursor:pointer;padding:.25rem .4rem;border-radius:4px;font-size:.85rem;transition:background .15s}
-.btn-icon:hover{background:#f0f0f0}
-
-/* ACCEPT ALL BUTTON */
-.btn-accept-all{background:linear-gradient(135deg,var(--green),#1e7e34);color:#fff;padding:.5rem 1.1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s}
-.btn-accept-all:hover{opacity:.9;transform:translateY(-1px)}
-
-/* TABLE */
-.table-wrap{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
-.acc-table{width:100%;border-collapse:collapse}
-.acc-table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
-.acc-table th{padding:.75rem .85rem;text-align:left;font-size:.78rem;font-weight:600;text-transform:uppercase;white-space:nowrap}
-.acc-table td{padding:.6rem .85rem;border-bottom:1px solid #f0f2f5;vertical-align:middle}
-.acc-table tbody tr:hover{background:#f8f9ff}
-
-/* ATHLETE ROW */
-.athlete-info{display:flex;align-items:center;gap:.6rem}
-.athlete-photo{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--b);flex-shrink:0}
-.athlete-name{font-size:.88rem;font-weight:600}
-.athlete-sub{font-size:.73rem;color:#888}
-
-/* STATUS BADGE */
-.status-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .6rem;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap}
-.status-active{background:#d4edda;color:#155724}
-.status-overdue{background:#f8d7da;color:#721c24}
-.status-trial{background:#fff3cd;color:#856404}
-.status-expired{background:#e2e3e5;color:#383d41}
-.status-none{background:#f0f0f0;color:#888}
-
-/* PAID UNTIL */
-.paid-until{font-size:.8rem;color:#666;white-space:nowrap}
-.paid-until.soon{color:var(--yellow);font-weight:700}
-.paid-until.overdue{color:var(--red);font-weight:700}
-
-/* PAYMENT ROW INPUT */
-.pay-row{display:flex;align-items:center;gap:.4rem}
-.sessions-ctrl{display:flex;align-items:center;gap:.2rem}
-.sessions-btn{width:24px;height:24px;border-radius:6px;border:1.5px solid var(--b);background:#fff;cursor:pointer;font-size:.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.sessions-btn:hover{border-color:var(--p);background:#f0f4ff}
-.amount-input{width:90px;padding:.4rem .5rem;border:1.5px solid var(--b);border-radius:8px;font-size:.88rem;text-align:center;font-family:inherit;outline:none;transition:border-color .15s}
-.amount-input:focus{border-color:var(--p)}
-.amount-input.filled{border-color:var(--green);background:#f0fff4}
-.pay-type-select{padding:.4rem .5rem;border:1.5px solid var(--b);border-radius:8px;font-size:.78rem;font-family:inherit;outline:none;cursor:pointer}
-.pay-type-select:focus{border-color:var(--p)}
-.comment-input{width:110px;padding:.4rem .5rem;border:1.5px solid var(--b);border-radius:8px;font-size:.78rem;font-family:inherit;outline:none}
-.comment-input:focus{border-color:var(--p)}
-
-/* ACCEPT BTN per row */
-.btn-accept{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.4rem .7rem;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s}
-.btn-accept:hover{background:#1e7e34}
-.btn-accept:disabled{background:#ccc;cursor:not-allowed}
-.btn-accepted{background:#e9f7ef;color:var(--green);border:1.5px solid #a8d5b5;border-radius:8px;padding:.4rem .7rem;font-size:.78rem;font-weight:700;cursor:default;white-space:nowrap}
-
-/* PAYMENT HISTORY */
-.history-row{background:#f8f9ff}
-.history-inner{padding:.5rem .85rem .75rem 3.5rem}
-.history-title{font-size:.75rem;font-weight:700;color:#666;margin-bottom:.4rem;text-transform:uppercase}
-.history-item{display:flex;align-items:center;gap:.75rem;padding:.3rem 0;border-bottom:1px solid #eef;font-size:.8rem}
-.history-item:last-child{border-bottom:none}
-.history-date{color:#666;min-width:80px}
-.history-amount{font-weight:700;color:var(--green);min-width:80px}
-.history-type{color:#888;min-width:60px}
-.history-period{color:var(--p);min-width:100px}
-.history-comment{color:#999;font-style:italic}
-.history-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:.8rem;padding:.1rem .3rem;border-radius:3px}
-.history-del:hover{color:var(--red);background:#fee2e2}
-.no-history{color:#bbb;font-size:.8rem;font-style:italic}
-
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:3rem;color:#aaa}
-.empty-icon{font-size:3rem;margin-bottom:.75rem}
-.empty-text{font-size:.95rem}
-
-/* LOADING */
-.loading{text-align:center;padding:2.5rem;color:var(--p);font-size:.9rem}
-
-/* MODAL */
-.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
-.modal.open{display:flex}
-.modal-box{background:#fff;border-radius:16px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.modal-hdr{padding:1.25rem 1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:1.1rem;font-weight:700;color:var(--p)}
-.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;line-height:1}
-.modal-close:hover{color:var(--red)}
-.modal-body{padding:1.25rem 1.5rem}
-.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--b);display:flex;justify-content:flex-end;gap:.75rem}
-
-/* FORM */
-.form-group{margin-bottom:1rem}
-.form-label{display:block;font-size:.85rem;font-weight:600;color:#555;margin-bottom:.35rem}
-.form-input,.form-select{width:100%;padding:.7rem .9rem;border:1.5px solid var(--b);border-radius:8px;font-size:.9rem;font-family:inherit;outline:none}
-.form-input:focus,.form-select:focus{border-color:var(--p)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
-
-/* TARIFF LIST */
-.tariff-list{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem}
-.tariff-item{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;background:#f8f9ff;border-radius:10px;border:1.5px solid #e0e8f0}
-.tariff-item-info{flex:1}
-.tariff-item-name{font-size:.9rem;font-weight:600}
-.tariff-item-details{font-size:.78rem;color:#888;margin-top:.15rem}
-.tariff-item-price{font-size:1rem;font-weight:800;color:var(--p);margin:0 1rem}
-.tariff-actions{display:flex;gap:.4rem}
-
-/* PLAN TYPE BADGES */
-.plan-monthly{background:#dbeafe;color:#1e3a8a;padding:.15rem .5rem;border-radius:6px;font-size:.72rem;font-weight:700}
-.plan-sessions{background:#dcfce7;color:#14532d;padding:.15rem .5rem;border-radius:6px;font-size:.72rem;font-weight:700}
-.plan-single{background:#fef9c3;color:#713f12;padding:.15rem .5rem;border-radius:6px;font-size:.72rem;font-weight:700}
-
-/* PAID UNTIL SELECTOR in modal */
-.period-options{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem}
-.period-option{display:flex;align-items:center;gap:.6rem;padding:.6rem .85rem;border:1.5px solid var(--b);border-radius:8px;cursor:pointer;transition:all .15s}
-.period-option:hover{border-color:var(--p);background:#f0f4ff}
-.period-option.selected{border-color:var(--p);background:#e8eeff}
-.period-option input[type=radio]{accent-color:var(--p)}
-.period-label{font-size:.88rem;font-weight:500;flex:1}
-.period-date{font-size:.82rem;color:var(--p);font-weight:700}
-
-/* TOOLTIP */
-.tooltip{position:relative;display:inline-block}
-.tooltip-text{visibility:hidden;background:#333;color:#fff;font-size:.75rem;border-radius:6px;padding:.3rem .6rem;position:absolute;bottom:125%;left:50%;transform:translateX(-50%);white-space:nowrap;z-index:10}
-.tooltip:hover .tooltip-text{visibility:visible}
-
-@media(max-width:900px){
-  .layout{flex-direction:column}
-  .sidebar{width:100%}
-  .stats-bar{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:600px){
-  .stats-bar{grid-template-columns:1fr 1fr}
-  .pay-row{flex-wrap:wrap}
-  .comment-input{display:none}
-}
+/* CHAT */
+.msg{max-width:78%;display:flex;flex-direction:column}
+.msg.mine{align-self:flex-end;align-items:flex-end}
+.msg.theirs{align-self:flex-start;align-items:flex-start}
+.msg-sender{font-size:.72rem;color:#888;margin-bottom:.2rem;padding:0 .25rem}
+.msg-bubble{padding:.65rem 1rem;border-radius:18px;font-size:.9rem;line-height:1.5;word-break:break-word}
+.msg.mine .msg-bubble{background:#dbeafe;color:#1e3a8a;border-bottom-right-radius:4px;overflow:hidden}
+.msg.theirs .msg-bubble{background:#f0f2f5;color:#1a1a2e;border-bottom-left-radius:4px;overflow:hidden}
+.msg-bubble img{max-width:220px;border-radius:10px;display:block;cursor:pointer;border:none;outline:none;margin:-.65rem -1rem;width:calc(100% + 2rem);max-width:240px}
+.msg-file-link{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .6rem;background:rgba(255,255,255,.25);border-radius:8px;font-size:.82rem;text-decoration:none;color:inherit;margin-top:.25rem}
+.msg.theirs .msg-file-link{background:rgba(0,0,0,.07)}
+.msg-meta{display:flex;align-items:center;gap:.4rem;margin-top:.2rem;padding:0 .25rem}
+.msg-time{font-size:.68rem;color:#aaa}
+.msg-read{font-size:.7rem;color:#1e3a8a}
+.msg-date-sep{text-align:center;font-size:.75rem;color:#aaa;padding:.5rem 0;position:relative;margin:.25rem 0;align-self:center;width:100%}
+.msg-date-sep span{background:#fff;padding:0 .75rem;position:relative;z-index:1}
+.msg-date-sep::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#e5e7eb}
+.unread-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:9px;font-size:.7rem;font-weight:700;padding:0 5px;margin-left:.35rem;vertical-align:middle}
+.msg-wrap{display:flex;align-items:flex-end;gap:.35rem;max-width:100%}
+.msg.mine .msg-wrap{flex-direction:row-reverse}
+.msg-del{background:none;border:none;cursor:pointer;font-size:.8rem;opacity:.35;padding:2px 4px;border-radius:4px;line-height:1;transition:opacity .15s,background .15s;flex-shrink:0}
+.msg-del:hover{opacity:1;background:#fee2e2}
 </style>
 </head>
 <body>
 
 <header class="header">
-  <div class="header-content">
-    <a class="logo" href="#">
-      <div class="logo-icon">
-        <div class="logo-bars">
-          <div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div>
-        </div>
-      </div>
-      InSkill.online
-    </a>
-    <div style="display:flex;align-items:center;gap:1rem">
-      <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
-      <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
-      <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти33</button>
-    </div>
-  </div>
+<div class="header-content">
+<a href="/" class="logo">
+<div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
+<span>InSkill<span style="color:var(--s)">.online</span></span>
+</a>
+<div style="display:flex;align-items:center;gap:1rem">
+<span class="badge-director">👔 ДИРЕКТОР</span>
+<span id="userName">—</span>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:var(--d);font-weight:600">💰 Бухгалтерия</a>
+<button class="btn-logout" onclick="logout()">Выход</button>
+</div>
+</div>
 </header>
 
 <div class="container">
+<div class="tabs">
+<button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
+<button class="tab" onclick="switchTab('groups')">👥 Группы</button>
+<button class="tab" onclick="switchTab('trainers')">👨‍🏫 Тренеры</button>
+<button class="tab" onclick="switchTab('athletes')">🏃 Все спортсмены</button>
+<button class="tab" onclick="switchTab('belts')">🥋 Пояса/Степени</button>
+<button class="tab" onclick="switchTab('events')">📅 Мероприятия</button>
+<button class="tab" onclick="switchTab('news')">🔍 AI-Новости</button>
+<button class="tab" onclick="switchTab('chat')" id="tabBtnChat">💬 Чат<span class="unread-badge" id="dirChatUnread" style="display:none"></span></button>
+</div>
 
-  <!-- STATS BAR (только director/accountant) -->
-  <div class="stats-bar" id="statsBar" style="display:none">
-    <div class="stat-card">
-      <div class="stat-value green" id="statCollected">—</div>
-      <div class="stat-label">💰 Собрано за месяц</div>
+<!-- CLUBS TAB -->
+<div class="tab-content active" id="tab-clubs">
+<div class="page-header">
+<h1 class="page-title">Мои клубы</h1>
+<button class="btn-add" onclick="addClub()"><span>➕</span><span>Добавить клуб</span></button>
+</div>
+<div class="table-container">
+<div id="loadingClubs" class="loading">Загрузка...</div>
+<table class="table" id="clubsTable" style="display:none">
+<thead><tr><th>Название</th><th>Адрес</th><th>Групп</th><th>Действия</th></tr></thead>
+<tbody id="clubsTableBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- GROUPS TAB -->
+<div class="tab-content" id="tab-groups">
+<div class="page-header">
+<h1 class="page-title">Группы</h1>
+<button class="btn-add" onclick="addGroup()"><span>➕</span><span>Добавить группу</span></button>
+</div>
+<div class="table-container">
+<div id="loadingGroups" class="loading">Загрузка...</div>
+<table class="table" id="groupsTable" style="display:none">
+<thead><tr><th>Название</th><th>Клуб</th><th>Детей</th><th>Тренеров</th><th>Действия</th></tr></thead>
+<tbody id="groupsTableBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- TRAINERS TAB -->
+<div class="tab-content" id="tab-trainers">
+<div class="page-header">
+<h1 class="page-title">Тренеры</h1>
+<button class="btn-add" onclick="addTrainer()"><span>➕</span><span>Добавить тренера</span></button>
+</div>
+<div class="table-container">
+<div id="loadingTrainers" class="loading">Загрузка...</div>
+<table class="table" id="trainersTable" style="display:none">
+<thead><tr><th>ФИО</th><th>Email</th><th>Клуб</th><th>Групп</th><th>Действия</th></tr></thead>
+<tbody id="trainersTableBody"></tbody>
+</table>
+</div>
+</div>
+
+<!-- ATHLETES TAB -->
+<div class="tab-content" id="tab-athletes">
+<div class="page-header">
+<h1 class="page-title">Все спортсмены</h1>
+</div>
+<div class="filters">
+<div class="filter-group">
+<label class="filter-label">Поиск</label>
+<input type="text" class="filter-input" id="athleteSearch" placeholder="Имя...">
+</div>
+<div class="filter-group">
+<label class="filter-label">Клуб</label>
+<select class="filter-select" id="athleteClubFilter"><option value="">Все</option></select>
+</div>
+<div class="filter-group">
+<label class="filter-label">Группа</label>
+<select class="filter-select" id="athleteGroupFilter"><option value="">Все</option></select>
+</div>
+</div>
+<div class="table-container">
+<div id="loadingAthletes" class="loading">Загрузка...</div>
+<table class="table" id="athletesTable" style="display:none">
+<thead><tr><th>Фото</th><th>ФИО</th><th>Группа</th><th>Клуб</th><th>🥋 Пояс / Экзамен</th><th>Действия</th></tr></thead>
+<tbody id="athletesTableBody"></tbody>
+</table>
+</div>
+</div>
+</div>
+
+<!-- BELTS TAB -->
+<div class="tab-content" id="tab-belts">
+<div class="page-header">
+<h1 class="page-title">Пояса и степени</h1>
+<button class="btn-add" onclick="addBelt()"><span>➕</span><span>Добавить степень</span></button>
+</div>
+<div class="table-container">
+<div id="loadingBelts" class="loading" style="display:none">Загрузка...</div>
+<div id="emptyBelts" class="loading" style="display:none">Нет степеней. Добавьте первую.</div>
+<table class="table" id="beltsTable" style="display:none">
+<thead><tr><th>#</th><th>Название</th><th>Цвет</th><th>Мин. срок</th><th>Действия</th></tr></thead>
+<tbody id="beltsTableBody"></tbody>
+</table>
+</div>
+</div>
+
+
+<!-- EVENTS TAB -->
+<div class="tab-content" id="tab-events">
+<div class="page-header">
+<h1 class="page-title">Мероприятия</h1>
+<button class="btn-add" onclick="addEvent()"><span>➕</span><span>Добавить мероприятие</span></button>
+</div>
+<div class="filters">
+<div class="filter-group">
+<label class="filter-label">Клуб</label>
+<select class="filter-select" id="eventClubFilter" onchange="filterEventsByClub()"><option value="">Все клубы</option></select>
+</div>
+</div>
+<div class="table-container">
+<div id="loadingEvents" class="loading" style="display:none">Загрузка...</div>
+<div id="emptyEvents" class="loading" style="display:none">Нет мероприятий. Добавьте первое.</div>
+<table class="table" id="eventsTable" style="display:none">
+<thead><tr><th>Название</th><th>Дата события</th><th>Дедлайн рег.</th><th>Место</th><th>Взнос</th><th>Записалось</th><th>Действия</th></tr></thead>
+<tbody id="eventsTableBody"></tbody>
+</table>
+</div>
+</div>
+
+
+<!-- NEWS TAB -->
+<div class="tab-content" id="tab-news">
+
+<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+  <div>
+    <h1 class="page-title">🤖 AI-Поиск мероприятий</h1>
+    <p style="color:#666;margin-top:.3rem;font-size:.88rem">Автоматический мониторинг источников · Анализ через OpenAI · Одним кликом в план</p>
+  </div>
+  <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
+    <button class="run-btn" id="runParseBtn" onclick="runParsing()">
+      <div class="spinner"></div>
+      <span id="runBtnText">▶ Запустить парсинг</span>
+    </button>
+  </div>
+</div>
+
+<!-- Stats bar -->
+<div class="news-stats-bar" id="newsStatsBar" style="display:none">
+  <div class="news-stat"><div class="news-stat-n" id="nsTotal">0</div><div class="news-stat-l">Всего</div></div>
+  <div class="news-stat"><div class="news-stat-n" id="nsNew" style="color:#e65100">0</div><div class="news-stat-l">Новых</div></div>
+  <div class="news-stat"><div class="news-stat-n" id="nsAdded" style="color:#28a745">0</div><div class="news-stat-l">Добавлено</div></div>
+  <div class="news-stat"><div class="news-stat-n" id="nsSources" style="color:#7b1fa2">0</div><div class="news-stat-l">Источников</div></div>
+</div>
+
+<div class="news-grid">
+
+  <!-- LEFT: news feed -->
+  <div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem">
+      <span style="font-size:.9rem;font-weight:700;color:#555">Найденные мероприятия</span>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <select class="filter-select" id="newsStatusFilter" onchange="filterNews()" style="padding:.4rem .75rem;font-size:.82rem;width:auto">
+          <option value="">Все статусы</option>
+          <option value="new">🆕 Новые</option>
+          <option value="processed">✅ Обработанные</option>
+          <option value="added">📅 Добавлены</option>
+          <option value="dismissed">🚫 Отклонённые</option>
+        </select>
+        <select class="filter-select" id="newsSourceFilter" onchange="filterNews()" style="padding:.4rem .75rem;font-size:.82rem;width:auto">
+          <option value="">Все источники</option>
+        </select>
+        <input type="text" class="filter-input" id="newsSearchInput" oninput="filterNews()" placeholder="Поиск..." style="padding:.4rem .75rem;font-size:.82rem;width:140px">
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-value red" id="statDebt">—</div>
-      <div class="stat-label">🔴 Общий долг</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value red" id="statDebtors">—</div>
-      <div class="stat-label">👥 Должников</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" id="statActive">—</div>
-      <div class="stat-label">✅ Активных</div>
+    <div id="loadingNews" class="loading" style="display:none">Загрузка...</div>
+    <div id="newsCards"></div>
+    <div id="emptyNews" class="news-empty" style="display:none;padding:3rem;text-align:center;color:#aaa;background:#fff;border-radius:12px">
+      <div style="font-size:3rem;margin-bottom:.5rem">🤖</div>
+      <div style="font-weight:600;margin-bottom:.35rem;color:#666">Мероприятий пока не найдено</div>
+      <div style="font-size:.85rem">Добавьте источники и запустите парсинг</div>
     </div>
   </div>
 
-  <div class="layout">
+  <!-- RIGHT: sources + params -->
+  <div style="display:flex;flex-direction:column;gap:1rem">
 
-    <!-- SIDEBAR — группы -->
-    <div class="sidebar">
-      <div class="sidebar-title">
-        <span>📋 Группы</span>
-        <span id="groupCount" style="font-size:.75rem;opacity:.8"></span>
+    <!-- Sources card -->
+    <div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:1.25rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
+        <span style="font-weight:700;color:var(--d)">📡 Источники</span>
+        <button class="btn-add" style="padding:.4rem .9rem;font-size:.8rem" onclick="openSourceModal()">+ Добавить</button>
       </div>
-      <div id="groupList">
-        <div class="loading">Загрузка...</div>
+      <div id="sourcesList"><div style="text-align:center;color:#bbb;padding:1.5rem;font-size:.85rem">Нет источников</div></div>
+    </div>
+
+    <!-- Search params card -->
+    <div class="params-section">
+      <div style="font-weight:700;color:var(--d);margin-bottom:.9rem">⚙️ Параметры поиска</div>
+      <div class="form-group">
+        <label class="form-label">Регион / Город</label>
+        <input type="text" class="form-input" id="searchRegion" placeholder="Полтава, Харків, Київ...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ключевые слова</label>
+        <input type="text" class="form-input" id="searchKeywords" placeholder="борьба, дзюдо, турнир...">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div class="form-group">
+          <label class="form-label">Дата от</label>
+          <input type="date" class="form-input" id="searchDateFrom">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Дата до</label>
+          <input type="date" class="form-input" id="searchDateTo">
+        </div>
+      </div>
+      <button class="btn btn-save" style="width:100%;margin-top:.25rem" onclick="saveSearchParams()">💾 Сохранить параметры</button>
+      <div class="parse-log" id="parseLog"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+
+<!-- MODALS -->
+<div class="modal" id="clubModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2><button class="modal-close" onclick="closeClubModal()">✕</button></div><div class="modal-body"><form id="clubForm" onsubmit="saveClub(event)"><input type="hidden" id="clubId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="clubName" required></div><div class="form-group"><label class="form-label">Адрес</label><input type="text" class="form-input" id="clubAddress" autocomplete="off" oninput="clubAddressInput(this.value)"><div id="clubAddressSuggestions" style="display:none;background:#fff;border:1px solid #ddd;border-radius:8px;max-height:200px;overflow-y:auto;margin-top:2px"></div></div><div id="clubMapDiv" style="height:220px;margin-top:.75rem;border-radius:8px;border:1px solid #ddd;overflow:hidden"></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeClubModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()">Сохранить</button></div></div></div>
+
+<div class="modal" id="groupModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="groupModalTitle">Добавить группу</h2><button class="modal-close" onclick="closeGroupModal()">✕</button></div><div class="modal-body"><form id="groupForm" onsubmit="saveGroup(event)"><input type="hidden" id="groupId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="groupName" required></div><div class="form-group"><label class="form-label">Клуб *</label><select class="form-input" id="groupClubId" required><option value="">Выберите</option></select></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeGroupModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()">Сохранить</button></div></div></div>
+
+<div class="modal" id="trainerModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="trainerModalTitle">Добавить тренера</h2>
+<button class="modal-close" onclick="closeTrainerModal()">✕</button>
+</div>
+<div class="modal-body">
+<form id="trainerForm" onsubmit="saveTrainer(event)">
+<input type="hidden" id="trainerId">
+<div class="form-group">
+<label class="form-label">Email *</label>
+<input type="email" class="form-input" id="trainerEmail" required>
+</div>
+<div class="form-group">
+<label class="form-label">Пароль *</label>
+<input type="password" class="form-input" id="trainerPassword" required>
+<small style="color:#666">Минимум 6 символов</small>
+</div>
+<div class="form-group">
+<label class="form-label">Имя *</label>
+<input type="text" class="form-input" id="trainerFirstName" required>
+</div>
+<div class="form-group">
+<label class="form-label">Фамилия *</label>
+<input type="text" class="form-input" id="trainerLastName" required>
+</div>
+<div class="form-group">
+<label class="form-label">Клуб *</label>
+<select class="form-input" id="trainerClubId" required>
+<option value="">Выберите клуб</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">Дата рождения</label>
+<div style="display:flex;gap:0.75rem">
+<select class="form-input" id="trainerBirthDay" style="flex:1"><option value="">День</option></select>
+<select class="form-input" id="trainerBirthMonth" style="flex:1"><option value="">Месяц</option></select>
+<select class="form-input" id="trainerBirthYear" style="flex:1"><option value="">Год</option></select>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Телефон</label>
+<input type="tel" class="form-input" id="trainerPhone">
+</div>
+<div class="form-group">
+<label class="form-label">Квалификация</label>
+<input type="text" class="form-input" id="trainerQualification">
+</div>
+<div class="form-group">
+<label class="form-label">Группы</label>
+<div id="trainerGroupsCheckboxes" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);padding:1rem;border-radius:8px;background:#f9f9f9"></div>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeTrainerModal()">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('trainerForm').requestSubmit()">Сохранить</button>
+</div>
+</div>
+</div>
+
+<!-- Belt Modal -->
+<div class="modal" id="beltModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="beltModalTitle">Добавить степень</h2><button class="modal-close" onclick="closeBeltModal()">&#x2715;</button></div><div class="modal-body"><form id="beltForm" onsubmit="saveBelt(event)"><input type="hidden" id="beltId"><input type="hidden" id="beltClubId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="beltName" placeholder="Например: Белый пояс, 1-я кю..." required></div><div class="form-group"><label class="form-label">Цвет пояса</label><div style="display:flex;gap:.75rem;align-items:center"><input type="color" id="beltColor" value="#ffffff" style="width:60px;height:44px;border:2px solid var(--b);border-radius:8px;padding:2px;cursor:pointer"><span style="font-size:.9rem;color:#666">Цвет для отображения</span></div></div><div class="form-group"><label class="form-label">Порядковый номер *</label><input type="number" class="form-input" id="beltOrder" min="1" placeholder="1 — первый (начальный)" required></div><div class="form-group"><label class="form-label">⏱ Минимальный срок до следующего экзамена</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem"><div><input type="number" class="form-input" id="beltMinYears" min="0" max="10" value="0" placeholder="0"><small style="color:#888;display:block;margin-top:.25rem">Лет</small></div><div><input type="number" class="form-input" id="beltMinMonths" min="0" max="11" value="0" placeholder="0"><small style="color:#888;display:block;margin-top:.25rem">Месяцев</small></div></div><small style="color:#aaa;margin-top:.35rem;display:block">Спортсмен увидит обратный отсчёт до экзамена</small></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeBeltModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('beltForm').requestSubmit()">Сохранить</button></div></div></div>
+
+
+
+<!-- Source Modal -->
+<div class="modal" id="sourceModal">
+<div class="modal-content" style="max-width:560px">
+<div class="modal-header">
+  <h2 class="modal-title" id="sourceModalTitle">Добавить источник</h2>
+  <button class="modal-close" onclick="closeSourceModal()">&#x2715;</button>
+</div>
+<div class="modal-body">
+<form id="sourceForm" onsubmit="saveSource(event)">
+<input type="hidden" id="sourceId">
+<div class="form-group">
+  <label class="form-label">URL источника *</label>
+  <input type="url" class="form-input" id="sourceUrl" placeholder="https://..." required>
+  <small style="color:#888;margin-top:.3rem;display:block">Сайт, RSS-лента или Telegram-канал (https://t.me/s/channelname)</small>
+</div>
+<div class="form-group">
+  <label class="form-label">Тип источника</label>
+  <select class="form-input" id="sourceType">
+    <option value="website">🌐 Веб-сайт</option>
+    <option value="rss">📡 RSS-лента</option>
+    <option value="telegram">✈️ Telegram-канал</option>
+  </select>
+</div>
+<div class="form-group">
+  <label class="form-label">Промпт для AI *</label>
+  <textarea class="form-input" id="sourcePrompt" rows="4" style="resize:vertical" required placeholder="Найди анонсы соревнований и турниров. Извлеки: название, дату, место, стоимость участия, описание. Верни только реальные мероприятия с датами."></textarea>
+  <small style="color:#888;margin-top:.3rem;display:block">Чем точнее промпт — тем лучше результат AI</small>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+  <div class="form-group">
+    <label class="form-label">Частота парсинга</label>
+    <select class="form-input" id="sourceFrequency">
+      <option value="daily">Ежедневно</option>
+      <option value="weekly">Еженедельно</option>
+      <option value="manual">Только вручную</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Статус</label>
+    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;padding:.75rem;border:2px solid var(--b);border-radius:8px;margin-top:.5rem">
+      <input type="checkbox" id="sourceActive" checked style="width:18px;height:18px;accent-color:var(--p)">
+      <span style="font-size:.9rem;font-weight:600">Активен</span>
+    </label>
+  </div>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-cancel" onclick="closeSourceModal()">Отмена</button>
+  <button class="btn btn-save" onclick="document.getElementById('sourceForm').requestSubmit()">Сохранить</button>
+</div>
+</div>
+</div>
+
+<!-- Event Modal -->
+<div class="modal" id="eventModal">
+<div class="modal-content" style="max-width:680px">
+<div class="modal-header">
+<h2 class="modal-title" id="eventModalTitle">Добавить мероприятие</h2>
+<button class="modal-close" onclick="closeEventModal()">&#x2715;</button>
+</div>
+<div class="modal-body">
+<form id="eventForm" onsubmit="saveEvent(event)">
+<input type="hidden" id="eventId"><input type="hidden" id="pendingNewsId">
+<div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="eventName" required></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+<div class="form-group"><label class="form-label">Дата мероприятия *</label><input type="date" class="form-input" id="eventDate" required></div>
+<div class="form-group"><label class="form-label">Крайний срок регистрации</label><input type="date" class="form-input" id="eventDeadline"></div>
+</div>
+<div class="form-group">
+<label class="form-label">Место проведения</label>
+<input type="text" class="form-input" id="eventLocation" placeholder="Адрес или название места..." oninput="previewMap()">
+<div id="mapPreview" style="margin-top:0.5rem;border-radius:8px;overflow:hidden;display:none">
+<iframe id="mapFrame" width="100%" height="200" frameborder="0" style="border:0;border-radius:8px" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+</div>
+<div class="form-group"><label class="form-label">Описание</label><textarea class="form-input" id="eventDesc" rows="3" style="resize:vertical"></textarea></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+<div class="form-group"><label class="form-label">Бюджет (грн)</label><input type="number" class="form-input" id="eventBudget" min="0" placeholder="0"></div>
+<div class="form-group"><label class="form-label">Сумма взноса (грн)</label><input type="number" class="form-input" id="eventEntryFee" min="0" placeholder="0"></div>
+</div>
+<div class="form-group">
+<label class="form-label">Клуб (для фильтра групп)</label>
+<select class="form-input" id="eventClubIdFilter" onchange="filterEventGroups()"><option value="">Все клубы</option></select>
+</div>
+<div class="form-group">
+<label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
+<span>Группы (видят мероприятие)</span>
+<span style="font-size:.8rem;color:var(--p);cursor:pointer;font-weight:400" onclick="toggleAllGroups(true)">Выбрать все</span>
+</label>
+<div id="eventGroupsCheckboxes" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);padding:0.75rem;border-radius:8px;background:#f9f9f9"></div>
+</div>
+<div class="form-group" id="newsSourceRef" style="display:none">
+  <label class="form-label">📰 Источник (из новости)</label>
+  <a id="newsSourceRefLink" href="#" target="_blank" style="display:block;padding:.6rem .9rem;background:#f0f7ff;border:1px dashed var(--p);border-radius:8px;color:var(--p);font-size:.85rem;word-break:break-all;text-decoration:none">—</a>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeEventModal()">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('eventForm').requestSubmit()">Сохранить</button>
+</div>
+</div>
+</div>
+
+<!-- CHAT TAB -->
+<div class="tab-content" id="tab-chat">
+<div class="page-header" style="max-width:1200px;margin-left:auto;margin-right:auto;margin-bottom:1.5rem">
+  <h1 class="page-title">💬 Чат</h1>
+  <button class="btn-add" onclick="openBroadcast()"><span>📢</span><span>Написать всем</span></button>
+</div>
+<div style="max-width:1200px;margin:0 auto 2rem;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden">
+  <div style="display:flex;height:560px">
+
+    <!-- Сайдбар -->
+    <div style="width:250px;flex-shrink:0;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;background:#fafafa">
+      <div style="padding:.6rem .75rem;border-bottom:1px solid #e5e7eb;font-weight:600;font-size:.85rem;display:flex;justify-content:space-between;align-items:center">
+        <span>Контакты</span>
+        <span id="chatTotalUnread" style="font-size:.75rem;color:#ef4444;font-weight:700"></span>
+      </div>
+      <div style="padding:.4rem .6rem;border-bottom:1px solid #e5e7eb">
+        <input type="text" placeholder="🔍 Поиск..." oninput="filterChatContacts(this.value)"
+          style="width:100%;padding:.35rem .6rem;border:1px solid #e5e7eb;border-radius:6px;font-size:.8rem;box-sizing:border-box;outline:none">
+      </div>
+      <div id="chatContactList" style="flex:1;overflow-y:auto">
+        <div style="text-align:center;padding:2rem;color:#aaa;font-size:.82rem">Загрузка...</div>
       </div>
     </div>
 
-    <!-- MAIN -->
-    <div class="main">
-      <div id="mainEmpty" class="empty-state">
-        <div class="empty-icon">💰</div>
-        <div class="empty-text">Выберите группу слева</div>
+    <!-- Основная область -->
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div id="chatEmpty" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;color:#aaa">
+        <div style="font-size:2.5rem">💬</div>
+        <div style="font-size:.9rem">Выберите контакт</div>
       </div>
-
-      <div id="mainContent" style="display:none">
-
-        <!-- Header группы -->
-        <div class="main-header">
-          <div>
-            <div class="main-title" id="groupTitle">—</div>
-            <div style="font-size:.78rem;color:#888;margin-top:.2rem" id="groupSubtitle"></div>
-          </div>
-          <div class="main-actions">
-            <!-- Навигация по месяцам -->
-            <div class="month-nav">
-              <button class="month-btn" onclick="changeMonth(-1)">‹</button>
-              <span class="month-label" id="monthLabel"></span>
-              <button class="month-btn" onclick="changeMonth(1)">›</button>
-            </div>
-            <!-- Выбор тарифа -->
-            <div class="tariff-select-wrap">
-              <label>Тариф:</label>
-              <select class="tariff-select" id="activeTariff" onchange="onTariffChange()">
-                <option value="">— выберите —</option>
-              </select>
-            </div>
-            <!-- Кнопки -->
-            <button class="btn btn-ghost btn-sm" onclick="fillByTariff()" id="btnFill">📋 По тарифу</button>
-            <button class="btn-accept-all" onclick="acceptAll()" id="btnAcceptAll">✅ Принять все</button>
-            <button class="btn btn-primary btn-sm" onclick="openTariffsModal()" id="btnTariffs">⚙️ Тарифы</button>
-          </div>
+      <div id="chatActiveArea" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+        <div id="chatMainHdr" style="padding:.7rem 1rem;border-bottom:1px solid #e5e7eb;font-weight:700;font-size:.92rem;flex-shrink:0;background:#fff"></div>
+        <div id="chatMsgList" style="flex:1;min-height:0;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.35rem;background:#f9fafb"></div>
+        <div id="chatPreviewBar" style="display:none;padding:.4rem .7rem;background:#f0f2ff;border-top:1px solid #dde0f5;align-items:center;gap:.55rem;font-size:.8rem;flex-shrink:0">
+          <img id="chatPreviewThumb" style="width:36px;height:36px;object-fit:cover;border-radius:6px;display:none">
+          <span id="chatPreviewName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+          <button onclick="clearChatAttach()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:#aaa">✕</button>
         </div>
-
-        <!-- Таблица спортсменов -->
-        <div class="table-wrap">
-          <div id="tableLoading" class="loading" style="display:none">Загрузка...</div>
-          <table class="acc-table" id="accTable" style="display:none">
-            <thead>
-              <tr>
-                <th style="width:28px"></th>
-                <th>Спортсмен</th>
-                <th>Статус</th>
-                <th>Период</th>
-                <th>Тариф</th>
-                <th>Сумма</th>
-                <th>Тип</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="accTableBody"></tbody>
-          </table>
-          <div id="tableEmpty" class="empty-state" style="display:none">
-            <div class="empty-icon">👥</div>
-            <div class="empty-text">В группе нет спортсменов</div>
-          </div>
+        <div style="padding:.6rem .75rem;border-top:1px solid #e5e7eb;display:flex;gap:.45rem;align-items:center;background:#fff;flex-shrink:0">
+          <label style="padding:.5rem .65rem;border:1.5px solid #e5e7eb;border-radius:8px;cursor:pointer;font-size:.95rem;line-height:1;background:#fff">
+            📎<input type="file" id="chatFileInp" accept="image/*,application/pdf" style="display:none" onchange="handleChatFile(this)">
+          </label>
+          <input type="text" id="chatTextarea" placeholder="Написать сообщение..."
+            style="flex:1;padding:.55rem .85rem;border:1.5px solid #e5e7eb;border-radius:9px;font-size:.87rem;font-family:inherit;outline:none"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMsg()}">
+          <button onclick="sendChatMsg()" style="padding:.55rem 1rem;background:#4361ee;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600">➤</button>
         </div>
-
       </div>
     </div>
   </div>
 </div>
+</div>
 
-<!-- MODAL: Тарифные планы -->
-<div class="modal" id="tariffsModal">
-  <div class="modal-box">
-    <div class="modal-hdr">
-      <span class="modal-title">⚙️ Тарифные планы</span>
-      <button class="modal-close" onclick="closeTariffsModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <div id="tariffsList" class="tariff-list"></div>
-      <button class="btn btn-primary" onclick="openAddTariff()">➕ Добавить тариф</button>
-
-      <!-- Форма добавления/редактирования -->
-      <div id="tariffForm" style="display:none;margin-top:1.25rem;padding-top:1.25rem;border-top:1.5px solid var(--b)">
-        <div style="font-size:.9rem;font-weight:700;color:var(--p);margin-bottom:.85rem" id="tariffFormTitle">Новый тариф</div>
-        <input type="hidden" id="tariffEditId">
-        <div class="form-group">
-          <label class="form-label">Название *</label>
-          <input class="form-input" id="tariffName" placeholder="Напр: Месячный абонемент">
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Тип *</label>
-            <select class="form-select" id="tariffType" onchange="onTariffTypeChange()">
-              <option value="monthly">📅 Месячный (до конца месяца)</option>
-              <option value="days">📆 По дням (напр. 30 дней)</option>
-              <option value="sessions">🎯 По тренировкам</option>
-              <option value="single">1️⃣ Разовый</option>
-              <option value="free">🎁 Бесплатно (льгота)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Цена (грн) *</label>
-            <input class="form-input" id="tariffPrice" type="number" min="0" placeholder="1200">
-          </div>
-        </div>
-        <div class="form-row" id="tariffExtraFields">
-          <div class="form-group" id="tariffDurationWrap">
-            <label class="form-label">Дней действия</label>
-            <input class="form-input" id="tariffDuration" type="number" min="1" placeholder="30">
-          </div>
-          <div class="form-group" id="tariffSessionsWrap" style="display:none">
-            <label class="form-label">Количество тренировок</label>
-            <input class="form-input" id="tariffSessions" type="number" min="1" placeholder="10">
-          </div>
-        </div>
-        <div style="display:flex;gap:.75rem;justify-content:flex-end">
-          <button class="btn btn-ghost" onclick="closeTariffForm()">Отмена</button>
-          <button class="btn btn-primary" onclick="saveTariff()">Сохранить</button>
-        </div>
-      </div>
+<!-- Broadcast modal -->
+<div id="broadcastModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:1.5rem;width:480px;max-width:95vw">
+    <h3 style="margin:0 0 1rem">📢 Написать всем спортсменам</h3>
+    <textarea id="broadcastText" style="width:100%;height:100px;padding:.75rem;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:.9rem;box-sizing:border-box;resize:vertical" placeholder="Текст сообщения..."></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:.75rem;margin-top:1rem">
+      <button onclick="closeBroadcast()" style="padding:.6rem 1.2rem;border:1.5px solid #e5e7eb;border-radius:9px;background:#fff;cursor:pointer">Отмена</button>
+      <button onclick="sendBroadcast()" style="padding:.6rem 1.2rem;background:#4361ee;color:#fff;border:none;border-radius:9px;cursor:pointer;font-weight:600">Отправить всем</button>
     </div>
   </div>
 </div>
 
 <script>
-const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
-const token = localStorage.getItem('token');
-let user = null;
-let currentGroupId = null;
-let currentGroupData = null;
-let allGroups = [];
-let groupAthletes = [];
-let groupPayments = {};  // child_id -> last paid_until
-let groupTariffs = [];
-let currentMonth = new Date().getMonth() + 1;
-let currentYear = new Date().getFullYear();
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
+let token=localStorage.getItem('token');
+let user,clubs=[],trainers=[],allAthletes=[],groups=[];
+let belts=[],allBelts=[],events=[];
+if(!token){window.location.href='/';throw new Error('No auth');}
 
-// ============================
-// INIT
-// ============================
-if (!token) window.location.href = '/';
-
-async function init() {
-  user = JSON.parse(localStorage.getItem('user') || '{}');
-  if (!user || !user.role) { window.location.href = '/'; return; }
-
-  const allowed = ['director', 'accountant', 'trainer'];
-  if (!allowed.includes(user.role)) { window.location.href = '/'; return; }
-
-  // UI по роли
-  document.getElementById('userName').textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim();
-  const roleLabels = { director: '👔 ДИРЕКТОР', accountant: '💰 БУХГАЛТЕР', trainer: '🥋 ТРЕНЕР' };
-  document.getElementById('userBadge').textContent = roleLabels[user.role] || user.role;
-
-  // Статистика только для director/accountant
-  if (user.role === 'director' || user.role === 'accountant') {
-    document.getElementById('statsBar').style.display = 'grid';
-    document.getElementById('btnTariffs').style.display = '';
-  } else {
-    document.getElementById('btnTariffs').style.display = 'none';
+function loadUserInfo(){user=JSON.parse(localStorage.getItem('user')||'{}');document.getElementById('userName').textContent=`${user.first_name||''} ${user.last_name||''}`;populateDateSelects()}
+function populateDateSelects(){const d=document.getElementById('trainerBirthDay'),m=document.getElementById('trainerBirthMonth'),y=document.getElementById('trainerBirthYear');for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i;d.appendChild(o)}['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'].forEach((n,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=n;m.appendChild(o)});const cy=new Date().getFullYear();for(let i=cy;i>=1940;i--){const o=document.createElement('option');o.value=i;o.textContent=i;y.appendChild(o)}}
+function switchTab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));event.target.classList.add('active');document.getElementById(`tab-${t}`).classList.add('active');if(t==='trainers'&&trainers.length===0)loadTrainers();if(t==='athletes'&&allAthletes.length===0)loadAthletes();if(t==='groups'&&groups.length===0)loadGroups();if(t==='belts'&&allBelts.length===0)loadBelts();if(t==='events'&&allEvents.length===0)loadEvents();if(t==='news'&&!newsLoaded){loadSources();loadNews();loadSearchParams();} else if(t==='news'){loadSearchParams();} if(t==='chat')initChat();}
+async function loadClubs(){try{document.getElementById('loadingClubs').style.display='block';document.getElementById('clubsTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list'})});let d=await r.json();clubs=d.merged||d||[];document.getElementById('loadingClubs').style.display='none';document.getElementById('clubsTable').style.display='table';renderClubsTable();const sel=document.getElementById('groupClubId');sel.innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}catch(e){console.error(e)}}
+function renderClubsTable(){const t=document.getElementById('clubsTableBody');t.innerHTML='';clubs.forEach(c=>{const r=document.createElement('tr');r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></div></td>`;t.appendChild(r)})}
+function addClub(){document.getElementById('clubModalTitle').textContent='Добавить клуб';document.getElementById('clubId').value='';document.getElementById('clubName').value='';const aEl=document.getElementById('clubAddress');aEl.value='';aEl._lat=null;aEl._lng=null;openClubModal();}
+function editClub(id){const c=clubs.find(x=>x.id===id);if(!c)return;document.getElementById('clubModalTitle').textContent='Редактировать клуб';document.getElementById('clubId').value=c.id;document.getElementById('clubName').value=c.name;const aEl=document.getElementById('clubAddress');aEl.value=c.address||'';aEl._lat=c.lat?parseFloat(c.lat):null;aEl._lng=c.lng?parseFloat(c.lng):null;openClubModal();}
+async function saveClub(e){e.preventDefault();const id=document.getElementById('clubId').value;const name=document.getElementById('clubName').value.trim();const addressEl=document.getElementById('clubAddress');const address=addressEl.value.trim();if(!name){alert('Введите название');return}const data={name,address,director_id:user.id};if(addressEl._lat&&addressEl._lng){data.lat=parseFloat(addressEl._lat);data.lng=parseFloat(addressEl._lng);};try{const a=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:a,data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeClubModal();alert(id?'Клуб обновлен!':'Клуб создан!');await loadClubs()}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
+async function deleteClub(id){if(!confirm('Удалить клуб?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Клуб удален!');await loadClubs()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
+async function loadGroups(){try{document.getElementById('loadingGroups').style.display='block';document.getElementById('groupsTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'list'})});let d=await r.json();groups=d.merged||d||[];const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});const d2=await r2.json();const allChildren=Array.isArray(d2.merged)?d2.merged:(Array.isArray(d2)?d2:[]);groups.forEach(g=>{g.real_children_count=allChildren.filter(c=>c.group_names&&c.group_names!=='Без группы'&&c.group_names.split(', ').includes(g.name)).length;});document.getElementById('loadingGroups').style.display='none';document.getElementById('groupsTable').style.display='table';renderGroupsTable()}catch(e){console.error(e);document.getElementById('loadingGroups').textContent='Ошибка загрузки: '+e.message}}
+function renderGroupsTable(){const t=document.getElementById('groupsTableBody');t.innerHTML='';groups.forEach(g=>{const r=document.createElement('tr');r.innerHTML=`<td><a href="/group-profile.html?id=${g.id}" style="color:var(--p);text-decoration:none;font-weight:600">${g.name}</a></td><td>${g.club_name||'—'}</td><td>${g.real_children_count||0}</td><td>${g.trainers_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteGroup(${g.id})">🗑️</button></div></td>`;t.appendChild(r)})}
+function addGroup(){document.getElementById('groupModalTitle').textContent='Добавить группу';document.getElementById('groupId').value='';document.getElementById('groupName').value='';document.getElementById('groupClubId').value='';openGroupModal()}
+function editGroup(id){const g=groups.find(x=>x.id===id);if(!g)return;document.getElementById('groupModalTitle').textContent='Редактировать группу';document.getElementById('groupId').value=g.id;document.getElementById('groupName').value=g.name;document.getElementById('groupClubId').value=g.club_id;openGroupModal()}
+async function saveGroup(e){e.preventDefault();const id=document.getElementById('groupId').value;const name=document.getElementById('groupName').value.trim();const club_id=document.getElementById('groupClubId').value;if(!name||!club_id){alert('Заполните все поля');return}const data={name,club_id:parseInt(club_id),schedule:'[]'};try{const a=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:a,data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeGroupModal();alert(id?'Группа обновлена!':'Группа создана!');await loadGroups()}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
+async function deleteGroup(id){const group=groups.find(g=>g.id===id);if(!group)return;if(group.real_children_count>0){alert(`Невозможно удалить группу "${group.name}".\nВ группе ${group.real_children_count} детей.\n\nСначала удалите всех детей из группы.`);return}if(!confirm(`Удалить группу "${group.name}"?`))return;try{const r=await fetch('https://primary-production-4b93e.up.railway.app/webhook/delete-group',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,group_id:id})});const res=await r.json();if(res.success){alert('Группа удалена!');await loadGroups();await loadTrainers()}else{alert('Ошибка удаления')}}catch(e){console.error(e);alert('Ошибка: '+e.message)}}
+async function loadTrainers(){try{document.getElementById('loadingTrainers').style.display='block';document.getElementById('trainersTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});let d=await r.json();trainers=Array.isArray(d)?d:(d.merged||[]);console.log('Trainers loaded:',trainers);document.getElementById('loadingTrainers').style.display='none';document.getElementById('trainersTable').style.display='table';renderTrainersTable()}catch(e){console.error('Load trainers error:',e);document.getElementById('loadingTrainers').textContent='Ошибка загрузки: '+e.message;trainers=[]}}
+function renderTrainersTable(){const t=document.getElementById('trainersTableBody');t.innerHTML='';trainers.forEach(tr=>{const clubName=clubs.find(c=>c.id===tr.club_id)?.name||'—';const r=document.createElement('tr');r.innerHTML=`<td><a href="/trainer-profile.html?id=${tr.id}" style="color:var(--p);text-decoration:none;font-weight:600">${tr.first_name} ${tr.last_name}</a></td><td>${tr.email}</td><td>${clubName}</td><td>${tr.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editTrainer(${tr.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteTrainer(${tr.id})">🗑️</button></div></td>`;t.appendChild(r)})}
+async function addTrainer(){document.getElementById('trainerModalTitle').textContent='Добавить тренера';document.getElementById('trainerId').value='';document.getElementById('trainerEmail').value='';document.getElementById('trainerPassword').value='';document.getElementById('trainerPassword').required=true;document.getElementById('trainerFirstName').value='';document.getElementById('trainerLastName').value='';document.getElementById('trainerBirthDay').value='';document.getElementById('trainerBirthMonth').value='';document.getElementById('trainerBirthYear').value='';document.getElementById('trainerPhone').value='';document.getElementById('trainerQualification').value='';document.getElementById('trainerGroupsCheckboxes').innerHTML='';const clubSelect=document.getElementById('trainerClubId');clubSelect.innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');if(groups.length===0)await loadGroups();await loadGroupsForTrainer(null);openTrainerModal()}
+async function editTrainer(id){const t=trainers.find(x=>x.id===id);if(!t)return;document.getElementById('trainerModalTitle').textContent='Редактировать тренера';document.getElementById('trainerId').value=t.id;document.getElementById('trainerEmail').value=t.email;document.getElementById('trainerPassword').value='';document.getElementById('trainerPassword').required=false;document.getElementById('trainerFirstName').value=t.first_name;document.getElementById('trainerLastName').value=t.last_name;if(t.birth_date){const parts=t.birth_date.split('-');if(parts.length===3){document.getElementById('trainerBirthYear').value=parts[0];document.getElementById('trainerBirthMonth').value=parseInt(parts[1]);document.getElementById('trainerBirthDay').value=parseInt(parts[2])}}else{document.getElementById('trainerBirthDay').value='';document.getElementById('trainerBirthMonth').value='';document.getElementById('trainerBirthYear').value=''}document.getElementById('trainerPhone').value=t.phone||'';document.getElementById('trainerQualification').value=t.qualification||'';const clubSelect=document.getElementById('trainerClubId');clubSelect.innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');if(t.club_id){document.getElementById('trainerClubId').value=t.club_id}await loadGroups();await loadGroupsForTrainer(t.id);openTrainerModal()}
+async function loadGroupsForTrainer(trainerId){try{const allGroups=groups||[];let trainerGroupIds=[];if(trainerId){try{const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:trainerId}})});if(r2.ok){const text=await r2.text();if(text){const d2=JSON.parse(text);const trainerGroups=d2.merged||d2||[];trainerGroupIds=trainerGroups.map(tg=>tg.group_id).filter(Boolean);console.log('Trainer groups loaded:',trainerGroupIds)}}}catch(e2){console.error('Error loading trainer groups:',e2)}}if(allGroups.length===0){document.getElementById('trainerGroupsCheckboxes').innerHTML='<p style="color:#999;padding:1rem;text-align:center">Нет доступных групп</p>';return}const html=allGroups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" ${trainerGroupIds.includes(g.id)?'checked':''}>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');document.getElementById('trainerGroupsCheckboxes').innerHTML=html}catch(e){console.error(e);document.getElementById('trainerGroupsCheckboxes').innerHTML='<p style="color:red;padding:1rem">Ошибка загрузки групп</p>'}}
+async function saveTrainer(e){e.preventDefault();const id=document.getElementById('trainerId').value;const email=document.getElementById('trainerEmail').value.trim();const password=document.getElementById('trainerPassword').value;const firstName=document.getElementById('trainerFirstName').value.trim();const lastName=document.getElementById('trainerLastName').value.trim();const club_id=document.getElementById('trainerClubId').value;const day=document.getElementById('trainerBirthDay').value;const month=document.getElementById('trainerBirthMonth').value;const year=document.getElementById('trainerBirthYear').value;const birthDate=(day&&month&&year)?`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`:'';const phone=document.getElementById('trainerPhone').value.trim();const qualification=document.getElementById('trainerQualification').value.trim();const selectedGroups=Array.from(document.querySelectorAll('#trainerGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));if(!club_id){alert('Выберите клуб!');return}if(id){const data={id:parseInt(id),email,first_name:firstName,last_name:lastName,phone,qualification,club_id:parseInt(club_id)};if(birthDate)data.birth_date=birthDate;if(password)data.password=password;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});const text2=await r2.text();let currentGroupIds=[];if(text2){const d2=JSON.parse(text2);const currentGroups=d2.merged||d2||[];currentGroupIds=currentGroups.map(g=>g.group_id).filter(Boolean)}const toRemove=currentGroupIds.filter(gid=>!selectedGroups.includes(gid));const toAdd=selectedGroups.filter(gid=>!currentGroupIds.includes(gid));for(let gid of toRemove){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'remove',data:{trainer_id:parseInt(id),group_id:gid}})})}for(let gid of toAdd){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(id),group_id:gid}})})}closeTrainerModal();alert('Тренер обновлен!');await loadTrainers()}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}else{try{const registerData={action:'register',email,password,role:'trainer',first_name:firstName,last_name:lastName,phone,qualification,club_id:parseInt(club_id)};if(birthDate)registerData.birth_date=birthDate;const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(registerData)});const res=await r.json();if(!r.ok){alert('Ошибка: '+(res.error||'Не удалось создать тренера'));return}let newTrainerId=res.user_id||res.id||res.userId;if(!newTrainerId&&(res.success||res.token)){await new Promise(resolve=>setTimeout(resolve,500));const listRes=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})});const listData=await listRes.json();const allTrainers=listData.merged||listData||[];const newTrainer=allTrainers.find(t=>t.email===email);if(newTrainer){newTrainerId=newTrainer.id}}if(newTrainerId&&selectedGroups.length>0){for(let gid of selectedGroups){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'assign',data:{trainer_id:parseInt(newTrainerId),group_id:gid}})})}}closeTrainerModal();alert('✅ Тренер создан!');await loadTrainers()}catch(err){console.error(err);alert('❌ Ошибка: '+err.message)}}}
+async function deleteTrainer(id){if(!confirm('Удалить тренера?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Тренер удален!');await loadTrainers()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
+async function loadAthletes(){try{document.getElementById('loadingAthletes').style.display='block';document.getElementById('athletesTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});let d=await r.json();allAthletes=Array.isArray(d)?d:(d.merged||[]);console.log('Athletes loaded:',allAthletes);const clubsSet=new Set(allAthletes.map(a=>a.club_names).filter(Boolean));document.getElementById('athleteClubFilter').innerHTML='<option value="">Все</option>'+Array.from(clubsSet).map(c=>`<option value="${c}">${c}</option>`).join('');const groupsSet=new Set();allAthletes.forEach(a=>{if(a.group_names&&a.group_names!=='Без группы'){a.group_names.split(', ').forEach(g=>groupsSet.add(g))}});document.getElementById('athleteGroupFilter').innerHTML='<option value="">Все</option>'+Array.from(groupsSet).map(g=>`<option value="${g}">${g}</option>`).join('');document.getElementById('loadingAthletes').style.display='none';document.getElementById('athletesTable').style.display='table';renderAthletesTable(allAthletes)}catch(e){console.error('loadAthletes error:',e);document.getElementById('loadingAthletes').textContent='Ошибка загрузки: '+e.message;allAthletes=[]}}
+function _beltCountdown(athlete){
+  // athlete must have: current_belt_name, current_belt_color, belt_awarded_at, belt_min_days
+  if(!athlete.current_belt_name) return '<span style="color:#bbb;font-size:.8rem">—</span>';
+  const color=athlete.current_belt_color||'#ccc';
+  const dot=`<span class="color-dot" style="background:${color};width:12px;height:12px;margin-right:3px"></span>`;
+  const beltLabel=`${dot}<span style="font-size:.82rem;font-weight:600">${athlete.current_belt_name}</span>`;
+  const minDays=parseInt(athlete.belt_min_days)||0;
+  if(!minDays||!athlete.belt_awarded_at) return `<div>${beltLabel}</div>`;
+  const awardedAt=new Date(athlete.belt_awarded_at);
+  const now=new Date();
+  const daysPassed=Math.floor((now-awardedAt)/(1000*60*60*24));
+  const daysLeft=minDays-daysPassed;
+  if(daysLeft<=0){
+    return `<div>${beltLabel}<br><span style="color:#28a745;font-size:.75rem;font-weight:600">✅ Можно сдавать!</span></div>`;
   }
+  const months=Math.floor(daysLeft/30);
+  const days=daysLeft%30;
+  let timeStr='';
+  if(months>0) timeStr+=months+'мес ';
+  timeStr+=days+'дн';
+  return `<div>${beltLabel}<br><span style="color:#e65100;font-size:.75rem">⏳ До экзамена: ${timeStr}</span></div>`;
+}
+function renderAthletesTable(data){const t=document.getElementById('athletesTableBody');t.innerHTML='';data.forEach(a=>{const beltCell=_beltCountdown(a);const r=document.createElement('tr');r.innerHTML=`<td><img src="${a.photo_url||'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect width="50" height="50" rx="25" fill="%230066CC"%2F%3E%3Ctext x="50%25" y="55%25" text-anchor="middle" fill="white" font-size="18" font-family="sans-serif" dy=".1em"%3E%3F%3C%2Ftext%3E%3C%2Fsvg%3E'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td>${beltCell}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteAthlete(${a.id})">🗑️</button></div></td>`;t.appendChild(r)})}
+async function deleteAthlete(id){if(!confirm('Удалить спортсмена?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Спортсмен удален!');await loadAthletes()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
+function filterAthletes(){const search=(document.getElementById('athleteSearch')?.value||'').toLowerCase();const club=document.getElementById('athleteClubFilter')?.value||'';const group=document.getElementById('athleteGroupFilter')?.value||'';const filtered=allAthletes.filter(a=>{const name=`${a.first_name} ${a.last_name}`.toLowerCase();if(search&&!name.includes(search))return false;if(club&&a.club_names!==club)return false;if(group&&(!a.group_names||!a.group_names.includes(group)))return false;return true});renderAthletesTable(filtered)}
+document.getElementById('athleteSearch')?.addEventListener('input',filterAthletes);document.getElementById('athleteClubFilter')?.addEventListener('change',filterAthletes);document.getElementById('athleteGroupFilter')?.addEventListener('change',filterAthletes);
+function openClubModal(){document.getElementById('clubModal').classList.add('active');document.body.style.overflow='hidden';const aEl=document.getElementById('clubAddress');setTimeout(()=>initClubMap(aEl._lat||null, aEl._lng||null), 50);}
+function closeClubModal(){document.getElementById('clubModal').classList.remove('active');document.body.style.overflow='';document.getElementById('clubAddressSuggestions').style.display='none';if(_clubMap){_clubMap.remove();_clubMap=null;_clubMarker=null;}}
+let _clubAcTimer=null;
+let _clubMap=null;
+let _clubMarker=null;
 
-  updateMonthLabel();
-  await loadGroups();
+function initClubMap(lat, lng) {
+  const container = document.getElementById('clubMapDiv');
+  if (_clubMap) { _clubMap.remove(); _clubMap=null; _clubMarker=null; }
+  const center = (lat && lng) ? [parseFloat(lat), parseFloat(lng)] : [49.588, 34.551];
+  const zoom = (lat && lng) ? 16 : 12;
+  _clubMap = L.map(container).setView(center, zoom);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(_clubMap);
+  if (lat && lng) {
+    _clubMarker = L.marker([parseFloat(lat), parseFloat(lng)]).addTo(_clubMap);
+  }
+  _clubMap.on('click', function(e) {
+    const la=e.latlng.lat, ln=e.latlng.lng;
+    if (_clubMarker) _clubMarker.setLatLng([la, ln]);
+    else { _clubMarker = L.marker([la, ln], {draggable:true}).addTo(_clubMap); _clubMarker.on('dragend', onMarkerDrag); }
+    document.getElementById('clubAddress')._lat = la;
+    document.getElementById('clubAddress')._lng = ln;
+    reverseGeocode(la, ln);
+  });
+  if (_clubMarker) { _clubMarker.options.draggable=true; _clubMarker.dragging && _clubMarker.dragging.enable(); _clubMarker.on('dragend', onMarkerDrag); }
+  setTimeout(() => _clubMap.invalidateSize(), 100);
 }
 
-// ============================
-// GROUPS
-// ============================
-async function loadGroups() {
+async function reverseGeocode(lat, lng) {
   try {
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'groups', action: 'list' }) });
-    const d = await r.json();
-    const allFromServer = Array.isArray(d) ? d : (d.merged || []);
-
-    if (user.role === 'trainer' || user.role === 'accountant') {
-      // Для тренера/бухгалтера — показываем только группы из group_accountants
-      const ra = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, resource: 'group_accountants', action: 'list',
-          data: { user_id: user.id } }) });
-      const da = await ra.json();
-      const accGroups = Array.isArray(da) ? da : (da.merged || []);
-      const accGroupIds = accGroups.map(g => g.group_id).filter(Boolean);
-      allGroups = allFromServer.filter(g => accGroupIds.includes(g.id));
-    } else {
-      allGroups = allFromServer;
+    const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/geocode', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({lat:lat, lon:lng})});
+    const rd = await r.json();
+    const results = rd.results || rd;
+    if (results && results[0]) {
+      document.getElementById('clubAddress').value = results[0].display_name;
+      document.getElementById('clubAddress')._lat = lat;
+      document.getElementById('clubAddress')._lng = lng;
     }
+  } catch(e) {}
+}
+function onMarkerDrag(e) {
+  const la = e.target.getLatLng().lat, ln = e.target.getLatLng().lng;
+  document.getElementById('clubAddress')._lat = la;
+  document.getElementById('clubAddress')._lng = ln;
+  reverseGeocode(la, ln);
+}
 
-    document.getElementById('groupCount').textContent = allGroups.length + ' групп';
-    renderGroupList();
-    if (user.role === 'director' || user.role === 'accountant') {
-      await loadStats();
+async function clubAddressInput(val) {
+  const box = document.getElementById('clubAddressSuggestions');
+  if (_clubAcTimer) clearTimeout(_clubAcTimer);
+  if (!val || val.length < 3) { box.style.display='none'; return; }
+  _clubAcTimer = setTimeout(async () => {
+    try {
+      const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/geocode', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:val})});
+      const rd = await r.json();
+      const results = rd.results || rd;
+      if (!results.length) { box.style.display='none'; return; }
+      box.style.display = 'block';
+      box.innerHTML = '';
+      results.forEach(res => {
+        const addr = res.address || {};
+        const road = addr.road || addr.pedestrian || addr.footway || '';
+        const house = addr.house_number || '';
+        const city = addr.city || addr.town || addr.village || addr.municipality || '';
+        const parts = [road, house].filter(Boolean).join(' ');
+        const short = parts ? (parts + (city ? ', ' + city : '')) : res.display_name;
+        const div = document.createElement('div');
+        div.innerHTML = '<div style="font-weight:600;font-size:.88rem;color:#222">' + short + '</div>'
+          + '<div style="font-size:.75rem;color:#888;margin-top:1px">' + res.display_name + '</div>';
+        div.style.cssText = 'padding:.55rem .9rem;cursor:pointer;border-bottom:1px solid #f0f0f0';
+        div.onmouseover = () => div.style.background = '#f0f7ff';
+        div.onmouseout = () => div.style.background = '';
+        div.onclick = () => clubSelectAddress(res.display_name, res.lat, res.lon);
+        box.appendChild(div);
+      });
+    } catch(e) { box.style.display='none'; }
+  }, 400);
+}
+
+function clubSelectAddress(name, lat, lng) {
+  const la = parseFloat(lat), ln = parseFloat(lng);
+  document.getElementById('clubAddress').value = name;
+  document.getElementById('clubAddress')._lat = la;
+  document.getElementById('clubAddress')._lng = ln;
+  document.getElementById('clubAddressSuggestions').style.display = 'none';
+  if (_clubMap) {
+    _clubMap.setView([la, ln], 17);
+    if (_clubMarker) _clubMarker.setLatLng([la, ln]);
+    else _clubMarker = L.marker([la, ln]).addTo(_clubMap);
+  }
+}
+function openGroupModal(){document.getElementById('groupModal').classList.add('active');document.body.style.overflow='hidden'}
+function closeGroupModal(){document.getElementById('groupModal').classList.remove('active');document.body.style.overflow=''}
+function openTrainerModal(){document.getElementById('trainerModal').classList.add('active');document.body.style.overflow='hidden'}
+function closeTrainerModal(){document.getElementById('trainerModal').classList.remove('active');document.body.style.overflow='';document.getElementById('trainerPassword').required=true}
+
+// ===== BELTS =====
+async function loadBelts(){
+  document.getElementById('loadingBelts').style.display='block';
+  document.getElementById('beltsTable').style.display='none';
+  document.getElementById('emptyBelts').style.display='none';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:'list'})});
+    const d=await r.json();
+    allBelts=d.merged||d||[];
+    document.getElementById('loadingBelts').style.display='none';
+    filterBelts();
+  }catch(e){document.getElementById('loadingBelts').textContent='Ошибка загрузки'}
+}
+function filterBelts(){
+  belts=allBelts;
+  if(belts.length===0){document.getElementById('emptyBelts').style.display='block';document.getElementById('beltsTable').style.display='none';}
+  else{document.getElementById('emptyBelts').style.display='none';document.getElementById('beltsTable').style.display='table';renderBeltsTable();}
+}
+function formatMinDays(min_days){
+  if(!min_days||min_days<=0) return '—';
+  const years=Math.floor(min_days/365);
+  const months=Math.floor((min_days%365)/30);
+  let parts=[];
+  if(years>0) parts.push(years+'л');
+  if(months>0) parts.push(months+'мес');
+  return parts.length?parts.join(' '):(min_days+'дн');
+}
+function renderBeltsTable(){
+  const t=document.getElementById('beltsTableBody');
+  t.innerHTML='';
+  [...belts].sort((a,b)=>(a.order_index||0)-(b.order_index||0)).forEach(b=>{
+    const dot=b.color?`<span class="color-dot" style="background:${b.color}"></span>`:'';
+    const minDaysStr=formatMinDays(b.min_days);
+    const r=document.createElement('tr');
+    r.innerHTML=`<td>${b.order_index||'—'}</td><td><strong>${b.name}</strong></td><td>${dot}${b.color||'—'}</td><td style="color:${b.min_days>0?'var(--p)':'#aaa'}">${minDaysStr}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editBelt(${b.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteBelt(${b.id})">🗑️</button></div></td>`;
+    t.appendChild(r);
+  });
+}
+function _minDaysToYearsMonths(min_days){
+  const md=min_days||0;
+  const y=Math.floor(md/365);
+  const m=Math.floor((md%365)/30);
+  return{y,m};
+}
+function addBelt(){
+  document.getElementById('beltModalTitle').textContent='Добавить степень';
+  document.getElementById('beltId').value='';
+  document.getElementById('beltClubId').value=clubs[0]?.id||'';
+  document.getElementById('beltName').value='';
+  document.getElementById('beltColor').value='#ffffff';
+  document.getElementById('beltOrder').value='';
+  document.getElementById('beltMinYears').value='0';
+  document.getElementById('beltMinMonths').value='0';
+  openBeltModal();
+}
+function editBelt(id){
+  const b=allBelts.find(x=>x.id===id);if(!b)return;
+  document.getElementById('beltModalTitle').textContent='Редактировать степень';
+  document.getElementById('beltId').value=b.id;
+  document.getElementById('beltClubId').value=b.club_id||'';
+  document.getElementById('beltName').value=b.name;
+  document.getElementById('beltColor').value=b.color||'#ffffff';
+  document.getElementById('beltOrder').value=b.order_index||'';
+  const {y,m}=_minDaysToYearsMonths(b.min_days);
+  document.getElementById('beltMinYears').value=y;
+  document.getElementById('beltMinMonths').value=m;
+  openBeltModal();
+}
+async function saveBelt(e){
+  e.preventDefault();
+  const id=document.getElementById('beltId').value;
+  const name=document.getElementById('beltName').value.trim();
+  const color=document.getElementById('beltColor').value;
+  const order_index=parseInt(document.getElementById('beltOrder').value)||1;
+  const minYears=parseInt(document.getElementById('beltMinYears').value)||0;
+  const minMonths=parseInt(document.getElementById('beltMinMonths').value)||0;
+  const min_days=minYears*365+minMonths*30;
+  // Use club_id from hidden field (set at load), or first club
+  const club_id=document.getElementById('beltClubId').value||clubs[0]?.id;
+  if(!name){alert('Введите название');return}
+  const data={name,color,order_index,min_days};
+  if(club_id) data.club_id=parseInt(club_id);
+  if(id) data.id=parseInt(id);
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:id?'update':'create',data})});
+    const res=await r.json();
+    const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+    if(result&&result.id){closeBeltModal();alert(id?'Степень обновлена!':'Степень добавлена!');await loadBelts();}
+    else{alert('Ошибка: '+(result?.error||JSON.stringify(res)));}
+  }catch(err){alert('Ошибка: '+err.message)}
+}
+async function deleteBelt(id){if(!confirm('Удалить степень?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'belt_grades',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Удалено!');await loadBelts();}else{alert('Ошибка удаления');}}catch(err){alert('Ошибка: '+err.message)}}
+
+// ===== EVENTS =====
+let allEvents=[];
+async function loadEvents(){
+  document.getElementById('loadingEvents').style.display='block';
+  document.getElementById('eventsTable').style.display='none';
+  document.getElementById('emptyEvents').style.display='none';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'events',action:'list'})});
+    const d=await r.json();
+    allEvents=d.merged||d||[];
+    // populate club filter
+    const sel=document.getElementById('eventClubFilter');
+    const done=new Set(Array.from(sel.options).map(o=>o.value));
+    clubs.forEach(c=>{if(!done.has(String(c.id))){const o=document.createElement('option');o.value=c.id;o.textContent=c.name;sel.appendChild(o)}});
+    document.getElementById('loadingEvents').style.display='none';
+    filterEventsByClub();
+  }catch(e){document.getElementById('loadingEvents').textContent='Ошибка загрузки: '+e.message}
+}
+function filterEventsByClub(){
+  const clubId=document.getElementById('eventClubFilter').value;
+  events=clubId?allEvents.filter(ev=>String(ev.club_id)===String(clubId)):allEvents;
+  if(events.length===0){document.getElementById('emptyEvents').style.display='block';document.getElementById('eventsTable').style.display='none';}
+  else{document.getElementById('emptyEvents').style.display='none';document.getElementById('eventsTable').style.display='table';renderEventsTable();}
+}
+function daysLeft(dateStr){
+  if(!dateStr)return null;
+  const diff=Math.ceil((new Date(dateStr)-new Date())/(1000*60*60*24));
+  return diff;
+}
+function renderEventsTable(){
+  const t=document.getElementById('eventsTableBody');t.innerHTML='';
+  events.forEach(ev=>{
+    const dateStr=ev.event_date?new Date(ev.event_date).toLocaleDateString('ru-RU'):'—';
+    const dl=ev.registration_deadline;
+    const dlStr=dl?new Date(dl).toLocaleDateString('ru-RU'):'—';
+    const dlDays=daysLeft(dl);
+    let dlBadge='—';
+    if(dl){
+      if(dlDays<0) dlBadge=`<span style="color:#dc3545;font-size:.8rem;font-weight:600">Закрыта</span>`;
+      else if(dlDays===0) dlBadge=`<span style="color:#ff9800;font-weight:600">Сегодня!</span>`;
+      else dlBadge=`${dlStr} <small style="color:#666">(${dlDays}д)</small>`;
     }
+    const fee=ev.entry_fee?ev.entry_fee+' грн':'—';
+    const reg=ev.registrations_count||0;
+    const location=ev.location?`<br><small style="color:#888">📍 ${ev.location.substring(0,30)}${ev.location.length>30?'...':''}</small>`:'';
+    const r=document.createElement('tr');
+    r.innerHTML=`<td><strong><a href="/event-page.html?id=${ev.id}" style="color:var(--p);text-decoration:none">${ev.title}</a></strong>${location}</td><td>${dateStr}</td><td>${dlBadge}</td><td>${ev.location?`<span style="font-size:.85rem">${ev.location.substring(0,25)}${ev.location.length>25?'...':''}</span>`:'—'}</td><td>${fee}</td><td><span style="font-weight:600;color:${reg>0?'#28a745':'#666'}">${reg}</span></td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editEvent(${ev.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteEvent(${ev.id})">🗑️</button></div></td>`;
+    t.appendChild(r);
+  });
+}
+let mapTimer=null;
+async function previewMap(){
+  const loc=document.getElementById('eventLocation').value.trim();
+  const preview=document.getElementById('mapPreview');
+  const frame=document.getElementById('mapFrame');
+  if(mapTimer)clearTimeout(mapTimer);
+  if(!loc){preview.style.display='none';return;}
+  mapTimer=setTimeout(async()=>{
+    try{
+      // Nominatim geocoding (бесплатно, без ключа)
+      const res=await fetch('https://primary-production-4b93e.up.railway.app/webhook/geocode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:loc})});
+      const rd=await res.json();const data=rd.results||rd;
+      if(data&&data[0]){
+        const lat=parseFloat(data[0].lat),lon=parseFloat(data[0].lon);
+        const d=0.01;
+        frame.src=`https://www.openstreetmap.org/export/embed.html?bbox=${lon-d},${lat-d},${lon+d},${lat+d}&layer=mapnik&marker=${lat},${lon}`;
+        preview.style.display='block';
+      }else{
+        preview.style.display='none';
+      }
+    }catch(e){preview.style.display='none';}
+  },900);
+}
+function filterEventGroups(){
+  const clubId=document.getElementById('eventClubIdFilter').value;
+  const filtered=clubId?groups.filter(g=>String(g.club_id)===String(clubId)):groups;
+  const checked=new Set(Array.from(document.querySelectorAll('#eventGroupsCheckboxes input:checked')).map(cb=>cb.value));
+  document.getElementById('eventGroupsCheckboxes').innerHTML=filtered.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" ${(checked.has(String(g.id))||checked.size===0)?'checked':''}>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');
+}
+function toggleAllGroups(state){
+  document.querySelectorAll('#eventGroupsCheckboxes input[type=checkbox]').forEach(cb=>cb.checked=state);
+}
+async function addEvent(){
+  document.getElementById('eventModalTitle').textContent='Добавить мероприятие';
+  document.getElementById('eventId').value='';
+  document.getElementById('eventName').value='';
+  document.getElementById('eventDate').value='';
+  document.getElementById('eventDeadline').value='';
+  document.getElementById('eventLocation').value='';
+  document.getElementById('eventDesc').value='';
+  document.getElementById('eventBudget').value='';
+  document.getElementById('eventEntryFee').value='';
+  document.getElementById('mapPreview').style.display='none';
+  if(groups.length===0)await loadGroups();
+  // populate club filter in modal
+  const sel=document.getElementById('eventClubIdFilter');
+  sel.innerHTML='<option value="">Все клубы</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  // all groups checked by default
+  document.getElementById('eventGroupsCheckboxes').innerHTML=groups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" checked>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');
+  openEventModal();
+}
+async function editEvent(id){
+  const ev=allEvents.find(x=>x.id===id);if(!ev)return;
+  document.getElementById('eventModalTitle').textContent='Редактировать мероприятие';
+  document.getElementById('eventId').value=ev.id;
+  document.getElementById('eventName').value=ev.title||'';
+  document.getElementById('eventDate').value=ev.event_date?ev.event_date.split('T')[0]:'';
+  document.getElementById('eventDeadline').value=ev.registration_deadline?ev.registration_deadline.split('T')[0]:'';
+  document.getElementById('eventLocation').value=ev.location||'';
+  document.getElementById('eventDesc').value=ev.description||'';
+  document.getElementById('eventBudget').value=ev.budget||'';
+  document.getElementById('eventEntryFee').value=ev.entry_fee||'';
+  // map preview
+  if(ev.location)previewMap();else document.getElementById('mapPreview').style.display='none';
+  if(groups.length===0)await loadGroups();
+  const sel=document.getElementById('eventClubIdFilter');
+  sel.innerHTML='<option value="">Все клубы</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  const selIds=(ev.group_ids||[]).map(Number);
+  document.getElementById('eventGroupsCheckboxes').innerHTML=groups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" ${selIds.includes(g.id)?'checked':''}>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');
+  openEventModal();
+}
+async function saveEvent(e){
+  e.preventDefault();
+  const id=document.getElementById('eventId').value;
+  const newsId=document.getElementById('pendingNewsId')?document.getElementById('pendingNewsId').value:'';
+  const title=document.getElementById('eventName').value.trim();
+  const event_date=document.getElementById('eventDate').value;
+  const registration_deadline=document.getElementById('eventDeadline').value||null;
+  const location=document.getElementById('eventLocation').value.trim();
+  const description=document.getElementById('eventDesc').value.trim();
+  const budget=document.getElementById('eventBudget').value;
+  const entry_fee=document.getElementById('eventEntryFee').value;
+  const group_ids=Array.from(document.querySelectorAll('#eventGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
+  if(!title||!event_date){alert('Заполните обязательные поля');return}
+  const data={title,event_date,registration_deadline,location,description,
+    budget:budget?parseInt(budget):null,
+    entry_fee:entry_fee?parseInt(entry_fee):null,
+    group_ids,created_by:user.id};
+  if(id)data.id=parseInt(id);
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'events',action:id?'update':'create',data})});
+    const res=await r.json();
+    const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+    if(result&&result.id){
+      closeEventModal();
+      // If created from news — mark it as added
+      if(newsId){
+        if(document.getElementById('pendingNewsId')) document.getElementById('pendingNewsId').value='';
+        if(document.getElementById('newsSourceRef')) document.getElementById('newsSourceRef').style.display='none';
+        try{
+          await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({token,resource:'news_items',action:'update',data:{id:parseInt(newsId),status:'added'}})});
+          const item=allNews.find(n=>n.id===parseInt(newsId));
+          if(item){item.status='added';updateNewsStats();filterNews();}
+        }catch(_){}
+      }
+      alert(id?'Мероприятие обновлено!':'Мероприятие создано!');
+      await loadEvents();
+    } else{alert('Ошибка: '+(result?.error||JSON.stringify(res)));}
+  }catch(err){alert('Ошибка: '+err.message)}
+}
+async function deleteEvent(id){
+  if(!confirm('Удалить мероприятие?'))return;
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'events',action:'delete',data:{id}})});
+    const res=await r.json();
+    if(res.success||res.id){alert('Мероприятие удалено!');await loadEvents();}
+    else{alert('Ошибка удаления');}
+  }catch(err){alert('Ошибка: '+err.message)}
+}
+
+// ===== MODAL OPEN/CLOSE for new modals =====
+function openBeltModal(){document.getElementById('beltModal').classList.add('active');document.body.style.overflow='hidden'}
+function closeBeltModal(){document.getElementById('beltModal').classList.remove('active');document.body.style.overflow=''}
+function openEventModal(){document.getElementById('eventModal').classList.add('active');document.body.style.overflow='hidden'}
+function closeEventModal(){document.getElementById('eventModal').classList.remove('active');document.body.style.overflow=''}
+
+// ===== AI NEWS =====
+let allNews=[], allSources=[], newsLoaded=false;
+
+function updateNewsStats(){
+  const total=allNews.length;
+  const nNew=allNews.filter(n=>n.status==='new'||!n.status).length;
+  const nAdded=allNews.filter(n=>n.status==='added').length;
+  document.getElementById('nsTotal').textContent=total;
+  document.getElementById('nsNew').textContent=nNew;
+  document.getElementById('nsAdded').textContent=nAdded;
+  document.getElementById('nsSources').textContent=allSources.length;
+  if(total>0) document.getElementById('newsStatsBar').style.display='flex';
+}
+
+async function loadNews(){
+  document.getElementById('loadingNews').style.display='block';
+  document.getElementById('emptyNews').style.display='none';
+  document.getElementById('newsCards').innerHTML='';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_items',action:'list',data:{director_id:user.id}})});
+    const d=await r.json();
+    allNews=(d.merged||d||[]);
+    // populate source filter
+    const srcSel=document.getElementById('newsSourceFilter');
+    const domains=new Set(allNews.map(n=>n.source_url).filter(Boolean));
+    srcSel.innerHTML='<option value="">Все источники</option>'+
+      [...domains].map(u=>`<option value="${u}">${u.replace(/^https?:\/\//,'').split('/')[0].substring(0,35)}</option>`).join('');
+    document.getElementById('loadingNews').style.display='none';
+    updateNewsStats();
+    filterNews();
+    newsLoaded=true;
+  }catch(e){
+    document.getElementById('loadingNews').style.display='none';
+    document.getElementById('loadingNews').textContent='Ошибка загрузки';
+  }
+}
+
+function filterNews(){
+  const status=document.getElementById('newsStatusFilter').value;
+  const src=document.getElementById('newsSourceFilter').value;
+  const q=(document.getElementById('newsSearchInput').value||'').toLowerCase();
+  let filtered=allNews;
+  if(status) filtered=filtered.filter(n=>(n.status||'new')===status);
+  if(src) filtered=filtered.filter(n=>n.source_url===src);
+  if(q) filtered=filtered.filter(n=>(n.title||'').toLowerCase().includes(q)||(n.description||'').toLowerCase().includes(q));
+  renderNewsCards(filtered);
+}
+
+function renderNewsCards(news){
+  const container=document.getElementById('newsCards');
+  container.innerHTML='';
+  if(!news.length){document.getElementById('emptyNews').style.display='block';return;}
+  document.getElementById('emptyNews').style.display='none';
+  const statusLabel={new:'🆕 Новое',processed:'✅ Обработано',added:'📅 Добавлено',dismissed:'🚫 Отклонено'};
+  const srcIconMap={website:'🌐',rss:'📡',telegram:'✈️'};
+  news.forEach(n=>{
+    const card=document.createElement('div');
+    const st=n.status||'new';
+    card.className=`news-card status-${st}`;
+    const dateStr=n.event_date?new Date(n.event_date).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'}):'';
+    const srcDomain=n.source_url?n.source_url.replace(/^https?:\/\//,'').split('/')[0]:'';
+    const src=allSources.find(s=>s.url===n.source_url);
+    const srcIcon=src?srcIconMap[src.type]||'🔗':'🔗';
+    card.innerHTML=`
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.5rem">
+        <div class="news-card-title">${n.title||'Без названия'}</div>
+        <span class="ntag ntag-status-${st}" style="flex-shrink:0">${statusLabel[st]||st}</span>
+      </div>
+      <div class="news-card-meta">
+        ${dateStr?`<span class="ntag ntag-date">📅 ${dateStr}</span>`:''}
+        ${n.location?`<span class="ntag ntag-loc">📍 ${n.location}</span>`:''}
+        ${srcDomain?`<span class="ntag ntag-src">${srcIcon} ${srcDomain}</span>`:''}
+        ${n.entry_fee?`<span class="ntag ntag-fee">💰 ${n.entry_fee} грн</span>`:''}
+        ${n.event_type?`<span class="ntag ntag-type">${n.event_type}</span>`:''}
+      </div>
+      ${n.description?`<div class="news-card-desc">${n.description.substring(0,240)}${n.description.length>240?'…':''}</div>`:''}
+      <div class="news-card-actions">
+        ${st!=='added'
+          ?`<button class="btn-make-event" onclick="createEventFromNews(${n.id})">📅 Создать мероприятие</button>`
+          :`<span style="color:#28a745;font-weight:600;font-size:.83rem">✅ Уже в плане</span>`}
+        ${n.original_url?`<a href="${n.original_url}" target="_blank" class="btn-open-src">Источник ↗</a>`:
+          n.source_url?`<a href="${n.source_url}" target="_blank" class="btn-open-src">Источник ↗</a>`:''}
+        ${st!=='added'&&st!=='dismissed'
+          ?`<button class="btn-dismiss-news" onclick="dismissNews(${n.id})" title="Отклонить">✕</button>`:''}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+async function dismissNews(newsId){
+  if(!confirm('Отклонить эту новость?'))return;
+  try{
+    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_items',action:'update',data:{id:newsId,status:'dismissed'}})});
+    const item=allNews.find(n=>n.id===newsId);
+    if(item) item.status='dismissed';
+    updateNewsStats();
+    filterNews();
+  }catch(e){alert('Ошибка: '+e.message);}
+}
+
+async function createEventFromNews(newsId){
+  const n=allNews.find(x=>x.id===newsId);
+  if(!n)return;
+  document.getElementById('eventModalTitle').textContent='📅 Создать мероприятие из новости';
+  document.getElementById('eventId').value='';
+  document.getElementById('pendingNewsId').value=newsId;
+  document.getElementById('eventName').value=n.title||'';
+  document.getElementById('eventDate').value=n.event_date?n.event_date.split('T')[0]:'';
+  document.getElementById('eventDeadline').value='';
+  document.getElementById('eventLocation').value=n.location||'';
+  document.getElementById('eventDesc').value=n.description||'';
+  document.getElementById('eventBudget').value='';
+  document.getElementById('eventEntryFee').value=n.entry_fee||'';
+  document.getElementById('mapPreview').style.display='none';
+  if(n.location) setTimeout(previewMap,100);
+  if(groups.length===0) await loadGroups();
+  const sel=document.getElementById('eventClubIdFilter');
+  sel.innerHTML='<option value="">Все клубы</option>'+clubs.map(cl=>`<option value="${cl.id}">${cl.name}</option>`).join('');
+  document.getElementById('eventGroupsCheckboxes').innerHTML=groups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" checked>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');
+  // Show source reference
+  const srcUrl=n.original_url||n.source_url;
+  const refRow=document.getElementById('newsSourceRef');
+  const refLink=document.getElementById('newsSourceRefLink');
+  if(srcUrl){refRow.style.display='block';refLink.href=srcUrl;refLink.textContent=srcUrl;}
+  else refRow.style.display='none';
+  openEventModal();
+}
+
+
+// ── Sources ───────────────────────────────────────────────────────────────────
+async function loadSources(){
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_sources',action:'list',data:{director_id:user.id}})});
+    const d=await r.json();
+    allSources=(d.merged||d||[]).filter(s=>s&&s.id);
+    renderSources();
+    document.getElementById('nsSources').textContent=allSources.length;
+  }catch(e){console.error('loadSources',e);}
+}
+
+function renderSources(){
+  const container=document.getElementById('sourcesList');
+  if(!allSources.length){
+    container.innerHTML='<div style="text-align:center;color:#bbb;padding:1.5rem;font-size:.85rem">Нет источников. Добавьте первый.</div>';
+    return;
+  }
+  const icons={website:'🌐',rss:'📡',telegram:'✈️'};
+  const freqLabel={daily:'Ежедневно',weekly:'Еженедельно',manual:'Вручную'};
+  container.innerHTML=allSources.map(s=>{
+    const url=s.url||'';
+    const displayUrl=url?url.replace(/^https?:\/\//,'').substring(0,45):'(нет URL)';
+    return `<div class="source-card">
+      <div class="source-icon">${icons[s.type]||'🌐'}</div>
+      <div class="source-card-body">
+        <div class="source-card-url" title="${url}">${displayUrl}</div>
+        <div class="source-card-prompt" title="${s.prompt||''}">${s.prompt?s.prompt.substring(0,70)+'…':'Промпт не задан'}</div>
+        <div class="source-card-meta">${freqLabel[s.frequency]||''} · ${s.is_active?'<span style="color:#28a745">✅ Активен</span>':'<span style="color:#aaa">⏸ Неактивен</span>'}</div>
+      </div>
+      <div class="source-actions">
+        <button class="btn-icon btn-edit" onclick="editSource(${s.id})" title="Редактировать">✏️</button>
+        <button class="btn-icon btn-delete" onclick="deleteSource(${s.id})" title="Удалить">🗑️</button>
+      </div>
+    </div>
+  `; }).join('');
+}
+
+function openSourceModal(){
+  document.getElementById('sourceModalTitle').textContent='Добавить источник';
+  document.getElementById('sourceId').value='';
+  document.getElementById('sourceUrl').value='';
+  document.getElementById('sourceType').value='website';
+  document.getElementById('sourcePrompt').value='';
+  document.getElementById('sourceFrequency').value='daily';
+  document.getElementById('sourceActive').checked=true;
+  document.getElementById('sourceModal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeSourceModal(){
+  document.getElementById('sourceModal').classList.remove('active');
+  document.body.style.overflow='';
+}
+function editSource(id){
+  const s=allSources.find(x=>x.id===id);if(!s)return;
+  document.getElementById('sourceModalTitle').textContent='Редактировать источник';
+  document.getElementById('sourceId').value=s.id;
+  document.getElementById('sourceUrl').value=s.url||'';
+  document.getElementById('sourceType').value=s.type||'website';
+  document.getElementById('sourcePrompt').value=s.prompt||'';
+  document.getElementById('sourceFrequency').value=s.frequency||'daily';
+  document.getElementById('sourceActive').checked=!!s.is_active;
+  document.getElementById('sourceModal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+async function saveSource(e){
+  e.preventDefault();
+  const id=document.getElementById('sourceId').value;
+  const url=document.getElementById('sourceUrl').value.trim();
+  const type=document.getElementById('sourceType').value;
+  const prompt=document.getElementById('sourcePrompt').value.trim();
+  const frequency=document.getElementById('sourceFrequency').value;
+  const is_active=document.getElementById('sourceActive').checked;
+  if(!url||!prompt){alert('Заполните URL и промпт');return;}
+  const data={url,type,prompt,frequency,is_active,director_id:user.id};
+  if(id)data.id=parseInt(id);
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_sources',action:id?'update':'create',data})});
+    const res=await r.json();
+    const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+    if(result&&result.id){closeSourceModal();await loadSources();}
+    else alert('Ошибка: '+JSON.stringify(res));
+  }catch(err){alert('Ошибка: '+err.message);}
+}
+async function deleteSource(id){
+  if(!confirm('Удалить источник?'))return;
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_sources',action:'delete',data:{id}})});
+    const res=await r.json();
+    if(res.success||res.id) await loadSources();
+    else alert('Ошибка удаления');
+  }catch(err){alert('Ошибка: '+err.message);}
+}
+
+// ── Search params ─────────────────────────────────────────────────────────────
+function loadSearchParams(){
+  try{
+    const p=JSON.parse(localStorage.getItem('newsSearchParams')||'{}');
+    if(p.region) document.getElementById('searchRegion').value=p.region;
+    if(p.keywords) document.getElementById('searchKeywords').value=p.keywords;
+    if(p.date_from) document.getElementById('searchDateFrom').value=p.date_from;
+    if(p.date_to) document.getElementById('searchDateTo').value=p.date_to;
+  }catch(_){}
+}
+function saveSearchParams(){
+  const p={
+    region:document.getElementById('searchRegion').value,
+    keywords:document.getElementById('searchKeywords').value,
+    date_from:document.getElementById('searchDateFrom').value,
+    date_to:document.getElementById('searchDateTo').value
+  };
+  localStorage.setItem('newsSearchParams',JSON.stringify(p));
+  fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({token,resource:'news_search_params',action:'upsert',data:{...p,director_id:user.id}})})
+    .catch(()=>{});
+  const btn=document.querySelector('#tab-news .btn-save');
+  if(btn){const o=btn.textContent;btn.textContent='✅ Сохранено';setTimeout(()=>btn.textContent=o,1500);}
+}
+
+// ── Run parsing ───────────────────────────────────────────────────────────────
+async function runParsing(){
+  const btn=document.getElementById('runParseBtn');
+  const txt=document.getElementById('runBtnText');
+  const log=document.getElementById('parseLog');
+  btn.disabled=true; btn.classList.add('running');
+  txt.textContent='Парсинг...';
+  log.style.display='block'; log.innerHTML='';
+  const addLog=(msg,color='#00e676')=>{
+    log.innerHTML+=`<div style="color:${color}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+    log.scrollTop=log.scrollHeight;
+  };
+  addLog('🚀 Запуск парсинга...');
+  const active=allSources.filter(s=>s.is_active);
+  addLog(`📡 Активных источников: ${active.length}`,'#aaa');
+  try{
+    const params=JSON.parse(localStorage.getItem('newsSearchParams')||'{}');
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'news_parse',action:'run',
+        data:{director_id:user.id,sources:active,...params}})});
+    const d=await r.json();
+    if(d.success||d.found_count!==undefined){
+      addLog(`✅ Найдено: ${d.found_count||0} новых мероприятий`,'#00e676');
+      addLog(`📊 Источников обработано: ${d.sources_processed||0}`,'#aaa');
+      if(d.errors&&d.errors.length) d.errors.forEach(e=>addLog('⚠️ '+e,'#ffb300'));
+      await loadNews();
+    }else{
+      addLog('❌ Ошибка: '+(d.error||JSON.stringify(d)),'#ff5252');
+    }
+  }catch(e){
+    addLog('❌ '+e.message,'#ff5252');
+  }finally{
+    btn.disabled=false; btn.classList.remove('running');
+    txt.textContent='▶ Запустить парсинг';
+  }
+}
+
+
+// ============================
+// CHAT (DIRECTOR)
+// ============================
+const API2 = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-api';
+let _chatContacts = [], _chatFiltered = [], _chatActiveId = null;
+let _chatInterval = null, _chatAttachFile = null, _chatInited = false, _chatLastMsgId = null, _chatLastMsgCount = 0;
+
+function updateDirChatBadge(n) {
+  const b = document.getElementById('dirChatUnread');
+  if (!b) return;
+  if (n > 0) { b.textContent = n > 99 ? '99+' : n; b.style.display = ''; }
+  else b.style.display = 'none';
+}
+
+async function initChat() {
+  if (_chatInited) return;
+  _chatInited = true;
+  await loadChatContacts();
+  _chatInterval = setInterval(() => {
+    if (_chatActiveId) loadChatMessages(_chatActiveId, false);
+  }, 8000);
+}
+
+async function loadChatContacts() {
+  try {
+    // Загружаем спортсменов
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'children', action:'list'})});
+    const text = await r.text();
+    const d = text ? JSON.parse(text) : [];
+    const athletes = Array.isArray(d) ? d : (d.merged || []);
+
+    // Загружаем все сообщения для счётчиков
+    let allMsgs = [];
+    try {
+      const mr = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token, resource:'messages', action:'list_all', data:{limit:500}})});
+      const mt = await mr.text();
+      const md = mt ? JSON.parse(mt) : [];
+      allMsgs = Array.isArray(md) ? md : (md.merged || []);
+    } catch(e) {}
+
+    _chatContacts = athletes.map(a => {
+      const msgs = allMsgs.filter(m => m.to_child_id === a.id || m.from_child_id === a.id);
+      const last = msgs[msgs.length - 1] || null;
+      const unread = msgs.filter(m => !m.is_read && m.from_child_id !== null).length;
+      return {...a, _lastMsg: last, _unread: unread};
+    });
+
+    _chatFiltered = [..._chatContacts];
+    const total = _chatContacts.reduce((s,c) => s + (c._unread||0), 0);
+    updateDirChatBadge(total);
+    const tot = document.getElementById('chatTotalUnread');
+    if (tot) tot.textContent = total ? total + ' непрочитанных' : '';
+    renderChatContacts();
   } catch(e) { console.error(e); }
 }
 
-function renderGroupList() {
-  const el = document.getElementById('groupList');
-  if (!allGroups.length) {
-    el.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#aaa;font-size:.85rem">Нет групп</div>';
+function renderChatContacts() {
+  const el = document.getElementById('chatContactList');
+  if (!el) return;
+  if (!_chatFiltered.length) {
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:#aaa;font-size:.82rem">Нет спортсменов</div>';
     return;
   }
-  el.innerHTML = allGroups.map(g => `
-    <div class="group-item ${g.id === currentGroupId ? 'active' : ''}" onclick="openGroup(${g.id})">
-      <div class="group-item-name">${g.name}</div>
-      <div class="group-item-club">${g.club_name || '—'}</div>
-    </div>`).join('');
-}
-
-// ============================
-// OPEN GROUP
-// ============================
-async function openGroup(groupId) {
-  currentGroupId = groupId;
-  currentGroupData = allGroups.find(g => g.id === groupId);
-  renderGroupList();
-
-  document.getElementById('mainEmpty').style.display = 'none';
-  document.getElementById('mainContent').style.display = 'block';
-  document.getElementById('groupTitle').textContent = currentGroupData?.name || '—';
-  document.getElementById('groupSubtitle').textContent = currentGroupData?.club_name || '';
-
-  await Promise.all([
-    loadGroupAthletes(),
-    loadGroupTariffs()
-  ]);
-}
-
-// ============================
-// ATHLETES
-// ============================
-async function loadGroupAthletes() {
-  document.getElementById('tableLoading').style.display = 'block';
-  document.getElementById('accTable').style.display = 'none';
-  document.getElementById('tableEmpty').style.display = 'none';
-
-  try {
-    // Загружаем спортсменов группы
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'children', action: 'list' }) });
-    const d = await r.json();
-    const all = Array.isArray(d) ? d : (d.merged || []);
-    // Фильтруем по группе
-    groupAthletes = all.filter(c => {
-      if (!c.group_names || c.group_names === 'Без группы') return false;
-      return c.group_names.split(', ').includes(currentGroupData?.name);
-    });
-
-    // Загружаем платежи за текущий месяц
-    const rp = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'list',
-        data: { group_id: currentGroupId, month: currentMonth, year: currentYear } }) });
-    const dp = await rp.json();
-    const payments = Array.isArray(dp) ? dp : (dp.merged || []);
-
-    // Загружаем ВСЕ платежи спортсменов группы (общий кошелёк — без фильтра клуба)
-    const rpAll = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: { group_id: currentGroupId } }) });
-    const dpAll = await rpAll.json();
-    const allPayments = Array.isArray(dpAll) ? dpAll : (dpAll.merged || []);
-
-    // Строим map child_id -> { paid_until, history, last_type }
-    groupPayments = {};
-    allPayments.forEach(p => {
-      if (!p.child_id) return;
-      if (!groupPayments[p.child_id]) groupPayments[p.child_id] = { history: [], last_type: 'cash' };
-      groupPayments[p.child_id].history.push(p);
-      if (p.paid_until) {
-        if (!groupPayments[p.child_id].paid_until || p.paid_until > groupPayments[p.child_id].paid_until) {
-          groupPayments[p.child_id].paid_until = p.paid_until;
-          groupPayments[p.child_id].last_type = p.payment_type || 'cash';
-        }
-      }
-    });
-
-    document.getElementById('tableLoading').style.display = 'none';
-
-    if (!groupAthletes.length) {
-      document.getElementById('tableEmpty').style.display = 'block';
-      return;
-    }
-
-    document.getElementById('accTable').style.display = 'table';
-    renderTable();
-
-  } catch(e) {
-    console.error(e);
-    document.getElementById('tableLoading').style.display = 'none';
-  }
-}
-
-function renderTable() {
-  const tbody = document.getElementById('accTableBody');
-  const today = new Date();
-  today.setHours(0,0,0,0);
-
-  // Строим map: child_id -> агрегированные данные по всем платежам
-  const lastPayMap = {};
-  Object.keys(groupPayments).forEach(cid => {
-    const pd = groupPayments[cid];
-    if (!pd.history || !pd.history.length) return;
-    
-    const mStart = new Date(currentYear, currentMonth - 1, 1);
-    const mEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59);
-
-    // Платёж активен в месяце если:
-    // - обычный: paid_from <= конец месяца И paid_until >= начало месяца
-    // - льгота (paid_until=null): paid_from в этом месяце
-    const monthPays = pd.history.filter(p => {
-      if (!p.child_id) return false;
-      if (p.sessions_paid) return false;
-      if (!p.paid_from) return false;
-      const pf = new Date(p.paid_from);
-      if (!p.paid_until) {
-        // Льгота — paid_from должен попадать в выбранный месяц
-        return pf >= mStart && pf <= mEnd;
-      }
-      return pf <= mEnd && new Date(p.paid_until) >= mStart;
-    }).sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
-
-    // Потренировочные — берём все (общий кошелёк)
-    const sessionPays = pd.history.filter(p => p.child_id && p.sessions_paid)
-      .sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
-
-    const sorted = monthPays.length ? monthPays : sessionPays;
-    if (!sorted.length) return;
-    const last = sorted[0];
-    
-    // Суммируем все sessions_paid (общий кошелёк тренировок)
-    const totalSessionsPaid = sorted.reduce((sum, p) => sum + (parseInt(p.sessions_paid) || 0), 0);
-    // sessions_used берём из последнего платежа (там считается с первой оплаты)
-    const sessionsUsed = parseInt(last.sessions_used) || 0;
-    
-    // Если есть хоть один потренировочный платёж — используем суммарный счётчик
-    const hasSessionsPay = sorted.some(p => p.sessions_paid);
-    
-    lastPayMap[cid] = {
-      ...last,
-      sessions_paid: hasSessionsPay ? totalSessionsPaid : null,
-      sessions_used: hasSessionsPay ? sessionsUsed : null,
-    };
-  });
-
-  // Тарифные опции для каждого спортсмена
-  const tariffOptions = '<option value="">— тариф —</option>' +
-    groupTariffs.map(t => {
-      const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
-      return `<option value="${t.id}">${icon} ${t.name} — ${t.price}грн</option>`;
-    }).join('');
-
-  // Общий тариф выбранный сверху
-  const globalTariffId = document.getElementById('activeTariff')?.value;
-
-  tbody.innerHTML = groupAthletes.map(athlete => {
-    const lastPay = lastPayMap[athlete.id];
-    const lastType = lastPay?.payment_type || 'cash';
-    const lastTariffId = athlete._lastTariffId || globalTariffId || '';
-
-    // ---- СТАТУС и ПЕРИОД ----
-    let statusHtml = '', periodHtml = '';
-
-    if (!lastPay) {
-      statusHtml = '<span class="status-badge status-none">⚫ Нет оплат</span>';
-      periodHtml = '<span class="paid-until">—</span>';
-    } else if (lastPay.sessions_paid) {
-      // Потренировочный тариф
-      const sessionsLeft = Math.max(0, lastPay.sessions_paid - (parseInt(lastPay.sessions_used) || 0));
-      if (sessionsLeft > 0) {
-        statusHtml = '<span class="status-badge status-active">🎯 По тренировкам</span>';
-        periodHtml = `<span class="paid-until">Осталось: <b>${sessionsLeft}</b> из ${lastPay.sessions_paid}</span>`;
-      } else {
-        statusHtml = '<span class="status-badge status-overdue">🔴 Закончились</span>';
-        periodHtml = `<span class="paid-until overdue">0 из ${lastPay.sessions_paid}</span>`;
-      }
-    } else if (lastPay.paid_until) {
-      const paidUntilDate = new Date(lastPay.paid_until);
-      const monthStart = new Date(currentYear, currentMonth - 1, 1);
-      const monthEnd = new Date(currentYear, currentMonth, 0);
-      const nowM = new Date().getMonth() + 1;
-      const nowY = new Date().getFullYear();
-      const isPastM = (currentYear < nowY) || (currentYear === nowY && currentMonth < nowM);
-
-      if (paidUntilDate >= monthStart) {
-        // Платёж покрывает выбранный месяц
-        if (isPastM) {
-          // Прошлый месяц — всегда "Активен" если paid_until >= начала месяца
-          statusHtml = '<span class="status-badge status-active">🟢 Активен</span>';
-          periodHtml = `<span class="paid-until">до ${formatDate(lastPay.paid_until)}</span>`;
-        } else {
-          // Текущий/будущий — сравниваем с сегодня
-          const diffDays = Math.ceil((paidUntilDate - today) / (1000*60*60*24));
-          const cls = diffDays >= 0 && diffDays <= 7 ? 'soon' : '';
-          if (diffDays >= 0) {
-            statusHtml = '<span class="status-badge status-active">🟢 Активен</span>';
-            periodHtml = `<span class="paid-until ${cls}">до ${formatDate(lastPay.paid_until)}</span>`;
-          } else {
-            statusHtml = '<span class="status-badge status-overdue">🔴 Просрочен</span>';
-            periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
-          }
-        }
-      } else {
-        // paid_until раньше начала выбранного месяца
-        statusHtml = '<span class="status-badge status-overdue">🔴 Не оплачен</span>';
-        periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
-      }
-    } else if (lastPay.period_label === 'Льгота') {
-      statusHtml = '<span class="status-badge" style="background:#dbeafe;color:#1e40af">🎁 Льгота</span>';
-      periodHtml = '<span class="paid-until">Бесплатно</span>';
-    } else {
-      statusHtml = '<span class="status-badge status-trial">🟡 Оплата есть</span>';
-      periodHtml = '<span class="paid-until">—</span>';
-    }
-
-    // ---- ЗАЩИТА ОТ ДВОЙНОЙ ОПЛАТЫ (глобальная по спортсмену) ----
-    const today2 = new Date(); today2.setHours(0,0,0,0);
-    // Месячный: есть платёж с paid_until >= сегодня
-    const isMonthlyPaid = lastPay?.paid_until && !lastPay.sessions_paid &&
-      new Date(lastPay.paid_until) >= today2;
-    // Потренировочный: есть остаток тренировок
-    const hasActiveSessions = lastPay?.sessions_paid &&
-      (lastPay.sessions_paid - (parseInt(lastPay.sessions_used) || 0)) > 0;
-
-    let acceptBtn = '';
-    if (isMonthlyPaid) {
-      acceptBtn = `<button class="btn-accepted" onclick="confirmDoublePayment(${athlete.id})" title="Уже оплачен. Нажмите для доп. платежа">✅ Оплачен</button>`;
-    } else if (hasActiveSessions) {
-      const left = lastPay.sessions_paid - (parseInt(lastPay.sessions_used) || 0);
-      acceptBtn = `<button class="btn-accept" style="background:#f59e0b" id="btn_${athlete.id}" onclick="acceptPayment(${athlete.id})" title="Есть ${left} тренировок. Всё равно принять?">⚠️ Принять</button>`;
-    } else {
-      acceptBtn = `<button class="btn-accept" id="btn_${athlete.id}" onclick="acceptPayment(${athlete.id})">✅ Принять</button>`;
-    }
-
-    // ---- ФОТО ----
-    const photo = athlete.photo_url
-      ? `<img class="athlete-photo" src="${athlete.photo_url}" loading="lazy">`
-      : `<div class="athlete-photo" style="background:var(--p);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.75rem">${(athlete.first_name||'')[0]}${(athlete.last_name||'')[0]}</div>`;
-
-    // ---- ТИП ОПЛАТЫ ----
-    const typeOptions = ['cash','card','bank'].map(t =>
-      `<option value="${t}" ${t === lastType ? 'selected' : ''}>${t === 'cash' ? '💵 Нал' : t === 'card' ? '💳 Карта' : '🏦 Банк'}</option>`
-    ).join('');
-
-    // ---- ТАРИФ В СТРОКЕ ----
-    // Для прошлых месяцев — только monthly и free
-    const nowMonthCheck = new Date().getMonth() + 1;
-    const nowYearCheck = new Date().getFullYear();
-    const isPastMonth = (currentYear < nowYearCheck) || (currentYear === nowYearCheck && currentMonth < nowMonthCheck);
-    const allowedTariffs = isPastMonth
-      ? groupTariffs.filter(t => t.plan_type === 'monthly' || t.plan_type === 'free')
-      : groupTariffs;
-    // Определяем выбранный тариф для этой строки
-    const rowTariffObj = lastTariffId ? groupTariffs.find(t => t.id == lastTariffId) : null;
-    const isDays = rowTariffObj?.plan_type === 'days';
-    // Дата начала по умолчанию — сегодня
-    const defaultFrom = new Date().toISOString().split('T')[0];
-    const rowTariffSel = `<div style="display:flex;align-items:center;gap:.3rem">
-      <select class="pay-type-select" id="tariff_${athlete.id}" 
-        onchange="onRowTariffChange(${athlete.id})" style="max-width:140px;font-size:.78rem">
-        ${allowedTariffs.map(t => {
-          const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
-          return `<option value="${t.id}" ${t.id == lastTariffId ? 'selected' : ''}>${icon} ${t.name}</option>`;
-        }).join('')}
-        <option value="" ${!lastTariffId ? 'selected' : ''}>— тариф —</option>
-      </select>
-      <div id="datebtn_wrap_${athlete.id}" style="display:${isDays ? 'flex' : 'none'};align-items:center;gap:.2rem">
-        <button class="btn-icon" onclick="toggleDatePicker(${athlete.id})" title="Дата начала" style="font-size:.9rem">📅</button>
-        <input type="date" id="paid_from_${athlete.id}" value="${defaultFrom}"
-          onchange="onPaidFromChange(${athlete.id})"
-          style="display:none;padding:.3rem .4rem;border:1.5px solid var(--p);border-radius:6px;font-size:.73rem;width:115px">
+  el.innerHTML = _chatFiltered.map(c => {
+    const name = c.first_name + ' ' + c.last_name;
+    const ini = (c.first_name||'')[0] + (c.last_name||'')[0];
+    const av = c.photo_url
+      ? `<img src="${c.photo_url}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0">`
+      : `<div style="width:36px;height:36px;border-radius:50%;background:#4361ee;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0">${ini}</div>`;
+    const prev = c._lastMsg ? (c._lastMsg.text || '📎 файл') : 'Нет сообщений';
+    const badge = c._unread ? `<span style="min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:9px;font-size:.65rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;padding:0 4px">${c._unread}</span>` : '';
+    const bg = c.id === _chatActiveId ? 'background:#e8eeff;border-left:3px solid #4361ee;' : '';
+    return `<div style="padding:.6rem .85rem;cursor:pointer;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid #f0f0f0;${bg}" onclick="openChat(${c.id},'${name.replace(/'/g,"\'")}')">
+      ${av}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.83rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div>
+        <div style="font-size:.73rem;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${prev.toString().substring(0,35)}</div>
       </div>
+      ${badge}
     </div>`;
-
-    // Определяем есть ли активная льгота
-    const hasFreeActive = lastPay && groupTariffs.find(t => t.id == (document.getElementById(`tariff_${athlete.id}`)?.value))?.plan_type === 'free';
-    const rowBg = hasFreeActive ? 'background:#e8f4fd;' : '';
-    return `<tr id="row_${athlete.id}" style="${rowBg}">
-      <td><button class="btn-icon" onclick="toggleHistory(${athlete.id})" title="История">📋</button></td>
-      <td>
-        <div class="athlete-info">
-          ${photo}
-          <div><div class="athlete-name">${athlete.last_name} ${athlete.first_name}</div></div>
-        </div>
-      </td>
-      <td>${statusHtml}</td>
-      <td>${periodHtml}</td>
-      <td>${rowTariffSel}</td>
-      <td>
-        <div class="pay-row">
-          <button class="sessions-btn" onclick="addSessions(${athlete.id}, -1)">−</button>
-          <input class="amount-input" type="number" id="amount_${athlete.id}"
-            value="" min="0" placeholder="грн" oninput="onAmountInput(${athlete.id})" style="width:75px">
-          <button class="sessions-btn" onclick="addSessions(${athlete.id}, 1)">+</button>
-        </div>
-      </td>
-      <td><select class="pay-type-select" id="type_${athlete.id}">${typeOptions}</select></td>
-      <input type="hidden" id="comment_${athlete.id}" value="">
-      <td>${acceptBtn}</td>
-    </tr>
-    <tr id="history_${athlete.id}" class="history-row" style="display:none">
-      <td colspan="9">
-        <div class="history-inner">
-          <div class="history-title">История платежей</div>
-          ${renderHistory(athlete.id)}
-        </div>
-      </td>
-    </tr>`;
   }).join('');
 }
 
-function onRowTariffChange(childId) {
-  const tariffId = document.getElementById(`tariff_${childId}`)?.value;
-  const athlete = groupAthletes.find(a => a.id === childId);
-  if (athlete) athlete._lastTariffId = tariffId;
-  // Показываем кнопку 📅 только для days
-  const tariff = tariffId ? groupTariffs.find(t => t.id == tariffId) : null;
-  const wrap = document.getElementById(`datebtn_wrap_${childId}`);
-  if (wrap) wrap.style.display = tariff?.plan_type === 'days' ? 'flex' : 'none';
-  // Скрываем датапикер при смене тарифа
-  const dp = document.getElementById(`paid_from_${childId}`);
-  if (dp) dp.style.display = 'none';
-  // Обнуляем сумму
-  const inp = document.getElementById(`amount_${childId}`);
-  if (inp) { inp.value = ''; inp.classList.remove('filled'); }
+function filterChatContacts(q) {
+  const s = q.toLowerCase();
+  _chatFiltered = s ? _chatContacts.filter(c => (c.first_name+' '+c.last_name).toLowerCase().includes(s)) : [..._chatContacts];
+  renderChatContacts();
 }
 
-function toggleDatePicker(childId) {
-  const dp = document.getElementById(`paid_from_${childId}`);
-  if (!dp) return;
-  dp.style.display = dp.style.display === 'none' ? 'block' : 'none';
-  if (dp.style.display !== 'none') dp.focus();
+function openChat(childId, name) {
+  _chatActiveId = childId;
+  _chatLastMsgId = null;
+  _chatLastMsgCount = 0;
+  document.getElementById('chatEmpty').style.display = 'none';
+  const area = document.getElementById('chatActiveArea');
+  area.style.display = 'flex';
+  area.style.flexDirection = 'column';
+  area.style.flex = '1';
+  document.getElementById('chatMainHdr').textContent = name;
+  renderChatContacts();
+  loadChatMessages(childId, true);
+  // Помечаем прочитанными сразу при открытии диалога
+  fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'messages', action:'read', data:{child_id: childId}})});
 }
 
-function onPaidFromChange(childId) {
-  // При изменении даты начала — скрываем пикер
-  const dp = document.getElementById(`paid_from_${childId}`);
-  if (dp) dp.style.display = 'none';
-}
-
-function confirmDoublePayment(childId) {
-  if (confirm('Спортсмен уже оплатил этот месяц. Всё равно добавить платёж?')) {
-    const btn = document.getElementById(`btn_${childId}`);
-    if (btn) btn.onclick = () => acceptPayment(childId);
-    acceptPayment(childId);
-  }
-}
-
-function renderHistory(childId) {
-  const pd = groupPayments[childId];
-  if (!pd?.history?.length) return '<div class="no-history">Нет платежей</div>';
-  return pd.history
-    .sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at))
-    .slice(0, 10)
-    .map(p => `
-      <div class="history-item">
-        <span class="history-date">${formatDateTime(p.paid_at)}</span>
-        <span class="history-amount">${p.amount} грн</span>
-        <span class="history-type">${p.payment_type === 'cash' ? '💵 Нал' : p.payment_type === 'card' ? '💳 Карта' : '🏦 Банк'}</span>
-        <span class="history-period">${p.period_label || '—'}</span>
-        <span class="history-comment">${p.comment || ''}</span>
-        <button class="history-del" onclick="deletePayment(${p.id}, ${childId})" title="Удалить">🗑</button>
-      </div>`).join('');
-}
-
-function toggleHistory(childId) {
-  const row = document.getElementById(`history_${childId}`);
-  row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
-}
-
-// ============================
-// TARIFFS
-// ============================
-async function loadGroupTariffs() {
-  if (!currentGroupData?.club_id) return;
+async function loadChatMessages(childId, scrollDown) {
   try {
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payment_plans', action: 'list', data: {} }) });
-    const d = await r.json();
-    const all = Array.isArray(d) ? d : (d.merged || []);
-    groupTariffs = all.filter(t => t.is_active !== false);
+    const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'messages', action:'list', data:{child_id: childId}})});
+    const text = await r.text();
+    const d = text ? JSON.parse(text) : [];
+    const msgs = Array.isArray(d) ? d : (d.merged || []);
+    const container = document.getElementById('chatMsgList');
+    if (!container) return;
+    const wasBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 80;
 
-    const sel = document.getElementById('activeTariff');
-    sel.innerHTML = '<option value="">— выберите тариф —</option>' +
-      groupTariffs.map(t => {
-        const typeLabel = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
-        return `<option value="${t.id}">${typeLabel} ${t.name} — ${t.price} грн</option>`;
-      }).join('');
-
-    // Если один тариф — выбираем автоматически
-    if (groupTariffs.length === 1) sel.value = groupTariffs[0].id;
-  } catch(e) { console.error(e); }
-}
-
-function onTariffChange() {
-  // Обновляем суммы в строках если таблица заполнена
-  if (groupAthletes.length) renderTable();
-}
-
-function getSinglePrice(childId) {
-  const rowSel = childId ? document.getElementById(`tariff_${childId}`) : null;
-  const tariffId = rowSel?.value || document.getElementById('activeTariff')?.value;
-  if (!tariffId) return 0;
-  const t = groupTariffs.find(t => t.id == tariffId);
-  if (!t) return 0;
-  // monthly, days, single — кнопка +/- добавляет полную сумму тарифа
-  if (t.plan_type === 'monthly') return t.price;
-  if (t.plan_type === 'days') return t.price;
-  if (t.plan_type === 'single') return t.price;
-  if (t.plan_type === 'free') return 0;
-  // sessions — цена одной тренировки
-  if (t.plan_type === 'sessions' && t.sessions_limit) return Math.round(t.price / t.sessions_limit);
-  return t.price;
-}
-
-function addSessions(childId, delta) {
-  const inp = document.getElementById(`amount_${childId}`);
-  const singlePrice = getSinglePrice(childId);
-  if (!singlePrice) { alert('Выберите тариф'); return; }
-  const current = parseFloat(inp.value) || 0;
-  const newVal = Math.max(0, current + delta * singlePrice);
-  inp.value = newVal || '';
-  onAmountInput(childId);
-}
-
-function onAmountInput(childId) {
-  const inp = document.getElementById(`amount_${childId}`);
-  inp.classList.toggle('filled', !!inp.value);
-}
-
-function fillByTariff() {
-  const sel = document.getElementById('activeTariff');
-  if (!sel.value) { alert('Выберите тариф сверху'); return; }
-  const t = groupTariffs.find(t => t.id == sel.value);
-  if (!t) return;
-  groupAthletes.forEach(a => {
-    // Пропускаем тех кто уже оплачен (monthly)
-    const lastPay = Object.values(groupPayments[a.id]?.history || [])
-      .sort((x,y) => new Date(y.paid_at) - new Date(x.paid_at))[0];
-    const endOfMonth = new Date(currentYear, currentMonth, 0);
-    if (lastPay?.paid_until && !lastPay.sessions_paid && new Date(lastPay.paid_until) >= endOfMonth) return;
-    // Проставляем тариф и сумму
-    const tariffSel = document.getElementById(`tariff_${a.id}`);
-    if (tariffSel) tariffSel.value = t.id;
-    const inp = document.getElementById(`amount_${a.id}`);
-    if (inp) { inp.value = t.price; inp.classList.add('filled'); }
-    a._lastTariffId = t.id;
-  });
-}
-
-// ============================
-// ACCEPT PAYMENT
-// ============================
-async function acceptPayment(childId) {
-  const amount = parseFloat(document.getElementById(`amount_${childId}`)?.value) || 0;
-  const rowTariffIdCheck = document.getElementById(`tariff_${childId}`)?.value;
-  const tariffCheck = rowTariffIdCheck ? groupTariffs.find(t => t.id == rowTariffIdCheck) : null;
-  const isFree = tariffCheck?.plan_type === 'free';
-  if (!isFree && amount <= 0) { alert('Введите сумму'); return; }
-
-  const payType = document.getElementById(`type_${childId}`)?.value || 'cash';
-  const comment = document.getElementById(`comment_${childId}`)?.value || '';
-  const btn = document.getElementById(`btn_${childId}`);
-
-  // Берём тариф из строки спортсмена
-  const rowTariffId = document.getElementById(`tariff_${childId}`)?.value;
-  const tariff = rowTariffId ? groupTariffs.find(t => t.id == rowTariffId) : null;
-  // paid_until считается с учётом текущего срока (продление)
-  const lastPayData = Object.values(groupPayments[childId]?.history || [])
-    .filter(p => p.paid_until && !p.sessions_paid)
-    .sort((a,b) => new Date(b.paid_until) - new Date(a.paid_until))[0];
-  const currentPaidUntil = lastPayData?.paid_until || null;
-  const paidFrom = calcPaidFrom(tariff, childId);
-  const paidUntil = calcPaidUntil(tariff, currentPaidUntil, paidFrom);
-  // sessions_paid — для потренировочного тарифа считаем по сумме
-  let sessionsPaid = null;
-  if (tariff?.plan_type === 'sessions' && tariff.sessions_limit && tariff.price) {
-    const pricePerSession = Math.round(tariff.price / tariff.sessions_limit);
-    sessionsPaid = pricePerSession > 0 ? Math.round(amount / pricePerSession) : tariff.sessions_limit;
-  }
-  const periodLabel = buildPeriodLabel(tariff, sessionsPaid);
-  const clubId = currentGroupData?.club_id;
-
-  if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
-
-  try {
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'create', data: {
-        child_id: childId,
-        club_id: clubId,
-        amount: amount,
-        payment_type: payType,
-        paid_from: paidFrom,
-        paid_until: paidUntil,
-        period_label: periodLabel,
-        sessions_paid: sessionsPaid,
-        comment: comment
-      }})});
-    const res = await r.json();
-
-    // Сбрасываем поля
-    const inp = document.getElementById(`amount_${childId}`);
-    if (inp) { inp.value = ''; inp.classList.remove('filled'); }
-    const commInp = document.getElementById(`comment_${childId}`);
-    if (commInp) commInp.value = '';
-
-    // Визуальная обратная связь — кнопка зеленеет
-    if (btn) { btn.textContent = '✅ Принято!'; btn.style.background = '#1e7e34'; }
-    setTimeout(async () => {
-      await loadGroupAthletes();
-      if (user.role === 'director' || user.role === 'accountant') await loadStats();
-    }, 800);
-
-  } catch(e) {
-    console.error(e);
-    if (btn) { btn.disabled = false; btn.textContent = '✅ Принять'; }
-    alert('Ошибка сохранения');
-  }
-}
-
-async function acceptAll() {
-  const toAccept = groupAthletes.filter(a => {
-    const tariffId = document.getElementById(`tariff_${a.id}`)?.value;
-    const t = tariffId ? groupTariffs.find(t => t.id == tariffId) : null;
-    const isFree = t?.plan_type === 'free';
-    if (isFree) return true; // бесплатные всегда включаем
-    const v = parseFloat(document.getElementById(`amount_${a.id}`)?.value);
-    return v && v > 0;
-  });
-  if (!toAccept.length) { alert('Нет заполненных сумм'); return; }
-  if (!confirm(`Принять оплату от ${toAccept.length} спортсменов?`)) return;
-  for (const a of toAccept) {
-    await acceptPayment(a.id);
-  }
-}
-
-function getDefaultPaidUntil() {
-  // По умолчанию +1 месяц от сегодня
-  const d = new Date();
-  d.setMonth(d.getMonth() + 1);
-  return d.toISOString().split('T')[0];
-}
-
-function calcPaidFrom(tariff, childId) {
-  if (!tariff) return null;
-  if (tariff.plan_type === 'days' && childId) {
-    // Если есть активный paid_until — paid_from = следующий день после него
-    const lastPayData = Object.values(groupPayments[childId]?.history || [])
-      .filter(p => p.paid_until && !p.sessions_paid)
-      .sort((a,b) => new Date(b.paid_until) - new Date(a.paid_until))[0];
-    const today = new Date(); today.setHours(0,0,0,0);
-    if (lastPayData?.paid_until && new Date(lastPayData.paid_until) > today) {
-      // Продление: следующий день после текущего paid_until
-      const next = new Date(new Date(lastPayData.paid_until).getTime() + 86400000);
-      const dy = next.getFullYear();
-      const dm = String(next.getMonth()+1).padStart(2,'0');
-      const dd = String(next.getDate()).padStart(2,'0');
-      return `${dy}-${dm}-${dd}`;
+    if (!msgs.length) {
+      container.innerHTML = '<div style="text-align:center;padding:2rem;color:#bbb;font-size:.83rem">Нет сообщений. Напишите первым!</div>';
+      return;
     }
-    // Новый платёж: берём дату из поля (или сегодня)
-    const dp = document.getElementById(`paid_from_${childId}`);
-    if (dp?.value) return dp.value;
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  }
-  // Для monthly/free — начало выбранного месяца
-  const y = currentYear;
-  const m = String(currentMonth).padStart(2, '0');
-  return `${y}-${m}-01`;
-}
 
-function calcPaidUntil(tariff, currentPaidUntil, currentPaidFrom) {
-  if (!tariff) return null;
-  if (tariff.plan_type === 'free') return null;
-  const today = new Date(); today.setHours(0,0,0,0);
-  const nowMonth = new Date().getMonth() + 1;
-  const nowYear = new Date().getFullYear();
-  const isPast = (currentYear < nowYear) || (currentYear === nowYear && currentMonth < nowMonth);
+    // Фильтруем — только сообщения директора и спортсмена к директору
+    const filteredMsgs = msgs.filter(m =>
+      m.from_user_id == user.id ||
+      m.to_user_id == user.id ||
+      (m.is_from_athlete && !m.to_user_id)
+    );
 
-  if (isPast) {
-    // Прошлый месяц — paid_until всегда конец выбранного месяца
-    const d = new Date(currentYear, currentMonth, 0);
-    return d.toISOString().split('T')[0];
-  }
-
-  // Текущий или будущий месяц
-  // Базовая дата: если уже активен — продлеваем от текущего paid_until
-  const base = (currentPaidUntil && new Date(currentPaidUntil) > today)
-    ? new Date(currentPaidUntil) : today;
-
-  if (tariff.plan_type === 'monthly') {
-    // Конец выбранного месяца (currentMonth/currentYear)
-    const d = new Date(currentYear, currentMonth, 0);
-    const dy = d.getFullYear();
-    const dm = String(d.getMonth()+1).padStart(2,'0');
-    const dd = String(d.getDate()).padStart(2,'0');
-    return `${dy}-${dm}-${dd}`;
-  }
-  if (tariff.plan_type === 'sessions') {
-    return null;
-  }
-  if (tariff.plan_type === 'days' && tariff.duration_days) {
-    // Если есть активный paid_until — продлеваем от него
-    // Иначе берём paid_from из поля (или сегодня)
-    let startDate;
-    if (currentPaidUntil && new Date(currentPaidUntil) > today) {
-      // Продление: следующий день после текущего paid_until
-      startDate = new Date(new Date(currentPaidUntil).getTime() + 86400000);
-    } else {
-      // Новый платёж: от выбранной даты начала
-      startDate = currentPaidFrom ? new Date(currentPaidFrom) : today;
+    // Если сообщений не прибавилось и последний id не изменился — не трогаем DOM
+    const lastMsg = filteredMsgs[filteredMsgs.length - 1] || msgs[msgs.length - 1];
+    const hasNewMsgs = lastMsg.id !== _chatLastMsgId || filteredMsgs.length !== _chatLastMsgCount;
+    if (!hasNewMsgs && !scrollDown) {
+      // Только обновляем галочки is_read без перерисовки
+      filteredMsgs.forEach(m => {
+        if (m.is_from_athlete === false) {
+          const meta = container.querySelector(`.msg[data-id="${m.id}"] .msg-read`);
+          if (meta) meta.textContent = m.is_read ? '✓✓' : '✓';
+        }
+      });
+      return;
     }
-    const d = new Date(startDate.getTime() + tariff.duration_days * 86400000);
-    const dy = d.getFullYear();
-    const dm = String(d.getMonth()+1).padStart(2,'0');
-    const dd = String(d.getDate()).padStart(2,'0');
-    return `${dy}-${dm}-${dd}`;
-  }
-  if (tariff.plan_type === 'single') {
-    return today.toISOString().split('T')[0];
-  }
-  if (tariff.duration_days) {
-    const d = new Date(base.getTime() + tariff.duration_days * 86400000);
-    return d.toISOString().split('T')[0];
-  }
-  return null;
-}
+    _chatLastMsgId = lastMsg.id;
+    _chatLastMsgCount = filteredMsgs.length;
 
-function calcDateAfterNSessions(n) {
-  const schedule = currentGroupData?.schedule || [];
-  if (!schedule.length) return null;
-  const days = schedule.map(s => s.day).sort();
-  let count = 0;
-  let d = new Date();
-  d.setHours(0,0,0,0);
-  for (let i = 0; i < 365 && count < n; i++) {
-    if (days.includes(d.getDay())) count++;
-    if (count < n) d.setDate(d.getDate() + 1);
-  }
-  return d.toISOString().split('T')[0];
-}
-
-function calcSessionsPaid(amount, tariff) {
-  if (tariff.plan_type === 'sessions') return tariff.sessions_limit;
-  if (tariff.plan_type === 'single') return 1;
-  const single = getSinglePrice();
-  return single ? Math.round(amount / single) : null;
-}
-
-function buildPeriodLabel(tariff, sessionsPaid) {
-  if (!tariff) return `${getMonthName(currentMonth)} ${currentYear}`;
-  const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  if (tariff.plan_type === 'monthly') return `${months[currentMonth-1]} ${currentYear}`;
-  if (tariff.plan_type === 'days') return `${tariff.duration_days || '?'} дней`;
-  if (tariff.plan_type === 'sessions') return `${sessionsPaid || tariff.sessions_limit} тренировок`;
-  if (tariff.plan_type === 'single') return '1 тренировка';
-  if (tariff.plan_type === 'free') return 'Льгота';
-  return `${months[currentMonth-1]} ${currentYear}`;
-}
-
-// ============================
-// DELETE PAYMENT
-// ============================
-async function deletePayment(paymentId, childId) {
-  if (!confirm('Удалить платёж?')) return;
-  try {
-    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'update',
-        data: { id: paymentId, status: 'deleted' } }) });
-    await loadGroupAthletes();
-    if (user.role === 'director' || user.role === 'accountant') await loadStats();
-  } catch(e) { console.error(e); }
-}
-
-// ============================
-// STATS
-// ============================
-async function loadStats() {
-  try {
-    // Загружаем ВСЕ платежи директора (без фильтра месяца — считаем пропорционально)
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: {} }) });
-    const d = await r.json();
-    const allPayments = (Array.isArray(d) ? d : (d.merged || [])).filter(p => p.status !== 'deleted' && p.child_id);
-
-    // Границы выбранного месяца
-    const mStart = new Date(currentYear, currentMonth - 1, 1);
-    const mEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59);
-
-    // Пропорциональный расчёт собранного за месяц
-    let collected = 0;
-    allPayments.forEach(p => {
-      if (!p.amount) return;
-      const amount = parseFloat(p.amount);
-      if (!p.paid_from || !p.paid_until) {
-        // Нет дат — проверяем попадает ли paid_at в месяц
-        const pa = new Date(p.paid_at);
-        if (pa >= mStart && pa <= mEnd) collected += amount;
-        return;
+    let lastDate = '';
+    container.innerHTML = filteredMsgs.map(m => {
+      const isMine = !m.is_from_athlete;
+      const dt = new Date(m.created_at);
+      const dk = dt.toLocaleDateString('ru-RU');
+      const time = dt.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+      let sep = '';
+      if (dk !== lastDate) {
+        lastDate = dk;
+        const today = new Date().toLocaleDateString('ru-RU');
+        const yest = new Date(Date.now()-86400000).toLocaleDateString('ru-RU');
+        const lbl = dk === today ? 'Сегодня' : dk === yest ? 'Вчера' : dk;
+        sep = `<div class="msg-date-sep"><span>${lbl}</span></div>`;
       }
-      const pf = new Date(p.paid_from);
-      const pu = new Date(p.paid_until);
-      // Пересечение периода платежа с выбранным месяцем
-      const overlapStart = Math.max(pf.getTime(), mStart.getTime());
-      const overlapEnd = Math.min(pu.getTime(), mEnd.getTime());
-      if (overlapEnd < overlapStart) return; // нет пересечения
-      const totalDays = Math.round((pu - pf) / 86400000) + 1;
-      const overlapDays = Math.round((overlapEnd - overlapStart) / 86400000) + 1;
-      collected += Math.round(amount * overlapDays / totalDays);
-    });
-    document.getElementById('statCollected').textContent = formatMoney(collected);
+      let bubble = '';
+      if (m.file_url) {
+        const isImg = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(m.file_url);
+        bubble = isImg
+          ? `${m.text?'<div>'+m.text+'</div>':''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy">`
+          : `${m.text?'<div style="margin-bottom:.3rem">'+m.text+'</div>':''}<a href="${m.file_url}" target="_blank" class="msg-file-link">📎 ${m.file_url.split('/').pop().split('?')[0]}</a>`;
+      } else { bubble = m.text || ''; }
+      const sender = !isMine ? `<div class="msg-sender">${document.getElementById('chatMainHdr').textContent||'Спортсмен'}</div>` : '';
+      const rm = isMine ? `<span class="msg-read">${m.is_read?'✓✓':'✓'}</span>` : '';
+      const delBtn = `<button class="msg-del" onclick="deleteChatMsg(${m.id})" title="Удалить">🗑</button>`;
+      return `${sep}<div class="msg ${isMine?'mine':'theirs'}">${sender}<div class="msg-wrap"><div class="msg-bubble">${bubble}</div>${delBtn}</div><div class="msg-meta"><span class="msg-time">${time}</span>${rm}</div></div>`;
+    }).join('');
 
-    // Должники и активные — относительно выбранного месяца
-    const today = new Date(); today.setHours(0,0,0,0);
-    const nowM = today.getMonth() + 1;
-    const nowY = today.getFullYear();
-    const isCurrentMonth = (currentMonth === nowM && currentYear === nowY);
-
-    // Строим map child_id -> активен ли в выбранном месяце
-    const activeMap = {};
-    allPayments.forEach(p => {
-      if (!p.paid_from) return;
-      const pf = new Date(p.paid_from);
-      // Льгота
-      if (!p.paid_until && p.period_label === 'Льгота') {
-        if (pf >= mStart && pf <= mEnd) activeMap[p.child_id] = true;
-        return;
+    if (scrollDown || wasBottom) {
+      const imgs = container.querySelectorAll('img');
+      if (imgs.length) {
+        Promise.all([...imgs].map(img => img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })))
+          .then(() => { container.scrollTop = container.scrollHeight; });
+      } else {
+        container.scrollTop = container.scrollHeight;
       }
-      if (!p.paid_until) return;
-      const pu = new Date(p.paid_until);
-      if (pf <= mEnd && pu >= mStart) activeMap[p.child_id] = true;
-    });
+    }
 
-    // Все спортсмены директора
-    const rc = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'children', action: 'list' }) });
-    const dc = await rc.json();
-    const children = Array.isArray(dc) ? dc : (dc.merged || []);
-
-    let debtors = 0, active = 0;
-    children.forEach(c => {
-      if (activeMap[c.id]) active++;
-      else debtors++;
-    });
-
-    document.getElementById('statDebt').textContent = '—';
-    document.getElementById('statDebtors').textContent = debtors;
-    document.getElementById('statActive').textContent = active;
+    // Обновляем превью и unread только если были новые сообщения
+    const contact = _chatContacts.find(c => c.id === childId);
+    if (contact) { contact._lastMsg = filteredMsgs[filteredMsgs.length-1] || msgs[msgs.length-1]; contact._unread = 0; }
+    if (hasNewMsgs || scrollDown) renderChatContacts();
+    const unread = filteredMsgs.filter(m => !m.is_read && m.is_from_athlete).length;
+    updateDirChatBadge(_chatContacts.reduce((s,c)=>s+(c._unread||0),0));
+    // read вызывается только в openChat, не при polling
   } catch(e) { console.error(e); }
 }
 
-// ============================
-// TARIFFS MODAL
-// ============================
-function openTariffsModal() {
-  renderTariffsList();
-  document.getElementById('tariffsModal').classList.add('open');
+function handleChatFile(input) {
+  const file = input.files[0]; if (!file) return;
+  _chatAttachFile = file;
+  const bar = document.getElementById('chatPreviewBar');
+  const thumb = document.getElementById('chatPreviewThumb');
+  const nm = document.getElementById('chatPreviewName');
+  bar.style.display = 'flex'; nm.textContent = file.name;
+  if (file.type.startsWith('image/')) { thumb.src = URL.createObjectURL(file); thumb.style.display = 'block'; }
+  else thumb.style.display = 'none';
 }
 
-function closeTariffsModal() {
-  document.getElementById('tariffsModal').classList.remove('open');
-  closeTariffForm();
+function clearChatAttach() {
+  _chatAttachFile = null;
+  document.getElementById('chatFileInp').value = '';
+  document.getElementById('chatPreviewBar').style.display = 'none';
 }
 
-function renderTariffsList() {
-  const el = document.getElementById('tariffsList');
-  if (!groupTariffs.length) {
-    el.innerHTML = '<div style="color:#aaa;font-size:.85rem;padding:.5rem 0">Нет тарифов для этого клуба</div>';
-    return;
+async function sendChatMsg() {
+  if (!_chatActiveId) return;
+  const inp = document.getElementById('chatTextarea');
+  const text = inp.value.trim();
+  if (!text && !_chatAttachFile) return;
+  inp.value = '';
+  let file_url = null;
+  if (_chatAttachFile) {
+    try {
+      const du = await new Promise((res,rej) => { const rd=new FileReader(); rd.onload=()=>res(rd.result); rd.onerror=rej; rd.readAsDataURL(_chatAttachFile); });
+      const mime = _chatAttachFile.type || 'application/octet-stream';
+      const b64 = du.split(',')[1];
+      const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-chat-photo', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token, file_base64:b64, file_mime:mime})
+      });
+      const rd = await r.json();
+      file_url = rd.url || null;
+      clearChatAttach();
+    } catch(e) { alert('Ошибка загрузки файла'); return; }
   }
-  const typeLabels = { monthly: '<span class="plan-monthly">📅 Месячный</span>', sessions: '<span class="plan-sessions">🎯 По тренировкам</span>', single: '<span class="plan-single">1️⃣ Разовый</span>' };
-  el.innerHTML = groupTariffs.map(t => `
-    <div class="tariff-item">
-      <div class="tariff-item-info">
-        <div class="tariff-item-name">${t.name} ${typeLabels[t.plan_type] || ''}</div>
-        <div class="tariff-item-details">
-          ${t.duration_days ? `${t.duration_days} дней` : ''}
-          ${t.sessions_limit ? `${t.sessions_limit} тренировок` : ''}
-        </div>
-      </div>
-      <div class="tariff-item-price">${t.price} грн</div>
-      <div class="tariff-actions">
-        <button class="btn btn-ghost btn-sm" onclick="editTariff(${t.id})">✏️</button>
-        <button class="btn-icon" onclick="deleteTariff(${t.id})" title="Удалить">🗑</button>
-      </div>
-    </div>`).join('');
+  await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'messages', action:'create', data:{child_id:_chatActiveId, text:text||'', file_url, from_user_id:user.id}})});
+  await loadChatMessages(_chatActiveId, true);
 }
 
-function openAddTariff() {
-  document.getElementById('tariffEditId').value = '';
-  document.getElementById('tariffName').value = '';
-  document.getElementById('tariffType').value = 'monthly';
-  document.getElementById('tariffPrice').value = '';
-  document.getElementById('tariffDuration').value = '30';
-  document.getElementById('tariffSessions').value = '';
-  document.getElementById('tariffFormTitle').textContent = 'Новый тариф';
-  onTariffTypeChange();
-  document.getElementById('tariffForm').style.display = 'block';
-  document.getElementById('tariffForm').scrollIntoView({ behavior: 'smooth' });
-}
-
-function editTariff(id) {
-  const t = groupTariffs.find(t => t.id == id);
-  if (!t) return;
-  document.getElementById('tariffEditId').value = t.id;
-  document.getElementById('tariffName').value = t.name;
-  document.getElementById('tariffType').value = t.plan_type;
-  document.getElementById('tariffPrice').value = t.price;
-  document.getElementById('tariffDuration').value = t.duration_days || '';
-  document.getElementById('tariffSessions').value = t.sessions_limit || '';
-  document.getElementById('tariffFormTitle').textContent = 'Редактировать тариф';
-  onTariffTypeChange();
-  document.getElementById('tariffForm').style.display = 'block';
-  document.getElementById('tariffForm').scrollIntoView({ behavior: 'smooth' });
-}
-
-function onTariffTypeChange() {
-  const type = document.getElementById('tariffType').value;
-  document.getElementById('tariffDurationWrap').style.display = (type === 'monthly' || type === 'days') ? 'block' : 'none';
-  document.getElementById('tariffSessionsWrap').style.display = type === 'sessions' ? 'block' : 'none';
-  // Для бесплатного — цена 0
-  const priceInp = document.getElementById('tariffPrice');
-  if (type === 'free') { priceInp.value = '0'; priceInp.readOnly = true; }
-  else { priceInp.readOnly = false; }
-  // Подсказка для дней
-  const durLabel = document.querySelector('#tariffDurationWrap .form-label');
-  if (durLabel) durLabel.textContent = type === 'days' ? 'Количество дней *' : 'Дней действия';
-}
-
-function closeTariffForm() {
-  document.getElementById('tariffForm').style.display = 'none';
-}
-
-async function saveTariff() {
-  const name = document.getElementById('tariffName').value.trim();
-  const price = parseFloat(document.getElementById('tariffPrice').value);
-  const planType = document.getElementById('tariffType').value;
-  const duration = parseInt(document.getElementById('tariffDuration').value) || null;
-  const sessions = parseInt(document.getElementById('tariffSessions').value) || null;
-  const editId = document.getElementById('tariffEditId').value;
-
-  if (!name || price === null || price === undefined || isNaN(price)) { alert('Заполните название и цену'); return; }
-  if (!currentGroupData?.club_id) { alert('Нет клуба'); return; }
-
-  const data = { name, plan_type: planType, price, club_id: currentGroupData.club_id,
-    duration_days: (planType === 'monthly' || planType === 'days') ? (duration || 30) : null,
-    sessions_limit: planType === 'sessions' ? sessions : null };
-
-  if (editId) data.id = parseInt(editId);
-
+async function deleteChatMsg(id) {
+  if (!confirm('Удалить сообщение?')) return;
   try {
-    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payment_plans', action: editId ? 'update' : 'create', data }) });
-    closeTariffForm();
-    await loadGroupTariffs();
-    renderTariffsList();
-  } catch(e) { console.error(e); alert('Ошибка сохранения'); }
-}
-
-async function deleteTariff(id) {
-  if (!confirm('Удалить тариф?')) return;
-  try {
-    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payment_plans', action: 'delete', data: { id } }) });
-    await loadGroupTariffs();
-    renderTariffsList();
+    await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'messages', action:'delete', data:{id}})});
+    await loadChatMessages(_chatActiveId, false);
   } catch(e) { console.error(e); }
 }
 
-// ============================
-// MONTH NAVIGATION
-// ============================
-function changeMonth(delta) {
-  currentMonth += delta;
-  if (currentMonth > 12) { currentMonth = 1; currentYear++; }
-  if (currentMonth < 1) { currentMonth = 12; currentYear--; }
-  updateMonthLabel();
-  if (currentGroupId) loadGroupAthletes();
-  if (user.role === 'director' || user.role === 'accountant') loadStats();
+function openBroadcast() {
+  document.getElementById('broadcastText').value = '';
+  document.getElementById('broadcastModal').style.display = 'flex';
+}
+function closeBroadcast() {
+  document.getElementById('broadcastModal').style.display = 'none';
+}
+async function sendBroadcast() {
+  const text = document.getElementById('broadcastText').value.trim();
+  if (!text) { alert('Введите текст'); return; }
+  const btn = event.target; btn.disabled = true; btn.textContent = 'Отправка...';
+  try {
+    let sent = 0;
+    for (const a of _chatContacts) {
+      await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({token, resource:'messages', action:'create', data:{child_id:a.id, text, from_user_id:user.id}})});
+      sent++;
+    }
+    closeBroadcast();
+    alert('✅ Отправлено ' + sent + ' спортсменам');
+    loadChatContacts();
+  } catch(e) { alert('Ошибка: '+e.message); }
+  finally { btn.disabled=false; btn.textContent='Отправить всем'; }
 }
 
-function updateMonthLabel() {
-  document.getElementById('monthLabel').textContent = `${getMonthName(currentMonth)} ${currentYear}`;
-}
-
-function getMonthName(m) {
-  return ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][m-1];
-}
-
-// ============================
-// HELPERS
-// ============================
-function formatDate(str) {
-  if (!str) return '—';
-  const d = new Date(str);
-  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' });
-}
-
-function formatDateTime(str) {
-  if (!str) return '—';
-  const d = new Date(str);
-  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit' }) + ' ' +
-    d.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
-}
-
-function formatMoney(n) {
-  return Math.round(n).toLocaleString('ru-RU') + ' грн';
-}
-
-function goBack() {
-  const role = user?.role;
-  if (role === 'director') window.location.href = '/director-dashboard.html';
-  else if (role === 'trainer') window.location.href = '/children-list.html';
-  else window.location.href = '/';
-}
-
-function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = '/';
-}
-
-// ============================
-// START
-// ============================
-init();
+function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/'}
+loadUserInfo();loadClubs();
+// Загружаем счётчики чата сразу при старте, не ждём открытия вкладки
+loadChatContacts();
+setInterval(() => { loadChatContacts(); }, 20000);
+if(location.hash==='#groups'){setTimeout(()=>{document.querySelector('.tab:nth-child(2)').click()},100);}
+if(location.hash==='#trainers'){setTimeout(()=>{document.querySelector('.tab:nth-child(3)').click()},100);}
 </script>
 </body>
 </html>
