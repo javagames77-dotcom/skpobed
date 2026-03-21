@@ -229,7 +229,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
       <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
       <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
       <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти3</button>
+      <button class="btn-logout" onclick="logout()">Выйти</button>
     </div>
   </div>
 </header>
@@ -995,10 +995,24 @@ function getDefaultPaidUntil() {
 function calcPaidFrom(tariff, childId) {
   if (!tariff) return null;
   if (tariff.plan_type === 'days' && childId) {
-    // Для days — берём дату из поля (или сегодня)
+    // Если есть активный paid_until — paid_from = следующий день после него
+    const lastPayData = Object.values(groupPayments[childId]?.history || [])
+      .filter(p => p.paid_until && !p.sessions_paid)
+      .sort((a,b) => new Date(b.paid_until) - new Date(a.paid_until))[0];
+    const today = new Date(); today.setHours(0,0,0,0);
+    if (lastPayData?.paid_until && new Date(lastPayData.paid_until) > today) {
+      // Продление: следующий день после текущего paid_until
+      const next = new Date(new Date(lastPayData.paid_until).getTime() + 86400000);
+      const dy = next.getFullYear();
+      const dm = String(next.getMonth()+1).padStart(2,'0');
+      const dd = String(next.getDate()).padStart(2,'0');
+      return `${dy}-${dm}-${dd}`;
+    }
+    // Новый платёж: берём дату из поля (или сегодня)
     const dp = document.getElementById(`paid_from_${childId}`);
     if (dp?.value) return dp.value;
-    return new Date().toISOString().split('T')[0];
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   }
   // Для monthly/free — начало выбранного месяца
   const y = currentYear;
@@ -1037,10 +1051,17 @@ function calcPaidUntil(tariff, currentPaidUntil, currentPaidFrom) {
     return null;
   }
   if (tariff.plan_type === 'days' && tariff.duration_days) {
-    // Для days — считаем от paid_from (не от base)
-    const pf = currentPaidFrom ? new Date(currentPaidFrom) : base;
-    const d = new Date(pf.getTime() + tariff.duration_days * 86400000);
-    // Форматируем без UTC
+    // Если есть активный paid_until — продлеваем от него
+    // Иначе берём paid_from из поля (или сегодня)
+    let startDate;
+    if (currentPaidUntil && new Date(currentPaidUntil) > today) {
+      // Продление: следующий день после текущего paid_until
+      startDate = new Date(new Date(currentPaidUntil).getTime() + 86400000);
+    } else {
+      // Новый платёж: от выбранной даты начала
+      startDate = currentPaidFrom ? new Date(currentPaidFrom) : today;
+    }
+    const d = new Date(startDate.getTime() + tariff.duration_days * 86400000);
     const dy = d.getFullYear();
     const dm = String(d.getMonth()+1).padStart(2,'0');
     const dd = String(d.getDate()).padStart(2,'0');
