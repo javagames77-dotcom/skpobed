@@ -217,6 +217,7 @@ body {
   background: #ccc;
   cursor: not-allowed;
   box-shadow: none;
+  transform: none;
 }
 
 .divider {
@@ -276,9 +277,34 @@ body {
   border-left: 4px solid var(--success);
 }
 
-.role-switcher{display:flex;background:#f0f2f5;border-radius:10px;padding:4px;margin-bottom:1.5rem;gap:4px}
-.role-btn{flex:1;padding:.6rem;border:none;border-radius:8px;cursor:pointer;font-size:.88rem;font-weight:600;background:transparent;color:#666;transition:all .2s}
-.role-btn.active{background:#fff;color:var(--primary);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.role-switcher {
+  display: flex;
+  background: #f0f2f5;
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 1.5rem;
+  gap: 4px;
+}
+
+.role-btn {
+  flex: 1;
+  padding: .6rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: .88rem;
+  font-weight: 600;
+  background: transparent;
+  color: #666;
+  transition: all .2s;
+}
+
+.role-btn.active {
+  background: #fff;
+  color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
 .loading-spinner {
   display: inline-block;
   width: 16px;
@@ -288,6 +314,7 @@ body {
   border-top-color: white;
   animation: spin 0.6s linear infinite;
   margin-right: 0.5rem;
+  vertical-align: middle;
 }
 
 @keyframes spin {
@@ -356,58 +383,94 @@ body {
     <div class="alert alert-success" id="successAlert"></div>
 
     <div class="role-switcher">
-      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор1</button>
+      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор</button>
       <button type="button" class="role-btn" id="btnAthlete" onclick="switchRole('athlete')">🥋 Спортсмен</button>
     </div>
 
-    <form id="loginForm" onsubmit="handleLogin(event)">
-      <div class="form-group" id="emailGroup">
-        <label class="form-label" for="email">Email</label>
-        <input 
-          type="email" 
-          class="form-input" 
-          id="email" 
+    <!-- Форма тренера/директора — отдельная форма для правильного autocomplete -->
+    <form id="staffForm" onsubmit="handleStaffLogin(event)" autocomplete="on">
+      <div class="form-group">
+        <label class="form-label" for="staffEmail">Email</label>
+        <input
+          type="email"
+          class="form-input"
+          id="staffEmail"
+          name="email"
           placeholder="your@email.com"
           autocomplete="email"
-        >
-      </div>
-      <div class="form-group" id="loginGroup" style="display:none">
-        <label class="form-label" for="athleteLogin">Логин спортсмена</label>
-        <input 
-          type="text" 
-          class="form-input" 
-          id="athleteLogin" 
-          placeholder="ivan.donetsky42"
-          autocomplete="username"
+          required
         >
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password">Пароль</label>
+        <label class="form-label" for="staffPassword">Пароль</label>
         <div class="password-wrapper">
-          <input 
-            type="password" 
-            class="form-input" 
-            id="password" 
+          <input
+            type="password"
+            class="form-input"
+            id="staffPassword"
+            name="password"
             placeholder="••••••••"
             required
             autocomplete="current-password"
           >
-          <button type="button" class="toggle-password" onclick="togglePassword()">
-            👁️
-          </button>
+          <button type="button" class="toggle-password" onclick="togglePassword('staffPassword', this)">👁️</button>
         </div>
       </div>
 
       <div class="form-footer">
         <label class="remember-me">
-          <input type="checkbox" id="rememberMe">
+          <input type="checkbox" id="rememberMeStaff" name="remember">
           <span>Запомнить меня</span>
         </label>
         <a href="#" class="forgot-password">Забыли пароль?</a>
       </div>
 
-      <button type="submit" class="btn-login" id="loginBtn">
+      <button type="submit" class="btn-login" id="staffLoginBtn">
+        Войти
+      </button>
+    </form>
+
+    <!-- Форма спортсмена — полностью отдельная форма -->
+    <form id="athleteForm" onsubmit="handleAthleteLogin(event)" autocomplete="on" style="display:none">
+      <div class="form-group">
+        <label class="form-label" for="athleteLogin">Логин спортсмена</label>
+        <input
+          type="text"
+          class="form-input"
+          id="athleteLogin"
+          name="athlete-username"
+          placeholder="ivan.donetsky42"
+          autocomplete="username"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="athletePassword">Пароль</label>
+        <div class="password-wrapper">
+          <input
+            type="password"
+            class="form-input"
+            id="athletePassword"
+            name="athlete-password"
+            placeholder="••••••••"
+            required
+            autocomplete="current-password"
+          >
+          <button type="button" class="toggle-password" onclick="togglePassword('athletePassword', this)">👁️</button>
+        </div>
+      </div>
+
+      <div class="form-footer">
+        <label class="remember-me">
+          <input type="checkbox" id="rememberMeAthlete" name="remember">
+          <span>Запомнить меня</span>
+        </label>
+        <a href="#" class="forgot-password">Забыли пароль?</a>
+      </div>
+
+      <button type="submit" class="btn-login" id="athleteLoginBtn">
         Войти
       </button>
     </form>
@@ -423,22 +486,11 @@ body {
 <script>
 const AUTH_URL = 'https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 const ATHLETE_AUTH_URL = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-login';
-let currentRole = 'staff';
-
-function switchRole(role) {
-  currentRole = role;
-  document.getElementById('btnStaff').classList.toggle('active', role === 'staff');
-  document.getElementById('btnAthlete').classList.toggle('active', role === 'athlete');
-  document.getElementById('emailGroup').style.display = role === 'staff' ? '' : 'none';
-  document.getElementById('loginGroup').style.display = role === 'athlete' ? '' : 'none';
-  document.getElementById('email').required = role === 'staff';
-  document.getElementById('athleteLogin').required = role === 'athlete';
-}
 
 // Check if already logged in
 const token = localStorage.getItem('token');
 if (token) {
-  const u = JSON.parse(localStorage.getItem('user')||'{}');
+  const u = JSON.parse(localStorage.getItem('user') || '{}');
   fetch(AUTH_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -447,27 +499,39 @@ if (token) {
   .then(res => res.json())
   .then(data => {
     if (data.success !== false) {
-      if (u.role === 'athlete') {
-        const aid = localStorage.getItem('athlete_id');
-        window.location.href = '/athlete-profile-athlete.html?id=' + aid;
-      } else if (u.role === 'director') {
-        window.location.href = '/director-dashboard.html';
-      } else if (u.role === 'superadmin') {
-        window.location.href = '/superadmin-dashboard.html';
-      } else if (u.role === 'accountant') {
-        window.location.href = '/accounting.html';
-      } else {
-        window.location.href = '/children-list.html';
-      }
+      redirectByRole(u.role);
     }
   })
   .catch(err => console.error('Token check error:', err));
 }
 
-function togglePassword() {
-  const input = document.getElementById('password');
-  const btn = event.target;
-  
+function redirectByRole(role) {
+  if (role === 'athlete') {
+    const aid = localStorage.getItem('athlete_id');
+    window.location.href = '/athlete-profile-athlete.html?id=' + aid;
+  } else if (role === 'director') {
+    window.location.href = '/director-dashboard.html';
+  } else if (role === 'superadmin') {
+    window.location.href = '/superadmin-dashboard.html';
+  } else if (role === 'accountant') {
+    window.location.href = '/accounting.html';
+  } else {
+    window.location.href = '/children-list.html';
+  }
+}
+
+function switchRole(role) {
+  document.getElementById('btnStaff').classList.toggle('active', role === 'staff');
+  document.getElementById('btnAthlete').classList.toggle('active', role === 'athlete');
+  document.getElementById('staffForm').style.display = role === 'staff' ? '' : 'none';
+  document.getElementById('athleteForm').style.display = role === 'athlete' ? '' : 'none';
+  // Clear alerts on switch
+  document.getElementById('errorAlert').style.display = 'none';
+  document.getElementById('successAlert').style.display = 'none';
+}
+
+function togglePassword(fieldId, btn) {
+  const input = document.getElementById(fieldId);
   if (input.type === 'password') {
     input.type = 'text';
     btn.textContent = '🙈';
@@ -482,10 +546,7 @@ function showError(message) {
   alert.textContent = message;
   alert.style.display = 'block';
   document.getElementById('successAlert').style.display = 'none';
-  
-  setTimeout(() => {
-    alert.style.display = 'none';
-  }, 5000);
+  setTimeout(() => { alert.style.display = 'none'; }, 5000);
 }
 
 function showSuccess(message) {
@@ -495,92 +556,93 @@ function showSuccess(message) {
   document.getElementById('errorAlert').style.display = 'none';
 }
 
-async function handleLogin(event) {
+async function handleStaffLogin(event) {
   event.preventDefault();
-  const password = document.getElementById('password').value;
-  const btn = document.getElementById('loginBtn');
+  const email = document.getElementById('staffEmail').value.trim();
+  const password = document.getElementById('staffPassword').value;
+  const btn = document.getElementById('staffLoginBtn');
 
+  if (!email) { showError('Введите email'); return; }
   if (!password) { showError('Введите пароль'); return; }
 
   btn.disabled = true;
   btn.innerHTML = '<span class="loading-spinner"></span>Вход...';
 
   try {
-    if (currentRole === 'athlete') {
-      // Логин спортсмена
-      const login = document.getElementById('athleteLogin').value.trim();
-      if (!login) { showError('Введите логин'); btn.disabled=false; btn.textContent='Войти'; return; }
+    const response = await fetch(AUTH_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login', email, password })
+    });
+    const data = await response.json();
 
-      const response = await fetch(ATHLETE_AUTH_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login, password })
-      });
-      const data = await response.json();
-
-      if (data.success && data.token && data.child) {
-        showSuccess('Успешный вход!');
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify({ role: 'athlete', id: data.child.id, first_name: data.child.first_name, last_name: data.child.last_name }));
-        localStorage.setItem('role', 'athlete');
-        localStorage.setItem('user_id', data.child.id);
-        localStorage.setItem('athlete_id', data.child.id);
-        setTimeout(() => {
-          window.location.href = '/athlete-profile-athlete.html?id=' + data.child.id;
-        }, 800);
-      } else {
-        showError(data.error || 'Неверный логин или пароль');
-        btn.disabled = false; btn.textContent = 'Войти';
-      }
-
+    if (data.success && data.token) {
+      showSuccess('Успешный вход! Перенаправление...');
+      localStorage.setItem('token', data.token);
+      if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
+      setTimeout(() => {
+        redirectByRole(data.user?.role || 'trainer');
+      }, 1000);
     } else {
-      // Логин тренера/директора
-      const email = document.getElementById('email').value.trim();
-      if (!email) { showError('Введите email'); btn.disabled=false; btn.textContent='Войти'; return; }
-
-      const response = await fetch(AUTH_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'login', email, password })
-      });
-      const data = await response.json();
-
-      if (data.success && data.token) {
-        showSuccess('Успешный вход! Перенаправление...');
-        localStorage.setItem('token', data.token);
-        if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
-        setTimeout(() => {
-          const role = data.user?.role || 'trainer';
-          if (role === 'superadmin') window.location.href = '/superadmin-dashboard.html';
-          else if (role === 'director') window.location.href = '/director-dashboard.html';
-          else if (role === 'accountant') window.location.href = '/accounting.html';
-          else window.location.href = '/children-list.html';
-        }, 1000);
-      } else {
-        showError(data.error || 'Неверный email или пароль');
-        btn.disabled = false; btn.textContent = 'Войти';
-      }
+      showError(data.error || 'Неверный email или пароль');
+      btn.disabled = false;
+      btn.textContent = 'Войти';
     }
   } catch (error) {
     console.error('Login error:', error);
     showError('Ошибка соединения с сервером');
-    btn.disabled = false; btn.textContent = 'Войти';
+    btn.disabled = false;
+    btn.textContent = 'Войти';
   }
 }
 
-// Demo credentials hint
-setTimeout(() => {
-  const demoHint = document.createElement('div');
-  demoHint.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 12px 20px; border-radius: 8px; font-size: 0.85rem; text-align: center; max-width: 90%; z-index: 1000;';
-  demoHint.innerHTML = '💡 <strong>Тестовый аккаунт:</strong><br>trainer@bjj.com / password123';
-  document.body.appendChild(demoHint);
-  
-  setTimeout(() => {
-    demoHint.style.opacity = '0';
-    demoHint.style.transition = 'opacity 0.5s';
-    setTimeout(() => demoHint.remove(), 500);
-  }, 8000);
-}, 2000);
+async function handleAthleteLogin(event) {
+  event.preventDefault();
+  const login = document.getElementById('athleteLogin').value.trim();
+  const password = document.getElementById('athletePassword').value;
+  const btn = document.getElementById('athleteLoginBtn');
+
+  if (!login) { showError('Введите логин'); return; }
+  if (!password) { showError('Введите пароль'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span>Вход...';
+
+  try {
+    const response = await fetch(ATHLETE_AUTH_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ login, password })
+    });
+    const data = await response.json();
+
+    if (data.success && data.token && data.child) {
+      showSuccess('Успешный вход!');
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify({
+        role: 'athlete',
+        id: data.child.id,
+        first_name: data.child.first_name,
+        last_name: data.child.last_name
+      }));
+      localStorage.setItem('role', 'athlete');
+      localStorage.setItem('user_id', data.child.id);
+      localStorage.setItem('athlete_id', data.child.id);
+      setTimeout(() => {
+        window.location.href = '/athlete-profile-athlete.html?id=' + data.child.id;
+      }, 800);
+    } else {
+      showError(data.error || 'Неверный логин или пароль');
+      btn.disabled = false;
+      btn.textContent = 'Войти';
+    }
+  } catch (error) {
+    console.error('Athlete login error:', error);
+    showError('Ошибка соединения с сервером');
+    btn.disabled = false;
+    btn.textContent = 'Войти';
+  }
+}
 </script>
 
 </body>
