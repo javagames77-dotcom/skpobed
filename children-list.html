@@ -293,7 +293,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="tabs">
-<button class="tab active" onclick="switchTab('children')">👶 Спортсмены</button>
+<button class="tab active" onclick="switchTab('children')">👶 Спортсмены2</button>
 <button class="tab" onclick="switchTab('requests')" id="tabBtnRequests">📋 Заявки<span class="unread-badge" id="requestsBadge" style="display:none"></span></button>
 <button class="tab" onclick="switchTab('chat')" id="tabBtnChat">💬 Чат<span class="unread-badge" id="trainerChatUnread" style="display:none"></span></button>
 </div>
@@ -1781,6 +1781,7 @@ async function loadRequests() {
     }
 
     list.style.display = 'grid';
+    list.style.gridTemplateColumns = 'repeat(auto-fill,minmax(320px,1fr))';
     list.innerHTML = requests.map(req => {
       const date = req.birth_date ? new Date(req.birth_date).toLocaleDateString('ru-RU') : '—';
       const created = new Date(req.created_at).toLocaleDateString('ru-RU');
@@ -2037,7 +2038,7 @@ style="width:100%;padding:.65rem .75rem;border:2px solid var(--b);border-radius:
   <div style="font-size:3rem;margin-bottom:1rem">📭</div>
   <div>Новых заявок нет</div>
 </div>
-<div id="requestsList" style="display:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;padding:0 0 2rem"></div>
+<div id="requestsList" style="display:none;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;padding:0 0 2rem"></div>
 </div>
 </div>
 </div>
