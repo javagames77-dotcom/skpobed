@@ -268,7 +268,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .msg-date-sep{text-align:center;font-size:.75rem;color:#aaa;padding:.5rem 0;position:relative;margin:.25rem 0;align-self:center;width:100%}
 .msg-date-sep span{background:#fff;padding:0 .75rem;position:relative;z-index:1}
 .msg-date-sep::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#e5e7eb}
-.unread-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:9px;font-size:.7rem;font-weight:700;padding:0 5px;margin-left:.35rem;vertical-align:middle}
+.unread-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:9px;font-size:.7rem;font-weight:700;padding:0 5px;margin-left:.35rem;vertical-align:middle;line-height:1}
 .msg-wrap{display:flex;align-items:flex-end;gap:.35rem;max-width:100%}
 .msg.mine .msg-wrap{flex-direction:row-reverse}
 .msg-del{background:none;border:none;cursor:pointer;font-size:.8rem;opacity:.35;padding:2px 4px;border-radius:4px;line-height:1;transition:opacity .15s,background .15s;flex-shrink:0}
@@ -285,7 +285,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </a>
 <div style="display:flex;align-items:center;gap:1rem">
 <span id="userName">—</span>
-<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия</a>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия1</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -1764,7 +1764,7 @@ async function loadRequests() {
     list.innerHTML = requests.map(req => {
       const date = req.birth_date ? new Date(req.birth_date).toLocaleDateString('ru-RU') : '—';
       const created = new Date(req.created_at).toLocaleDateString('ru-RU');
-      return `<div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;border:1px solid #e0e0e0">
+      return `<div data-request-id="${req.id}" data-request-json="${encodeURIComponent(JSON.stringify(req))}" style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;border:1px solid #e0e0e0">
         <div style="display:flex;gap:1rem;padding:1.25rem;align-items:flex-start">
           <img src="${req.photo_url||''}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #e0e0e0" onerror="this.style.display='none'">
           <div style="flex:1;min-width:0">
@@ -1790,19 +1790,61 @@ async function loadRequests() {
 }
 
 async function approveRequest(requestId) {
-  if (!confirm('Принять спортсмена? После подтверждения откроется карточка для добавления в группы.')) return;
+  if (!requestId) { alert('Ошибка: ID заявки не определён'); return; }
+
+  const reqEl = document.querySelector('[data-request-id="' + requestId + '"]');
+  const reqData = reqEl ? JSON.parse(decodeURIComponent(reqEl.dataset.requestJson)) : null;
+  if (!reqData) { alert('Ошибка: данные заявки не найдены'); return; }
+
+  if (!confirm('Принять заявку от ' + reqData.first_name + ' ' + reqData.last_name + '?
+Откроется форма добавления — выберите группы и сохраните.')) return;
+
   try {
+    // 1. Update request status to approved
     const r = await fetch(API, {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ token, resource: 'registration_requests', action: 'approve', data: { id: requestId, reviewed_by: user.id } })
+      body: JSON.stringify({ token, resource: 'registration_requests', action: 'approve', data: { id: parseInt(requestId), reviewed_by: user.id } })
     });
     const data = await r.json();
     const result = data.merged && data.merged[0];
-    if (result && result.child_id) {
-      await loadRequests();
-      await loadChildren();
-      editChild(result.child_id);
-    } else { alert('Ошибка: ' + JSON.stringify(data)); }
+    if (!result || !result.id) { alert('Ошибка: ' + JSON.stringify(data)); return; }
+
+    // 2. Switch to children tab
+    document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+    document.querySelector("button[onclick="switchTab('children')"]").classList.add('active');
+    document.getElementById('tab-children').classList.add('active');
+
+    // 3. Open addChild form — same as clicking "Добавить"
+    addChild();
+
+    // 4. Fill fields from request
+    document.getElementById('childFirstName').value = reqData.first_name || '';
+    document.getElementById('childLastName').value = reqData.last_name || '';
+    if (reqData.birth_date) {
+      const bd = new Date(reqData.birth_date);
+      document.getElementById('childBirthDay').value = bd.getDate();
+      document.getElementById('childBirthMonth').value = bd.getMonth() + 1;
+      document.getElementById('childBirthYear').value = bd.getFullYear();
+    }
+    document.getElementById('childLogin').value = reqData.login || '';
+
+    // 5. Download photo and set as File — same as if trainer selected it manually
+    if (reqData.photo_url) {
+      try {
+        const photoResp = await fetch(reqData.photo_url);
+        const blob = await photoResp.blob();
+        const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        document.getElementById('childPhoto').files = dt.files;
+        const preview = document.getElementById('photoPreview');
+        if (preview) { preview.src = reqData.photo_url; preview.style.display = 'block'; }
+      } catch(pe) { console.warn('Photo load failed:', pe); }
+    }
+
+    await loadRequests();
+
   } catch(e) { alert('Ошибка: ' + e.message); }
 }
 
