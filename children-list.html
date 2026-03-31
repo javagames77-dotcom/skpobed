@@ -285,7 +285,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </a>
 <div style="display:flex;align-items:center;gap:1rem">
 <span id="userName">—</span>
-<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия</a>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия1</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -1044,8 +1044,13 @@ await loadChildren();
 alert('Ошибка: '+(result?.error||JSON.stringify(res)));
 }
 }else{
-const photoFile=document.getElementById('childPhoto').files[0];
+let photoFile=document.getElementById('childPhoto').files[0];
+// Use pre-loaded photo from approve flow if available
+if(!photoFile && window._approvePhotoFile){
+  photoFile = window._approvePhotoFile;
+}
 if(!photoFile){alert('Загрузите фото');return;}
+window._approvePhotoFile = null;
 
 alert('Обработка... Пожалуйста, подождите');
 const result=await uploadChildPhoto(photoFile,data,selectedGroups);
@@ -1054,6 +1059,7 @@ if(result.success){
 closeChildModal();
 alert('Добавлено!');
 await loadChildren();
+await loadRequests();
 }else{
 alert('Ошибка: '+(result.error||JSON.stringify(result)));
 }
@@ -1836,15 +1842,19 @@ async function approveRequest(requestId) {
         const photoResp = await fetch(reqData.photo_url);
         const blob = await photoResp.blob();
         const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        document.getElementById('childPhoto').files = dt.files;
+        // Save blob globally for saveChild to use
+        window._approvePhotoFile = file;
+        // Try DataTransfer (works in Chrome/Edge)
+        try {
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          document.getElementById('childPhoto').files = dt.files;
+        } catch(dtErr) { console.warn('DataTransfer not supported'); }
+        // Always show preview
         const preview = document.getElementById('photoPreview');
         if (preview) { preview.src = reqData.photo_url; preview.style.display = 'block'; }
       } catch(pe) { console.warn('Photo load failed:', pe); }
     }
-
-    await loadRequests();
 
   } catch(e) { alert('Ошибка: ' + e.message); }
 }
