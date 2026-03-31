@@ -285,7 +285,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </a>
 <div style="display:flex;align-items:center;gap:1rem">
 <span id="userName">—</span>
-<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия1</a>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -1812,7 +1812,7 @@ async function approveRequest(requestId) {
     // 2. Switch to children tab
     document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
-    document.querySelector("button[onclick="switchTab('children')"]").classList.add('active');
+    Array.from(document.querySelectorAll('.tab')).find(b=>b.textContent.includes('Спортсмены')).classList.add('active');
     document.getElementById('tab-children').classList.add('active');
 
     // 3. Open addChild form — same as clicking "Добавить"
