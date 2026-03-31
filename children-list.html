@@ -285,7 +285,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </a>
 <div style="display:flex;align-items:center;gap:1rem">
 <span id="userName">—</span>
-<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия</a>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия1</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -931,6 +931,7 @@ reader.readAsDataURL(file);
 }
 
 async function uploadChildPhoto(photoFile, childData, selectedGroups){
+console.log('uploadChildPhoto childData:', JSON.stringify(childData));
 const compressedPhoto=await compressImage(photoFile);
 const formData=new FormData();
 formData.append('token',token);
@@ -939,7 +940,9 @@ formData.append('child_data',JSON.stringify({
   first_name:childData.first_name,
   last_name:childData.last_name,
   birth_date:childData.birth_date,
-  group_ids:selectedGroups
+  group_ids:selectedGroups,
+  login:childData.login||undefined,
+  password:childData.password||undefined
 }));
 
 const r=await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-child-photo',{
@@ -1056,23 +1059,23 @@ alert('Обработка... Пожалуйста, подождите');
 const result=await uploadChildPhoto(photoFile,data,selectedGroups);
 
 if(result.success){
+// If this was from approve flow — do it BEFORE closeChildModal clears the variables
+const approveReqId = window._approveRequestId;
+const approveReviewedBy = window._approveReviewedBy;
 closeChildModal();
-// If this was from approve flow — copy password_hash and update request status
-if(window._approveRequestId){
-  // Copy password_hash from registration_requests to children
+if(approveReqId){
+  // Copy password_hash from registration_requests to new child
   if(result.child_id){
     await fetch(API, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'registration_requests', action:'copy_password', data:{request_id:window._approveRequestId, child_id:result.child_id}})
+      body: JSON.stringify({token, resource:'registration_requests', action:'copy_password', data:{request_id:approveReqId, child_id:result.child_id}})
     });
   }
   // Update request status to approved
   await fetch(API, {
     method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({token, resource:'registration_requests', action:'approve', data:{id:window._approveRequestId, reviewed_by:window._approveReviewedBy||user.id, child_id:result.child_id||null}})
+    body: JSON.stringify({token, resource:'registration_requests', action:'approve', data:{id:approveReqId, reviewed_by:approveReviewedBy||user.id, child_id:result.child_id||null}})
   });
-  window._approveRequestId = null;
-  window._approveReviewedBy = null;
 }
 alert('Добавлено!');
 await loadChildren();
