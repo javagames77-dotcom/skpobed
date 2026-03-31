@@ -285,7 +285,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </a>
 <div style="display:flex;align-items:center;gap:1rem">
 <span id="userName">—</span>
-<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия1</a>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -1057,11 +1057,19 @@ const result=await uploadChildPhoto(photoFile,data,selectedGroups);
 
 if(result.success){
 closeChildModal();
-// If this was from approve flow — update request status now
+// If this was from approve flow — copy password_hash and update request status
 if(window._approveRequestId){
+  // Copy password_hash from registration_requests to children
+  if(result.child_id){
+    await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'registration_requests', action:'copy_password', data:{request_id:window._approveRequestId, child_id:result.child_id}})
+    });
+  }
+  // Update request status to approved
   await fetch(API, {
     method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({token, resource:'registration_requests', action:'approve', data:{id:window._approveRequestId, reviewed_by:window._approveReviewedBy||user.id}})
+    body: JSON.stringify({token, resource:'registration_requests', action:'approve', data:{id:window._approveRequestId, reviewed_by:window._approveReviewedBy||user.id, child_id:result.child_id||null}})
   });
   window._approveRequestId = null;
   window._approveReviewedBy = null;
