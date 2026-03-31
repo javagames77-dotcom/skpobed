@@ -285,7 +285,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </a>
 <div style="display:flex;align-items:center;gap:1rem">
 <span id="userName">—</span>
-<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия</a>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия1</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -1859,8 +1859,10 @@ async function approveRequest(requestId) {
           document.getElementById('childPhoto').files = dt.files;
         } catch(dtErr) { console.warn('DataTransfer not supported'); }
         // Always show preview
-        const preview = document.getElementById('photoPreview');
-        if (preview) { preview.src = reqData.photo_url; preview.style.display = 'block'; }
+        const previewDiv = document.getElementById('photoPreview');
+        const previewImg = document.getElementById('previewImage');
+        if (previewDiv) previewDiv.style.display = 'block';
+        if (previewImg) previewImg.src = reqData.photo_url;
       } catch(pe) { console.warn('Photo load failed:', pe); }
     }
 
