@@ -383,7 +383,7 @@ body {
     <div class="alert alert-success" id="successAlert"></div>
 
     <div class="role-switcher">
-      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор</button>
+      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор1</button>
       <button type="button" class="role-btn" id="btnAthlete" onclick="switchRole('athlete')">🥋 Спортсмен</button>
     </div>
 
@@ -609,12 +609,26 @@ async function handleAthleteLogin(event) {
   btn.innerHTML = '<span class="loading-spinner"></span>Вход...';
 
   try {
-    const response = await fetch(ATHLETE_AUTH_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ login, password })
-    });
-    const data = await response.json();
+    // Retry once if Railway cold start returns empty response
+    let data = null;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      const response = await fetch(ATHLETE_AUTH_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login, password })
+      });
+      const text = await response.text();
+      if (!text || !text.trim()) {
+        if (attempt === 1) {
+          btn.innerHTML = '<span class="loading-spinner"></span>Подключение...';
+          await new Promise(r => setTimeout(r, 2500));
+          continue;
+        }
+        throw new Error('empty_response');
+      }
+      data = JSON.parse(text);
+      break;
+    }
 
     if (data.success && data.token && data.child) {
       showSuccess('Успешный вход!');
