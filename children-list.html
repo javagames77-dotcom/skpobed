@@ -285,7 +285,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </a>
 <div style="display:flex;align-items:center;gap:1rem">
 <span id="userName">—</span>
-<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия1</a>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -1057,6 +1057,15 @@ const result=await uploadChildPhoto(photoFile,data,selectedGroups);
 
 if(result.success){
 closeChildModal();
+// If this was from approve flow — update request status now
+if(window._approveRequestId){
+  await fetch(API, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({token, resource:'registration_requests', action:'approve', data:{id:window._approveRequestId, reviewed_by:window._approveReviewedBy||user.id}})
+  });
+  window._approveRequestId = null;
+  window._approveReviewedBy = null;
+}
 alert('Добавлено!');
 await loadChildren();
 await loadRequests();
@@ -1109,6 +1118,10 @@ document.body.style.overflow='hidden';
 function closeChildModal(){
 document.getElementById('childModal').classList.remove('active');
 document.body.style.overflow='';
+// Clear approve flow data if trainer cancelled
+window._approveRequestId = null;
+window._approveReviewedBy = null;
+window._approvePhotoFile = null;
 }
 
 function addGroup(){
@@ -1807,14 +1820,9 @@ async function approveRequest(requestId) {
   if (!confirm('Принять заявку от ' + reqData.first_name + ' ' + reqData.last_name + '? Откроется форма добавления — выберите группы и сохраните.')) return;
 
   try {
-    // 1. Update request status to approved
-    const r = await fetch(API, {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ token, resource: 'registration_requests', action: 'approve', data: { id: parseInt(requestId), reviewed_by: user.id } })
-    });
-    const data = await r.json();
-    const result = data.merged && data.merged[0];
-    if (!result || !result.id) { alert('Ошибка: ' + JSON.stringify(data)); return; }
+    // Store request ID for saveChild to use after successful save
+    window._approveRequestId = parseInt(requestId);
+    window._approveReviewedBy = user.id;
 
     // 2. Switch to children tab
     document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
