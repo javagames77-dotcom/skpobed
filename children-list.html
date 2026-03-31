@@ -285,7 +285,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </a>
 <div style="display:flex;align-items:center;gap:1rem">
 <span id="userName">—</span>
-<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия</a>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия1</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -1796,8 +1796,7 @@ async function approveRequest(requestId) {
   const reqData = reqEl ? JSON.parse(decodeURIComponent(reqEl.dataset.requestJson)) : null;
   if (!reqData) { alert('Ошибка: данные заявки не найдены'); return; }
 
-  if (!confirm('Принять заявку от ' + reqData.first_name + ' ' + reqData.last_name + '?
-Откроется форма добавления — выберите группы и сохраните.')) return;
+  if (!confirm('Принять заявку от ' + reqData.first_name + ' ' + reqData.last_name + '? Откроется форма добавления — выберите группы и сохраните.')) return;
 
   try {
     // 1. Update request status to approved
