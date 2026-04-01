@@ -172,6 +172,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <button class="tab" onclick="switchTab('events')">📅 Мероприятия</button>
 <button class="tab" onclick="switchTab('news')">🔍 AI-Новости</button>
 <button class="tab" onclick="switchTab('chat')" id="tabBtnChat">💬 Чат<span class="unread-badge" id="dirChatUnread" style="display:none"></span></button>
+<button class="tab" onclick="switchTab('subscription')">💳 Подписка</button>
 </div>
 
 <!-- CLUBS TAB -->
@@ -635,6 +636,44 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
   </div>
 </div>
 
+<div class="tab-content" id="tab-subscription">
+<div class="page-header">
+<h1 class="page-title">💳 Моя подписка</h1>
+</div>
+<div id="subscriptionContent" style="max-width:600px">
+<div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:2rem">
+<div id="subLoading" style="text-align:center;color:#666;padding:2rem">Загрузка...</div>
+<div id="subData" style="display:none">
+<div style="margin-bottom:1.5rem">
+<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Статус</div>
+<div id="subStatus" style="font-size:1.1rem;font-weight:600"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Тарифный план</div>
+<div id="subPlan" style="font-size:1.1rem;font-weight:600"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Активен до</div>
+<div id="subActiveUntil" style="font-size:1.1rem;font-weight:600"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Осталось дней</div>
+<div id="subDaysLeft" style="font-size:1.1rem;font-weight:600"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Лимит групп</div>
+<div id="subGroupsLimit" style="font-size:1.1rem;font-weight:600"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Активных групп</div>
+<div id="subGroupsActive" style="font-size:1.1rem;font-weight:600"></div>
+</div>
+</div>
+<div id="subEmpty" style="display:none;text-align:center;color:#666;padding:2rem">Подписка не найдена. Обратитесь к администратору.</div>
+</div>
+</div>
+</div>
+
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
@@ -645,7 +684,35 @@ if(!token){window.location.href='/';throw new Error('No auth');}
 
 function loadUserInfo(){user=JSON.parse(localStorage.getItem('user')||'{}');document.getElementById('userName').textContent=`${user.first_name||''} ${user.last_name||''}`;populateDateSelects()}
 function populateDateSelects(){const d=document.getElementById('trainerBirthDay'),m=document.getElementById('trainerBirthMonth'),y=document.getElementById('trainerBirthYear');for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i;d.appendChild(o)}['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'].forEach((n,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=n;m.appendChild(o)});const cy=new Date().getFullYear();for(let i=cy;i>=1940;i--){const o=document.createElement('option');o.value=i;o.textContent=i;y.appendChild(o)}}
-function switchTab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));event.target.classList.add('active');document.getElementById(`tab-${t}`).classList.add('active');if(t==='trainers'&&trainers.length===0)loadTrainers();if(t==='athletes'&&allAthletes.length===0)loadAthletes();if(t==='groups'&&groups.length===0)loadGroups();if(t==='belts'&&allBelts.length===0)loadBelts();if(t==='events'&&allEvents.length===0)loadEvents();if(t==='news'&&!newsLoaded){loadSources();loadNews();loadSearchParams();} else if(t==='news'){loadSearchParams();} if(t==='chat')initChat();}
+function switchTab(t){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));event.target.classList.add('active');document.getElementById(`tab-${t}`).classList.add('active');if(t==='trainers'&&trainers.length===0)loadTrainers();if(t==='athletes'&&allAthletes.length===0)loadAthletes();if(t==='groups'&&groups.length===0)loadGroups();if(t==='belts'&&allBelts.length===0)loadBelts();if(t==='events'&&allEvents.length===0)loadEvents();if(t==='news'&&!newsLoaded){loadSources();loadNews();loadSearchParams();} else if(t==='news'){loadSearchParams();} if(t==='chat')initChat();if(t==='subscription')loadSubscription();}
+async function loadSubscription(){
+  document.getElementById('subLoading').style.display='block';
+  document.getElementById('subData').style.display='none';
+  document.getElementById('subEmpty').style.display='none';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'users',action:'list',data:{role:'director'}})});
+    const text=await r.text();
+    if(!text||!text.trim()){document.getElementById('subLoading').style.display='none';document.getElementById('subEmpty').style.display='block';return;}
+    const d=JSON.parse(text);
+    const users=d.merged||d||[];
+    const me=users.find(function(u){return u.id===user.id;});
+    document.getElementById('subLoading').style.display='none';
+    if(!me||!me.subscription_status){document.getElementById('subEmpty').style.display='block';return;}
+    const statusMap={'trial':'Пробный период','active':'Активна','grace':'Льготный период','blocked':'Заблокирована'};
+    const statusColors={'trial':'#ff9933','active':'#22c55e','grace':'#f59e0b','blocked':'#ef4444'};
+    const st=me.subscription_status||'trial';
+    document.getElementById('subStatus').innerHTML='<span style="color:'+( statusColors[st]||'#666')+'">'+( statusMap[st]||st)+'</span>';
+    document.getElementById('subPlan').textContent='Украина Базовый ($10/группу)';
+    const au=me.active_until?new Date(me.active_until):null;
+    document.getElementById('subActiveUntil').textContent=au?au.toLocaleDateString('ru-RU'):'—';
+    const dl=au?Math.ceil((au-new Date())/864e5):null;
+    document.getElementById('subDaysLeft').innerHTML=dl!==null?(dl>0?'<span style="color:#22c55e">'+dl+' дн.</span>':'<span style="color:#ef4444">Истёк</span>'):'—';
+    document.getElementById('subGroupsLimit').textContent=(me.groups_limit||'—')+' групп';
+    document.getElementById('subGroupsActive').textContent=(me.groups_count||0)+' групп';
+    document.getElementById('subData').style.display='block';
+  }catch(e){console.error(e);document.getElementById('subLoading').style.display='none';document.getElementById('subEmpty').style.display='block';}
+}
 async function loadClubs(){try{document.getElementById('loadingClubs').style.display='block';document.getElementById('clubsTable').style.display='none';const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list'})});let d=await r.json();clubs=d.merged||d||[];document.getElementById('loadingClubs').style.display='none';document.getElementById('clubsTable').style.display='table';renderClubsTable();const sel=document.getElementById('groupClubId');sel.innerHTML='<option value="">Выберите клуб</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}catch(e){console.error(e)}}
 function renderClubsTable(){const t=document.getElementById('clubsTableBody');t.innerHTML='';clubs.forEach(c=>{const r=document.createElement('tr');r.innerHTML=`<td>${c.name}</td><td>${c.address||'—'}</td><td>${c.groups_count||0}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editClub(${c.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteClub(${c.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 function addClub(){document.getElementById('clubModalTitle').textContent='Добавить клуб';document.getElementById('clubId').value='';document.getElementById('clubName').value='';const aEl=document.getElementById('clubAddress');aEl.value='';aEl._lat=null;aEl._lng=null;openClubModal();}
