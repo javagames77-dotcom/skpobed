@@ -143,6 +143,9 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .msg.mine .msg-wrap{flex-direction:row-reverse}
 .msg-del{background:none;border:none;cursor:pointer;font-size:.8rem;opacity:.35;padding:2px 4px;border-radius:4px;line-height:1;transition:opacity .15s,background .15s;flex-shrink:0}
 .msg-del:hover{opacity:1;background:#fee2e2}
+.sub-banner{display:none;padding:1rem 1.5rem;border-radius:10px;margin-bottom:1rem;font-weight:600;font-size:.95rem}
+.sub-banner-warning{background:#fff3cd;color:#856404;border:1px solid #ffc107}
+.sub-banner-danger{background:#f8d7da;color:#721c24;border:1px solid #dc3545}
 </style>
 </head>
 <body>
@@ -163,6 +166,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </header>
 
 <div class="container">
+<div id="subBanner" class="sub-banner"></div>
 <div class="tabs">
 <button class="tab active" onclick="switchTab('clubs')">🏢 Мои клубы</button>
 <button class="tab" onclick="switchTab('groups')">👥 Группы</button>
@@ -708,6 +712,10 @@ async function loadSubscription(){
     document.getElementById('subActiveUntil').textContent=au?au.toLocaleDateString('ru-RU'):'—';
     const dl=au?Math.ceil((au-new Date())/864e5):null;
     document.getElementById('subDaysLeft').innerHTML=dl!==null?(dl>0?'<span style="color:#22c55e">'+dl+' дн.</span>':'<span style="color:#ef4444">Истёк</span>'):'—';
+    var banner=document.getElementById('subBanner');
+    if(dl!==null&&dl<=0){banner.className='sub-banner sub-banner-danger';banner.textContent='⛔ Срок подписки истёк! Обратитесь к администратору для продления.';banner.style.display='block';}
+    else if(dl!==null&&dl<=7){banner.className='sub-banner sub-banner-warning';banner.textContent='⚠️ Подписка истекает через '+dl+' дн. Обратитесь к администратору для продления.';banner.style.display='block';}
+    else{banner.style.display='none';}
     document.getElementById('subGroupsLimit').textContent=(sub.groups_limit||'—')+' групп';
     document.getElementById('subGroupsActive').textContent=(sub.groups_count||0)+' групп';
     document.getElementById('subData').style.display='block';
@@ -1760,7 +1768,7 @@ async function sendBroadcast() {
 }
 
 function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/'}
-loadUserInfo();loadClubs();
+loadUserInfo();loadClubs();loadSubscription();
 // Загружаем счётчики чата сразу при старте, не ждём открытия вкладки
 loadChatContacts();
 setInterval(() => { loadChatContacts(); }, 20000);
