@@ -75,7 +75,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="container">
 <div class="page-header"><h1 class="page-title">Суперадмин</h1></div>
 <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)">
-<button class="tab-btn active" id="tabDirectors" onclick="switchTab('directors')">👥 Директора</button>
+<button class="tab-btn active" id="tabDirectors" onclick="switchTab('directors')">👥 Директора1</button>
 <button class="tab-btn" id="tabRequests" onclick="switchTab('requests')">📋 Заявки<span id="reqBadge" style="display:none;margin-left:.4rem;background:#dc3545;color:#fff;border-radius:10px;padding:0 6px;font-size:.8rem"></span></button>
 <button class="tab-btn" id="tabPlans" onclick="switchTab('plans')">💳 Тарифы</button>
 <button class="tab-btn" id="tabProviders" onclick="switchTab('providers')">⚙️ Платёжные системы</button>
@@ -278,18 +278,38 @@ async function saveDirector(e){
     if(!password||password.length<6){alert('Пароль минимум 6 символов');return;}
     const u=JSON.parse(localStorage.getItem('user')||'{}');
     const trialEndsAt=activationType==='manual'&&activeUntil?activeUntil+'T23:59:59':null;
-    try{
-      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token:token,resource:'users',action:'create',
-          data:{email:email,password:password,role:'director',first_name:firstName,last_name:lastName,
-            plan_id:planId,groups_limit:groupsLimit,trial_ends_at:trialEndsAt,reviewed_by:u.id}})});
-      const text=await r.text();
-      if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
-      const res=JSON.parse(text);
-      const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-      if(result&&result.id){closeModal();alert('Директор создан!');await loadDirectors();}
-      else{alert('Ошибка: '+JSON.stringify(res));}
-    }catch(err){alert('Ошибка: '+err.message);}
+    // Check if this is approve flow
+    if(window._approveReqId){
+      try{
+        const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({token:token,resource:'registration_requests',action:'approve_director',
+            data:{id:window._approveReqId,plan_id:planId,groups_limit:groupsLimit,
+              trial_ends_at:trialEndsAt,temp_password:password,reviewed_by:u.id}})});
+        const text=await r.text();
+        if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+        const res=JSON.parse(text);
+        const result=res.merged&&res.merged[0];
+        if(result&&result.user_id){
+          window._approveReqId=null;window._approveEmail=null;
+          closeModal();
+          alert('Директор одобрен! Вход: '+email+' Пароль: '+password);
+          await loadRequests();await loadRequestsBadge();await loadDirectors();
+        }else{alert('Ошибка: '+JSON.stringify(res));}
+      }catch(err){alert('Ошибка: '+err.message);}
+    }else{
+      try{
+        const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({token:token,resource:'users',action:'create',
+            data:{email:email,password:password,role:'director',first_name:firstName,last_name:lastName,
+              plan_id:planId,groups_limit:groupsLimit,trial_ends_at:trialEndsAt,reviewed_by:u.id}})});
+        const text=await r.text();
+        if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+        const res=JSON.parse(text);
+        const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+        if(result&&result.id){closeModal();alert('Директор создан!');await loadDirectors();}
+        else{alert('Ошибка: '+JSON.stringify(res));}
+      }catch(err){alert('Ошибка: '+err.message);}
+    }
   }
 }
 
@@ -307,7 +327,7 @@ async function deactivateDirector(id){
 }
 
 function openModal(){document.getElementById('directorModal').classList.add('active');document.body.style.overflow='hidden';}
-function closeModal(){document.getElementById('directorModal').classList.remove('active');document.body.style.overflow='';document.getElementById('directorPassword').required=true;}
+function closeModal(){document.getElementById('directorModal').classList.remove('active');document.body.style.overflow='';document.getElementById('directorPassword').required=true;window._approveReqId=null;window._approveEmail=null;}
 function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/';}
 
 async function loadRequestsBadge(){
@@ -367,28 +387,25 @@ async function loadRequests(){
   }catch(e){console.error('loadRequests:',e);loading.style.display='none';empty.style.display='block';}
 }
 
-async function approveDirectorRequest(requestId,email){
-  const u=JSON.parse(localStorage.getItem('user')||'{}');
+function approveDirectorRequest(requestId,email){
+  // Store request data for modal save
+  window._approveReqId = requestId;
+  window._approveEmail = email;
+  // Open director modal pre-filled
+  document.getElementById('modalTitle').textContent='Принять заявку директора';
+  document.getElementById('directorId').value='';
+  document.getElementById('directorEmail').value=email;
+  document.getElementById('directorPassword').value='';
+  document.getElementById('directorPassword').required=true;
+  document.getElementById('directorFirstName').value='';
+  document.getElementById('directorLastName').value='';
+  document.getElementById('directorGroupsLimit').value='3';
+  document.getElementById('directorActivationType').value='manual';
+  toggleActivationDate('manual');
   const d=new Date();d.setDate(d.getDate()+30);
-  const trialDate=prompt('Дата окончания триала:',d.toISOString().split('T')[0]);
-  if(trialDate===null)return;
-  const gl=parseInt(prompt('Лимит групп:','3')||'3');
-  if(!gl)return;
-  const pw=prompt('Временный пароль (мин. 6 символов):','');
-  if(!pw||pw.length<6){alert('Пароль минимум 6 символов');return;}
-  try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token:token,resource:'registration_requests',action:'approve_director',
-        data:{id:requestId,plan_id:1,groups_limit:gl,trial_ends_at:trialDate+'T23:59:59',temp_password:pw,reviewed_by:u.id}})});
-    const text=await r.text();
-    if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
-    const res=JSON.parse(text);
-    const result=res.merged&&res.merged[0];
-    if(result&&result.user_id){
-      alert('Директор одобрен! Вход: '+email+' Пароль: '+pw);
-      await loadRequests();await loadRequestsBadge();
-    }else{alert('Ошибка: '+JSON.stringify(res));}
-  }catch(e){alert('Ошибка: '+e.message);}
+  document.getElementById('directorActiveUntil').value=d.toISOString().split('T')[0];
+  document.getElementById('directorSaveBtn').textContent='Одобрить';
+  openModal();
 }
 
 async function rejectDirectorRequest(requestId){
