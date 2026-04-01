@@ -54,7 +54,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .btn-save{background:var(--s);color:#fff}
 .tab-btn{padding:.75rem 1.5rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
 .tab-btn.active{color:var(--p);border-bottom-color:var(--p)}
-.tab-btn:hover{color:var(--p)}
 </style>
 </head>
 <body>
@@ -74,15 +73,13 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </header>
 
 <div class="container">
-<div class="page-header">
-<h1 class="page-title">Суперадмин</h1>
-</div>
-
+<div class="page-header"><h1 class="page-title">Суперадмин</h1></div>
 <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)">
 <button class="tab-btn active" id="tabDirectors" onclick="switchTab('directors')">👥 Директора</button>
 <button class="tab-btn" id="tabRequests" onclick="switchTab('requests')">📋 Заявки<span id="reqBadge" style="display:none;margin-left:.4rem;background:#dc3545;color:#fff;border-radius:10px;padding:0 6px;font-size:.8rem"></span></button>
+<button class="tab-btn" id="tabPlans" onclick="switchTab('plans')">💳 Тарифы</button>
+<button class="tab-btn" id="tabProviders" onclick="switchTab('providers')">⚙️ Платёжные системы</button>
 </div>
-
 <div id="panelDirectors">
 <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
 <button class="btn-add" onclick="addDirector()"><span>➕</span><span>Добавить директора</span></button>
@@ -90,339 +87,456 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="table-container">
 <div id="loading" class="loading">Загрузка...</div>
 <table class="table" id="directorsTable" style="display:none">
-<thead>
-<tr>
-<th>ФИО</th>
-<th>Email</th>
-<th>Клубов</th>
-<th>Статус</th>
-<th>Дата регистрации</th>
-<th>Действия</th>
-</tr>
-</thead>
+<thead><tr><th>ФИО</th><th>Email</th><th>Групп</th><th>Статус</th><th>Активен до</th><th>Осталось</th><th>Действия</th></tr></thead>
 <tbody id="tbody"></tbody>
 </table>
 </div>
 </div>
-
 <div id="panelRequests" style="display:none">
 <div id="reqLoading" class="loading" style="display:none">Загрузка...</div>
-<div id="reqEmpty" style="display:none;text-align:center;padding:3rem;color:#666">
-  <div style="font-size:3rem;margin-bottom:1rem">📭</div>
-  <div>Новых заявок нет</div>
-</div>
+<div id="reqEmpty" style="display:none;text-align:center;padding:3rem;color:#666"><div style="font-size:3rem">📭</div><div>Новых заявок нет</div></div>
 <div id="reqList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:1.5rem"></div>
 </div>
+<div id="panelPlans" style="display:none">
+<div style="display:flex;justify-content:flex-end;margin-bottom:1rem"><button class="btn-add" onclick="addPlan()"><span>➕</span><span>Добавить тариф</span></button></div>
+<div class="table-container"><table class="table"><thead><tr>
+<th>Название</th><th>Страна</th><th>Валюта</th><th>$/группу</th><th>Фото/день</th><th>Смен/мес</th><th>Доков/мес</th><th>Grace</th><th>Статус</th><th>Действия</th>
+</tr></thead><tbody id="plansTbody"><tr><td colspan="10" style="text-align:center;padding:2rem;color:#666">Загрузка...</td></tr></tbody></table></div>
 </div>
+<div id="panelProviders" style="display:none">
+<div class="table-container"><table class="table"><thead><tr>
+<th>Провайдер</th><th>Комиссия</th><th>Приоритет</th><th>Статус</th><th>Действия</th>
+</tr></thead><tbody id="providersTbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:#666">Загрузка...</td></tr></tbody></table></div>
+</div>
+</div>
+
+<div class="modal" id="planModal">
+<div class="modal-content" style="max-width:680px">
+<div class="modal-header"><h2 class="modal-title" id="planModalTitle">Добавить тариф</h2><button class="modal-close" onclick="closePlanModal()">✕</button></div>
+<div class="modal-body"><form id="planForm" onsubmit="savePlan(event)"><input type="hidden" id="planId">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+<div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="planName" required></div>
+<div class="form-group"><label class="form-label">Страна</label><input type="text" class="form-input" id="planCountry" value="UA" maxlength="2"></div>
+<div class="form-group"><label class="form-label">Валюта</label><select class="form-input" id="planCurrency"><option value="USD">USD</option><option value="EUR">EUR</option><option value="UAH">UAH</option></select></div>
+<div class="form-group"><label class="form-label">$/группу в месяц *</label><input type="number" class="form-input" id="planPricePerGroup" step="0.01" min="0" value="10.00" required></div>
+<div class="form-group"><label class="form-label">Фото/день/группа</label><input type="number" class="form-input" id="planFreePhotos" value="2" min="0"></div>
+<div class="form-group"><label class="form-label">Смен/мес/спортсмен</label><input type="number" class="form-input" id="planFreeChanges" value="4" min="0"></div>
+<div class="form-group"><label class="form-label">Документов/мес/спортсмен</label><input type="number" class="form-input" id="planFreeDocs" value="5" min="0"></div>
+<div class="form-group"><label class="form-label">Доп. фото ($)</label><input type="number" class="form-input" id="planOveragePhoto" step="0.01" value="0.20"></div>
+<div class="form-group"><label class="form-label">Доп. смена ($)</label><input type="number" class="form-input" id="planOverageChange" step="0.01" value="0.05"></div>
+<div class="form-group"><label class="form-label">Доп. документ ($)</label><input type="number" class="form-input" id="planOverageDoc" step="0.01" value="0.05"></div>
+<div class="form-group"><label class="form-label">Порог счёта ($)</label><input type="number" class="form-input" id="planOverageThreshold" step="0.01" value="10.00"></div>
+<div class="form-group"><label class="form-label">Grace period (дней)</label><input type="number" class="form-input" id="planGraceDays" value="30" min="0"></div>
+</div></form></div>
+<div class="modal-footer"><button class="btn btn-cancel" onclick="closePlanModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('planForm').requestSubmit()">Сохранить</button></div>
+</div></div>
 
 <div class="modal" id="directorModal">
 <div class="modal-content">
-<div class="modal-header">
-<h2 class="modal-title" id="modalTitle">Добавить директора</h2>
-<button class="modal-close" onclick="closeModal()">✕</button>
-</div>
-<div class="modal-body">
-<form id="directorForm" onsubmit="saveDirector(event)">
-<input type="hidden" id="directorId">
-<div class="form-group">
-<label class="form-label">Email *</label>
-<input type="email" class="form-input" id="directorEmail" required>
-</div>
-<div class="form-group">
-<label class="form-label">Пароль *</label>
-<input type="password" class="form-input" id="directorPassword" required>
-<small style="color:#666">Минимум 6 символов</small>
-</div>
-<div class="form-group">
-<label class="form-label">Имя *</label>
-<input type="text" class="form-input" id="directorFirstName" required>
-</div>
-<div class="form-group">
-<label class="form-label">Фамилия *</label>
-<input type="text" class="form-input" id="directorLastName" required>
-</div>
-</form>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeModal()">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('directorForm').requestSubmit()">Создать</button>
-</div>
-</div>
-</div>
+<div class="modal-header"><h2 class="modal-title" id="modalTitle">Добавить директора</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
+<div class="modal-body"><form id="directorForm" onsubmit="saveDirector(event)"><input type="hidden" id="directorId">
+<div class="form-group"><label class="form-label">Имя *</label><input type="text" class="form-input" id="directorFirstName" autocomplete="given-name" required></div>
+<div class="form-group"><label class="form-label">Фамилия *</label><input type="text" class="form-input" id="directorLastName" autocomplete="family-name" required></div>
+<div class="form-group"><label class="form-label">Email *</label><input type="email" class="form-input" id="directorEmail" autocomplete="email" required></div>
+<div class="form-group"><label class="form-label">Пароль *</label><input type="password" class="form-input" id="directorPassword" autocomplete="new-password" required><small style="color:#666">Минимум 6 символов</small></div>
+<div class="form-group"><label class="form-label">Тарифный план *</label><select class="form-input" id="directorPlanId" required><option value="1">Украина Базовый ($10/группу)</option></select></div>
+<div class="form-group"><label class="form-label">Лимит групп *</label><input type="number" class="form-input" id="directorGroupsLimit" min="1" value="3" required></div>
+<div class="form-group"><label class="form-label">Тип активации *</label>
+<select class="form-input" id="directorActivationType" onchange="toggleActivationDate(this.value)">
+<option value="manual">Ручная (оплата наличными)</option>
+<option value="auto">Автооплата (через платёжную систему)</option>
+</select></div>
+<div class="form-group" id="activationDateGroup"><label class="form-label">Активен до *</label><input type="date" class="form-input" id="directorActiveUntil"><small style="color:#666">По умолчанию +30 дней</small></div>
+</form></div>
+<div class="modal-footer"><button class="btn btn-cancel" onclick="closeModal()">Отмена</button><button class="btn btn-save" id="directorSaveBtn" onclick="document.getElementById('directorForm').requestSubmit()">Создать</button></div>
+</div></div>
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 let token=localStorage.getItem('token');
-let directors=[];
-
+let directors=[],plans=[],providers=[];
 if(!token){window.location.href='/';throw new Error('No auth');}
 
 function loadUserInfo(){
-const u=JSON.parse(localStorage.getItem('user')||'{}');
-if(u.role!=='superadmin'){alert('Доступ запрещен');window.location.href='/';return}
-document.getElementById('userName').textContent=u.first_name?`${u.first_name} ${u.last_name||''}`.trim():u.email||'Пользователь';
+  const u=JSON.parse(localStorage.getItem('user')||'{}');
+  if(u.role!=='superadmin'){alert('Доступ запрещен');window.location.href='/';return;}
+  document.getElementById('userName').textContent=u.first_name?(u.first_name+' '+(u.last_name||'')).trim():u.email||'';
+}
+
+function switchTab(tab){
+  ['directors','requests','plans','providers'].forEach(function(t){
+    var panel=document.getElementById('panel'+t[0].toUpperCase()+t.slice(1));
+    var btn=document.getElementById('tab'+t[0].toUpperCase()+t.slice(1));
+    if(panel) panel.style.display=t===tab?'':'none';
+    if(btn) btn.classList.toggle('active',t===tab);
+  });
+  if(tab==='requests') loadRequests();
+  if(tab==='plans') loadPlans();
+  if(tab==='providers') loadProviders();
+}
+
+function toggleActivationDate(val){
+  document.getElementById('activationDateGroup').style.display=val==='auto'?'none':'';
 }
 
 async function loadDirectors(){
-try{
-document.getElementById('loading').style.display='block';
-document.getElementById('directorsTable').style.display='none';
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'director'}})});
-let d=await r.json();
-directors=d.merged||d||[];
-document.getElementById('loading').style.display='none';
-document.getElementById('directorsTable').style.display='table';
-renderTable();
-}catch(e){console.error(e);document.getElementById('loading').textContent='Ошибка загрузки'}
+  try{
+    document.getElementById('loading').style.display='block';
+    document.getElementById('directorsTable').style.display='none';
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'users',action:'list',data:{role:'director'}})});
+    const text=await r.text();
+    if(!text||!text.trim()){document.getElementById('loading').textContent='Нет данных';return;}
+    const d=JSON.parse(text);
+    directors=d.merged||d||[];
+    document.getElementById('loading').style.display='none';
+    document.getElementById('directorsTable').style.display='table';
+    renderTable();
+  }catch(e){console.error(e);document.getElementById('loading').textContent='Ошибка загрузки';}
 }
 
 function renderTable(){
-const t=document.getElementById('tbody');
-t.innerHTML='';
-directors.forEach(dir=>{
-const statusClass=dir.is_active?'status-active':'status-inactive';
-const statusText=dir.is_active?'Активен':'Деактивирован';
-const clubsCount=dir.clubs_count||0;
-const r=document.createElement('tr');
-r.innerHTML=`
-<td>${dir.first_name} ${dir.last_name}</td>
-<td>${dir.email}</td>
-<td>${clubsCount}</td>
-<td><span class="status-badge ${statusClass}">${statusText}</span></td>
-<td>${new Date(dir.created_at).toLocaleDateString('ru-RU')}</td>
-<td>
-<div class="table-actions">
-<button class="btn-icon btn-edit" onclick="editDirector(${dir.id})" title="Редактировать">✏️</button>
-<button class="btn-icon btn-delete" onclick="deactivateDirector(${dir.id})" title="Деактивировать">🗑️</button>
-</div>
-</td>
-`;
-t.appendChild(r);
-});
+  const t=document.getElementById('tbody');
+  t.innerHTML='';
+  directors.forEach(function(dir){
+    const sc=dir.is_active?'status-active':'status-inactive';
+    const st=dir.is_active?'Активен':'Деактивирован';
+    const gc=dir.groups_count||0;
+    const au=dir.active_until?new Date(dir.active_until):null;
+    const aus=au?au.toLocaleDateString('ru-RU'):'—';
+    const dl=au?Math.ceil((au-new Date())/864e5):null;
+    const ds=dl!==null?(dl>0?dl+' дн.':'<span style="color:#dc3545">Истёк</span>'):'—';
+    const row=document.createElement('tr');
+    row.innerHTML='<td>'+dir.first_name+' '+dir.last_name+'</td>'+
+      '<td>'+dir.email+'</td><td>'+gc+'</td>'+
+      '<td><span class="status-badge '+sc+'">'+st+'</span></td>'+
+      '<td>'+aus+'</td><td>'+ds+'</td>'+
+      '<td><div class="table-actions">'+
+      '<button class="btn-icon btn-edit" onclick="editDirector('+dir.id+')">✏️</button>'+
+      '<button class="btn-icon btn-delete" onclick="deactivateDirector('+dir.id+')">🗑️</button>'+
+      '</div></td>';
+    t.appendChild(row);
+  });
 }
 
 function addDirector(){
-document.getElementById('modalTitle').textContent='Добавить директора';
-document.getElementById('directorId').value='';
-document.getElementById('directorEmail').value='';
-document.getElementById('directorPassword').value='';
-document.getElementById('directorFirstName').value='';
-document.getElementById('directorLastName').value='';
-openModal();
+  document.getElementById('modalTitle').textContent='Добавить директора';
+  document.getElementById('directorId').value='';
+  document.getElementById('directorEmail').value='';
+  document.getElementById('directorPassword').value='';
+  document.getElementById('directorPassword').required=true;
+  document.getElementById('directorFirstName').value='';
+  document.getElementById('directorLastName').value='';
+  document.getElementById('directorGroupsLimit').value='3';
+  document.getElementById('directorActivationType').value='manual';
+  toggleActivationDate('manual');
+  const d=new Date();d.setDate(d.getDate()+30);
+  document.getElementById('directorActiveUntil').value=d.toISOString().split('T')[0];
+  document.getElementById('directorSaveBtn').textContent='Создать';
+  openModal();
 }
 
 function editDirector(id){
-const dir=directors.find(d=>d.id===id);
-if(!dir)return;
-document.getElementById('modalTitle').textContent='Редактировать директора';
-document.getElementById('directorId').value=dir.id;
-document.getElementById('directorEmail').value=dir.email;
-document.getElementById('directorPassword').value='';
-document.getElementById('directorPassword').required=false;
-document.getElementById('directorFirstName').value=dir.first_name;
-document.getElementById('directorLastName').value=dir.last_name;
-openModal();
+  const dir=directors.find(function(d){return d.id===id;});
+  if(!dir)return;
+  document.getElementById('modalTitle').textContent='Редактировать директора';
+  document.getElementById('directorId').value=dir.id;
+  document.getElementById('directorEmail').value=dir.email;
+  document.getElementById('directorPassword').value='';
+  document.getElementById('directorPassword').required=false;
+  document.getElementById('directorFirstName').value=dir.first_name;
+  document.getElementById('directorLastName').value=dir.last_name;
+  document.getElementById('directorGroupsLimit').value=dir.groups_limit||3;
+  document.getElementById('directorSaveBtn').textContent='Сохранить';
+  openModal();
 }
 
 async function saveDirector(e){
-e.preventDefault();
-const id=document.getElementById('directorId').value;
-const email=document.getElementById('directorEmail').value.trim();
-const password=document.getElementById('directorPassword').value;
-const firstName=document.getElementById('directorFirstName').value.trim();
-const lastName=document.getElementById('directorLastName').value.trim();
-
-if(id){
-// UPDATE
-const data={id:parseInt(id),email,first_name:firstName,last_name:lastName};
-if(password)data.password=password;
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'update',data})});
-let res=await r.json();
-const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-if(result&&result.id){
-closeModal();
-alert('Директор обновлен!');
-await loadDirectors();
-}else{alert('Ошибка: '+(result?.error||JSON.stringify(res)))}
-}catch(err){console.error(err);alert('Ошибка: '+err.message)}
-}else{
-// CREATE via AUTH API
-try{
-const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'register',email,password,role:'director',first_name:firstName,last_name:lastName})});
-if(!r.ok)throw new Error('HTTP '+r.status);
-const res=await r.json();
-if(res.success||res.token){
-closeModal();
-alert('✅ Директор создан!');
-await loadDirectors();
-}else{alert('❌ '+JSON.stringify(res))}
-}catch(err){console.error(err);alert('❌ Ошибка сети: '+err.message+'\n\nПроверьте n8n workflow Auth API')}
-}
+  e.preventDefault();
+  const id=document.getElementById('directorId').value;
+  const email=document.getElementById('directorEmail').value.trim();
+  const password=document.getElementById('directorPassword').value;
+  const firstName=document.getElementById('directorFirstName').value.trim();
+  const lastName=document.getElementById('directorLastName').value.trim();
+  const planId=parseInt(document.getElementById('directorPlanId').value)||1;
+  const groupsLimit=parseInt(document.getElementById('directorGroupsLimit').value)||3;
+  const activationType=document.getElementById('directorActivationType').value;
+  const activeUntil=document.getElementById('directorActiveUntil').value;
+  if(id){
+    const data={id:parseInt(id),email:email,first_name:firstName,last_name:lastName,groups_limit:groupsLimit};
+    if(password)data.password=password;
+    try{
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,resource:'users',action:'update',data:data})});
+      const text=await r.text();
+      if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+      const res=JSON.parse(text);
+      const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+      if(result&&result.id){closeModal();alert('Директор обновлён!');await loadDirectors();}
+      else{alert('Ошибка: '+JSON.stringify(res));}
+    }catch(err){alert('Ошибка: '+err.message);}
+  }else{
+    if(!password||password.length<6){alert('Пароль минимум 6 символов');return;}
+    const u=JSON.parse(localStorage.getItem('user')||'{}');
+    const trialEndsAt=activationType==='manual'&&activeUntil?activeUntil+'T23:59:59':null;
+    try{
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token:token,resource:'users',action:'create',
+          data:{email:email,password:password,role:'director',first_name:firstName,last_name:lastName,
+            plan_id:planId,groups_limit:groupsLimit,trial_ends_at:trialEndsAt,reviewed_by:u.id}})});
+      const text=await r.text();
+      if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+      const res=JSON.parse(text);
+      const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+      if(result&&result.id){closeModal();alert('Директор создан!');await loadDirectors();}
+      else{alert('Ошибка: '+JSON.stringify(res));}
+    }catch(err){alert('Ошибка: '+err.message);}
+  }
 }
 
 async function deactivateDirector(id){
-if(!confirm('Деактивировать директора?'))return;
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'delete',data:{id}})});
-let d=await r.json();
-const result=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
-if(result&&(result.success||result.id)){
-alert('Директор деактивирован');
-await loadDirectors();
-}else{
-alert('Ошибка: '+JSON.stringify(d));
-}
-}catch(e){console.error(e);alert('Ошибка: '+e.message)}
+  if(!confirm('Деактивировать директора?'))return;
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,resource:'users',action:'delete',data:{id:id}})});
+    const text=await r.text();
+    if(!text||!text.trim()){alert('Ошибка');return;}
+    const d=JSON.parse(text);
+    const result=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
+    if(result&&(result.success||result.id)){alert('Директор деактивирован');await loadDirectors();}
+    else{alert('Ошибка: '+JSON.stringify(d));}
+  }catch(e){alert('Ошибка: '+e.message);}
 }
 
-function openModal(){
-document.getElementById('directorModal').classList.add('active');
-document.body.style.overflow='hidden';
+function openModal(){document.getElementById('directorModal').classList.add('active');document.body.style.overflow='hidden';}
+function closeModal(){document.getElementById('directorModal').classList.remove('active');document.body.style.overflow='';document.getElementById('directorPassword').required=true;}
+function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/';}
+
+async function loadRequestsBadge(){
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'registration_requests',action:'list',data:{type:'director',status:'pending'}})});
+    const text=await r.text();
+    if(!text||!text.trim())return;
+    const d=JSON.parse(text);
+    const count=(d.merged||d||[]).filter(function(i){return i&&i.id;}).length;
+    const badge=document.getElementById('reqBadge');
+    if(count>0){badge.textContent=count;badge.style.display='inline-block';}
+    else{badge.style.display='none';}
+  }catch(e){console.error('badge:',e);}
 }
 
-function closeModal(){
-document.getElementById('directorModal').classList.remove('active');
-document.body.style.overflow='';
-document.getElementById('directorPassword').required=true;
+async function loadRequests(){
+  const loading=document.getElementById('reqLoading');
+  const empty=document.getElementById('reqEmpty');
+  const list=document.getElementById('reqList');
+  loading.style.display='block';empty.style.display='none';list.innerHTML='';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'registration_requests',action:'list',data:{type:'director',status:'pending'}})});
+    const text=await r.text();
+    loading.style.display='none';
+    if(!text||!text.trim()){empty.style.display='block';return;}
+    const d=JSON.parse(text);
+    const requests=(d.merged||d||[]).filter(function(i){return i&&i.id;});
+    const badge=document.getElementById('reqBadge');
+    if(requests.length>0){badge.textContent=requests.length;badge.style.display='inline-block';}
+    else{badge.style.display='none';}
+    if(!requests.length){empty.style.display='block';return;}
+    var html='';
+    requests.forEach(function(req){
+      var created=new Date(req.created_at).toLocaleDateString('ru-RU');
+      html+='<div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;border:1px solid #e0e0e0">';
+      html+='<div style="padding:1.25rem">';
+      html+='<div style="font-weight:700;font-size:1.1rem;margin-bottom:.5rem">'+req.first_name+' '+req.last_name+'</div>';
+      html+='<div style="font-size:.9rem;color:#555;margin-bottom:.25rem">Email: '+(req.email||'—')+'</div>';
+      if(req.club_name) html+='<div style="font-size:.9rem;color:#555;margin-bottom:.25rem">Клуб: '+req.club_name+'</div>';
+      if(req.phone) html+='<div style="font-size:.9rem;color:#555;margin-bottom:.25rem">Тел: '+req.phone+'</div>';
+      html+='<div style="font-size:.8rem;color:#999;margin-top:.5rem">Заявка от '+created+'</div>';
+      html+='</div>';
+      html+='<div style="padding:1rem 1.25rem;border-top:1px solid #f0f0f0;display:flex;gap:.75rem">';
+      html+='<button class="approve-btn" data-id="'+req.id+'" data-email="'+(req.email||'')+'" style="flex:1;padding:.65rem;background:#22c55e;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">Принять</button>';
+      html+='<button class="reject-btn" data-id="'+req.id+'" style="flex:1;padding:.65rem;background:#fff;color:#ef4444;border:1.5px solid #ef4444;border-radius:8px;font-weight:600;cursor:pointer">Отклонить</button>';
+      html+='</div></div>';
+    });
+    list.innerHTML=html;
+    list.querySelectorAll('.approve-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){approveDirectorRequest(parseInt(btn.dataset.id),btn.dataset.email);});
+    });
+    list.querySelectorAll('.reject-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){rejectDirectorRequest(parseInt(btn.dataset.id));});
+    });
+  }catch(e){console.error('loadRequests:',e);loading.style.display='none';empty.style.display='block';}
 }
 
-function logout(){
-localStorage.removeItem('token');
-localStorage.removeItem('user');
-window.location.href='/';
+async function approveDirectorRequest(requestId,email){
+  const u=JSON.parse(localStorage.getItem('user')||'{}');
+  const d=new Date();d.setDate(d.getDate()+30);
+  const trialDate=prompt('Дата окончания триала:',d.toISOString().split('T')[0]);
+  if(trialDate===null)return;
+  const gl=parseInt(prompt('Лимит групп:','3')||'3');
+  if(!gl)return;
+  const pw=prompt('Временный пароль (мин. 6 символов):','');
+  if(!pw||pw.length<6){alert('Пароль минимум 6 символов');return;}
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'registration_requests',action:'approve_director',
+        data:{id:requestId,plan_id:1,groups_limit:gl,trial_ends_at:trialDate+'T23:59:59',temp_password:pw,reviewed_by:u.id}})});
+    const text=await r.text();
+    if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+    const res=JSON.parse(text);
+    const result=res.merged&&res.merged[0];
+    if(result&&result.user_id){
+      alert('Директор одобрен! Вход: '+email+' Пароль: '+pw);
+      await loadRequests();await loadRequestsBadge();
+    }else{alert('Ошибка: '+JSON.stringify(res));}
+  }catch(e){alert('Ошибка: '+e.message);}
+}
+
+async function rejectDirectorRequest(requestId){
+  const reason=prompt('Причина отклонения (необязательно):');
+  if(reason===null)return;
+  const u=JSON.parse(localStorage.getItem('user')||'{}');
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'registration_requests',action:'reject',
+        data:{id:requestId,reviewed_by:u.id,reason:reason||null}})});
+    const text=await r.text();
+    if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+    const res=JSON.parse(text);
+    const result=res.merged&&res.merged[0];
+    if(result&&result.status==='rejected'){await loadRequests();await loadRequestsBadge();}
+    else{alert('Ошибка: '+JSON.stringify(res));}
+  }catch(e){alert('Ошибка: '+e.message);}
+}
+
+async function loadPlans(){
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'billing_plans',action:'list'})});
+    const text=await r.text();if(!text||!text.trim())return;
+    const d=JSON.parse(text);
+    plans=(d.merged||d||[]).filter(function(i){return i&&i.id;});
+    var html=plans.length?'':'<tr><td colspan="10" style="text-align:center;padding:2rem;color:#666">Нет тарифов</td></tr>';
+    plans.forEach(function(p){
+      html+='<tr><td>'+p.name+'</td><td>'+(p.country||'—')+'</td><td>'+p.currency+'</td>'+
+        '<td>$'+p.price_per_group+'</td>'+
+        '<td>'+(p.free_photo_uploads_per_day_per_group||2)+'</td>'+
+        '<td>'+(p.free_group_changes_per_month_per_athlete||4)+'</td>'+
+        '<td>'+(p.free_docs_per_month_per_athlete||5)+'</td>'+
+        '<td>'+(p.grace_period_days||30)+'</td>'+
+        '<td><span class="status-badge '+(p.is_active?'status-active':'status-inactive')+'">'+(p.is_active?'Активен':'Нет')+'</span></td>'+
+        '<td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editPlan('+p.id+')">✏️</button></div></td></tr>';
+    });
+    document.getElementById('plansTbody').innerHTML=html;
+    const sel=document.getElementById('directorPlanId');
+    if(sel) sel.innerHTML=plans.filter(function(p){return p.is_active;}).map(function(p){return '<option value="'+p.id+'">'+p.name+' ($'+p.price_per_group+'/группу)</option>';}).join('');
+  }catch(e){console.error('loadPlans:',e);}
+}
+
+function addPlan(){
+  document.getElementById('planModalTitle').textContent='Добавить тариф';
+  document.getElementById('planId').value='';
+  document.getElementById('planName').value='';
+  document.getElementById('planCountry').value='UA';
+  document.getElementById('planCurrency').value='USD';
+  document.getElementById('planPricePerGroup').value='10.00';
+  document.getElementById('planFreePhotos').value='2';
+  document.getElementById('planFreeChanges').value='4';
+  document.getElementById('planFreeDocs').value='5';
+  document.getElementById('planOveragePhoto').value='0.20';
+  document.getElementById('planOverageChange').value='0.05';
+  document.getElementById('planOverageDoc').value='0.05';
+  document.getElementById('planOverageThreshold').value='10.00';
+  document.getElementById('planGraceDays').value='30';
+  document.getElementById('planModal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+
+function editPlan(id){
+  const p=plans.find(function(x){return x.id===id;});if(!p)return;
+  document.getElementById('planModalTitle').textContent='Редактировать тариф';
+  document.getElementById('planId').value=p.id;
+  document.getElementById('planName').value=p.name;
+  document.getElementById('planCountry').value=p.country||'UA';
+  document.getElementById('planCurrency').value=p.currency||'USD';
+  document.getElementById('planPricePerGroup').value=p.price_per_group;
+  document.getElementById('planFreePhotos').value=p.free_photo_uploads_per_day_per_group||2;
+  document.getElementById('planFreeChanges').value=p.free_group_changes_per_month_per_athlete||4;
+  document.getElementById('planFreeDocs').value=p.free_docs_per_month_per_athlete||5;
+  document.getElementById('planOveragePhoto').value=p.overage_price_photo||0.20;
+  document.getElementById('planOverageChange').value=p.overage_price_group_change||0.05;
+  document.getElementById('planOverageDoc').value=p.overage_price_doc||0.05;
+  document.getElementById('planOverageThreshold').value=p.overage_invoice_threshold||10.00;
+  document.getElementById('planGraceDays').value=p.grace_period_days||30;
+  document.getElementById('planModal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+
+function closePlanModal(){document.getElementById('planModal').classList.remove('active');document.body.style.overflow='';}
+
+async function savePlan(e){
+  e.preventDefault();
+  const id=document.getElementById('planId').value;
+  const data={
+    name:document.getElementById('planName').value.trim(),
+    country:document.getElementById('planCountry').value.trim().toUpperCase(),
+    currency:document.getElementById('planCurrency').value,
+    price_per_group:parseFloat(document.getElementById('planPricePerGroup').value),
+    free_photo_uploads_per_day_per_group:parseInt(document.getElementById('planFreePhotos').value),
+    free_group_changes_per_month_per_athlete:parseInt(document.getElementById('planFreeChanges').value),
+    free_docs_per_month_per_athlete:parseInt(document.getElementById('planFreeDocs').value),
+    overage_price_photo:parseFloat(document.getElementById('planOveragePhoto').value),
+    overage_price_group_change:parseFloat(document.getElementById('planOverageChange').value),
+    overage_price_doc:parseFloat(document.getElementById('planOverageDoc').value),
+    overage_invoice_threshold:parseFloat(document.getElementById('planOverageThreshold').value),
+    grace_period_days:parseInt(document.getElementById('planGraceDays').value),
+    is_active:true
+  };
+  if(id)data.id=parseInt(id);
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'billing_plans',action:id?'update':'create',data:data})});
+    const text=await r.text();if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+    const res=JSON.parse(text);
+    const result=res.merged&&res.merged[0];
+    if(result&&result.id){closePlanModal();await loadPlans();alert('Тариф сохранён!');}
+    else{alert('Ошибка: '+JSON.stringify(res));}
+  }catch(err){alert('Ошибка: '+err.message);}
+}
+
+async function loadProviders(){
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'billing_providers',action:'list'})});
+    const text=await r.text();if(!text||!text.trim())return;
+    const d=JSON.parse(text);
+    providers=(d.merged||d||[]).filter(function(i){return i&&i.id;});
+    var html='';
+    providers.forEach(function(p){
+      html+='<tr><td><strong>'+p.display_name+'</strong><br><small style="color:#888">'+p.name+'</small></td>'+
+        '<td>'+p.fee_percent+'%</td><td>'+p.priority+'</td>'+
+        '<td><span class="status-badge '+(p.is_active?'status-active':'status-inactive')+'">'+(p.is_active?'Активен':'Неактивен')+'</span></td>'+
+        '<td><div class="table-actions"><button class="btn-icon '+(p.is_active?'btn-delete':'btn-edit')+'" onclick="toggleProvider('+p.id+','+(p.is_active?'false':'true')+')">'+(p.is_active?'⏸️':'▶️')+'</button></div></td></tr>';
+    });
+    document.getElementById('providersTbody').innerHTML=html||'<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666">Нет данных</td></tr>';
+  }catch(e){console.error('loadProviders:',e);}
+}
+
+async function toggleProvider(id,newState){
+  const p=providers.find(function(x){return x.id===id;});
+  if(p&&p.is_active&&providers.filter(function(x){return x.is_active;}).length<=1){
+    alert('Нельзя отключить последний активный провайдер!');return;
+  }
+  try{
+    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'billing_providers',action:'update',data:{id:id,is_active:newState}})});
+    await loadProviders();
+  }catch(e){alert('Ошибка: '+e.message);}
 }
 
 loadUserInfo();
 loadDirectors();
 loadRequestsBadge();
-
-function switchTab(tab) {
-  document.getElementById('panelDirectors').style.display = tab === 'directors' ? '' : 'none';
-  document.getElementById('panelRequests').style.display = tab === 'requests' ? '' : 'none';
-  document.getElementById('tabDirectors').classList.toggle('active', tab === 'directors');
-  document.getElementById('tabRequests').classList.toggle('active', tab === 'requests');
-  if (tab === 'requests') loadRequests();
-}
-
-async function loadRequestsBadge() {
-  try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'registration_requests', action:'list', data:{type:'director', status:'pending'}})
-    });
-    const text = await r.text();
-    if (!text || !text.trim()) return;
-    const d = JSON.parse(text);
-    const count = (d.merged||d||[]).filter(i=>i&&i.id).length;
-    const badge = document.getElementById('reqBadge');
-    if (count > 0) { badge.textContent = count; badge.style.display = 'inline-block'; }
-    else { badge.style.display = 'none'; }
-  } catch(e) { console.error('badge error:', e); }
-}
-
-async function loadRequests() {
-  const loading = document.getElementById('reqLoading');
-  const empty = document.getElementById('reqEmpty');
-  const list = document.getElementById('reqList');
-  loading.style.display = 'block';
-  empty.style.display = 'none';
-  list.innerHTML = '';
-  try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'registration_requests', action:'list', data:{type:'director', status:'pending'}})
-    });
-    const text = await r.text();
-    loading.style.display = 'none';
-    if (!text || !text.trim()) { empty.style.display = 'block'; return; }
-    const d = JSON.parse(text);
-    const requests = (d.merged||d||[]).filter(i=>i&&i.id);
-    const badge = document.getElementById('reqBadge');
-    if (requests.length > 0) { badge.textContent = requests.length; badge.style.display = 'inline-block'; }
-    else { badge.style.display = 'none'; }
-    if (!requests.length) { empty.style.display = 'block'; return; }
-    list.innerHTML = requests.map(req => {
-      const created = new Date(req.created_at).toLocaleDateString('ru-RU');
-      return `<div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;border:1px solid #e0e0e0">
-        <div style="padding:1.25rem">
-          <div style="font-weight:700;font-size:1.1rem;margin-bottom:.5rem">${req.first_name} ${req.last_name}</div>
-          <div style="font-size:.9rem;color:#555;margin-bottom:.25rem">📧 ${req.email}</div>
-          ${req.club_name ? `<div style="font-size:.9rem;color:#555;margin-bottom:.25rem">🏢 ${req.club_name}</div>` : ''}
-          ${req.phone ? `<div style="font-size:.9rem;color:#555;margin-bottom:.25rem">📞 ${req.phone}</div>` : ''}
-          <div style="font-size:.8rem;color:#999;margin-top:.5rem">Заявка от ${created}</div>
-        </div>
-        <div style="padding:1rem 1.25rem;border-top:1px solid #f0f0f0;display:flex;gap:.75rem">
-          <button onclick="approveDirectorRequest(${req.id},'${(req.email||'').replace(/'/g,"\\'")}','${(req.first_name||'').replace(/'/g,"\\'")} ${(req.last_name||'').replace(/'/g,"\\'")}')"
-            style="flex:1;padding:.65rem;background:#22c55e;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">
-            ✅ Принять
-          </button>
-          <button onclick="rejectDirectorRequest(${req.id})"
-            style="flex:1;padding:.65rem;background:#fff;color:#ef4444;border:1.5px solid #ef4444;border-radius:8px;font-weight:600;cursor:pointer">
-            ❌ Отклонить
-          </button>
-        </div>
-      </div>`;
-    }).join('');
-  } catch(e) {
-    console.error('loadRequests error:', e);
-    loading.style.display = 'none';
-    empty.style.display = 'block';
-  }
-}
-
-async function approveDirectorRequest(requestId, email, fullName) {
-  const u = JSON.parse(localStorage.getItem('user')||'{}');
-
-  // Get plan and trial date from admin
-  const trialDate = prompt(`Дата окончания триала для ${fullName}:`, new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0]);
-  if (trialDate === null) return;
-  const groupsLimit = parseInt(prompt('Лимит групп:', '3') || '3');
-  if (!groupsLimit) return;
-  const tempPassword = prompt('Временный пароль для директора (минимум 6 символов):', '');
-  if (!tempPassword || tempPassword.length < 6) { alert('Пароль минимум 6 символов'); return; }
-
-  try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'registration_requests', action:'approve_director',
-        data:{id:requestId, plan_id:1, groups_limit:groupsLimit,
-          trial_ends_at: trialDate + 'T23:59:59',
-          temp_password: tempPassword, reviewed_by: u.id}
-      })
-    });
-    const text = await r.text();
-    if (!text || !text.trim()) { alert('Ошибка: пустой ответ сервера'); return; }
-    const d = JSON.parse(text);
-    const result = d.merged && d.merged[0];
-    if (result && result.user_id) {
-      alert('✅ Директор ' + fullName + ' одобрен!\nВход: ' + email + '\nПароль: ' + tempPassword);
-      await loadRequests();
-      await loadRequestsBadge();
-    } else {
-      alert('Ошибка: ' + JSON.stringify(d));
-    }
-  } catch(e) { alert('Ошибка: ' + e.message); }
-}
-
-async function rejectDirectorRequest(requestId) {
-  const reason = prompt('Причина отклонения (необязательно):');
-  if (reason === null) return;
-  const u = JSON.parse(localStorage.getItem('user')||'{}');
-  try {
-    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({token, resource:'registration_requests', action:'reject',
-        data:{id:requestId, reviewed_by:u.id, reason:reason||null}
-      })
-    });
-    const text = await r.text();
-    if (!text || !text.trim()) { alert('Ошибка: пустой ответ'); return; }
-    const d = JSON.parse(text);
-    const result = d.merged && d.merged[0];
-    if (result && result.status === 'rejected') {
-      await loadRequests();
-      await loadRequestsBadge();
-    } else { alert('Ошибка: ' + JSON.stringify(d)); }
-  } catch(e) { alert('Ошибка: ' + e.message); }
-}
+loadPlans();
 </script>
 </body>
 </html>
