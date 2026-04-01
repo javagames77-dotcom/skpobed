@@ -156,7 +156,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div style="display:flex;align-items:center;gap:1rem">
 <span class="badge-director">👔 ДИРЕКТОР</span>
 <span id="userName">—</span>
-<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:var(--d);font-weight:600">💰 Бухгалтерия3</a>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:var(--d);font-weight:600">💰 Бухгалтерия</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -691,25 +691,24 @@ async function loadSubscription(){
   document.getElementById('subEmpty').style.display='none';
   try{
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'users',action:'list',data:{role:'director'}})});
+      body:JSON.stringify({token,resource:'director_subscriptions',action:'get'})});
     const text=await r.text();
     document.getElementById('subLoading').style.display='none';
     if(!text||!text.trim()){document.getElementById('subEmpty').style.display='block';return;}
     const d=JSON.parse(text);
-    const arr=Array.isArray(d)?d:(Array.isArray(d.merged)?d.merged:[]);
-    const me=arr.find(function(u){return u.id===user.id;})||arr[0];
-    if(!me){document.getElementById('subEmpty').style.display='block';return;}
+    const arr=Array.isArray(d.merged)?d.merged:(Array.isArray(d)?d:[]);
+    const sub=arr[0];
+    if(!sub||!sub.id){document.getElementById('subEmpty').style.display='block';return;}
     const statusMap={'trial':'Пробный период','active':'Активна','grace':'Льготный период','blocked':'Заблокирована'};
     const statusColors={'trial':'#ff9933','active':'#22c55e','grace':'#f59e0b','blocked':'#ef4444'};
-    const st=me.subscription_status||'trial';
+    const st=sub.status||'trial';
     document.getElementById('subStatus').innerHTML='<span style="color:'+(statusColors[st]||'#666')+'">'+(statusMap[st]||st)+'</span>';
-    document.getElementById('subPlan').textContent='Украина Базовый ($10/группу)';
-    const au=me.active_until?new Date(me.active_until):null;
+    document.getElementById('subPlan').textContent=(sub.plan_name||'—')+' ($'+(sub.price_per_group||'?')+'/группу)';
+    const au=sub.trial_ends_at?new Date(sub.trial_ends_at):null;
     document.getElementById('subActiveUntil').textContent=au?au.toLocaleDateString('ru-RU'):'—';
     const dl=au?Math.ceil((au-new Date())/864e5):null;
     document.getElementById('subDaysLeft').innerHTML=dl!==null?(dl>0?'<span style="color:#22c55e">'+dl+' дн.</span>':'<span style="color:#ef4444">Истёк</span>'):'—';
-    document.getElementById('subGroupsLimit').textContent=(me.groups_limit||'—')+' групп';
-    document.getElementById('subGroupsActive').textContent=(me.groups_count||0)+' групп';
+    document.getElementById('subGroupsLimit').textContent=(sub.groups_limit||'—')+' групп';
     document.getElementById('subData').style.display='block';
   }catch(e){console.error(e);document.getElementById('subLoading').style.display='none';document.getElementById('subEmpty').style.display='block';}
 }
