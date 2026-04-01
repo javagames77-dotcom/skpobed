@@ -52,6 +52,9 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
 .btn-cancel{background:var(--l);color:var(--d)}
 .btn-save{background:var(--s);color:#fff}
+.tab-btn{padding:.75rem 1.5rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
+.tab-btn.active{color:var(--p);border-bottom-color:var(--p)}
+.tab-btn:hover{color:var(--p)}
 </style>
 </head>
 <body>
@@ -72,10 +75,18 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <div class="container">
 <div class="page-header">
-<h1 class="page-title">Директора клубов</h1>
-<button class="btn-add" onclick="addDirector()"><span>➕</span><span>Добавить директора</span></button>
+<h1 class="page-title">Суперадмин</h1>
 </div>
 
+<div style="display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)">
+<button class="tab-btn active" id="tabDirectors" onclick="switchTab('directors')">👥 Директора</button>
+<button class="tab-btn" id="tabRequests" onclick="switchTab('requests')">📋 Заявки<span id="reqBadge" style="display:none;margin-left:.4rem;background:#dc3545;color:#fff;border-radius:10px;padding:0 6px;font-size:.8rem"></span></button>
+</div>
+
+<div id="panelDirectors">
+<div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+<button class="btn-add" onclick="addDirector()"><span>➕</span><span>Добавить директора</span></button>
+</div>
 <div class="table-container">
 <div id="loading" class="loading">Загрузка...</div>
 <table class="table" id="directorsTable" style="display:none">
@@ -91,6 +102,16 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </thead>
 <tbody id="tbody"></tbody>
 </table>
+</div>
+</div>
+
+<div id="panelRequests" style="display:none">
+<div id="reqLoading" class="loading" style="display:none">Загрузка...</div>
+<div id="reqEmpty" style="display:none;text-align:center;padding:3rem;color:#666">
+  <div style="font-size:3rem;margin-bottom:1rem">📭</div>
+  <div>Новых заявок нет</div>
+</div>
+<div id="reqList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:1.5rem"></div>
 </div>
 </div>
 
@@ -275,6 +296,133 @@ window.location.href='/';
 
 loadUserInfo();
 loadDirectors();
+loadRequestsBadge();
+
+function switchTab(tab) {
+  document.getElementById('panelDirectors').style.display = tab === 'directors' ? '' : 'none';
+  document.getElementById('panelRequests').style.display = tab === 'requests' ? '' : 'none';
+  document.getElementById('tabDirectors').classList.toggle('active', tab === 'directors');
+  document.getElementById('tabRequests').classList.toggle('active', tab === 'requests');
+  if (tab === 'requests') loadRequests();
+}
+
+async function loadRequestsBadge() {
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'registration_requests', action:'list', data:{type:'director', status:'pending'}})
+    });
+    const text = await r.text();
+    if (!text || !text.trim()) return;
+    const d = JSON.parse(text);
+    const count = (d.merged||d||[]).filter(i=>i&&i.id).length;
+    const badge = document.getElementById('reqBadge');
+    if (count > 0) { badge.textContent = count; badge.style.display = 'inline-block'; }
+    else { badge.style.display = 'none'; }
+  } catch(e) { console.error('badge error:', e); }
+}
+
+async function loadRequests() {
+  const loading = document.getElementById('reqLoading');
+  const empty = document.getElementById('reqEmpty');
+  const list = document.getElementById('reqList');
+  loading.style.display = 'block';
+  empty.style.display = 'none';
+  list.innerHTML = '';
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'registration_requests', action:'list', data:{type:'director', status:'pending'}})
+    });
+    const text = await r.text();
+    loading.style.display = 'none';
+    if (!text || !text.trim()) { empty.style.display = 'block'; return; }
+    const d = JSON.parse(text);
+    const requests = (d.merged||d||[]).filter(i=>i&&i.id);
+    const badge = document.getElementById('reqBadge');
+    if (requests.length > 0) { badge.textContent = requests.length; badge.style.display = 'inline-block'; }
+    else { badge.style.display = 'none'; }
+    if (!requests.length) { empty.style.display = 'block'; return; }
+    list.innerHTML = requests.map(req => {
+      const created = new Date(req.created_at).toLocaleDateString('ru-RU');
+      return `<div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;border:1px solid #e0e0e0">
+        <div style="padding:1.25rem">
+          <div style="font-weight:700;font-size:1.1rem;margin-bottom:.5rem">${req.first_name} ${req.last_name}</div>
+          <div style="font-size:.9rem;color:#555;margin-bottom:.25rem">📧 ${req.email}</div>
+          ${req.club_name ? `<div style="font-size:.9rem;color:#555;margin-bottom:.25rem">🏢 ${req.club_name}</div>` : ''}
+          ${req.phone ? `<div style="font-size:.9rem;color:#555;margin-bottom:.25rem">📞 ${req.phone}</div>` : ''}
+          <div style="font-size:.8rem;color:#999;margin-top:.5rem">Заявка от ${created}</div>
+        </div>
+        <div style="padding:1rem 1.25rem;border-top:1px solid #f0f0f0;display:flex;gap:.75rem">
+          <button onclick="approveDirectorRequest(${req.id},'${(req.email||'').replace(/'/g,"\\'")}','${(req.first_name||'').replace(/'/g,"\\'")} ${(req.last_name||'').replace(/'/g,"\\'")}')"
+            style="flex:1;padding:.65rem;background:#22c55e;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">
+            ✅ Принять
+          </button>
+          <button onclick="rejectDirectorRequest(${req.id})"
+            style="flex:1;padding:.65rem;background:#fff;color:#ef4444;border:1.5px solid #ef4444;border-radius:8px;font-weight:600;cursor:pointer">
+            ❌ Отклонить
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.error('loadRequests error:', e);
+    loading.style.display = 'none';
+    empty.style.display = 'block';
+  }
+}
+
+async function approveDirectorRequest(requestId, email, fullName) {
+  const u = JSON.parse(localStorage.getItem('user')||'{}');
+
+  // Get plan and trial date from admin
+  const trialDate = prompt(`Дата окончания триала для ${fullName}:`, new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0]);
+  if (trialDate === null) return;
+  const groupsLimit = parseInt(prompt('Лимит групп:', '3') || '3');
+  if (!groupsLimit) return;
+  const tempPassword = prompt('Временный пароль для директора (минимум 6 символов):', '');
+  if (!tempPassword || tempPassword.length < 6) { alert('Пароль минимум 6 символов'); return; }
+
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'registration_requests', action:'approve_director',
+        data:{id:requestId, plan_id:1, groups_limit:groupsLimit,
+          trial_ends_at: trialDate + 'T23:59:59',
+          temp_password: tempPassword, reviewed_by: u.id}
+      })
+    });
+    const text = await r.text();
+    if (!text || !text.trim()) { alert('Ошибка: пустой ответ сервера'); return; }
+    const d = JSON.parse(text);
+    const result = d.merged && d.merged[0];
+    if (result && result.user_id) {
+      alert('✅ Директор ' + fullName + ' одобрен!\nВход: ' + email + '\nПароль: ' + tempPassword);
+      await loadRequests();
+      await loadRequestsBadge();
+    } else {
+      alert('Ошибка: ' + JSON.stringify(d));
+    }
+  } catch(e) { alert('Ошибка: ' + e.message); }
+}
+
+async function rejectDirectorRequest(requestId) {
+  const reason = prompt('Причина отклонения (необязательно):');
+  if (reason === null) return;
+  const u = JSON.parse(localStorage.getItem('user')||'{}');
+  try {
+    const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, resource:'registration_requests', action:'reject',
+        data:{id:requestId, reviewed_by:u.id, reason:reason||null}
+      })
+    });
+    const text = await r.text();
+    if (!text || !text.trim()) { alert('Ошибка: пустой ответ'); return; }
+    const d = JSON.parse(text);
+    const result = d.merged && d.merged[0];
+    if (result && result.status === 'rejected') {
+      await loadRequests();
+      await loadRequestsBadge();
+    } else { alert('Ошибка: ' + JSON.stringify(d)); }
+  } catch(e) { alert('Ошибка: ' + e.message); }
+}
 </script>
 </body>
 </html>
