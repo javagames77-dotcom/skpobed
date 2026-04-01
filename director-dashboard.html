@@ -693,16 +693,16 @@ async function loadSubscription(){
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token,resource:'users',action:'list',data:{role:'director'}})});
     const text=await r.text();
-    if(!text||!text.trim()){document.getElementById('subLoading').style.display='none';document.getElementById('subEmpty').style.display='block';return;}
-    const d=JSON.parse(text);
-    const users=d.merged||d||[];
-    const me=users.find(function(u){return u.id===user.id;});
     document.getElementById('subLoading').style.display='none';
-    if(!me||!me.subscription_status){document.getElementById('subEmpty').style.display='block';return;}
+    if(!text||!text.trim()){document.getElementById('subEmpty').style.display='block';return;}
+    const d=JSON.parse(text);
+    const arr=Array.isArray(d)?d:(Array.isArray(d.merged)?d.merged:[]);
+    const me=arr.find(function(u){return u.id===user.id;})||arr[0];
+    if(!me){document.getElementById('subEmpty').style.display='block';return;}
     const statusMap={'trial':'Пробный период','active':'Активна','grace':'Льготный период','blocked':'Заблокирована'};
     const statusColors={'trial':'#ff9933','active':'#22c55e','grace':'#f59e0b','blocked':'#ef4444'};
     const st=me.subscription_status||'trial';
-    document.getElementById('subStatus').innerHTML='<span style="color:'+( statusColors[st]||'#666')+'">'+( statusMap[st]||st)+'</span>';
+    document.getElementById('subStatus').innerHTML='<span style="color:'+(statusColors[st]||'#666')+'">'+(statusMap[st]||st)+'</span>';
     document.getElementById('subPlan').textContent='Украина Базовый ($10/группу)';
     const au=me.active_until?new Date(me.active_until):null;
     document.getElementById('subActiveUntil').textContent=au?au.toLocaleDateString('ru-RU'):'—';
