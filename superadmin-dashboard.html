@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -154,7 +153,6 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
-const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 let token=localStorage.getItem('token');
 let directors=[],plans=[],providers=[];
 if(!token){window.location.href='/';throw new Error('No auth');}
@@ -249,6 +247,15 @@ function editDirector(id){
   document.getElementById('directorFirstName').value=dir.first_name;
   document.getElementById('directorLastName').value=dir.last_name;
   document.getElementById('directorGroupsLimit').value=dir.groups_limit||3;
+  document.getElementById('directorPlanId').value=dir.plan_id||1;
+  document.getElementById('directorActivationType').value='manual';
+  toggleActivationDate('manual');
+  if(dir.active_until){
+    document.getElementById('directorActiveUntil').value=new Date(dir.active_until).toISOString().split('T')[0];
+  }else{
+    const d=new Date();d.setDate(d.getDate()+30);
+    document.getElementById('directorActiveUntil').value=d.toISOString().split('T')[0];
+  }
   document.getElementById('directorSaveBtn').textContent='Сохранить';
   openModal();
 }
@@ -265,10 +272,10 @@ async function saveDirector(e){
   const activationType=document.getElementById('directorActivationType').value;
   const activeUntil=document.getElementById('directorActiveUntil').value;
   if(id){
-    const data={id:parseInt(id),email:email,first_name:firstName,last_name:lastName,groups_limit:groupsLimit};
+    const data={id:parseInt(id),email:email,first_name:firstName,last_name:lastName,groups_limit:groupsLimit,plan_id:planId,trial_ends_at:trialEndsAt};
     if(password)data.password=password;
     try{
-      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,resource:'users',action:'update',data:data})});
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,resource:'users',action:'update_director',data:data})});
       const text=await r.text();
       if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
       const res=JSON.parse(text);
@@ -300,16 +307,16 @@ async function saveDirector(e){
       }catch(err){alert('Ошибка: '+err.message);}
     }else{
       try{
-        const r=await fetch(AUTH_API,{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'register',email:email,password:password,role:'director',
-            first_name:firstName,last_name:lastName})});
-        if(!r.ok) throw new Error('HTTP '+r.status);
-        const res=await r.json();
-        if(res.success||res.token){
-          closeModal();
-          alert('Директор создан!');
-          await loadDirectors();
-        }else{alert('Ошибка: '+JSON.stringify(res));}
+        const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({token:token,resource:'users',action:'create_director',
+            data:{email:email,password:password,role:'director',first_name:firstName,last_name:lastName,
+              plan_id:planId,groups_limit:groupsLimit,trial_ends_at:trialEndsAt,reviewed_by:u.id}})});
+        const text=await r.text();
+        if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+        const res=JSON.parse(text);
+        const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+        if(result&&result.id){closeModal();alert('Директор создан!');await loadDirectors();}
+        else{alert('Ошибка: '+JSON.stringify(res));}
       }catch(err){alert('Ошибка: '+err.message);}
     }
   }
