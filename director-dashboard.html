@@ -637,10 +637,10 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </div>
 
 <div class="tab-content" id="tab-subscription">
-<div class="page-header">
+<div class="page-header" style="max-width:1200px;margin-left:auto;margin-right:auto;margin-bottom:1.5rem">
 <h1 class="page-title">💳 Моя подписка</h1>
 </div>
-<div id="subscriptionContent" style="max-width:600px">
+<div id="subscriptionContent" style="max-width:600px;margin-left:auto;margin-right:auto">
 <div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:2rem">
 <div id="subLoading" style="text-align:center;color:#666;padding:2rem">Загрузка...</div>
 <div id="subData" style="display:none">
@@ -709,6 +709,7 @@ async function loadSubscription(){
     const dl=au?Math.ceil((au-new Date())/864e5):null;
     document.getElementById('subDaysLeft').innerHTML=dl!==null?(dl>0?'<span style="color:#22c55e">'+dl+' дн.</span>':'<span style="color:#ef4444">Истёк</span>'):'—';
     document.getElementById('subGroupsLimit').textContent=(sub.groups_limit||'—')+' групп';
+    document.getElementById('subGroupsActive').textContent=(sub.groups_count||0)+' групп';
     document.getElementById('subData').style.display='block';
   }catch(e){console.error(e);document.getElementById('subLoading').style.display='none';document.getElementById('subEmpty').style.display='block';}
 }
