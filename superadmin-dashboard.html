@@ -75,7 +75,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="container">
 <div class="page-header"><h1 class="page-title">Суперадмин</h1></div>
 <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)">
-<button class="tab-btn active" id="tabDirectors" onclick="switchTab('directors')">👥 Директора1</button>
+<button class="tab-btn active" id="tabDirectors" onclick="switchTab('directors')">👥 Директора</button>
 <button class="tab-btn" id="tabRequests" onclick="switchTab('requests')">📋 Заявки<span id="reqBadge" style="display:none;margin-left:.4rem;background:#dc3545;color:#fff;border-radius:10px;padding:0 6px;font-size:.8rem"></span></button>
 <button class="tab-btn" id="tabPlans" onclick="switchTab('plans')">💳 Тарифы</button>
 <button class="tab-btn" id="tabProviders" onclick="switchTab('providers')">⚙️ Платёжные системы</button>
@@ -225,8 +225,8 @@ function addDirector(){
   document.getElementById('directorEmail').value='';
   document.getElementById('directorPassword').value='';
   document.getElementById('directorPassword').required=true;
-  document.getElementById('directorFirstName').value='';
-  document.getElementById('directorLastName').value='';
+  document.getElementById('directorFirstName').value=firstName||'';
+  document.getElementById('directorLastName').value=lastName||'';
   document.getElementById('directorGroupsLimit').value='3';
   document.getElementById('directorActivationType').value='manual';
   toggleActivationDate('manual');
@@ -373,13 +373,13 @@ async function loadRequests(){
       html+='<div style="font-size:.8rem;color:#999;margin-top:.5rem">Заявка от '+created+'</div>';
       html+='</div>';
       html+='<div style="padding:1rem 1.25rem;border-top:1px solid #f0f0f0;display:flex;gap:.75rem">';
-      html+='<button class="approve-btn" data-id="'+req.id+'" data-email="'+(req.email||'')+'" style="flex:1;padding:.65rem;background:#22c55e;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">Принять</button>';
+      html+='<button class="approve-btn" data-id="'+req.id+'" data-email="'+(req.email||'')+'" data-firstname="'+(req.first_name||'')+'" data-lastname="'+(req.last_name||'')+'" style="flex:1;padding:.65rem;background:#22c55e;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">Принять</button>';
       html+='<button class="reject-btn" data-id="'+req.id+'" style="flex:1;padding:.65rem;background:#fff;color:#ef4444;border:1.5px solid #ef4444;border-radius:8px;font-weight:600;cursor:pointer">Отклонить</button>';
       html+='</div></div>';
     });
     list.innerHTML=html;
     list.querySelectorAll('.approve-btn').forEach(function(btn){
-      btn.addEventListener('click',function(){approveDirectorRequest(parseInt(btn.dataset.id),btn.dataset.email);});
+      btn.addEventListener('click',function(){approveDirectorRequest(parseInt(btn.dataset.id),btn.dataset.email,btn.dataset.firstname,btn.dataset.lastname);});
     });
     list.querySelectorAll('.reject-btn').forEach(function(btn){
       btn.addEventListener('click',function(){rejectDirectorRequest(parseInt(btn.dataset.id));});
@@ -387,7 +387,7 @@ async function loadRequests(){
   }catch(e){console.error('loadRequests:',e);loading.style.display='none';empty.style.display='block';}
 }
 
-function approveDirectorRequest(requestId,email){
+function approveDirectorRequest(requestId,email,firstName,lastName){
   // Store request data for modal save
   window._approveReqId = requestId;
   window._approveEmail = email;
@@ -397,8 +397,8 @@ function approveDirectorRequest(requestId,email){
   document.getElementById('directorEmail').value=email;
   document.getElementById('directorPassword').value='';
   document.getElementById('directorPassword').required=true;
-  document.getElementById('directorFirstName').value='';
-  document.getElementById('directorLastName').value='';
+  document.getElementById('directorFirstName').value=firstName||'';
+  document.getElementById('directorLastName').value=lastName||'';
   document.getElementById('directorGroupsLimit').value='3';
   document.getElementById('directorActivationType').value='manual';
   toggleActivationDate('manual');
