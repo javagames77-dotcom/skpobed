@@ -677,6 +677,20 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Активных групп</div>
 <div id="subGroupsActive" style="font-size:1.1rem;font-weight:600"></div>
 </div>
+<hr style="border:none;border-top:1px solid #e0e0e0;margin:1.5rem 0">
+<div style="font-size:.9rem;color:#888;font-weight:600;margin-bottom:1rem">Использование за месяц</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">📄 Документы</div>
+<div id="subDocsUsed" style="font-size:1.1rem;font-weight:600"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">🔄 Смены групп</div>
+<div id="subChangesUsed" style="font-size:1.1rem;font-weight:600"></div>
+</div>
+<div style="margin-bottom:1rem">
+<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">💰 Сумма превышений</div>
+<div id="subOverage" style="font-size:1.1rem;font-weight:600"></div>
+</div>
 </div>
 <div id="subEmpty" style="display:none;text-align:center;color:#666;padding:2rem">Подписка не найдена. Обратитесь к администратору.</div>
 </div>
@@ -729,6 +743,14 @@ async function loadSubscription(){
     }else{banner.style.display='none';}
     document.getElementById('subGroupsLimit').textContent=(sub.groups_limit||'—')+' групп';
     document.getElementById('subGroupsActive').textContent=(sub.groups_count||0)+' групп';
+    var freeDocs=sub.free_docs_per_month_per_athlete||5;
+    var docsUsed=parseInt(sub.docs_used_month)||0;
+    var freeChanges=sub.free_group_changes_per_month_per_athlete||4;
+    var changesUsed=parseInt(sub.group_changes_used_month)||0;
+    var overageSum=parseFloat(sub.overage_sum_month)||0;
+    document.getElementById('subDocsUsed').innerHTML=docsUsed+' / '+freeDocs+' на спортсмена'+(docsUsed>freeDocs?' <span style="color:#ef4444">превышен</span>':'');
+    document.getElementById('subChangesUsed').innerHTML=changesUsed+' / '+freeChanges+' на спортсмена'+(changesUsed>freeChanges?' <span style="color:#ef4444">превышен</span>':'');
+    document.getElementById('subOverage').innerHTML=overageSum>0?'<span style="color:#ef4444">$'+overageSum.toFixed(2)+'</span>':'<span style="color:#22c55e">$0.00</span>';
     document.getElementById('subData').style.display='block';
   }catch(e){console.error(e);document.getElementById('subLoading').style.display='none';document.getElementById('subEmpty').style.display='block';}
 }
