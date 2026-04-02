@@ -130,6 +130,8 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="form-group"><label class="form-label">Фото/день/группа</label><input type="number" class="form-input" id="planFreePhotos" value="2" min="0"></div>
 <div class="form-group"><label class="form-label">Смен/мес/спортсмен</label><input type="number" class="form-input" id="planFreeChanges" value="4" min="0"></div>
 <div class="form-group"><label class="form-label">Документов/мес/спортсмен</label><input type="number" class="form-input" id="planFreeDocs" value="5" min="0"></div>
+<div class="form-group"><label class="form-label">Документов/мес/группа</label><input type="number" class="form-input" id="planFreeDocsGroup" value="70" min="0"></div>
+<div class="form-group"><label class="form-label">Смен/мес/группа</label><input type="number" class="form-input" id="planFreeChangesGroup" value="100" min="0"></div>
 <div class="form-group"><label class="form-label">Доп. фото ($)</label><input type="number" class="form-input" id="planOveragePhoto" step="0.01" value="0.20"></div>
 <div class="form-group"><label class="form-label">Доп. смена ($)</label><input type="number" class="form-input" id="planOverageChange" step="0.01" value="0.05"></div>
 <div class="form-group"><label class="form-label">Доп. документ ($)</label><input type="number" class="form-input" id="planOverageDoc" step="0.01" value="0.05"></div>
@@ -499,6 +501,8 @@ function editPlan(id){
   document.getElementById('planFreePhotos').value=p.free_photo_uploads_per_day_per_group||2;
   document.getElementById('planFreeChanges').value=p.free_group_changes_per_month_per_athlete||4;
   document.getElementById('planFreeDocs').value=p.free_docs_per_month_per_athlete||5;
+  document.getElementById('planFreeDocsGroup').value=p.free_docs_per_month_per_group||70;
+  document.getElementById('planFreeChangesGroup').value=p.free_group_changes_per_month_per_group||100;
   document.getElementById('planOveragePhoto').value=p.overage_price_photo||0.20;
   document.getElementById('planOverageChange').value=p.overage_price_group_change||0.05;
   document.getElementById('planOverageDoc').value=p.overage_price_doc||0.05;
@@ -521,6 +525,8 @@ async function savePlan(e){
     free_photo_uploads_per_day_per_group:parseInt(document.getElementById('planFreePhotos').value),
     free_group_changes_per_month_per_athlete:parseInt(document.getElementById('planFreeChanges').value),
     free_docs_per_month_per_athlete:parseInt(document.getElementById('planFreeDocs').value),
+    free_docs_per_month_per_group:parseInt(document.getElementById('planFreeDocsGroup').value)||70,
+    free_group_changes_per_month_per_group:parseInt(document.getElementById('planFreeChangesGroup').value)||100,
     overage_price_photo:parseFloat(document.getElementById('planOveragePhoto').value),
     overage_price_group_change:parseFloat(document.getElementById('planOverageChange').value),
     overage_price_doc:parseFloat(document.getElementById('planOverageDoc').value),
