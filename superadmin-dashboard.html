@@ -54,6 +54,8 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .btn-save{background:var(--s);color:#fff}
 .tab-btn{padding:.75rem 1.5rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
 .tab-btn.active{color:var(--p);border-bottom-color:var(--p)}
+.msg-badge{position:absolute;top:-6px;right:-6px;background:#dc3545;color:#fff;border-radius:50%;width:18px;height:18px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.msg-btn-inline{padding:.3rem .6rem;background:#e3f2fd;color:var(--p);border:none;border-radius:6px;cursor:pointer;font-size:.9rem}
 </style>
 </head>
 <body>
@@ -79,6 +81,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <button class="tab-btn" id="tabRequests" onclick="switchTab('requests')">📋 Заявки<span id="reqBadge" style="display:none;margin-left:.4rem;background:#dc3545;color:#fff;border-radius:10px;padding:0 6px;font-size:.8rem"></span></button>
 <button class="tab-btn" id="tabPlans" onclick="switchTab('plans')">💳 Тарифы</button>
 <button class="tab-btn" id="tabProviders" onclick="switchTab('providers')">⚙️ Платёжные системы</button>
+<button class="tab-btn" id="tabMessages" onclick="switchTab('messages')" style="position:relative">📬 Сообщения<span id="saMsgBadge" class="msg-badge" style="display:none">0</span></button>
 </div>
 <div id="panelDirectors">
 <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
@@ -108,6 +111,11 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <th>Провайдер</th><th>Комиссия</th><th>Приоритет</th><th>Статус</th><th>Действия</th>
 </tr></thead><tbody id="providersTbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:#666">Загрузка...</td></tr></tbody></table></div>
 </div>
+</div>
+
+<div id="panelMessages" style="display:none">
+<div id="messagesLoading" class="loading" style="display:none">Загрузка...</div>
+<div id="messagesList" style="display:grid;gap:1rem;max-width:800px"></div>
 </div>
 
 <div class="modal" id="planModal">
@@ -164,7 +172,7 @@ function loadUserInfo(){
 }
 
 function switchTab(tab){
-  ['directors','requests','plans','providers'].forEach(function(t){
+  ['directors','requests','plans','providers','messages'].forEach(function(t){
     var panel=document.getElementById('panel'+t[0].toUpperCase()+t.slice(1));
     var btn=document.getElementById('tab'+t[0].toUpperCase()+t.slice(1));
     if(panel) panel.style.display=t===tab?'':'none';
@@ -173,6 +181,7 @@ function switchTab(tab){
   if(tab==='requests') loadRequests();
   if(tab==='plans') loadPlans();
   if(tab==='providers') loadProviders();
+  if(tab==='messages') loadSAMessages();
 }
 
 function toggleActivationDate(val){
@@ -214,6 +223,7 @@ function renderTable(){
       '<td><div class="table-actions">'+
       '<button class="btn-icon btn-edit" onclick="editDirector('+dir.id+')">✏️</button>'+
       '<button class="btn-icon btn-delete" onclick="deactivateDirector('+dir.id+')">🗑️</button>'+
+      '<button class="btn-icon" style="background:#e8f4fd;color:#0066CC" data-dirid="'+dir.id+'" data-dirname="'+dir.first_name+' '+dir.last_name+'" onclick="openSendMessageFromBtn(this)" title="Написать">✉️</button>'+
       '</div></td>';
     t.appendChild(row);
   });
@@ -564,6 +574,112 @@ loadUserInfo();
 loadDirectors();
 loadRequestsBadge();
 loadPlans();
+loadSAUnreadCount();
+setInterval(loadSAUnreadCount, 30000);
+
+function openSendMessageFromBtn(btn){
+  openSendMessage(parseInt(btn.dataset.dirid), btn.dataset.dirname);
+}
+function openSendMessage(dirId, dirName){
+  document.getElementById('sendMsgTitle').textContent='Написать: '+dirName;
+  document.getElementById('sendMsgToId').value=dirId;
+  document.getElementById('sendMsgText').value='';
+  document.getElementById('sendMsgModal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeSendMessage(){document.getElementById('sendMsgModal').classList.remove('active');document.body.style.overflow='';}
+
+async function sendMsgToDirector(){
+  var text=document.getElementById('sendMsgText').value.trim();
+  var toId=parseInt(document.getElementById('sendMsgToId').value);
+  if(!text){alert('Введите сообщение');return;}
+  try{
+    var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'admin_messages',action:'send',
+        data:{to_user_id:toId,message:text,type:'message'}})});
+    var t=await r.text();
+    if(!t||!t.trim()){alert('Ошибка: пустой ответ');return;}
+    var res=JSON.parse(t);
+    var result=res.merged&&res.merged[0];
+    if(result&&result.id){closeSendMessage();alert('Сообщение отправлено!');}
+    else{alert('Ошибка: '+JSON.stringify(res));}
+  }catch(e){alert('Ошибка: '+e.message);}
+}
+
+async function loadSAUnreadCount(){
+  try{
+    var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'admin_messages',action:'list',data:{unread_only:true}})});
+    var text=await r.text();
+    if(!text||!text.trim()){updateSABadge(0);return;}
+    var d=JSON.parse(text);
+    var msgs=(d.merged||d||[]).filter(function(m){return m&&m.id;});
+    updateSABadge(msgs.length);
+  }catch(e){console.error(e);}
+}
+
+function updateSABadge(count){
+  var badge=document.getElementById('saMsgBadge');
+  if(count>0){badge.textContent=count;badge.style.display='flex';}
+  else{badge.style.display='none';}
+}
+
+async function loadSAMessages(){
+  var loading=document.getElementById('messagesLoading');
+  var list=document.getElementById('messagesList');
+  loading.style.display='block';
+  list.innerHTML='';
+  try{
+    var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'admin_messages',action:'list',data:{}})});
+    var text=await r.text();
+    loading.style.display='none';
+    if(!text||!text.trim()){list.innerHTML='<div style="text-align:center;padding:3rem;color:#666">Нет сообщений</div>';return;}
+    var d=JSON.parse(text);
+    var msgs=(d.merged||d||[]).filter(function(m){return m&&m.id;});
+    if(!msgs.length){list.innerHTML='<div style="text-align:center;padding:3rem;color:#666">Нет сообщений</div>';return;}
+    list.innerHTML=msgs.map(function(m){
+      var date=new Date(m.created_at).toLocaleDateString('ru-RU');
+      var isFromDir=m.from_user_id!==7;
+      var bg=isFromDir?(m.is_read?'#fff':'#e8f4fd'):'#f0fff0';
+      var typeLabel=m.type==='renewal_request'?'🔄 Запрос продления':m.type==='reply'?'↩️ Ответ':'💬 Сообщение';
+      var fromName=(m.from_first_name||'')+' '+(m.from_last_name||'');
+      var toName=(m.to_first_name||'')+' '+(m.to_last_name||'');
+      var replyBtn=isFromDir?'<button class="msg-btn-inline" data-dirid="'+m.from_user_id+'" data-dirname="'+fromName.trim()+'" onclick="openSendMessageFromBtn(this)">↩️ Ответить</button>':'';
+      return '<div style="background:'+bg+';border-radius:12px;padding:1.25rem;border:1px solid #e0e0e0">'+
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">'+
+        '<div><strong>'+fromName+'</strong><span style="color:#888;font-size:.85rem"> → '+toName+'</span></div>'+
+        '<div style="display:flex;align-items:center;gap:.5rem">'+
+        '<span style="font-size:.8rem;color:#888">'+typeLabel+' • '+date+'</span>'+
+        (isFromDir&&!m.is_read?'<span style="font-size:.75rem;background:#dc3545;color:#fff;border-radius:10px;padding:0 6px">Новое</span>':'')+
+        '</div></div>'+
+        '<div style="margin-bottom:.75rem">'+m.message+'</div>'+replyBtn+
+        '</div>';
+    }).join('');
+    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token:token,resource:'admin_messages',action:'mark_read',data:{}})});
+    updateSABadge(0);
+  }catch(e){console.error(e);loading.style.display='none';}
+}
 </script>
+<div class="modal" id="sendMsgModal">
+<div class="modal-content" style="max-width:500px">
+<div class="modal-header">
+<h2 class="modal-title" id="sendMsgTitle">✉️ Написать директору</h2>
+<button class="modal-close" onclick="closeSendMessage()">✕</button>
+</div>
+<div class="modal-body">
+<input type="hidden" id="sendMsgToId">
+<div class="form-group">
+<label class="form-label">Сообщение *</label>
+<textarea id="sendMsgText" class="form-input" style="min-height:120px;resize:vertical" placeholder="Введите сообщение..."></textarea>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeSendMessage()">Отмена</button>
+<button class="btn btn-save" onclick="sendMsgToDirector()">Отправить</button>
+</div>
+</div>
+</div>
 </body>
 </html>
