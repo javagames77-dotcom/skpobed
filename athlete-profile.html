@@ -283,7 +283,7 @@ body { font-family:'Inter',sans-serif; background:var(--l); color:var(--text); m
   <div class="hero-inner">
     <div class="photo-wrap">
       <img id="athletePhoto" src="https://ui-avatars.com/api/?name=A&background=0066CC&color=fff" class="athlete-photo">
-     
+
       <div id="frozenBadge" class="frozen-badge" style="display:none">🧊 Заморожен</div>
     </div>
     <div class="hero-info">
@@ -2136,6 +2136,7 @@ async function loadDocuments() {
       body: JSON.stringify({token, resource:'athlete_documents', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     const docs = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
+    window._athleteDocs = docs;
     const icons = {birth_cert:'📜', medical:'🏥', other:'📎'};
     document.getElementById('docGrid').innerHTML = docs.map(doc => `
       <div class="doc-card filled" onclick="window.open('${doc.file_url}','_blank')" style="cursor:pointer">
@@ -2160,6 +2161,16 @@ async function deleteDocument(docId, childId) {
 
 async function uploadDocument(input) {
   const file = input.files[0]; if (!file) return;
+  // Check monthly document limit
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const docsThisMonth = (window._athleteDocs||[]).filter(function(d){
+    return d.created_at && d.created_at.slice(0,7) === currentMonth;
+  }).length;
+  if (docsThisMonth >= 5) {
+    alert('Достигнут лимит документов (5 в месяц). Обратитесь к администратору.');
+    input.value = '';
+    return;
+  }
 
   const typeMap = {'1':'birth_cert','2':'medical','3':'other'};
   const typeChoice = prompt('Тип документа:\n1 - Свидетельство о рождении\n2 - Медсправка\n3 - Другое\n\nВведите номер:', '3');
