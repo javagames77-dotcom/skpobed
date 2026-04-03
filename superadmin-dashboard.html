@@ -241,7 +241,8 @@ function addDirector(){
   document.getElementById('directorFirstName').value='';
   document.getElementById('directorLastName').value='';
   document.getElementById('directorGroupsLimit').value='3';
-  document.getElementById('directorPhone').value=phone||'';
+  document.getElementById('directorPhone').value='';
+  document.getElementById('directorPlanId').value='1';
   document.getElementById('directorActivationType').value='manual';
   toggleActivationDate('manual');
   const d=new Date();d.setDate(d.getDate()+30);
@@ -426,10 +427,11 @@ function approveDirectorRequest(requestId,email,firstName,lastName,phone){
   document.getElementById('directorEmail').value=email;
   document.getElementById('directorPassword').value='';
   document.getElementById('directorPassword').required=true;
-  document.getElementById('directorFirstName').value='';
-  document.getElementById('directorLastName').value='';
+  document.getElementById('directorFirstName').value=firstName||'';
+  document.getElementById('directorLastName').value=lastName||'';
   document.getElementById('directorGroupsLimit').value='3';
-  document.getElementById('directorPhone').value='';
+  document.getElementById('directorPhone').value=phone||'';
+  document.getElementById('directorPlanId').value='1';
   document.getElementById('directorActivationType').value='manual';
   toggleActivationDate('manual');
   const d=new Date();d.setDate(d.getDate()+30);
