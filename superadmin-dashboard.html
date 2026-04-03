@@ -149,6 +149,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="form-group"><label class="form-label">Фамилия *</label><input type="text" class="form-input" id="directorLastName" autocomplete="family-name" required></div>
 <div class="form-group"><label class="form-label">Email *</label><input type="email" class="form-input" id="directorEmail" autocomplete="email" required></div>
 <div class="form-group"><label class="form-label">Пароль *</label><input type="password" class="form-input" id="directorPassword" autocomplete="new-password" required><small style="color:#666">Минимум 6 символов</small></div>
+<div class="form-group"><label class="form-label">Телефон</label><input type="tel" class="form-input" id="directorPhone" placeholder="+380XXXXXXXXX"></div>
 <div class="form-group"><label class="form-label">Тарифный план *</label><select class="form-input" id="directorPlanId" required><option value="1">Украина Базовый ($10/группу)</option></select></div>
 <div class="form-group"><label class="form-label">Лимит групп *</label><input type="number" class="form-input" id="directorGroupsLimit" min="1" value="3" required></div>
 <div class="form-group"><label class="form-label">Тип активации *</label>
@@ -240,6 +241,7 @@ function addDirector(){
   document.getElementById('directorFirstName').value=firstName||'';
   document.getElementById('directorLastName').value=lastName||'';
   document.getElementById('directorGroupsLimit').value='3';
+  document.getElementById('directorPhone').value='';
   document.getElementById('directorActivationType').value='manual';
   toggleActivationDate('manual');
   const d=new Date();d.setDate(d.getDate()+30);
@@ -259,6 +261,7 @@ function editDirector(id){
   document.getElementById('directorFirstName').value=dir.first_name;
   document.getElementById('directorLastName').value=dir.last_name;
   document.getElementById('directorGroupsLimit').value=dir.groups_limit||3;
+  document.getElementById('directorPhone').value=dir.phone||'';
   document.getElementById('directorPlanId').value=dir.plan_id||1;
   document.getElementById('directorActivationType').value='manual';
   toggleActivationDate('manual');
@@ -285,7 +288,9 @@ async function saveDirector(e){
   const activeUntil=document.getElementById('directorActiveUntil').value;
   const trialEndsAt=activationType==='manual'&&activeUntil?activeUntil+'T23:59:59':null;
   if(id){
+    const phone=document.getElementById('directorPhone').value.trim();
     const data={id:parseInt(id),email:email,first_name:firstName,last_name:lastName,groups_limit:groupsLimit,plan_id:planId,trial_ends_at:trialEndsAt};
+    if(phone)data.phone=phone;
     if(password)data.password=password;
     try{
       const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,resource:'users',action:'update_director',data:data})});
@@ -323,6 +328,7 @@ async function saveDirector(e){
         const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({token:token,resource:'users',action:'create_director',
             data:{email:email,password:password,role:'director',first_name:firstName,last_name:lastName,
+              phone:document.getElementById('directorPhone').value.trim()||null,
               plan_id:planId,groups_limit:groupsLimit,trial_ends_at:trialEndsAt,reviewed_by:u.id}})});
         const text=await r.text();
         if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
@@ -422,6 +428,7 @@ function approveDirectorRequest(requestId,email,firstName,lastName){
   document.getElementById('directorFirstName').value=firstName||'';
   document.getElementById('directorLastName').value=lastName||'';
   document.getElementById('directorGroupsLimit').value='3';
+  document.getElementById('directorPhone').value='';
   document.getElementById('directorActivationType').value='manual';
   toggleActivationDate('manual');
   const d=new Date();d.setDate(d.getDate()+30);
