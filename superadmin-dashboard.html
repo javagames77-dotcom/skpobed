@@ -218,7 +218,7 @@ function renderTable(){
     const dl=au?Math.ceil((au-new Date())/864e5):null;
     const ds=dl!==null?(dl>0?dl+' дн.':'<span style="color:#dc3545">Истёк</span>'):'—';
     const row=document.createElement('tr');
-    row.innerHTML='<td>'+dir.first_name+' '+dir.last_name+'</td>'+
+    row.innerHTML='<td><a href="#" onclick="showDirectorInfo('+dir.id+');return false;" style="color:var(--p);text-decoration:none;font-weight:600">'+dir.first_name+' '+dir.last_name+'</a></td>'+
       '<td>'+dir.email+'</td><td>'+gc+'</td>'+
       '<td><span class="status-badge '+sc+'">'+st+'</span></td>'+
       '<td>'+aus+'</td><td>'+ds+'</td>'+
@@ -237,8 +237,8 @@ function addDirector(){
   document.getElementById('directorEmail').value='';
   document.getElementById('directorPassword').value='';
   document.getElementById('directorPassword').required=true;
-  document.getElementById('directorFirstName').value='';
-  document.getElementById('directorLastName').value='';
+  document.getElementById('directorFirstName').value=firstName||'';
+  document.getElementById('directorLastName').value=lastName||'';
   document.getElementById('directorGroupsLimit').value='3';
   document.getElementById('directorActivationType').value='manual';
   toggleActivationDate('manual');
@@ -419,8 +419,8 @@ function approveDirectorRequest(requestId,email,firstName,lastName){
   document.getElementById('directorEmail').value=email;
   document.getElementById('directorPassword').value='';
   document.getElementById('directorPassword').required=true;
-  document.getElementById('directorFirstName').value='';
-  document.getElementById('directorLastName').value='';
+  document.getElementById('directorFirstName').value=firstName||'';
+  document.getElementById('directorLastName').value=lastName||'';
   document.getElementById('directorGroupsLimit').value='3';
   document.getElementById('directorActivationType').value='manual';
   toggleActivationDate('manual');
@@ -576,6 +576,33 @@ async function toggleProvider(id,newState){
   }catch(e){alert('Ошибка: '+e.message);}
 }
 
+function showDirectorInfo(id){
+  var dir=directors.find(function(d){return d.id===id;});
+  if(!dir)return;
+  window._infoDirectorId=id;
+  var au=dir.active_until?new Date(dir.active_until).toLocaleDateString('ru-RU'):'—';
+  var dl=dir.active_until?Math.ceil((new Date(dir.active_until)-new Date())/864e5):null;
+  var dls=dl!==null?(dl>0?dl+' дн.':(dl===0?'Истекает сегодня':'Истёк')):'—';
+  var statusMap={'trial':'Пробный','active':'Активна','grace':'Льготный','blocked':'Заблокирована'};
+  document.getElementById('directorInfoTitle').textContent=dir.first_name+' '+dir.last_name;
+  document.getElementById('directorInfoBody').innerHTML=
+    '<div style="display:grid;gap:.75rem">'+
+    '<div><span style="color:#888;font-size:.85rem">Email</span><div style="font-weight:600">'+dir.email+'</div></div>'+
+    '<div><span style="color:#888;font-size:.85rem">Телефон</span><div style="font-weight:600">'+(dir.phone||'—')+'</div></div>'+
+    '<div><span style="color:#888;font-size:.85rem">Групп</span><div style="font-weight:600">'+(dir.groups_count||0)+'</div></div>'+
+    '<div><span style="color:#888;font-size:.85rem">Статус подписки</span><div style="font-weight:600">'+(statusMap[dir.subscription_status]||dir.subscription_status||'—')+'</div></div>'+
+    '<div><span style="color:#888;font-size:.85rem">Активен до</span><div style="font-weight:600">'+au+'</div></div>'+
+    '<div><span style="color:#888;font-size:.85rem">Осталось</span><div style="font-weight:600">'+dls+'</div></div>'+
+    '<div><span style="color:#888;font-size:.85rem">Лимит групп</span><div style="font-weight:600">'+(dir.groups_limit||'—')+'</div></div>'+
+    '</div>';
+  document.getElementById('directorInfoModal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+function closeDirectorInfo(){
+  document.getElementById('directorInfoModal').classList.remove('active');
+  document.body.style.overflow='';
+}
+
 loadUserInfo();
 loadDirectors();
 loadRequestsBadge();
@@ -684,6 +711,19 @@ async function loadSAMessages(){
 <div class="modal-footer">
 <button class="btn btn-cancel" onclick="closeSendMessage()">Отмена</button>
 <button class="btn btn-save" onclick="sendMsgToDirector()">Отправить</button>
+</div>
+</div>
+</div>
+<div class="modal" id="directorInfoModal">
+<div class="modal-content" style="max-width:480px">
+<div class="modal-header">
+<h2 class="modal-title" id="directorInfoTitle">Информация о директоре</h2>
+<button class="modal-close" onclick="closeDirectorInfo()">✕</button>
+</div>
+<div class="modal-body" id="directorInfoBody"></div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeDirectorInfo()">Закрыть</button>
+<button class="btn btn-save" onclick="closeDirectorInfo();editDirector(window._infoDirectorId)">✏️ Редактировать</button>
 </div>
 </div>
 </div>
