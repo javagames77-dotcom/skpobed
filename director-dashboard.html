@@ -1970,6 +1970,7 @@ async function uploadChildPhotoUpdate(photoFile, child_id){
   return await r.json();
 }
 
+function openChildModal(){document.getElementById('childModal').classList.add('active');document.body.style.overflow='hidden';}
 function closeChildModal(){document.getElementById('childModal').classList.remove('active');document.body.style.overflow='';}
 
 function populateChildDateSelects(){
