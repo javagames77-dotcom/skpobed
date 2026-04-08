@@ -1925,7 +1925,51 @@ async function sendRenewalRequest(){
 }
 
 // ===== CHILD EDIT (director) =====
-function openChildModal(){document.getElementById('childModal').classList.add('active');document.body.style.overflow='hidden';}
+function previewChildPhoto(input){
+  const file=input.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      document.getElementById('childPreviewImage').src=ev.target.result;
+      document.getElementById('childPhotoPreview').style.display='block';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+async function compressImage(file){
+  return new Promise((resolve)=>{
+    const reader=new FileReader();
+    reader.onload=function(e){
+      const img=new Image();
+      img.onload=function(){
+        const canvas=document.createElement('canvas');
+        const MAX=800;
+        let w=img.width,h=img.height;
+        if(w>h){if(w>MAX){h*=MAX/w;w=MAX;}}else{if(h>MAX){w*=MAX/h;h=MAX;}}
+        canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        canvas.toBlob((blob)=>{resolve(new File([blob],file.name,{type:'image/jpeg'}));},'image/jpeg',0.8);
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadChildPhotoUpdate(photoFile, child_id){
+  const compressed=await compressImage(photoFile);
+  const formData=new FormData();
+  formData.append('token',token);
+  formData.append('photo',compressed);
+  formData.append('child_id',child_id);
+  const r=await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-child-photo-update',{
+    method:'POST',
+    body:formData
+  });
+  return await r.json();
+}
+
 function closeChildModal(){document.getElementById('childModal').classList.remove('active');document.body.style.overflow='';}
 
 function populateChildDateSelects(){
@@ -1990,6 +2034,7 @@ async function editChild(id){
   renderChildGroupCheckboxes(childGroupIds);
   document.getElementById('childLogin').value=c.login||'';
   document.getElementById('childPassword').value='';
+  document.getElementById('childPhotoFile').value='';
   openChildModal();
 }
 
@@ -2004,13 +2049,28 @@ async function saveChild(e){
   const selectedGroups=Array.from(document.querySelectorAll('#childGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
   const login=document.getElementById('childLogin').value.trim();
   const password=document.getElementById('childPassword').value.trim();
+  const photoFile=document.getElementById('childPhotoFile').files[0];
   if(!fn||!ln){alert('Заполните имя и фамилию');return;}
   if(selectedGroups.length===0){alert('Выберите хотя бы одну группу');return;}
-  const data={id:parseInt(id),first_name:fn,last_name:ln};
-  if(d&&m&&y)data.birth_date=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-  if(login)data.login=login;
-  if(password)data.password=password;
+
   try{
+    // Если выбрано новое фото — сначала загружаем
+    if(photoFile){
+      const photoResult=await uploadChildPhotoUpdate(photoFile, parseInt(id));
+      if(!photoResult.success){
+        alert('Ошибка загрузки фото: '+(photoResult.error||JSON.stringify(photoResult)));
+        return;
+      }
+      // Обновляем превью
+      document.getElementById('childPreviewImage').src=photoResult.photo_url;
+    }
+
+    // Обновляем данные спортсмена
+    const data={id:parseInt(id),first_name:fn,last_name:ln};
+    if(d&&m&&y)data.birth_date=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    if(login)data.login=login;
+    if(password)data.password=password;
+
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'update',data})});
     const res=await r.json();
     const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
@@ -2112,11 +2172,12 @@ if(location.hash==='#trainers'){setTimeout(()=>{document.querySelector('.tab:nth
 <div id="childGroupsCheckboxes" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);padding:1rem;border-radius:8px;background:#f9f9f9"></div>
 </div>
 <div class="form-group">
-<label class="form-label">Фото (смена фото — отдельная операция)</label>
+<label class="form-label">Фото</label>
 <div id="childPhotoPreview" style="margin-bottom:.75rem;display:none">
 <img id="childPreviewImage" style="max-width:100px;max-height:100px;border-radius:8px;border:2px solid var(--b)">
 </div>
-<p style="color:#888;font-size:.85rem">Смена фото пока недоступна в этом окне</p>
+<input type="file" class="form-input" id="childPhotoFile" accept="image/*" style="padding:.5rem" onchange="previewChildPhoto(this)">
+<p style="color:#888;font-size:.8rem;margin-top:.4rem">Выберите новое фото только если хотите его заменить</p>
 </div>
 <div style="border-top:1px solid var(--b);margin:.5rem 0 1rem;padding-top:1rem">
 <div style="font-weight:600;font-size:.9rem;color:#555;margin-bottom:.75rem">🔐 Доступ спортсмена</div>
