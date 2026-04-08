@@ -146,6 +146,8 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 .msg-badge{position:absolute;top:-6px;right:-6px;background:#dc3545;color:#fff;border-radius:50%;width:18px;height:18px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
 .msg-btn{position:relative;padding:.5rem .75rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer;font-size:1rem}
 .sub-banner{display:none;padding:1rem 1.5rem;border-radius:10px;margin-bottom:1rem;font-weight:600;font-size:.95rem}
+.date-inputs{display:flex;gap:.75rem}
+.date-inputs .form-group{flex:1;margin-bottom:0}
 .sub-banner-warning{background:#fff3cd;color:#856404;border:1px solid #ffc107}
 .sub-banner-danger{background:#f8d7da;color:#721c24;border:1px solid #dc3545}
 </style>
@@ -700,6 +702,10 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
+const CLOUDINARY_CLOUD='dzxvshxvk';
+const CLOUDINARY_UPLOAD_PRESET='ml_default';
+const FACEPP_KEY='ZdR2xNAbSgwc93z8TZ2h31CVq5Pr4UES';
+const FACEPP_SECRET='sh6HWQ_gYuvkAJwsu1STZWbyx40';
 let token=localStorage.getItem('token');
 let user,clubs=[],trainers=[],allAthletes=[],groups=[];
 let belts=[],allBelts=[],events=[];
@@ -866,8 +872,7 @@ function _beltCountdown(athlete){
   timeStr+=days+'дн';
   return `<div>${beltLabel}<br><span style="color:#e65100;font-size:.75rem">⏳ До экзамена: ${timeStr}</span></div>`;
 }
-function renderAthletesTable(data){const t=document.getElementById('athletesTableBody');t.innerHTML='';data.forEach(a=>{const beltCell=_beltCountdown(a);const r=document.createElement('tr');r.innerHTML=`<td><img src="${a.photo_url||'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect width="50" height="50" rx="25" fill="%230066CC"%2F%3E%3Ctext x="50%25" y="55%25" text-anchor="middle" fill="white" font-size="18" font-family="sans-serif" dy=".1em"%3E%3F%3C%2Ftext%3E%3C%2Fsvg%3E'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td>${beltCell}</td><td><div class="table-actions"><button class="btn-icon btn-delete" onclick="deleteAthlete(${a.id})">🗑️</button></div></td>`;t.appendChild(r)})}
-async function deleteAthlete(id){if(!confirm('Удалить спортсмена?'))return;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'delete',data:{id}})});const res=await r.json();if(res.success||res.id){alert('Спортсмен удален!');await loadAthletes()}else{alert('Ошибка удаления')}}catch(err){console.error(err);alert('Ошибка: '+err.message)}}
+function renderAthletesTable(data){const t=document.getElementById('athletesTableBody');t.innerHTML='';data.forEach(a=>{const beltCell=_beltCountdown(a);const r=document.createElement('tr');r.innerHTML=`<td><img src="${a.photo_url||'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50"%3E%3Crect width="50" height="50" rx="25" fill="%230066CC"%2F%3E%3Ctext x="50%25" y="55%25" text-anchor="middle" fill="white" font-size="18" font-family="sans-serif" dy=".1em"%3E%3F%3C%2Ftext%3E%3C%2Fsvg%3E'}" class="child-photo"></td><td><a href="/athlete-profile.html?id=${a.id}" style="color:var(--p);text-decoration:none;font-weight:600">${a.first_name} ${a.last_name}</a></td><td><span class="group-badge">${a.group_names||'Без группы'}</span></td><td>${a.club_names||'—'}</td><td>${beltCell}</td><td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editChild(${a.id})">✏️</button><button class="btn-icon btn-delete" onclick="deleteAthlete(${a.id})">🗑️</button></div></td>`;t.appendChild(r)})}
 function filterAthletes(){const search=(document.getElementById('athleteSearch')?.value||'').toLowerCase();const club=document.getElementById('athleteClubFilter')?.value||'';const group=document.getElementById('athleteGroupFilter')?.value||'';const filtered=allAthletes.filter(a=>{const name=`${a.first_name} ${a.last_name}`.toLowerCase();if(search&&!name.includes(search))return false;if(club&&a.club_names!==club)return false;if(group&&(!a.group_names||!a.group_names.includes(group)))return false;return true});renderAthletesTable(filtered)}
 document.getElementById('athleteSearch')?.addEventListener('input',filterAthletes);document.getElementById('athleteClubFilter')?.addEventListener('change',filterAthletes);document.getElementById('athleteGroupFilter')?.addEventListener('change',filterAthletes);
 function openClubModal(){document.getElementById('clubModal').classList.add('active');document.body.style.overflow='hidden';const aEl=document.getElementById('clubAddress');setTimeout(()=>initClubMap(aEl._lat||null, aEl._lng||null), 50);}
@@ -1919,6 +1924,156 @@ async function sendRenewalRequest(){
   }catch(e){alert('Ошибка: '+e.message);}
 }
 
+// ===== CHILD EDIT (director) =====
+function openChildModal(){document.getElementById('childModal').classList.add('active');document.body.style.overflow='hidden';}
+function closeChildModal(){document.getElementById('childModal').classList.remove('active');document.body.style.overflow='';}
+
+function populateChildDateSelects(){
+  const d=document.getElementById('childBirthDay');
+  const m=document.getElementById('childBirthMonth');
+  const y=document.getElementById('childBirthYear');
+  if(d.options.length>1)return;
+  for(let i=1;i<=31;i++){const o=document.createElement('option');o.value=i;o.textContent=i;d.appendChild(o);}
+  ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'].forEach((n,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=n;m.appendChild(o);});
+  const cy=new Date().getFullYear();
+  for(let i=cy;i>=1940;i--){const o=document.createElement('option');o.value=i;o.textContent=i;y.appendChild(o);}
+}
+
+function renderChildGroupCheckboxes(selectedIds){
+  const container=document.getElementById('childGroupsCheckboxes');
+  if(!groups||groups.length===0){container.innerHTML='<p style="color:#999">Нет доступных групп</p>';return;}
+  container.innerHTML=groups.map(g=>`
+    <label style="display:block;padding:0.5rem;cursor:pointer;border-bottom:1px solid var(--b)">
+    <input type="checkbox" value="${g.id}" ${selectedIds.includes(g.id)?'checked':''} style="margin-right:0.5rem">
+    ${g.name} <span style="color:#666">(${g.club_name||'—'})</span>
+    </label>
+  `).join('');
+}
+
+function generateCredentials(){
+  const fn=(document.getElementById('childFirstName').value||'user').toLowerCase().replace(/[^a-zа-яёa-z0-9]/gi,'').substring(0,10);
+  const ln=(document.getElementById('childLastName').value||'').toLowerCase().replace(/[^a-zа-яёa-z0-9]/gi,'').substring(0,10);
+  const chars='abcdefghjkmnpqrstuvwxyz23456789';
+  let pwd='';for(let i=0;i<8;i++)pwd+=chars[Math.floor(Math.random()*chars.length)];
+  const login=fn+(ln?'.'+ln:'')+Math.floor(Math.random()*99);
+  document.getElementById('childLogin').value=login;
+  document.getElementById('childPassword').value=pwd;
+}
+
+async function editChild(id){
+  if(groups.length===0)await loadGroups();
+  populateChildDateSelects();
+  const c=allAthletes.find(x=>x.id===id);
+  if(!c)return;
+  document.getElementById('childModalTitle').textContent='Редактировать спортсмена';
+  document.getElementById('childId').value=c.id;
+  document.getElementById('childFirstName').value=c.first_name;
+  document.getElementById('childLastName').value=c.last_name;
+  if(c.birth_date){
+    const parts=c.birth_date.split('T')[0].split('-');
+    document.getElementById('childBirthYear').value=parts[0];
+    document.getElementById('childBirthMonth').value=parseInt(parts[1]);
+    document.getElementById('childBirthDay').value=parseInt(parts[2]);
+  }else{
+    document.getElementById('childBirthDay').value='';
+    document.getElementById('childBirthMonth').value='';
+    document.getElementById('childBirthYear').value='';
+  }
+  if(c.photo_url){
+    document.getElementById('childPreviewImage').src=c.photo_url;
+    document.getElementById('childPhotoPreview').style.display='block';
+  }else{
+    document.getElementById('childPhotoPreview').style.display='none';
+  }
+  const childGroupNames=c.group_names&&c.group_names!=='Без группы'?c.group_names.split(', '):[];
+  const childGroupIds=groups.filter(g=>childGroupNames.includes(g.name)).map(g=>g.id);
+  renderChildGroupCheckboxes(childGroupIds);
+  document.getElementById('childLogin').value=c.login||'';
+  document.getElementById('childPassword').value='';
+  openChildModal();
+}
+
+async function saveChild(e){
+  e.preventDefault();
+  const id=document.getElementById('childId').value;
+  const fn=document.getElementById('childFirstName').value.trim();
+  const ln=document.getElementById('childLastName').value.trim();
+  const d=document.getElementById('childBirthDay').value;
+  const m=document.getElementById('childBirthMonth').value;
+  const y=document.getElementById('childBirthYear').value;
+  const selectedGroups=Array.from(document.querySelectorAll('#childGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
+  const login=document.getElementById('childLogin').value.trim();
+  const password=document.getElementById('childPassword').value.trim();
+  if(!fn||!ln){alert('Заполните имя и фамилию');return;}
+  if(selectedGroups.length===0){alert('Выберите хотя бы одну группу');return;}
+  const data={id:parseInt(id),first_name:fn,last_name:ln};
+  if(d&&m&&y)data.birth_date=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  if(login)data.login=login;
+  if(password)data.password=password;
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'update',data})});
+    const res=await r.json();
+    const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
+    if(result&&result.id){
+      // Получаем текущие группы спортсмена
+      const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
+      const d2=await r2.json();
+      const allChildren=d2.merged||d2||[];
+      const child=allChildren.find(c=>c.id==parseInt(id));
+      const currentGroupNames=child&&child.group_names&&child.group_names!=='Без группы'?child.group_names.split(', '):[];
+      const currentGroupIds=groups.filter(g=>currentGroupNames.includes(g.name)).map(g=>g.id);
+      const removedGroups=currentGroupIds.filter(gid=>!selectedGroups.includes(gid));
+      const addedGroups=selectedGroups.filter(gid=>!currentGroupIds.includes(gid));
+      // Face++ sync если есть изменения в группах
+      if(removedGroups.length>0||addedGroups.length>0){
+        const r3=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'face_tokens',action:'list',data:{child_id:parseInt(id)}})});
+        const d3=await r3.json();
+        const faceTokensData=(d3.merged||d3||[]).filter(ft=>ft.child_id==parseInt(id));
+        const childFaceToken=faceTokensData.length>0?faceTokensData[0].face_token:null;
+        if(childFaceToken){
+          await fetch('https://primary-production-4b93e.up.railway.app/webhook/sync-child-facesets',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({token,child_id:parseInt(id),action:'update',removed_groups:removedGroups,added_groups:addedGroups})
+          });
+        }
+      }
+      // Обновляем группы в БД
+      for(const gid of removedGroups){
+        await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(id),group_id:gid}})});
+      }
+      for(const gid of addedGroups){
+        await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});
+      }
+      closeChildModal();
+      alert('Спортсмен обновлён!');
+      await loadAthletes();
+    }else{
+      alert('Ошибка: '+(result?.error||JSON.stringify(res)));
+    }
+  }catch(err){console.error(err);alert('Ошибка: '+err.message);}
+}
+
+async function deleteAthlete(id){
+  if(!confirm('Удалить спортсмена?'))return;
+  try{
+    // Face++ sync — удаляем из всех FaceSet
+    const r3=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'face_tokens',action:'list',data:{child_id:id}})});
+    const d3=await r3.json();
+    const faceTokensData=(d3.merged||d3||[]).filter(ft=>ft.child_id==id);
+    const childFaceToken=faceTokensData.length>0?faceTokensData[0].face_token:null;
+    if(childFaceToken){
+      await fetch('https://primary-production-4b93e.up.railway.app/webhook/sync-child-facesets',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,child_id:id,action:'delete'})
+      });
+    }
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'delete',data:{id}})});
+    const res=await r.json();
+    if(res.success||res.id){alert('Спортсмен удален!');await loadAthletes();}
+    else{alert('Ошибка удаления');}
+  }catch(err){console.error(err);alert('Ошибка: '+err.message);}
+}
+
 loadUserInfo();loadClubs();loadSubscription();
 // Загружаем счётчики чата сразу при старте, не ждём открытия вкладки
 loadChatContacts();
@@ -1926,6 +2081,66 @@ setInterval(() => { loadChatContacts(); }, 20000);
 if(location.hash==='#groups'){setTimeout(()=>{document.querySelector('.tab:nth-child(2)').click()},100);}
 if(location.hash==='#trainers'){setTimeout(()=>{document.querySelector('.tab:nth-child(3)').click()},100);}
 </script>
+<!-- Child Edit Modal -->
+<div class="modal" id="childModal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title" id="childModalTitle">Редактировать спортсмена</h2>
+<button class="modal-close" onclick="closeChildModal()">✕</button>
+</div>
+<div class="modal-body">
+<form id="childForm" onsubmit="saveChild(event)">
+<input type="hidden" id="childId">
+<div class="form-group">
+<label class="form-label">Имя *</label>
+<input type="text" class="form-input" id="childFirstName" required>
+</div>
+<div class="form-group">
+<label class="form-label">Фамилия *</label>
+<input type="text" class="form-input" id="childLastName" required>
+</div>
+<div class="form-group">
+<label class="form-label">Дата рождения</label>
+<div class="date-inputs">
+<div class="form-group"><select class="form-input" id="childBirthDay"><option value="">День</option></select></div>
+<div class="form-group"><select class="form-input" id="childBirthMonth"><option value="">Месяц</option></select></div>
+<div class="form-group"><select class="form-input" id="childBirthYear"><option value="">Год</option></select></div>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Группы *</label>
+<div id="childGroupsCheckboxes" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);padding:1rem;border-radius:8px;background:#f9f9f9"></div>
+</div>
+<div class="form-group">
+<label class="form-label">Фото (смена фото — отдельная операция)</label>
+<div id="childPhotoPreview" style="margin-bottom:.75rem;display:none">
+<img id="childPreviewImage" style="max-width:100px;max-height:100px;border-radius:8px;border:2px solid var(--b)">
+</div>
+<p style="color:#888;font-size:.85rem">Смена фото пока недоступна в этом окне</p>
+</div>
+<div style="border-top:1px solid var(--b);margin:.5rem 0 1rem;padding-top:1rem">
+<div style="font-weight:600;font-size:.9rem;color:#555;margin-bottom:.75rem">🔐 Доступ спортсмена</div>
+<div class="form-group" style="margin-bottom:.75rem">
+<label class="form-label">Логин</label>
+<div style="display:flex;gap:.5rem">
+<input type="text" class="form-input" id="childLogin" placeholder="ivan.donetsky" style="flex:1">
+<button type="button" onclick="generateCredentials()" style="padding:.5rem .75rem;background:#6c63ff;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;white-space:nowrap">🔄 Генерировать</button>
+</div>
+</div>
+<div class="form-group" style="margin-bottom:0">
+<label class="form-label">Новый пароль</label>
+<input type="text" class="form-input" id="childPassword" placeholder="Оставьте пустым чтобы не менять">
+</div>
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-cancel" onclick="closeChildModal()">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('childForm').requestSubmit()">Сохранить</button>
+</div>
+</div>
+</div>
+
 <!-- Message Inbox Modal -->
 <div class="modal" id="inboxModal">
 <div class="modal-content" style="max-width:600px">
