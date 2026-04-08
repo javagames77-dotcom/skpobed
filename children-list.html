@@ -285,7 +285,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 </a>
 <div style="display:flex;align-items:center;gap:1rem">
 <span id="userName">—</span>
-<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия1</a>
+<a href="/accounting.html" style="padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;font-size:.9rem;text-decoration:none;color:#1a1a1a;font-weight:600">💰 Бухгалтерия</a>
 <button class="btn-logout" onclick="logout()">Выход</button>
 </div>
 </div>
@@ -368,6 +368,7 @@ body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
 <div class="form-group">
 <label class="form-label">Фото *</label>
 <input type="file" class="form-input" id="childPhoto" accept="image/*" required style="padding:0.5rem">
+<p id="childPhotoHint" style="display:none;color:#888;font-size:.8rem;margin-top:.4rem">Выберите новое фото только если хотите его заменить</p>
 <div id="photoPreview" style="margin-top:1rem;display:none">
 <img id="previewImage" style="max-width:200px;max-height:200px;border-radius:8px;border:2px solid var(--b)">
 </div>
@@ -843,6 +844,7 @@ document.getElementById('childBirthMonth').value='';
 document.getElementById('childBirthYear').value='';
 document.getElementById('childPhoto').value='';
 document.getElementById('childPhoto').required=true;
+document.getElementById('childPhotoHint').style.display='none';
 document.getElementById('photoPreview').style.display='none';
 document.getElementById('childLogin').value='';
 document.getElementById('childPassword').value='';
@@ -881,6 +883,8 @@ const childGroupIds=groups.filter(g=>childGroupNames.includes(g.group_name)).map
 renderGroupCheckboxes(childGroupIds);
 
 document.getElementById('childPhoto').required=false;
+document.getElementById('childPhoto').value='';
+document.getElementById('childPhotoHint').style.display='block';
 if(c.photo_url){
 document.getElementById('previewImage').src=c.photo_url;
 document.getElementById('photoPreview').style.display='block';
@@ -952,6 +956,19 @@ const r=await fetch('https://primary-production-4b93e.up.railway.app/webhook/upl
 return await r.json();
 }
 
+async function uploadChildPhotoUpdate(photoFile, child_id){
+const compressed=await compressImage(photoFile);
+const formData=new FormData();
+formData.append('token',token);
+formData.append('photo',compressed);
+formData.append('child_id',child_id);
+const r=await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-child-photo-update',{
+  method:'POST',
+  body:formData
+});
+return await r.json();
+}
+
 async function saveChild(e){
 e.preventDefault();
 const id=document.getElementById('childId').value;
@@ -975,6 +992,16 @@ if(password)data.password=password;
 try{
 if(id){
 data.id=parseInt(id);
+// Если выбрано новое фото — сначала загружаем
+const newPhotoFile=document.getElementById('childPhoto').files[0];
+if(newPhotoFile){
+  const photoResult=await uploadChildPhotoUpdate(newPhotoFile, parseInt(id));
+  if(!photoResult.success){
+    alert('Ошибка загрузки фото: '+(photoResult.error||JSON.stringify(photoResult)));
+    return;
+  }
+  document.getElementById('previewImage').src=photoResult.photo_url;
+}
 console.log('UPDATE child:', data);
 const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'update',data})});
 let res=await r.json();
