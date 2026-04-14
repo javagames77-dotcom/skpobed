@@ -61,7 +61,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 /* ── SUB BANNER ── */
 .sub-banner{display:none;padding:.75rem 1rem;border-radius:8px;margin-bottom:16px;font-weight:500;font-size:12px;border:1px solid transparent}
-.sub-banner-warning{background:#fff3cd;color:#856404;border-color:#ffc107}
+.sub-banner-warning{background:var(--bg)3cd;color:#856404;border-color:#ffc107}
 .sub-banner-danger{background:var(--tag-red-bg);color:var(--tag-red);border-color:var(--tag-red)}
 
 /* ── PAGE HEADER ── */
@@ -153,10 +153,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .ntag-loc{background:var(--tag-green-bg);color:var(--tag-green)}
 .ntag-src{background:#f3e5f5;color:#7b1fa2}
 [data-theme="dark"] .ntag-src{background:#2a1040;color:#c084fc}
-.ntag-fee{background:#fff8e1;color:#e65100}
+.ntag-fee{background:var(--bg)8e1;color:#e65100}
 [data-theme="dark"] .ntag-fee{background:#2a1800;color:#fbbf24}
 .ntag-type{background:var(--tag-green-bg);color:var(--tag-green)}
-.ntag-status-new{background:#fff3e0;color:#e65100}
+.ntag-status-new{background:var(--bg)3e0;color:#e65100}
 [data-theme="dark"] .ntag-status-new{background:#2a1800;color:#fbbf24}
 .ntag-status-processed,.ntag-status-added{background:var(--tag-green-bg);color:var(--tag-green)}
 .ntag-status-dismissed{background:var(--tag-gray-bg);color:var(--tag-gray)}
@@ -527,7 +527,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     </div>
     <div id="loadingNews" class="loading" style="display:none">Загрузка...</div>
     <div id="newsCards"></div>
-    <div id="emptyNews" class="news-empty" style="display:none;padding:3rem;text-align:center;color:#aaa;background:#fff;border-radius:12px">
+    <div id="emptyNews" class="news-empty" style="display:none;padding:3rem;text-align:center;color:#aaa;background:var(--bg);border-radius:12px">
       <div style="font-size:3rem;margin-bottom:.5rem">🤖</div>
       <div style="font-weight:600;margin-bottom:.35rem;color:#666">Мероприятий пока не найдено</div>
       <div style="font-size:.85rem">Добавьте источники и запустите парсинг</div>
@@ -538,7 +538,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div style="display:flex;flex-direction:column;gap:1rem">
 
     <!-- Sources card -->
-    <div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:1.25rem">
+    <div style="background:var(--bg);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:1.25rem">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
         <span style="font-weight:700;color:var(--d)">📡 Источники</span>
         <button class="btn-add" style="padding:.4rem .9rem;font-size:.8rem" onclick="openSourceModal()">+ Добавить</button>
@@ -573,6 +573,126 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
   </div>
 </div>
+</div>
+
+<!-- CHAT TAB -->
+<div class="view" id="tab-chat">
+<div class="page-header">
+  <h1 class="page-title">💬 Чат</h1>
+  <button class="btn-add" onclick="openBroadcast()"><span>📢</span><span>Написать всем</span></button>
+</div>
+<div style="background:var(--card-bg);border-radius:12px;border:1px solid var(--border);overflow:hidden">
+  <div style="display:flex;height:560px">
+
+    <!-- Сайдбар -->
+    <div style="width:250px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--bg2)">
+      <div style="padding:.6rem .75rem;border-bottom:1px solid var(--border);font-weight:600;font-size:.85rem;display:flex;justify-content:space-between;align-items:center">
+        <span>Контакты</span>
+        <span id="chatTotalUnread" style="font-size:.75rem;color:#ef4444;font-weight:700"></span>
+      </div>
+      <div style="padding:.4rem .6rem;border-bottom:1px solid var(--border)">
+        <input type="text" placeholder="🔍 Поиск..." oninput="filterChatContacts(this.value)"
+          style="width:100%;padding:.35rem .6rem;border:1px solid var(--border);border-radius:6px;font-size:.8rem;box-sizing:border-box;outline:none">
+      </div>
+      <div id="chatContactList" style="flex:1;overflow-y:auto">
+        <div style="text-align:center;padding:2rem;color:#aaa;font-size:.82rem">Загрузка...</div>
+      </div>
+    </div>
+
+    <!-- Основная область -->
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+      <div id="chatEmpty" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;color:#aaa">
+        <div style="font-size:2.5rem">💬</div>
+        <div style="font-size:.9rem">Выберите контакт</div>
+      </div>
+      <div id="chatActiveArea" style="display:none;flex:1;flex-direction:column;overflow:hidden">
+        <div id="chatMainHdr" style="padding:.7rem 1rem;border-bottom:1px solid var(--border);font-weight:700;font-size:.92rem;flex-shrink:0;background:var(--bg)"></div>
+        <div id="chatMsgList" style="flex:1;min-height:0;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.35rem;background:var(--bg2)"></div>
+        <div id="chatPreviewBar" style="display:none;padding:.4rem .7rem;background:var(--bg3);border-top:1px solid var(--border);align-items:center;gap:.55rem;font-size:.8rem;flex-shrink:0">
+          <img id="chatPreviewThumb" style="width:36px;height:36px;object-fit:cover;border-radius:6px;display:none">
+          <span id="chatPreviewName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+          <button onclick="clearChatAttach()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:#aaa">✕</button>
+        </div>
+        <div style="padding:.6rem .75rem;border-top:1px solid var(--border);display:flex;gap:.45rem;align-items:center;background:var(--bg);flex-shrink:0">
+          <label style="padding:.5rem .65rem;border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:.95rem;line-height:1;background:var(--bg)">
+            📎<input type="file" id="chatFileInp" accept="image/*,application/pdf" style="display:none" onchange="handleChatFile(this)">
+          </label>
+          <input type="text" id="chatTextarea" placeholder="Написать сообщение..."
+            style="flex:1;padding:.55rem .85rem;border:1px solid var(--border);border-radius:8px;font-size:.87rem;font-family:inherit;outline:none"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMsg()}">
+          <button onclick="sendChatMsg()" style="padding:.55rem 1rem;background:var(--p);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Broadcast modal -->
+<div id="broadcastModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:var(--bg);border-radius:16px;padding:1.5rem;width:480px;max-width:95vw">
+    <h3 style="margin:0 0 1rem">📢 Написать всем спортсменам</h3>
+    <textarea id="broadcastText" style="width:100%;height:100px;padding:.75rem;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:.9rem;box-sizing:border-box;resize:vertical" placeholder="Текст сообщения..."></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:.75rem;margin-top:1rem">
+      <button onclick="closeBroadcast()" style="padding:.6rem 1.2rem;border:1px solid var(--border);border-radius:8px;background:var(--bg);cursor:pointer">Отмена</button>
+      <button onclick="sendBroadcast()" style="padding:.6rem 1.2rem;background:var(--p);color:#fff;border:none;border-radius:9px;cursor:pointer;font-weight:600">Отправить всем</button>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="tab-subscription">
+<div class="page-header">
+<h1 class="page-title">💳 Моя подписка</h1>
+</div>
+<div id="subscriptionContent" style="max-width:600px">
+<div style="background:var(--card-bg);border-radius:12px;border:1px solid var(--border);padding:1.5rem">
+<div id="subLoading" style="text-align:center;color:var(--muted);padding:2rem;text-align:center">Загрузка...</div>
+<div id="subData" style="display:none">
+<div style="margin-bottom:1.5rem">
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Статус</div>
+<div id="subStatus" style="font-size:14px;font-weight:600;color:var(--black)"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Тарифный план</div>
+<div id="subPlan" style="font-size:14px;font-weight:600;color:var(--black)"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Активен до</div>
+<div id="subActiveUntil" style="font-size:14px;font-weight:600;color:var(--black)"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Осталось дней</div>
+<div id="subDaysLeft" style="font-size:14px;font-weight:600;color:var(--black)"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Лимит групп</div>
+<div id="subGroupsLimit" style="font-size:14px;font-weight:600;color:var(--black)"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Активных групп</div>
+<div id="subGroupsActive" style="font-size:14px;font-weight:600;color:var(--black)"></div>
+</div>
+<hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
+<div style="font-size:11px;color:var(--muted2);font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em">Использование за месяц</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">📄 Документы</div>
+<div id="subDocsUsed" style="font-size:14px;font-weight:600;color:var(--black)"></div>
+</div>
+<div style="margin-bottom:1.5rem">
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">🔄 Смены групп</div>
+<div id="subChangesUsed" style="font-size:14px;font-weight:600;color:var(--black)"></div>
+</div>
+<div style="margin-bottom:1rem">
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">💰 Сумма превышений</div>
+<div id="subOverage" style="font-size:14px;font-weight:600;color:var(--black)"></div>
+</div>
+</div>
+<div id="subEmpty" style="display:none;text-align:center;color:var(--muted);padding:2rem;text-align:center">Подписка не найдена. Обратитесь к администратору.</div>
+</div>
+</div>
+</div>
+
+
 
 
 
@@ -654,7 +774,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 
 <!-- MODALS -->
-<div class="modal" id="clubModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2><button class="modal-close" onclick="closeClubModal()">✕</button></div><div class="modal-body"><form id="clubForm" onsubmit="saveClub(event)"><input type="hidden" id="clubId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="clubName" required></div><div class="form-group"><label class="form-label">Адрес</label><input type="text" class="form-input" id="clubAddress" autocomplete="off" oninput="clubAddressInput(this.value)"><div id="clubAddressSuggestions" style="display:none;background:#fff;border:1px solid #ddd;border-radius:8px;max-height:200px;overflow-y:auto;margin-top:2px"></div></div><div id="clubMapDiv" style="height:220px;margin-top:.75rem;border-radius:8px;border:1px solid #ddd;overflow:hidden"></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeClubModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()">Сохранить</button></div></div></div>
+<div class="modal" id="clubModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2><button class="modal-close" onclick="closeClubModal()">✕</button></div><div class="modal-body"><form id="clubForm" onsubmit="saveClub(event)"><input type="hidden" id="clubId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="clubName" required></div><div class="form-group"><label class="form-label">Адрес</label><input type="text" class="form-input" id="clubAddress" autocomplete="off" oninput="clubAddressInput(this.value)"><div id="clubAddressSuggestions" style="display:none;background:var(--bg);border:1px solid #ddd;border-radius:8px;max-height:200px;overflow-y:auto;margin-top:2px"></div></div><div id="clubMapDiv" style="height:220px;margin-top:.75rem;border-radius:8px;border:1px solid #ddd;overflow:hidden"></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeClubModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()">Сохранить</button></div></div></div>
 
 <div class="modal" id="groupModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="groupModalTitle">Добавить группу</h2><button class="modal-close" onclick="closeGroupModal()">✕</button></div><div class="modal-body"><form id="groupForm" onsubmit="saveGroup(event)"><input type="hidden" id="groupId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="groupName" required></div><div class="form-group"><label class="form-label">Клуб *</label><select class="form-input" id="groupClubId" required><option value="">Выберите</option></select></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeGroupModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()">Сохранить</button></div></div></div>
 
@@ -839,125 +959,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 </div>
 </div>
-
-<!-- CHAT TAB -->
-<div class="view" id="tab-chat">
-<div class="page-header" style="max-width:1200px;margin-left:auto;margin-right:auto;margin-bottom:1.5rem">
-  <h1 class="page-title">💬 Чат</h1>
-  <button class="btn-add" onclick="openBroadcast()"><span>📢</span><span>Написать всем</span></button>
-</div>
-<div style="max-width:1200px;margin:0 auto 2rem;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden">
-  <div style="display:flex;height:560px">
-
-    <!-- Сайдбар -->
-    <div style="width:250px;flex-shrink:0;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;background:#fafafa">
-      <div style="padding:.6rem .75rem;border-bottom:1px solid #e5e7eb;font-weight:600;font-size:.85rem;display:flex;justify-content:space-between;align-items:center">
-        <span>Контакты</span>
-        <span id="chatTotalUnread" style="font-size:.75rem;color:#ef4444;font-weight:700"></span>
-      </div>
-      <div style="padding:.4rem .6rem;border-bottom:1px solid #e5e7eb">
-        <input type="text" placeholder="🔍 Поиск..." oninput="filterChatContacts(this.value)"
-          style="width:100%;padding:.35rem .6rem;border:1px solid #e5e7eb;border-radius:6px;font-size:.8rem;box-sizing:border-box;outline:none">
-      </div>
-      <div id="chatContactList" style="flex:1;overflow-y:auto">
-        <div style="text-align:center;padding:2rem;color:#aaa;font-size:.82rem">Загрузка...</div>
-      </div>
-    </div>
-
-    <!-- Основная область -->
-    <div style="flex:1;display:flex;flex-direction:column;min-width:0">
-      <div id="chatEmpty" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;color:#aaa">
-        <div style="font-size:2.5rem">💬</div>
-        <div style="font-size:.9rem">Выберите контакт</div>
-      </div>
-      <div id="chatActiveArea" style="display:none;flex:1;flex-direction:column;overflow:hidden">
-        <div id="chatMainHdr" style="padding:.7rem 1rem;border-bottom:1px solid #e5e7eb;font-weight:700;font-size:.92rem;flex-shrink:0;background:#fff"></div>
-        <div id="chatMsgList" style="flex:1;min-height:0;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.35rem;background:#f9fafb"></div>
-        <div id="chatPreviewBar" style="display:none;padding:.4rem .7rem;background:#f0f2ff;border-top:1px solid #dde0f5;align-items:center;gap:.55rem;font-size:.8rem;flex-shrink:0">
-          <img id="chatPreviewThumb" style="width:36px;height:36px;object-fit:cover;border-radius:6px;display:none">
-          <span id="chatPreviewName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-          <button onclick="clearChatAttach()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:#aaa">✕</button>
-        </div>
-        <div style="padding:.6rem .75rem;border-top:1px solid #e5e7eb;display:flex;gap:.45rem;align-items:center;background:#fff;flex-shrink:0">
-          <label style="padding:.5rem .65rem;border:1.5px solid #e5e7eb;border-radius:8px;cursor:pointer;font-size:.95rem;line-height:1;background:#fff">
-            📎<input type="file" id="chatFileInp" accept="image/*,application/pdf" style="display:none" onchange="handleChatFile(this)">
-          </label>
-          <input type="text" id="chatTextarea" placeholder="Написать сообщение..."
-            style="flex:1;padding:.55rem .85rem;border:1.5px solid #e5e7eb;border-radius:9px;font-size:.87rem;font-family:inherit;outline:none"
-            onkeydown="if(event.key==='Enter'){event.preventDefault();sendChatMsg()}">
-          <button onclick="sendChatMsg()" style="padding:.55rem 1rem;background:#4361ee;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600">➤</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- Broadcast modal -->
-<div id="broadcastModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:16px;padding:1.5rem;width:480px;max-width:95vw">
-    <h3 style="margin:0 0 1rem">📢 Написать всем спортсменам</h3>
-    <textarea id="broadcastText" style="width:100%;height:100px;padding:.75rem;border:1.5px solid #e5e7eb;border-radius:10px;font-family:inherit;font-size:.9rem;box-sizing:border-box;resize:vertical" placeholder="Текст сообщения..."></textarea>
-    <div style="display:flex;justify-content:flex-end;gap:.75rem;margin-top:1rem">
-      <button onclick="closeBroadcast()" style="padding:.6rem 1.2rem;border:1.5px solid #e5e7eb;border-radius:9px;background:#fff;cursor:pointer">Отмена</button>
-      <button onclick="sendBroadcast()" style="padding:.6rem 1.2rem;background:#4361ee;color:#fff;border:none;border-radius:9px;cursor:pointer;font-weight:600">Отправить всем</button>
-    </div>
-  </div>
-</div>
-
-<div class="view" id="tab-subscription">
-<div class="page-header" style="max-width:1200px;margin-left:auto;margin-right:auto;margin-bottom:1.5rem">
-<h1 class="page-title">💳 Моя подписка</h1>
-</div>
-<div id="subscriptionContent" style="max-width:600px;margin-left:auto;margin-right:auto">
-<div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:2rem">
-<div id="subLoading" style="text-align:center;color:#666;padding:2rem">Загрузка...</div>
-<div id="subData" style="display:none">
-<div style="margin-bottom:1.5rem">
-<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Статус</div>
-<div id="subStatus" style="font-size:1.1rem;font-weight:600"></div>
-</div>
-<div style="margin-bottom:1.5rem">
-<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Тарифный план</div>
-<div id="subPlan" style="font-size:1.1rem;font-weight:600"></div>
-</div>
-<div style="margin-bottom:1.5rem">
-<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Активен до</div>
-<div id="subActiveUntil" style="font-size:1.1rem;font-weight:600"></div>
-</div>
-<div style="margin-bottom:1.5rem">
-<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Осталось дней</div>
-<div id="subDaysLeft" style="font-size:1.1rem;font-weight:600"></div>
-</div>
-<div style="margin-bottom:1.5rem">
-<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Лимит групп</div>
-<div id="subGroupsLimit" style="font-size:1.1rem;font-weight:600"></div>
-</div>
-<div style="margin-bottom:1.5rem">
-<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">Активных групп</div>
-<div id="subGroupsActive" style="font-size:1.1rem;font-weight:600"></div>
-</div>
-<hr style="border:none;border-top:1px solid #e0e0e0;margin:1.5rem 0">
-<div style="font-size:.9rem;color:#888;font-weight:600;margin-bottom:1rem">Использование за месяц</div>
-<div style="margin-bottom:1.5rem">
-<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">📄 Документы</div>
-<div id="subDocsUsed" style="font-size:1.1rem;font-weight:600"></div>
-</div>
-<div style="margin-bottom:1.5rem">
-<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">🔄 Смены групп</div>
-<div id="subChangesUsed" style="font-size:1.1rem;font-weight:600"></div>
-</div>
-<div style="margin-bottom:1rem">
-<div style="font-size:.85rem;color:#888;margin-bottom:.25rem">💰 Сумма превышений</div>
-<div id="subOverage" style="font-size:1.1rem;font-weight:600"></div>
-</div>
-</div>
-<div id="subEmpty" style="display:none;text-align:center;color:#666;padding:2rem">Подписка не найдена. Обратитесь к администратору.</div>
-</div>
-</div>
-</div>
-
-
 
 <!-- Child Edit Modal -->
 <div class="modal" id="childModal">
@@ -2013,7 +2014,7 @@ function renderChatContacts() {
     const ini = (c.first_name||'')[0] + (c.last_name||'')[0];
     const av = c.photo_url
       ? `<img src="${c.photo_url}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0">`
-      : `<div style="width:36px;height:36px;border-radius:50%;background:#4361ee;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0">${ini}</div>`;
+      : `<div style="width:36px;height:36px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0">${ini}</div>`;
     const prev = c._lastMsg ? (c._lastMsg.text || '📎 файл') : 'Нет сообщений';
     const badge = c._unread ? `<span style="min-width:18px;height:18px;background:#ef4444;color:#fff;border-radius:9px;font-size:.65rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;padding:0 4px">${c._unread}</span>` : '';
     const bg = c.id === _chatActiveId ? 'background:#e8eeff;border-left:3px solid #4361ee;' : '';
