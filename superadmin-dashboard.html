@@ -1,196 +1,671 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Суперадмин — InSkill Online</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InSkill.online — Superadmin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
-.logo-icon{width:40px;height:40px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
-.logo-bars{display:flex;gap:3px;align-items:flex-end}
-.logo-bar{width:6px;background:#fff;border-radius:2px}
-.logo-bar:nth-child(1){height:12px}
-.logo-bar:nth-child(2){height:18px;background:var(--s)}
-.logo-bar:nth-child(3){height:24px;background:var(--s)}
-.user-menu{display:flex;align-items:center;gap:1rem}
-.badge-superadmin{padding:.25rem .75rem;background:linear-gradient(135deg,#dc3545,#c82333);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
-.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer}
-.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
-.page-header{background:#fff;padding:1.5rem;border-radius:12px;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center}
-.page-title{font-size:1.75rem;font-weight:700;color:var(--p)}
-.btn-add{padding:.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:.5rem}
-.table-container{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
-.table{width:100%;border-collapse:collapse}
-.table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
-.table th{padding:1rem;text-align:left;font-weight:600;text-transform:uppercase;font-size:.85rem}
-.table td{padding:1rem;border-bottom:1px solid var(--b)}
-.table tbody tr:hover{background:#f8f9ff}
-.status-badge{padding:.35rem .75rem;border-radius:20px;font-size:.85rem;font-weight:500}
-.status-active{background:#d4edda;color:#155724}
-.status-inactive{background:#f8d7da;color:#721c24}
-.table-actions{display:flex;gap:.5rem}
-.btn-icon{width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
-.btn-edit{background:#e3f2fd;color:var(--p)}
-.btn-delete{background:#ffebee;color:#dc3545}
-.loading{text-align:center;padding:3rem;color:var(--p)}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+[data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--sidebar-bg:#ffffff;--input-bg:#fafafa;--theme-btn-bg:#f0f0f0;--theme-btn-color:#6b6b6b;--tbl-bg:#ffffff;--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green-text:#16a34a;--tag-red-bg:#fff0f0;--tag-red-text:#c0392b;--tag-gray-bg:#f5f5f5;--tag-gray-text:#6b6b6b;--card-shadow:0 1px 3px rgba(0,0,0,.06)}
+[data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--sidebar-bg:#0a0a0a;--input-bg:#181818;--theme-btn-bg:#222222;--theme-btn-color:#bbbbbb;--tbl-bg:#181818;--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green-text:#4ade80;--tag-red-bg:#2a1010;--tag-red-text:#ff7070;--tag-gray-bg:#222222;--tag-gray-text:#999999;--card-shadow:0 1px 3px rgba(0,0,0,.3)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+/* NAV */
+.nav{height:48px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:background .2s,border-color .2s}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:600;color:var(--black);letter-spacing:-.03em;transition:color .2s}
+.logo-text span{font-weight:300;color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-badge{font-size:10px;font-weight:500;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;letter-spacing:.02em;transition:background .2s,border-color .2s,color .2s}
+.nav-divider{width:1px;height:18px;background:var(--border);transition:background .2s}
+.nav-user{display:flex;align-items:center;gap:7px}
+.nav-avatar{width:26px;height:26px;border-radius:50%;background:var(--black);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--bg);transition:background .2s,border-color .2s}
+.nav-username{font-size:12px;color:var(--muted);transition:color .2s}
+.nav-btn{font-size:12px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer;font-family:inherit;transition:all .12s}
+.nav-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg2)}
+
+/* THEME & LANG */
+.theme-toggle{width:32px;height:32px;background:var(--theme-btn-bg);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--theme-btn-color);flex-shrink:0}
+.theme-toggle:hover{border-color:var(--border2)}
+.lang-switcher{display:flex;align-items:center;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:3px;transition:background .2s,border-color .2s}
+.lang-btn{padding:3px 8px;border:none;border-radius:5px;background:transparent;color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.lang-btn.active{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* LAYOUT */
+.layout{display:flex;height:calc(100vh - 48px)}
+.sidebar{width:220px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:background .2s,border-color .2s;overflow-y:auto}
+.sidebar-section{padding:16px 12px 8px;font-size:10px;font-weight:500;color:var(--muted2);letter-spacing:.08em;text-transform:uppercase;transition:color .2s}
+.sitem{display:flex;align-items:center;gap:9px;padding:7px 12px;margin:1px 6px;border:none;border-radius:7px;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;text-align:left;width:calc(100% - 12px);position:relative}
+.sitem:hover{background:var(--bg3);color:var(--text)}
+.sitem.active{background:var(--bg3);color:var(--black)}
+.sitem svg{flex-shrink:0;color:inherit}
+.sitem-badge{margin-left:auto;background:var(--accent);color:#fff;border-radius:9px;font-size:10px;font-weight:700;padding:1px 6px;min-width:18px;text-align:center;display:none}
+.main{flex:1;overflow-y:auto;padding:24px}
+
+/* PAGE HEADER */
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.ph-title{font-size:16px;font-weight:600;color:var(--black);letter-spacing:-.02em;transition:color .2s}
+.ph-sub{font-size:12px;color:var(--muted);margin-top:2px;transition:color .2s}
+
+/* BUTTON */
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--black);color:var(--bg);border:none;border-radius:7px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:opacity .15s,background .2s,color .2s}
+.btn-primary:hover{opacity:.85}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:7px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-danger{background:var(--tag-red-bg);color:var(--tag-red-text);border:1px solid var(--tag-red-text);border-radius:7px;padding:6px 12px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn-success{background:var(--tag-green-bg);color:var(--tag-green-text);border:1px solid var(--tag-green-text);border-radius:7px;padding:6px 12px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s}
+
+/* TABLE */
+.tbl-wrap{background:var(--tbl-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:background .2s,border-color .2s}
+.tbl{width:100%;border-collapse:collapse}
+.tbl thead tr{border-bottom:1px solid var(--border)}
+.tbl th{padding:10px 14px;text-align:left;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;transition:color .2s}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;transition:border-color .2s}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:var(--tbl-hover)}
+.row-actions{display:flex;gap:4px}
+.act-btn{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.act-btn:hover{border-color:var(--border2);color:var(--text)}
+.act-btn.del:hover{border-color:var(--tag-red-text);color:var(--tag-red-text);background:var(--tag-red-bg)}
+.act-btn.msg:hover{border-color:#3b82f6;color:#3b82f6;background:#eff6ff}
+
+/* TAGS */
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500}
+.tag-green{background:var(--tag-green-bg);color:var(--tag-green-text)}
+.tag-red{background:var(--tag-red-bg);color:var(--tag-red-text)}
+.tag-gray{background:var(--tag-gray-bg);color:var(--tag-gray-text)}
+.tag-blue{background:#eff6ff;color:#1d4ed8}
+[data-theme="dark"] .tag-blue{background:#0c1a3a;color:#93c5fd}
+
+/* REQUEST CARDS */
+.req-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.req-card{background:var(--tbl-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:background .2s,border-color .2s}
+.req-card-body{padding:16px}
+.req-card-name{font-size:14px;font-weight:600;color:var(--black);margin-bottom:6px;transition:color .2s}
+.req-card-row{font-size:12px;color:var(--muted);margin-bottom:3px;transition:color .2s}
+.req-card-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;transition:border-color .2s}
+
+/* MESSAGES */
+.msg-card{background:var(--tbl-bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;transition:background .2s,border-color .2s}
+.msg-card.unread{border-left:3px solid #3b82f6}
+.msg-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.msg-card-from{font-size:13px;font-weight:500;color:var(--black);transition:color .2s}
+.msg-card-meta{font-size:11px;color:var(--muted2);transition:color .2s}
+.msg-card-text{font-size:12px;color:var(--text);line-height:1.5;margin-bottom:10px;transition:color .2s}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
 .modal.active{display:flex}
-.modal-content{background:#fff;border-radius:16px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.modal-header{padding:1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:1.5rem;font-weight:700;color:var(--p)}
-.modal-close{width:32px;height:32px;border:none;background:var(--l);border-radius:50%;cursor:pointer;font-size:1.2rem}
-.modal-body{padding:1.5rem}
-.form-group{margin-bottom:1.25rem}
-.form-label{display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem}
-.form-input{width:100%;padding:.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
-.modal-footer{padding:1.5rem;border-top:2px solid var(--b);display:flex;gap:1rem;justify-content:flex-end}
-.btn{padding:.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem}
-.btn-cancel{background:var(--l);color:var(--d)}
-.btn-save{background:var(--s);color:#fff}
-.tab-btn{padding:.75rem 1.5rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:1rem;font-weight:600;color:#666}
-.tab-btn.active{color:var(--p);border-bottom-color:var(--p)}
-.msg-badge{position:absolute;top:-6px;right:-6px;background:#dc3545;color:#fff;border-radius:50%;width:18px;height:18px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
-.msg-btn-inline{padding:.3rem .6rem;background:#e3f2fd;color:var(--p);border:none;border-radius:6px;cursor:pointer;font-size:.9rem}
+.modal-box{background:var(--bg);border:1px solid var(--border);border-radius:14px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);transition:background .2s,border-color .2s}
+.modal-box.sm{max-width:460px}
+.modal-box.md{max-width:560px}
+.modal-box.lg{max-width:700px}
+.modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;transition:border-color .2s}
+.modal-title{font-size:14px;font-weight:600;color:var(--black);transition:color .2s}
+.modal-close{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;transition:all .12s}
+.modal-close:hover{border-color:var(--border2);color:var(--text)}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;transition:border-color .2s}
+
+/* FORM */
+.form-group{margin-bottom:14px}
+.form-label{display:block;margin-bottom:5px;font-size:12px;font-weight:500;color:var(--muted);transition:color .2s}
+.form-input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--input-bg);color:var(--text);transition:border-color .15s,box-shadow .15s,background .2s,color .2s;outline:none}
+.form-input:focus{border-color:var(--border2);box-shadow:0 0 0 3px rgba(0,0,0,.06)}
+[data-theme="dark"] .form-input:focus{box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+.form-input::placeholder{color:var(--muted2)}
+.form-hint{font-size:11px;color:var(--muted2);margin-top:3px;transition:color .2s}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* INFO GRID */
+.info-grid{display:grid;gap:12px}
+.info-row label{font-size:11px;color:var(--muted2);display:block;margin-bottom:2px;transition:color .2s}
+.info-row .info-val{font-size:13px;font-weight:500;color:var(--black);transition:color .2s}
+
+/* LOADING / EMPTY */
+.loading-state{text-align:center;padding:48px 24px;color:var(--muted);font-size:13px}
+.empty-state{text-align:center;padding:48px 24px}
+.empty-icon{font-size:32px;margin-bottom:12px}
+.empty-text{font-size:13px;color:var(--muted)}
+
+/* VIEW */
+.view{display:none}
+.view.active{display:block}
+
+/* MOBILE */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--nav-bg);border-top:1px solid var(--border);z-index:200;backdrop-filter:blur(10px)}
+.mob-nav-items{display:flex;height:100%}
+.mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);font-size:9px;font-weight:500;font-family:inherit;cursor:pointer;transition:color .15s;position:relative}
+.mob-nav-btn.active{color:var(--black)}
+.mob-nav-dot{position:absolute;top:8px;right:calc(50% - 14px);width:7px;height:7px;border-radius:50%;background:var(--accent);display:none}
+
+@media(max-width:768px){
+  .sidebar{display:none}
+  .mob-nav{display:block}
+  .main{padding:16px;padding-bottom:72px}
+  .layout{height:calc(100vh - 48px)}
+  .form-grid{grid-template-columns:1fr}
+  .req-grid{grid-template-columns:1fr}
+  .tbl-wrap{overflow-x:auto}
+  .nav-username,.nav-divider,.nav-badge{display:none}
+  .ph{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:480px){
+  .main{padding:12px;padding-bottom:72px}
+}
 </style>
 </head>
 <body>
 
-<header class="header">
-<div class="header-content">
-<a href="/" class="logo">
-<div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
-<span>InSkill<span style="color:var(--s)">.online</span></span>
-</a>
-<div class="user-menu">
-<span class="badge-superadmin">👑 SUPERADMIN</span>
-<span id="userName">—</span>
-<button class="btn-logout" onclick="logout()">Выход</button>
-</div>
-</div>
-</header>
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <svg width="23" height="23" viewBox="0 0 20 20" fill="none">
+      <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+      <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="logo-text">InSkill<span>.online</span></span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-badge" id="t-nav-badge">SUPERADMIN</span>
+    <div class="nav-divider"></div>
+    <div class="nav-user">
+      <div class="nav-avatar" id="navInitials">SA</div>
+      <span class="nav-username" id="userName">—</span>
+    </div>
+    <div class="nav-divider"></div>
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="icon-sun" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.6 3.6l1.3 1.3M11.1 11.1l1.3 1.3M3.6 12.4l1.3-1.3M11.1 4.9l1.3-1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:none"><path d="M13.5 10A6 6 0 015 2.5a6 6 0 108 8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="nav-btn" onclick="logout()" id="t-logout">Вийти</button>
+  </div>
+</nav>
 
-<div class="container">
-<div class="page-header"><h1 class="page-title">Суперадмин</h1></div>
-<div style="display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:2px solid var(--b)">
-<button class="tab-btn active" id="tabDirectors" onclick="switchTab('directors')">👥 Директора</button>
-<button class="tab-btn" id="tabRequests" onclick="switchTab('requests')">📋 Заявки<span id="reqBadge" style="display:none;margin-left:.4rem;background:#dc3545;color:#fff;border-radius:10px;padding:0 6px;font-size:.8rem"></span></button>
-<button class="tab-btn" id="tabPlans" onclick="switchTab('plans')">💳 Тарифы</button>
-<button class="tab-btn" id="tabProviders" onclick="switchTab('providers')">⚙️ Платёжные системы</button>
-<button class="tab-btn" id="tabMessages" onclick="switchTab('messages')" style="position:relative">📬 Сообщения<span id="saMsgBadge" class="msg-badge" style="display:none">0</span></button>
-</div>
-<div id="panelDirectors">
-<div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
-<button class="btn-add" onclick="addDirector()"><span>➕</span><span>Добавить директора</span></button>
-</div>
-<div class="table-container">
-<div id="loading" class="loading">Загрузка...</div>
-<table class="table" id="directorsTable" style="display:none">
-<thead><tr><th>ФИО</th><th>Email</th><th>Групп</th><th>Статус</th><th>Активен до</th><th>Осталось</th><th>Действия</th></tr></thead>
-<tbody id="tbody"></tbody>
-</table>
-</div>
-</div>
-<div id="panelRequests" style="display:none">
-<div id="reqLoading" class="loading" style="display:none">Загрузка...</div>
-<div id="reqEmpty" style="display:none;text-align:center;padding:3rem;color:#666"><div style="font-size:3rem">📭</div><div>Новых заявок нет</div></div>
-<div id="reqList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:1.5rem"></div>
-</div>
-<div id="panelPlans" style="display:none">
-<div style="display:flex;justify-content:flex-end;margin-bottom:1rem"><button class="btn-add" onclick="addPlan()"><span>➕</span><span>Добавить тариф</span></button></div>
-<div class="table-container"><table class="table"><thead><tr>
-<th>Название</th><th>Страна</th><th>Валюта</th><th>$/группу</th><th>Фото/день</th><th>Смен/мес</th><th>Доков/мес</th><th>Grace</th><th>Статус</th><th>Действия</th>
-</tr></thead><tbody id="plansTbody"><tr><td colspan="10" style="text-align:center;padding:2rem;color:#666">Загрузка...</td></tr></tbody></table></div>
-</div>
-<div id="panelProviders" style="display:none">
-<div class="table-container"><table class="table"><thead><tr>
-<th>Провайдер</th><th>Комиссия</th><th>Приоритет</th><th>Статус</th><th>Действия</th>
-</tr></thead><tbody id="providersTbody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:#666">Загрузка...</td></tr></tbody></table></div>
-</div>
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section" id="t-s-directors-label">Директори</div>
+    <button class="sitem active" id="sitem-directors" onclick="show('directors',this)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="5" width="14" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5V4a2 2 0 014 0v1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M1 9h14" stroke="currentColor" stroke-width="1.2"/><path d="M7 9v1.5M9 9v1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span id="t-s-directors">Директори</span>
+    </button>
+    <button class="sitem" id="sitem-requests" onclick="show('requests',this)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 5.5h14" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 9h7M4.5 11.5h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span id="t-s-requests">Заявки</span>
+      <span class="sitem-badge" id="reqBadge"></span>
+    </button>
+    <div class="sidebar-section" id="t-s-billing-label">Білінг</div>
+    <button class="sitem" id="sitem-plans" onclick="show('plans',this)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6.5h14" stroke="currentColor" stroke-width="1.2"/><path d="M4 9.5h3M10 9.5h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span id="t-s-plans">Тарифи</span>
+    </button>
+    <button class="sitem" id="sitem-providers" onclick="show('providers',this)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5v13M1.5 8h13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M5 4.5c0 0 1 1.5 3 1.5s3-1.5 3-1.5M5 11.5c0 0 1-1.5 3-1.5s3 1.5 3 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span id="t-s-providers">Платіжні системи</span>
+    </button>
+    <div class="sidebar-section" id="t-s-comm-label">Комунікація</div>
+    <button class="sitem" id="sitem-messages" onclick="show('messages',this)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1.5 2h13v9H9l-2.5 3L4 11H1.5V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="5.5" cy="7" r=".85" fill="currentColor"/><circle cx="8" cy="7" r=".85" fill="currentColor"/><circle cx="10.5" cy="7" r=".85" fill="currentColor"/></svg>
+      <span id="t-s-messages">Повідомлення</span>
+      <span class="sitem-badge" id="saMsgBadge"></span>
+    </button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- DIRECTORS VIEW -->
+    <div class="view active" id="v-directors">
+      <div class="ph">
+        <div>
+          <div class="ph-title" id="t-directors-title">Директори</div>
+          <div class="ph-sub" id="t-directors-sub"></div>
+        </div>
+        <button class="btn-primary" onclick="addDirector()">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span id="t-add-director">Додати директора</span>
+        </button>
+      </div>
+      <div id="loading" class="loading-state" id="t-loading">Завантаження...</div>
+      <div class="tbl-wrap" id="directorsTable" style="display:none">
+        <table class="tbl">
+          <thead><tr>
+            <th id="t-th-name">ПІБ</th>
+            <th>Email</th>
+            <th id="t-th-groups">Груп</th>
+            <th id="t-th-status">Статус</th>
+            <th id="t-th-until">Активний до</th>
+            <th id="t-th-left">Залишилось</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- REQUESTS VIEW -->
+    <div class="view" id="v-requests">
+      <div class="ph">
+        <div>
+          <div class="ph-title" id="t-requests-title">Заявки</div>
+          <div class="ph-sub" id="t-requests-sub"></div>
+        </div>
+      </div>
+      <div id="reqLoading" class="loading-state" style="display:none"></div>
+      <div id="reqEmpty" class="empty-state" style="display:none">
+        <div class="empty-icon">📭</div>
+        <div class="empty-text" id="t-req-empty">Нових заявок немає</div>
+      </div>
+      <div class="req-grid" id="reqList"></div>
+    </div>
+
+    <!-- PLANS VIEW -->
+    <div class="view" id="v-plans">
+      <div class="ph">
+        <div><div class="ph-title" id="t-plans-title">Тарифи</div></div>
+        <button class="btn-primary" onclick="addPlan()">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span id="t-add-plan">Додати тариф</span>
+        </button>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th id="t-th-plan-name">Назва</th><th id="t-th-country">Країна</th><th id="t-th-currency">Валюта</th>
+            <th id="t-th-price">$/групу</th><th id="t-th-photos">Фото/день</th><th id="t-th-changes">Змін/міс</th>
+            <th id="t-th-docs">Доків/міс</th><th id="t-th-grace">Grace</th><th id="t-th-plan-status">Статус</th><th></th>
+          </tr></thead>
+          <tbody id="plansTbody"><tr><td colspan="10" class="loading-state">Завантаження...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PROVIDERS VIEW -->
+    <div class="view" id="v-providers">
+      <div class="ph">
+        <div><div class="ph-title" id="t-providers-title">Платіжні системи</div></div>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th id="t-th-provider">Провайдер</th><th id="t-th-fee">Комісія</th>
+            <th id="t-th-priority">Пріоритет</th><th id="t-th-prov-status">Статус</th><th></th>
+          </tr></thead>
+          <tbody id="providersTbody"><tr><td colspan="5" class="loading-state">Завантаження...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MESSAGES VIEW -->
+    <div class="view" id="v-messages">
+      <div class="ph">
+        <div><div class="ph-title" id="t-messages-title">Повідомлення</div></div>
+      </div>
+      <div id="messagesLoading" class="loading-state" style="display:none"></div>
+      <div id="messagesList" style="display:grid;gap:10px;max-width:720px"></div>
+    </div>
+
+  </main>
 </div>
 
-<div id="panelMessages" style="display:none">
-<div id="messagesLoading" class="loading" style="display:none">Загрузка...</div>
-<div id="messagesList" style="display:grid;gap:1rem;max-width:800px;margin-left:auto;margin-right:auto"></div>
-</div>
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mob-nav">
+  <div class="mob-nav-items">
+    <button class="mob-nav-btn active" id="mob-directors" onclick="show('directors',this)">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="5" width="14" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 5V4a2 2 0 014 0v1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M1 9h14" stroke="currentColor" stroke-width="1.2"/></svg>
+      <span id="t-mob-directors">Директори</span>
+    </button>
+    <button class="mob-nav-btn" id="mob-requests" onclick="show('requests',this)">
+      <div class="mob-nav-dot" id="mobReqDot"></div>
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 5.5h14" stroke="currentColor" stroke-width="1.2"/><path d="M4.5 9h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span id="t-mob-requests">Заявки</span>
+    </button>
+    <button class="mob-nav-btn" id="mob-plans" onclick="show('plans',this)">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6.5h14" stroke="currentColor" stroke-width="1.2"/></svg>
+      <span id="t-mob-plans">Тарифи</span>
+    </button>
+    <button class="mob-nav-btn" id="mob-providers" onclick="show('providers',this)">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5v13M1.5 8h13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span id="t-mob-providers">Платіж</span>
+    </button>
+    <button class="mob-nav-btn" id="mob-messages" onclick="show('messages',this)">
+      <div class="mob-nav-dot" id="mobMsgDot"></div>
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M1.5 2h13v9H9l-2.5 3L4 11H1.5V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      <span id="t-mob-messages">Повідом.</span>
+    </button>
+  </div>
+</nav>
 
-<div class="modal" id="planModal">
-<div class="modal-content" style="max-width:680px">
-<div class="modal-header"><h2 class="modal-title" id="planModalTitle">Добавить тариф</h2><button class="modal-close" onclick="closePlanModal()">✕</button></div>
-<div class="modal-body"><form id="planForm" onsubmit="savePlan(event)"><input type="hidden" id="planId">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-<div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="planName" required></div>
-<div class="form-group"><label class="form-label">Страна</label><input type="text" class="form-input" id="planCountry" value="UA" maxlength="2"></div>
-<div class="form-group"><label class="form-label">Валюта</label><select class="form-input" id="planCurrency"><option value="USD">USD</option><option value="EUR">EUR</option><option value="UAH">UAH</option></select></div>
-<div class="form-group"><label class="form-label">$/группу в месяц *</label><input type="number" class="form-input" id="planPricePerGroup" step="0.01" min="0" value="10.00" required></div>
-<div class="form-group"><label class="form-label">Фото/день/группа</label><input type="number" class="form-input" id="planFreePhotos" value="2" min="0"></div>
-<div class="form-group"><label class="form-label">Смен/мес/спортсмен</label><input type="number" class="form-input" id="planFreeChanges" value="4" min="0"></div>
-<div class="form-group"><label class="form-label">Документов/мес/спортсмен</label><input type="number" class="form-input" id="planFreeDocs" value="5" min="0"></div>
-<div class="form-group"><label class="form-label">Документов/мес/группа</label><input type="number" class="form-input" id="planFreeDocsGroup" value="70" min="0"></div>
-<div class="form-group"><label class="form-label">Смен/мес/группа</label><input type="number" class="form-input" id="planFreeChangesGroup" value="100" min="0"></div>
-<div class="form-group"><label class="form-label">Доп. фото ($)</label><input type="number" class="form-input" id="planOveragePhoto" step="0.01" value="0.20"></div>
-<div class="form-group"><label class="form-label">Доп. смена ($)</label><input type="number" class="form-input" id="planOverageChange" step="0.01" value="0.05"></div>
-<div class="form-group"><label class="form-label">Доп. документ ($)</label><input type="number" class="form-input" id="planOverageDoc" step="0.01" value="0.05"></div>
-<div class="form-group"><label class="form-label">Порог счёта ($)</label><input type="number" class="form-input" id="planOverageThreshold" step="0.01" value="10.00"></div>
-<div class="form-group"><label class="form-label">Grace period (дней)</label><input type="number" class="form-input" id="planGraceDays" value="30" min="0"></div>
-</div></form></div>
-<div class="modal-footer"><button class="btn btn-cancel" onclick="closePlanModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('planForm').requestSubmit()">Сохранить</button></div>
+<!-- MODALS -->
+
+<!-- Director modal -->
+<div class="modal" id="directorModal">
+<div class="modal-box md">
+<div class="modal-hdr"><span class="modal-title" id="modalTitle">Додати директора</span><button class="modal-close" onclick="closeModal()">✕</button></div>
+<div class="modal-body">
+<form id="directorForm" onsubmit="saveDirector(event)">
+<input type="hidden" id="directorId">
+<div class="form-grid">
+<div class="form-group"><label class="form-label" id="t-lbl-firstname">Ім'я *</label><input type="text" class="form-input" id="directorFirstName" autocomplete="given-name" required></div>
+<div class="form-group"><label class="form-label" id="t-lbl-lastname">Прізвище *</label><input type="text" class="form-input" id="directorLastName" autocomplete="family-name" required></div>
+</div>
+<div class="form-group"><label class="form-label" id="t-lbl-email">Email *</label><input type="email" class="form-input" id="directorEmail" autocomplete="email" required></div>
+<div class="form-group"><label class="form-label" id="t-lbl-password">Пароль *</label><input type="password" class="form-input" id="directorPassword" autocomplete="new-password" required><div class="form-hint" id="t-hint-password">Мінімум 6 символів</div></div>
+<div class="form-group"><label class="form-label" id="t-lbl-phone">Телефон</label><input type="tel" class="form-input" id="directorPhone" placeholder="+380XXXXXXXXX"></div>
+<div class="form-group"><label class="form-label" id="t-lbl-plan">Тарифний план *</label><select class="form-input" id="directorPlanId" required><option value="1">Базовий ($10/групу)</option></select></div>
+<div class="form-group"><label class="form-label" id="t-lbl-limit">Ліміт груп *</label><input type="number" class="form-input" id="directorGroupsLimit" min="1" value="3" required></div>
+<div class="form-group"><label class="form-label" id="t-lbl-activation">Тип активації *</label>
+<select class="form-input" id="directorActivationType" onchange="toggleActivationDate(this.value)">
+<option value="manual" id="t-opt-manual">Ручна (оплата готівкою)</option>
+<option value="auto" id="t-opt-auto">Автооплата (платіжна система)</option>
+</select></div>
+<div class="form-group" id="activationDateGroup"><label class="form-label" id="t-lbl-until">Активний до *</label><input type="date" class="form-input" id="directorActiveUntil"><div class="form-hint" id="t-hint-until">За замовчуванням +30 днів</div></div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn-ghost" onclick="closeModal()" id="t-btn-cancel">Скасувати</button>
+<button class="btn-primary" id="directorSaveBtn" onclick="document.getElementById('directorForm').requestSubmit()">Створити</button>
+</div>
 </div></div>
 
-<div class="modal" id="directorModal">
-<div class="modal-content">
-<div class="modal-header"><h2 class="modal-title" id="modalTitle">Добавить директора</h2><button class="modal-close" onclick="closeModal()">✕</button></div>
-<div class="modal-body"><form id="directorForm" onsubmit="saveDirector(event)"><input type="hidden" id="directorId">
-<div class="form-group"><label class="form-label">Имя *</label><input type="text" class="form-input" id="directorFirstName" autocomplete="given-name" required></div>
-<div class="form-group"><label class="form-label">Фамилия *</label><input type="text" class="form-input" id="directorLastName" autocomplete="family-name" required></div>
-<div class="form-group"><label class="form-label">Email *</label><input type="email" class="form-input" id="directorEmail" autocomplete="email" required></div>
-<div class="form-group"><label class="form-label">Пароль *</label><input type="password" class="form-input" id="directorPassword" autocomplete="new-password" required><small style="color:#666">Минимум 6 символов</small></div>
-<div class="form-group"><label class="form-label">Телефон</label><input type="tel" class="form-input" id="directorPhone" placeholder="+380XXXXXXXXX"></div>
-<div class="form-group"><label class="form-label">Тарифный план *</label><select class="form-input" id="directorPlanId" required><option value="1">Украина Базовый ($10/группу)</option></select></div>
-<div class="form-group"><label class="form-label">Лимит групп *</label><input type="number" class="form-input" id="directorGroupsLimit" min="1" value="3" required></div>
-<div class="form-group"><label class="form-label">Тип активации *</label>
-<select class="form-input" id="directorActivationType" onchange="toggleActivationDate(this.value)">
-<option value="manual">Ручная (оплата наличными)</option>
-<option value="auto">Автооплата (через платёжную систему)</option>
-</select></div>
-<div class="form-group" id="activationDateGroup"><label class="form-label">Активен до *</label><input type="date" class="form-input" id="directorActiveUntil"><small style="color:#665">По умолчанию +30 дней</small></div>
-</form></div>
-<div class="modal-footer"><button class="btn btn-cancel" onclick="closeModal()">Отмена</button><button class="btn btn-save" id="directorSaveBtn" onclick="document.getElementById('directorForm').requestSubmit()">Создать</button></div>
+<!-- Plan modal -->
+<div class="modal" id="planModal">
+<div class="modal-box lg">
+<div class="modal-hdr"><span class="modal-title" id="planModalTitle">Додати тариф</span><button class="modal-close" onclick="closePlanModal()">✕</button></div>
+<div class="modal-body">
+<form id="planForm" onsubmit="savePlan(event)"><input type="hidden" id="planId">
+<div class="form-grid">
+<div class="form-group"><label class="form-label" id="t-plan-name">Назва *</label><input type="text" class="form-input" id="planName" required></div>
+<div class="form-group"><label class="form-label" id="t-plan-country">Країна</label><input type="text" class="form-input" id="planCountry" value="UA" maxlength="2"></div>
+<div class="form-group"><label class="form-label" id="t-plan-currency">Валюта</label><select class="form-input" id="planCurrency"><option value="USD">USD</option><option value="EUR">EUR</option><option value="UAH">UAH</option></select></div>
+<div class="form-group"><label class="form-label" id="t-plan-price">$/групу на місяць *</label><input type="number" class="form-input" id="planPricePerGroup" step="0.01" min="0" value="10.00" required></div>
+<div class="form-group"><label class="form-label" id="t-plan-photos">Фото/день/група</label><input type="number" class="form-input" id="planFreePhotos" value="2" min="0"></div>
+<div class="form-group"><label class="form-label" id="t-plan-changes">Змін/міс/спортсмен</label><input type="number" class="form-input" id="planFreeChanges" value="4" min="0"></div>
+<div class="form-group"><label class="form-label" id="t-plan-docs">Доків/міс/спортсмен</label><input type="number" class="form-input" id="planFreeDocs" value="5" min="0"></div>
+<div class="form-group"><label class="form-label" id="t-plan-docs-group">Доків/міс/група</label><input type="number" class="form-input" id="planFreeDocsGroup" value="70" min="0"></div>
+<div class="form-group"><label class="form-label" id="t-plan-changes-group">Змін/міс/група</label><input type="number" class="form-input" id="planFreeChangesGroup" value="100" min="0"></div>
+<div class="form-group"><label class="form-label" id="t-plan-overage-photo">Додат. фото ($)</label><input type="number" class="form-input" id="planOveragePhoto" step="0.01" value="0.20"></div>
+<div class="form-group"><label class="form-label" id="t-plan-overage-change">Додат. зміна ($)</label><input type="number" class="form-input" id="planOverageChange" step="0.01" value="0.05"></div>
+<div class="form-group"><label class="form-label" id="t-plan-overage-doc">Додат. документ ($)</label><input type="number" class="form-input" id="planOverageDoc" step="0.01" value="0.05"></div>
+<div class="form-group"><label class="form-label" id="t-plan-threshold">Поріг рахунку ($)</label><input type="number" class="form-input" id="planOverageThreshold" step="0.01" value="10.00"></div>
+<div class="form-group"><label class="form-label" id="t-plan-grace">Grace period (днів)</label><input type="number" class="form-input" id="planGraceDays" value="30" min="0"></div>
+</div></form>
+</div>
+<div class="modal-footer">
+<button class="btn-ghost" onclick="closePlanModal()" id="t-plan-cancel">Скасувати</button>
+<button class="btn-primary" onclick="document.getElementById('planForm').requestSubmit()" id="t-plan-save">Зберегти</button>
+</div>
+</div></div>
+
+<!-- Send message modal -->
+<div class="modal" id="sendMsgModal">
+<div class="modal-box sm">
+<div class="modal-hdr"><span class="modal-title" id="sendMsgTitle">Написати директору</span><button class="modal-close" onclick="closeSendMessage()">✕</button></div>
+<div class="modal-body">
+<input type="hidden" id="sendMsgToId">
+<div class="form-group"><label class="form-label" id="t-msg-label">Повідомлення *</label><textarea id="sendMsgText" class="form-input" style="min-height:120px;resize:vertical" id="t-msg-placeholder"></textarea></div>
+</div>
+<div class="modal-footer">
+<button class="btn-ghost" onclick="closeSendMessage()" id="t-msg-cancel">Скасувати</button>
+<button class="btn-primary" onclick="sendMsgToDirector()" id="t-msg-send">Надіслати</button>
+</div>
+</div></div>
+
+<!-- Director info modal -->
+<div class="modal" id="directorInfoModal">
+<div class="modal-box sm">
+<div class="modal-hdr"><span class="modal-title" id="directorInfoTitle">Інформація про директора</span><button class="modal-close" onclick="closeDirectorInfo()">✕</button></div>
+<div class="modal-body" id="directorInfoBody"></div>
+<div class="modal-footer">
+<button class="btn-ghost" onclick="closeDirectorInfo()" id="t-info-close">Закрити</button>
+<button class="btn-primary" onclick="closeDirectorInfo();editDirector(window._infoDirectorId)" id="t-info-edit">✏️ Редагувати</button>
+</div>
 </div></div>
 
 <script>
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const SUPERADMIN_ID=7;
 let token=localStorage.getItem('token');
 let directors=[],plans=[],providers=[];
 if(!token){window.location.href='/';throw new Error('No auth');}
 
+/* ── i18n ── */
+const i18n={
+  uk:{
+    pageTitle:'InSkill — Superadmin',logout:'Вийти',navBadge:'SUPERADMIN',
+    sDirLabel:'Директори',sDirectors:'Директори',sRequests:'Заявки',sBillingLabel:'Білінг',
+    sPlans:'Тарифи',sProviders:'Платіжні системи',sCommLabel:'Комунікація',sMessages:'Повідомлення',
+    directorsTitle:'Директори',addDirector:'Додати директора',
+    thName:'ПІБ',thGroups:'Груп',thStatus:'Статус',thUntil:'Активний до',thLeft:'Залишилось',
+    requestsTitle:'Заявки',reqEmpty:'Нових заявок немає',
+    plansTitle:'Тарифи',addPlan:'Додати тариф',
+    thPlanName:'Назва',thCountry:'Країна',thCurrency:'Валюта',thPrice:'$/групу',
+    thPhotos:'Фото/день',thChanges:'Змін/міс',thDocs:'Доків/міс',thGrace:'Grace',thPlanStatus:'Статус',
+    providersTitle:'Платіжні системи',
+    thProvider:'Провайдер',thFee:'Комісія',thPriority:'Пріоритет',thProvStatus:'Статус',
+    messagesTitle:'Повідомлення',
+    lblFirstname:"Ім'я *",lblLastname:'Прізвище *',lblEmail:'Email *',lblPassword:'Пароль *',
+    hintPassword:'Мінімум 6 символів',lblPhone:'Телефон',lblPlan:'Тарифний план *',
+    lblLimit:'Ліміт груп *',lblActivation:'Тип активації *',optManual:'Ручна (оплата готівкою)',
+    optAuto:'Автооплата (платіжна система)',lblUntil:'Активний до *',hintUntil:'За замовчуванням +30 днів',
+    btnCancel:'Скасувати',btnCreate:'Створити',btnSave:'Зберегти',btnEdit:'✏️ Редагувати',btnClose:'Закрити',
+    planName:'Назва *',planCountry:'Країна',planCurrency:'Валюта',planPrice:'$/групу на місяць *',
+    planPhotos:'Фото/день/група',planChanges:'Змін/міс/спортсмен',planDocs:'Доків/міс/спортсмен',
+    planDocsGroup:'Доків/міс/група',planChangesGroup:'Змін/міс/група',planOverPhoto:'Додат. фото ($)',
+    planOverChange:'Додат. зміна ($)',planOverDoc:'Додат. документ ($)',planThreshold:'Поріг рахунку ($)',
+    planGrace:'Grace period (днів)',planCancel:'Скасувати',planSave:'Зберегти',
+    msgLabel:'Повідомлення *',msgCancel:'Скасувати',msgSend:'Надіслати',
+    infoClose:'Закрити',infoEdit:'✏️ Редагувати',
+    mobDirectors:'Директори',mobRequests:'Заявки',mobPlans:'Тарифи',mobProviders:'Платіж',mobMessages:'Повідом.',
+    statusActive:'Активний',statusInactive:'Деактивовано',statusTrial:'Пробний',statusGrace:'Пільговий',statusBlocked:'Заблокований',
+    tagActive:'Активний',tagInactive:'Неактивний',
+    approve:'Прийняти',reject:'Відхилити',
+    msgTypeMsg:'💬 Повідомлення',msgTypeRenewal:'🔄 Запит продовження',msgTypeReply:'↩️ Відповідь',
+    msgNew:'Нове',msgReply:'↩️ Відповісти',noMessages:'Немає повідомлень',
+    loading:'Завантаження...',
+    alertDeactivate:'Деактивувати директора?',alertDeactivated:'Директора деактивовано',
+    alertProviderLast:'Не можна вимкнути останнього активного провайдера!',
+    alertSaved:'Тариф збережено!',alertMsgSent:'Повідомлення надіслано!',
+    alertApproved:'Директора схвалено! Вхід: ',alertPassword:' Пароль: ',
+    errEmpty:'Помилка: порожня відповідь',errMsg:'Введіть повідомлення',errPassword:'Пароль мінімум 6 символів',
+    promptReject:'Причина відхилення (необов\'язково):',
+    infoEmail:'Email',infoPhone:'Телефон',infoGroups:'Груп',infoSubStatus:'Статус підписки',
+    infoUntil:'Активний до',infoLeft:'Залишилось',infoLimit:'Ліміт груп',
+    addDirectorModal:'Додати директора',editDirectorModal:'Редагувати директора',approveModal:'Прийняти заявку директора',
+    addPlanModal:'Додати тариф',editPlanModal:'Редагувати тариф',
+  },
+  ru:{
+    pageTitle:'InSkill — Superadmin',logout:'Выход',navBadge:'SUPERADMIN',
+    sDirLabel:'Директора',sDirectors:'Директора',sRequests:'Заявки',sBillingLabel:'Биллинг',
+    sPlans:'Тарифы',sProviders:'Платёжные системы',sCommLabel:'Коммуникация',sMessages:'Сообщения',
+    directorsTitle:'Директора',addDirector:'Добавить директора',
+    thName:'ФИО',thGroups:'Групп',thStatus:'Статус',thUntil:'Активен до',thLeft:'Осталось',
+    requestsTitle:'Заявки',reqEmpty:'Новых заявок нет',
+    plansTitle:'Тарифы',addPlan:'Добавить тариф',
+    thPlanName:'Название',thCountry:'Страна',thCurrency:'Валюта',thPrice:'$/группу',
+    thPhotos:'Фото/день',thChanges:'Смен/мес',thDocs:'Доков/мес',thGrace:'Grace',thPlanStatus:'Статус',
+    providersTitle:'Платёжные системы',
+    thProvider:'Провайдер',thFee:'Комиссия',thPriority:'Приоритет',thProvStatus:'Статус',
+    messagesTitle:'Сообщения',
+    lblFirstname:'Имя *',lblLastname:'Фамилия *',lblEmail:'Email *',lblPassword:'Пароль *',
+    hintPassword:'Минимум 6 символов',lblPhone:'Телефон',lblPlan:'Тарифный план *',
+    lblLimit:'Лимит групп *',lblActivation:'Тип активации *',optManual:'Ручная (оплата наличными)',
+    optAuto:'Автооплата (платёжная система)',lblUntil:'Активен до *',hintUntil:'По умолчанию +30 дней',
+    btnCancel:'Отмена',btnCreate:'Создать',btnSave:'Сохранить',btnEdit:'✏️ Редактировать',btnClose:'Закрыть',
+    planName:'Название *',planCountry:'Страна',planCurrency:'Валюта',planPrice:'$/группу в месяц *',
+    planPhotos:'Фото/день/группа',planChanges:'Смен/мес/спортсмен',planDocs:'Доков/мес/спортсмен',
+    planDocsGroup:'Доков/мес/группа',planChangesGroup:'Смен/мес/группа',planOverPhoto:'Доп. фото ($)',
+    planOverChange:'Доп. смена ($)',planOverDoc:'Доп. документ ($)',planThreshold:'Порог счёта ($)',
+    planGrace:'Grace period (дней)',planCancel:'Отмена',planSave:'Сохранить',
+    msgLabel:'Сообщение *',msgCancel:'Отмена',msgSend:'Отправить',
+    infoClose:'Закрыть',infoEdit:'✏️ Редактировать',
+    mobDirectors:'Директора',mobRequests:'Заявки',mobPlans:'Тарифы',mobProviders:'Платёж',mobMessages:'Сообщ.',
+    statusActive:'Активен',statusInactive:'Деактивирован',statusTrial:'Пробный',statusGrace:'Льготный',statusBlocked:'Заблокирован',
+    tagActive:'Активен',tagInactive:'Неактивен',
+    approve:'Принять',reject:'Отклонить',
+    msgTypeMsg:'💬 Сообщение',msgTypeRenewal:'🔄 Запрос продления',msgTypeReply:'↩️ Ответ',
+    msgNew:'Новое',msgReply:'↩️ Ответить',noMessages:'Нет сообщений',
+    loading:'Загрузка...',
+    alertDeactivate:'Деактивировать директора?',alertDeactivated:'Директор деактивирован',
+    alertProviderLast:'Нельзя отключить последнего активного провайдера!',
+    alertSaved:'Тариф сохранён!',alertMsgSent:'Сообщение отправлено!',
+    alertApproved:'Директор одобрен! Вход: ',alertPassword:' Пароль: ',
+    errEmpty:'Ошибка: пустой ответ',errMsg:'Введите сообщение',errPassword:'Пароль минимум 6 символов',
+    promptReject:'Причина отклонения (необязательно):',
+    infoEmail:'Email',infoPhone:'Телефон',infoGroups:'Групп',infoSubStatus:'Статус подписки',
+    infoUntil:'Активен до',infoLeft:'Осталось',infoLimit:'Лимит групп',
+    addDirectorModal:'Добавить директора',editDirectorModal:'Редактировать директора',approveModal:'Принять заявку директора',
+    addPlanModal:'Добавить тариф',editPlanModal:'Редактировать тариф',
+  },
+  en:{
+    pageTitle:'InSkill — Superadmin',logout:'Logout',navBadge:'SUPERADMIN',
+    sDirLabel:'Directors',sDirectors:'Directors',sRequests:'Requests',sBillingLabel:'Billing',
+    sPlans:'Plans',sProviders:'Payment systems',sCommLabel:'Communication',sMessages:'Messages',
+    directorsTitle:'Directors',addDirector:'Add director',
+    thName:'Name',thGroups:'Groups',thStatus:'Status',thUntil:'Active until',thLeft:'Left',
+    requestsTitle:'Requests',reqEmpty:'No new requests',
+    plansTitle:'Plans',addPlan:'Add plan',
+    thPlanName:'Name',thCountry:'Country',thCurrency:'Currency',thPrice:'$/group',
+    thPhotos:'Photos/day',thChanges:'Changes/mo',thDocs:'Docs/mo',thGrace:'Grace',thPlanStatus:'Status',
+    providersTitle:'Payment systems',
+    thProvider:'Provider',thFee:'Fee',thPriority:'Priority',thProvStatus:'Status',
+    messagesTitle:'Messages',
+    lblFirstname:'First name *',lblLastname:'Last name *',lblEmail:'Email *',lblPassword:'Password *',
+    hintPassword:'Minimum 6 characters',lblPhone:'Phone',lblPlan:'Billing plan *',
+    lblLimit:'Groups limit *',lblActivation:'Activation type *',optManual:'Manual (cash payment)',
+    optAuto:'Auto (payment system)',lblUntil:'Active until *',hintUntil:'Default +30 days',
+    btnCancel:'Cancel',btnCreate:'Create',btnSave:'Save',btnEdit:'✏️ Edit',btnClose:'Close',
+    planName:'Name *',planCountry:'Country',planCurrency:'Currency',planPrice:'$/group per month *',
+    planPhotos:'Photos/day/group',planChanges:'Changes/mo/athlete',planDocs:'Docs/mo/athlete',
+    planDocsGroup:'Docs/mo/group',planChangesGroup:'Changes/mo/group',planOverPhoto:'Extra photo ($)',
+    planOverChange:'Extra change ($)',planOverDoc:'Extra doc ($)',planThreshold:'Invoice threshold ($)',
+    planGrace:'Grace period (days)',planCancel:'Cancel',planSave:'Save',
+    msgLabel:'Message *',msgCancel:'Cancel',msgSend:'Send',
+    infoClose:'Close',infoEdit:'✏️ Edit',
+    mobDirectors:'Directors',mobRequests:'Requests',mobPlans:'Plans',mobProviders:'Payment',mobMessages:'Messages',
+    statusActive:'Active',statusInactive:'Deactivated',statusTrial:'Trial',statusGrace:'Grace',statusBlocked:'Blocked',
+    tagActive:'Active',tagInactive:'Inactive',
+    approve:'Approve',reject:'Reject',
+    msgTypeMsg:'💬 Message',msgTypeRenewal:'🔄 Renewal request',msgTypeReply:'↩️ Reply',
+    msgNew:'New',msgReply:'↩️ Reply',noMessages:'No messages',
+    loading:'Loading...',
+    alertDeactivate:'Deactivate director?',alertDeactivated:'Director deactivated',
+    alertProviderLast:'Cannot disable the last active provider!',
+    alertSaved:'Plan saved!',alertMsgSent:'Message sent!',
+    alertApproved:'Director approved! Login: ',alertPassword:' Password: ',
+    errEmpty:'Error: empty response',errMsg:'Enter message',errPassword:'Password minimum 6 characters',
+    promptReject:'Rejection reason (optional):',
+    infoEmail:'Email',infoPhone:'Phone',infoGroups:'Groups',infoSubStatus:'Subscription status',
+    infoUntil:'Active until',infoLeft:'Left',infoLimit:'Groups limit',
+    addDirectorModal:'Add director',editDirectorModal:'Edit director',approveModal:'Approve director request',
+    addPlanModal:'Add plan',editPlanModal:'Edit plan',
+  }
+};
+let currentLang=localStorage.getItem('lang')||'uk';
+function t(k){return (i18n[currentLang]||i18n.uk)[k]||k;}
+
+function applyLang(){
+  document.documentElement.lang=currentLang==='uk'?'uk':currentLang==='ru'?'ru':'en';
+  document.title=t('pageTitle');
+  const ids={
+    't-logout':'logout','t-nav-badge':'navBadge',
+    't-s-directors-label':'sDirLabel','t-s-directors':'sDirectors','t-s-requests':'sRequests',
+    't-s-billing-label':'sBillingLabel','t-s-plans':'sPlans','t-s-providers':'sProviders',
+    't-s-comm-label':'sCommLabel','t-s-messages':'sMessages',
+    't-directors-title':'directorsTitle','t-add-director':'addDirector',
+    't-th-name':'thName','t-th-groups':'thGroups','t-th-status':'thStatus',
+    't-th-until':'thUntil','t-th-left':'thLeft',
+    't-requests-title':'requestsTitle','t-req-empty':'reqEmpty',
+    't-plans-title':'plansTitle','t-add-plan':'addPlan',
+    't-th-plan-name':'thPlanName','t-th-country':'thCountry','t-th-currency':'thCurrency',
+    't-th-price':'thPrice','t-th-photos':'thPhotos','t-th-changes':'thChanges',
+    't-th-docs':'thDocs','t-th-grace':'thGrace','t-th-plan-status':'thPlanStatus',
+    't-providers-title':'providersTitle',
+    't-th-provider':'thProvider','t-th-fee':'thFee','t-th-priority':'thPriority','t-th-prov-status':'thProvStatus',
+    't-messages-title':'messagesTitle',
+    't-lbl-firstname':'lblFirstname','t-lbl-lastname':'lblLastname','t-lbl-email':'lblEmail',
+    't-lbl-password':'lblPassword','t-hint-password':'hintPassword','t-lbl-phone':'lblPhone',
+    't-lbl-plan':'lblPlan','t-lbl-limit':'lblLimit','t-lbl-activation':'lblActivation',
+    't-opt-manual':'optManual','t-opt-auto':'optAuto','t-lbl-until':'lblUntil','t-hint-until':'hintUntil',
+    't-btn-cancel':'btnCancel','t-plan-cancel':'planCancel','t-plan-save':'planSave',
+    't-plan-name':'planName','t-plan-country':'planCountry','t-plan-currency':'planCurrency',
+    't-plan-price':'planPrice','t-plan-photos':'planPhotos','t-plan-changes':'planChanges',
+    't-plan-docs':'planDocs','t-plan-docs-group':'planDocsGroup','t-plan-changes-group':'planChangesGroup',
+    't-plan-overage-photo':'planOverPhoto','t-plan-overage-change':'planOverChange',
+    't-plan-overage-doc':'planOverDoc','t-plan-threshold':'planThreshold','t-plan-grace':'planGrace',
+    't-msg-label':'msgLabel','t-msg-cancel':'msgCancel','t-msg-send':'msgSend',
+    't-info-close':'infoClose','t-info-edit':'infoEdit',
+    't-mob-directors':'mobDirectors','t-mob-requests':'mobRequests','t-mob-plans':'mobPlans',
+    't-mob-providers':'mobProviders','t-mob-messages':'mobMessages',
+  };
+  Object.entries(ids).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=t(key);});
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    const map={'UA':'uk','RU':'ru','EN':'en'};
+    btn.classList.toggle('active',map[btn.textContent]===currentLang);
+  });
+}
+function setLang(lang){currentLang=lang;localStorage.setItem('lang',lang);applyLang();}
+
+/* ── THEME ── */
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  const n=isDark?'light':'dark';
+  html.setAttribute('data-theme',n);localStorage.setItem('theme',n);
+  document.getElementById('icon-sun').style.display=isDark?'block':'none';
+  document.getElementById('icon-moon').style.display=isDark?'none':'block';
+}
+(function(){
+  const s=localStorage.getItem('theme');
+  if(s==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('icon-sun').style.display='none';
+    document.getElementById('icon-moon').style.display='block';
+  }
+})();
+
+/* ── NAVIGATION ── */
+function show(name,clickedEl){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.sitem').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active'));
+  const v=document.getElementById('v-'+name);
+  if(v)v.classList.add('active');
+  if(clickedEl)clickedEl.classList.add('active');
+  const mob=document.getElementById('mob-'+name);
+  if(mob)mob.classList.add('active');
+  const sidebar=document.getElementById('sitem-'+name);
+  if(sidebar)sidebar.classList.add('active');
+  if(name==='requests')loadRequests();
+  if(name==='plans')loadPlans();
+  if(name==='providers')loadProviders();
+  if(name==='messages')loadSAMessages();
+}
+
+/* ── USER ── */
 function loadUserInfo(){
   const u=JSON.parse(localStorage.getItem('user')||'{}');
-  if(u.role!=='superadmin'){alert('Доступ запрещен');window.location.href='/';return;}
-  document.getElementById('userName').textContent=u.first_name?(u.first_name+' '+(u.last_name||'')).trim():u.email||'';
+  if(u.role!=='superadmin'){alert('Доступ заборонено');window.location.href='/';return;}
+  const name=u.first_name?(u.first_name+' '+(u.last_name||'')).trim():u.email||'';
+  document.getElementById('userName').textContent=name;
+  const initials=((u.first_name||'')[0]||'S')+((u.last_name||'')[0]||'A');
+  document.getElementById('navInitials').textContent=initials.toUpperCase();
 }
+function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/';}
+function toggleActivationDate(val){document.getElementById('activationDateGroup').style.display=val==='auto'?'none':'';}
 
-function switchTab(tab){
-  ['directors','requests','plans','providers','messages'].forEach(function(t){
-    var panel=document.getElementById('panel'+t[0].toUpperCase()+t.slice(1));
-    var btn=document.getElementById('tab'+t[0].toUpperCase()+t.slice(1));
-    if(panel) panel.style.display=t===tab?'':'none';
-    if(btn) btn.classList.toggle('active',t===tab);
-  });
-  if(tab==='requests') loadRequests();
-  if(tab==='plans') loadPlans();
-  if(tab==='providers') loadProviders();
-  if(tab==='messages') loadSAMessages();
-}
-
-function toggleActivationDate(val){
-  document.getElementById('activationDateGroup').style.display=val==='auto'?'none':'';
-}
-
+/* ── DIRECTORS ── */
 async function loadDirectors(){
   try{
     document.getElementById('loading').style.display='block';
@@ -198,42 +673,46 @@ async function loadDirectors(){
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'users',action:'list',data:{role:'director'}})});
     const text=await r.text();
-    if(!text||!text.trim()){document.getElementById('loading').textContent='Нет данных';return;}
+    if(!text||!text.trim()){document.getElementById('loading').textContent=t('loading');return;}
     const d=JSON.parse(text);
     directors=d.merged||d||[];
     document.getElementById('loading').style.display='none';
-    document.getElementById('directorsTable').style.display='table';
+    document.getElementById('directorsTable').style.display='block';
     renderTable();
-  }catch(e){console.error(e);document.getElementById('loading').textContent='Ошибка загрузки';}
+  }catch(e){console.error(e);document.getElementById('loading').textContent='Помилка завантаження';}
 }
 
 function renderTable(){
-  const t=document.getElementById('tbody');
-  t.innerHTML='';
+  const tb=document.getElementById('tbody');
+  tb.innerHTML='';
   directors.forEach(function(dir){
-    const sc=dir.is_active?'status-active':'status-inactive';
-    const st=dir.is_active?'Активен':'Деактивирован';
+    const isActive=dir.is_active;
+    const tagClass=isActive?'tag-green':'tag-red';
+    const tagText=isActive?t('statusActive'):t('statusInactive');
     const gc=dir.groups_count||0;
     const au=dir.active_until?new Date(dir.active_until):null;
     const aus=au?au.toLocaleDateString('ru-RU'):'—';
     const dl=au?Math.ceil((au-new Date())/864e5):null;
-    const ds=dl!==null?(dl>0?dl+' дн.':'<span style="color:#dc3545">Истёк</span>'):'—';
+    const ds=dl!==null?(dl>0?dl+' дн.':'<span class="tag tag-red">'+t('statusBlocked')+'</span>'):'—';
     const row=document.createElement('tr');
-    row.innerHTML='<td><a href="#" onclick="showDirectorInfo('+dir.id+');return false;" style="color:var(--p);text-decoration:none;font-weight:600">'+dir.first_name+' '+dir.last_name+'</a></td>'+
-      '<td>'+dir.email+'</td><td>'+gc+'</td>'+
-      '<td><span class="status-badge '+sc+'">'+st+'</span></td>'+
-      '<td>'+aus+'</td><td>'+ds+'</td>'+
-      '<td><div class="table-actions">'+
-      '<button class="btn-icon btn-edit" onclick="editDirector('+dir.id+')">✏️</button>'+
-      '<button class="btn-icon btn-delete" onclick="deactivateDirector('+dir.id+')">🗑️</button>'+
-      '<button class="btn-icon" style="background:#e8f4fd;color:#0066CC" data-dirid="'+dir.id+'" data-dirname="'+dir.first_name+' '+dir.last_name+'" onclick="openSendMessageFromBtn(this)" title="Написать">✉️</button>'+
+    row.innerHTML=
+      '<td><button style="background:none;border:none;cursor:pointer;color:var(--black);font-weight:500;font-size:13px;padding:0;text-align:left" onclick="showDirectorInfo('+dir.id+')">'+dir.first_name+' '+dir.last_name+'</button></td>'+
+      '<td style="color:var(--muted)">'+dir.email+'</td>'+
+      '<td>'+gc+'</td>'+
+      '<td><span class="tag '+tagClass+'">'+tagText+'</span></td>'+
+      '<td style="color:var(--muted)">'+aus+'</td>'+
+      '<td>'+ds+'</td>'+
+      '<td><div class="row-actions">'+
+        '<button class="act-btn" onclick="editDirector('+dir.id+')" title="'+t('btnEdit')+'"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>'+
+        '<button class="act-btn msg" onclick="openSendMessage('+dir.id+',\''+dir.first_name+' '+dir.last_name+'\')" title="'+t('msgSend')+'"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 2h9v7H7l-1.5 2L4 9H1.5V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>'+
+        '<button class="act-btn del" onclick="deactivateDirector('+dir.id+')" title="'+t('alertDeactivate')+'"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'+
       '</div></td>';
-    t.appendChild(row);
+    tb.appendChild(row);
   });
 }
 
 function addDirector(){
-  document.getElementById('modalTitle').textContent='Добавить директора';
+  document.getElementById('modalTitle').textContent=t('addDirectorModal');
   document.getElementById('directorId').value='';
   document.getElementById('directorEmail').value='';
   document.getElementById('directorPassword').value='';
@@ -247,14 +726,14 @@ function addDirector(){
   toggleActivationDate('manual');
   const d=new Date();d.setDate(d.getDate()+30);
   document.getElementById('directorActiveUntil').value=d.toISOString().split('T')[0];
-  document.getElementById('directorSaveBtn').textContent='Создать';
+  document.getElementById('directorSaveBtn').textContent=t('btnCreate');
   openModal();
 }
 
 function editDirector(id){
   const dir=directors.find(function(d){return d.id===id;});
   if(!dir)return;
-  document.getElementById('modalTitle').textContent='Редактировать директора';
+  document.getElementById('modalTitle').textContent=t('editDirectorModal');
   document.getElementById('directorId').value=dir.id;
   document.getElementById('directorEmail').value=dir.email;
   document.getElementById('directorPassword').value='';
@@ -272,7 +751,7 @@ function editDirector(id){
     const d=new Date();d.setDate(d.getDate()+30);
     document.getElementById('directorActiveUntil').value=d.toISOString().split('T')[0];
   }
-  document.getElementById('directorSaveBtn').textContent='Сохранить';
+  document.getElementById('directorSaveBtn').textContent=t('btnSave');
   openModal();
 }
 
@@ -296,17 +775,15 @@ async function saveDirector(e){
     try{
       const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,resource:'users',action:'update_director',data:data})});
       const text=await r.text();
-      if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+      if(!text||!text.trim()){alert(t('errEmpty'));return;}
       const res=JSON.parse(text);
       const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-      if(result&&result.id){closeModal();alert('Директор обновлён!');await loadDirectors();}
-      else{alert('Ошибка: '+JSON.stringify(res));}
-    }catch(err){alert('Ошибка: '+err.message);}
+      if(result&&result.id){closeModal();alert('Директора оновлено!');await loadDirectors();}
+      else{alert('Помилка: '+JSON.stringify(res));}
+    }catch(err){alert('Помилка: '+err.message);}
   }else{
-    if(!password||password.length<6){alert('Пароль минимум 6 символов');return;}
+    if(!password||password.length<6){alert(t('errPassword'));return;}
     const u=JSON.parse(localStorage.getItem('user')||'{}');
-    const trialEndsAt=activationType==='manual'&&activeUntil?activeUntil+'T23:59:59':null;
-    // Check if this is approve flow
     if(window._approveReqId){
       try{
         const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -315,16 +792,16 @@ async function saveDirector(e){
               trial_ends_at:trialEndsAt,temp_password:password,reviewed_by:u.id,
               phone:document.getElementById('directorPhone').value.trim()||null}})});
         const text=await r.text();
-        if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+        if(!text||!text.trim()){alert(t('errEmpty'));return;}
         const res=JSON.parse(text);
         const result=res.merged&&res.merged[0];
         if(result&&result.user_id){
           window._approveReqId=null;window._approveEmail=null;
           closeModal();
-          alert('Директор одобрен! Вход: '+email+' Пароль: '+password);
+          alert(t('alertApproved')+email+t('alertPassword')+password);
           await loadRequests();await loadRequestsBadge();await loadDirectors();
-        }else{alert('Ошибка: '+JSON.stringify(res));}
-      }catch(err){alert('Ошибка: '+err.message);}
+        }else{alert('Помилка: '+JSON.stringify(res));}
+      }catch(err){alert('Помилка: '+err.message);}
     }else{
       try{
         const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -333,33 +810,33 @@ async function saveDirector(e){
               phone:document.getElementById('directorPhone').value.trim()||null,
               plan_id:planId,groups_limit:groupsLimit,trial_ends_at:trialEndsAt,reviewed_by:u.id}})});
         const text=await r.text();
-        if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+        if(!text||!text.trim()){alert(t('errEmpty'));return;}
         const res=JSON.parse(text);
         const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-        if(result&&result.id){closeModal();alert('Директор создан!');await loadDirectors();}
-        else{alert('Ошибка: '+JSON.stringify(res));}
-      }catch(err){alert('Ошибка: '+err.message);}
+        if(result&&result.id){closeModal();alert('Директора створено!');await loadDirectors();}
+        else{alert('Помилка: '+JSON.stringify(res));}
+      }catch(err){alert('Помилка: '+err.message);}
     }
   }
 }
 
 async function deactivateDirector(id){
-  if(!confirm('Деактивировать директора?'))return;
+  if(!confirm(t('alertDeactivate')))return;
   try{
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,resource:'users',action:'delete',data:{id:id}})});
     const text=await r.text();
-    if(!text||!text.trim()){alert('Ошибка');return;}
+    if(!text||!text.trim()){alert(t('errEmpty'));return;}
     const d=JSON.parse(text);
     const result=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
-    if(result&&(result.success||result.id)){alert('Директор деактивирован');await loadDirectors();}
-    else{alert('Ошибка: '+JSON.stringify(d));}
-  }catch(e){alert('Ошибка: '+e.message);}
+    if(result&&(result.success||result.id)){alert(t('alertDeactivated'));await loadDirectors();}
+    else{alert('Помилка: '+JSON.stringify(d));}
+  }catch(e){alert('Помилка: '+e.message);}
 }
 
 function openModal(){document.getElementById('directorModal').classList.add('active');document.body.style.overflow='hidden';}
 function closeModal(){document.getElementById('directorModal').classList.remove('active');document.body.style.overflow='';document.getElementById('directorPassword').required=true;window._approveReqId=null;window._approveEmail=null;}
-function logout(){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='/';}
 
+/* ── REQUESTS ── */
 async function loadRequestsBadge(){
   try{
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -369,8 +846,9 @@ async function loadRequestsBadge(){
     const d=JSON.parse(text);
     const count=(d.merged||d||[]).filter(function(i){return i&&i.id;}).length;
     const badge=document.getElementById('reqBadge');
-    if(count>0){badge.textContent=count;badge.style.display='inline-block';}
-    else{badge.style.display='none';}
+    const mobDot=document.getElementById('mobReqDot');
+    if(count>0){badge.textContent=count;badge.style.display='inline-block';if(mobDot)mobDot.style.display='block';}
+    else{badge.style.display='none';if(mobDot)mobDot.style.display='none';}
   }catch(e){console.error('badge:',e);}
 }
 
@@ -388,26 +866,25 @@ async function loadRequests(){
     const d=JSON.parse(text);
     const requests=(d.merged||d||[]).filter(function(i){return i&&i.id;});
     const badge=document.getElementById('reqBadge');
-    if(requests.length>0){badge.textContent=requests.length;badge.style.display='inline-block';}
-    else{badge.style.display='none';}
+    const mobDot=document.getElementById('mobReqDot');
+    if(requests.length>0){badge.textContent=requests.length;badge.style.display='inline-block';if(mobDot)mobDot.style.display='block';}
+    else{badge.style.display='none';if(mobDot)mobDot.style.display='none';}
     if(!requests.length){empty.style.display='block';return;}
-    var html='';
-    requests.forEach(function(req){
+    list.innerHTML=requests.map(function(req){
       var created=new Date(req.created_at).toLocaleDateString('ru-RU');
-      html+='<div style="background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;border:1px solid #e0e0e0">';
-      html+='<div style="padding:1.25rem">';
-      html+='<div style="font-weight:700;font-size:1.1rem;margin-bottom:.5rem">'+req.first_name+' '+req.last_name+'</div>';
-      html+='<div style="font-size:.9rem;color:#555;margin-bottom:.25rem">Email: '+(req.email||'—')+'</div>';
-      if(req.club_name) html+='<div style="font-size:.9rem;color:#555;margin-bottom:.25rem">Клуб: '+req.club_name+'</div>';
-      if(req.phone) html+='<div style="font-size:.9rem;color:#555;margin-bottom:.25rem">Тел: '+req.phone+'</div>';
-      html+='<div style="font-size:.8rem;color:#999;margin-top:.5rem">Заявка от '+created+'</div>';
-      html+='</div>';
-      html+='<div style="padding:1rem 1.25rem;border-top:1px solid #f0f0f0;display:flex;gap:.75rem">';
-      html+='<button class="approve-btn" data-id="'+req.id+'" data-email="'+(req.email||'')+'" data-firstname="'+(req.first_name||'')+'" data-lastname="'+(req.last_name||'')+'" data-phone="'+(req.phone||'')+'" style="flex:1;padding:.65rem;background:#22c55e;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">Принять</button>';
-      html+='<button class="reject-btn" data-id="'+req.id+'" style="flex:1;padding:.65rem;background:#fff;color:#ef4444;border:1.5px solid #ef4444;border-radius:8px;font-weight:600;cursor:pointer">Отклонить</button>';
-      html+='</div></div>';
-    });
-    list.innerHTML=html;
+      return '<div class="req-card">'+
+        '<div class="req-card-body">'+
+        '<div class="req-card-name">'+req.first_name+' '+req.last_name+'</div>'+
+        (req.email?'<div class="req-card-row">Email: '+req.email+'</div>':'')+
+        (req.club_name?'<div class="req-card-row">'+t('infoGroups')+': '+req.club_name+'</div>':'')+
+        (req.phone?'<div class="req-card-row">'+t('infoPhone')+': '+req.phone+'</div>':'')+
+        '<div class="req-card-row" style="margin-top:6px;font-size:11px;color:var(--muted2)">'+created+'</div>'+
+        '</div>'+
+        '<div class="req-card-footer">'+
+        '<button class="btn-success approve-btn" data-id="'+req.id+'" data-email="'+(req.email||'')+'" data-firstname="'+(req.first_name||'')+'" data-lastname="'+(req.last_name||'')+'" data-phone="'+(req.phone||'')+'">'+t('approve')+'</button>'+
+        '<button class="btn-danger reject-btn" data-id="'+req.id+'">'+t('reject')+'</button>'+
+        '</div></div>';
+    }).join('');
     list.querySelectorAll('.approve-btn').forEach(function(btn){
       btn.addEventListener('click',function(){approveDirectorRequest(parseInt(btn.dataset.id),btn.dataset.email,btn.dataset.firstname,btn.dataset.lastname,btn.dataset.phone);});
     });
@@ -418,11 +895,8 @@ async function loadRequests(){
 }
 
 function approveDirectorRequest(requestId,email,firstName,lastName,phone){
-  // Store request data for modal save
-  window._approveReqId = requestId;
-  window._approveEmail = email;
-  // Open director modal pre-filled
-  document.getElementById('modalTitle').textContent='Принять заявку директора';
+  window._approveReqId=requestId;window._approveEmail=email;
+  document.getElementById('modalTitle').textContent=t('approveModal');
   document.getElementById('directorId').value='';
   document.getElementById('directorEmail').value=email;
   document.getElementById('directorPassword').value='';
@@ -436,12 +910,12 @@ function approveDirectorRequest(requestId,email,firstName,lastName,phone){
   toggleActivationDate('manual');
   const d=new Date();d.setDate(d.getDate()+30);
   document.getElementById('directorActiveUntil').value=d.toISOString().split('T')[0];
-  document.getElementById('directorSaveBtn').textContent='Одобрить';
+  document.getElementById('directorSaveBtn').textContent=t('approve');
   openModal();
 }
 
 async function rejectDirectorRequest(requestId){
-  const reason=prompt('Причина отклонения (необязательно):');
+  const reason=prompt(t('promptReject'));
   if(reason===null)return;
   const u=JSON.parse(localStorage.getItem('user')||'{}');
   try{
@@ -449,14 +923,15 @@ async function rejectDirectorRequest(requestId){
       body:JSON.stringify({token:token,resource:'registration_requests',action:'reject',
         data:{id:requestId,reviewed_by:u.id,reason:reason||null}})});
     const text=await r.text();
-    if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+    if(!text||!text.trim()){alert(t('errEmpty'));return;}
     const res=JSON.parse(text);
     const result=res.merged&&res.merged[0];
     if(result&&result.status==='rejected'){await loadRequests();await loadRequestsBadge();}
-    else{alert('Ошибка: '+JSON.stringify(res));}
-  }catch(e){alert('Ошибка: '+e.message);}
+    else{alert('Помилка: '+JSON.stringify(res));}
+  }catch(e){alert('Помилка: '+e.message);}
 }
 
+/* ── PLANS ── */
 async function loadPlans(){
   try{
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -464,25 +939,27 @@ async function loadPlans(){
     const text=await r.text();if(!text||!text.trim())return;
     const d=JSON.parse(text);
     plans=(d.merged||d||[]).filter(function(i){return i&&i.id;});
-    var html=plans.length?'':'<tr><td colspan="10" style="text-align:center;padding:2rem;color:#666">Нет тарифов</td></tr>';
+    var html=plans.length?'':'<tr><td colspan="10" class="loading-state">'+t('reqEmpty')+'</td></tr>';
     plans.forEach(function(p){
-      html+='<tr><td>'+p.name+'</td><td>'+(p.country||'—')+'</td><td>'+p.currency+'</td>'+
+      const tagClass=p.is_active?'tag-green':'tag-red';
+      const tagText=p.is_active?t('tagActive'):t('tagInactive');
+      html+='<tr><td style="font-weight:500">'+p.name+'</td><td style="color:var(--muted)">'+(p.country||'—')+'</td><td style="color:var(--muted)">'+p.currency+'</td>'+
         '<td>$'+p.price_per_group+'</td>'+
         '<td>'+(p.free_photo_uploads_per_day_per_group||2)+'</td>'+
         '<td>'+(p.free_group_changes_per_month_per_athlete||4)+'</td>'+
         '<td>'+(p.free_docs_per_month_per_athlete||5)+'</td>'+
         '<td>'+(p.grace_period_days||30)+'</td>'+
-        '<td><span class="status-badge '+(p.is_active?'status-active':'status-inactive')+'">'+(p.is_active?'Активен':'Нет')+'</span></td>'+
-        '<td><div class="table-actions"><button class="btn-icon btn-edit" onclick="editPlan('+p.id+')">✏️</button></div></td></tr>';
+        '<td><span class="tag '+tagClass+'">'+tagText+'</span></td>'+
+        '<td><div class="row-actions"><button class="act-btn" onclick="editPlan('+p.id+')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button></div></td></tr>';
     });
     document.getElementById('plansTbody').innerHTML=html;
     const sel=document.getElementById('directorPlanId');
-    if(sel) sel.innerHTML=plans.filter(function(p){return p.is_active;}).map(function(p){return '<option value="'+p.id+'">'+p.name+' ($'+p.price_per_group+'/группу)</option>';}).join('');
+    if(sel)sel.innerHTML=plans.filter(function(p){return p.is_active;}).map(function(p){return '<option value="'+p.id+'">'+p.name+' ($'+p.price_per_group+'/'+t('sPlans').toLowerCase()+')</option>';}).join('');
   }catch(e){console.error('loadPlans:',e);}
 }
 
 function addPlan(){
-  document.getElementById('planModalTitle').textContent='Добавить тариф';
+  document.getElementById('planModalTitle').textContent=t('addPlanModal');
   document.getElementById('planId').value='';
   document.getElementById('planName').value='';
   document.getElementById('planCountry').value='UA';
@@ -491,18 +968,19 @@ function addPlan(){
   document.getElementById('planFreePhotos').value='2';
   document.getElementById('planFreeChanges').value='4';
   document.getElementById('planFreeDocs').value='5';
+  document.getElementById('planFreeDocsGroup').value='70';
+  document.getElementById('planFreeChangesGroup').value='100';
   document.getElementById('planOveragePhoto').value='0.20';
   document.getElementById('planOverageChange').value='0.05';
   document.getElementById('planOverageDoc').value='0.05';
   document.getElementById('planOverageThreshold').value='10.00';
   document.getElementById('planGraceDays').value='30';
-  document.getElementById('planModal').classList.add('active');
-  document.body.style.overflow='hidden';
+  document.getElementById('planModal').classList.add('active');document.body.style.overflow='hidden';
 }
 
 function editPlan(id){
   const p=plans.find(function(x){return x.id===id;});if(!p)return;
-  document.getElementById('planModalTitle').textContent='Редактировать тариф';
+  document.getElementById('planModalTitle').textContent=t('editPlanModal');
   document.getElementById('planId').value=p.id;
   document.getElementById('planName').value=p.name;
   document.getElementById('planCountry').value=p.country||'UA';
@@ -518,8 +996,7 @@ function editPlan(id){
   document.getElementById('planOverageDoc').value=p.overage_price_doc||0.05;
   document.getElementById('planOverageThreshold').value=p.overage_invoice_threshold||10.00;
   document.getElementById('planGraceDays').value=p.grace_period_days||30;
-  document.getElementById('planModal').classList.add('active');
-  document.body.style.overflow='hidden';
+  document.getElementById('planModal').classList.add('active');document.body.style.overflow='hidden';
 }
 
 function closePlanModal(){document.getElementById('planModal').classList.remove('active');document.body.style.overflow='';}
@@ -548,14 +1025,15 @@ async function savePlan(e){
   try{
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'billing_plans',action:id?'update':'create',data:data})});
-    const text=await r.text();if(!text||!text.trim()){alert('Ошибка: пустой ответ');return;}
+    const text=await r.text();if(!text||!text.trim()){alert(t('errEmpty'));return;}
     const res=JSON.parse(text);
     const result=res.merged&&res.merged[0];
-    if(result&&result.id){closePlanModal();await loadPlans();alert('Тариф сохранён!');}
-    else{alert('Ошибка: '+JSON.stringify(res));}
-  }catch(err){alert('Ошибка: '+err.message);}
+    if(result&&result.id){closePlanModal();await loadPlans();alert(t('alertSaved'));}
+    else{alert('Помилка: '+JSON.stringify(res));}
+  }catch(err){alert('Помилка: '+err.message);}
 }
 
+/* ── PROVIDERS ── */
 async function loadProviders(){
   try{
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -565,88 +1043,77 @@ async function loadProviders(){
     providers=(d.merged||d||[]).filter(function(i){return i&&i.id;});
     var html='';
     providers.forEach(function(p){
-      html+='<tr><td><strong>'+p.display_name+'</strong><br><small style="color:#888">'+p.name+'</small></td>'+
+      const tagClass=p.is_active?'tag-green':'tag-red';
+      const tagText=p.is_active?t('tagActive'):t('tagInactive');
+      html+='<tr>'+
+        '<td><div style="font-weight:500;color:var(--black)">'+p.display_name+'</div><div style="font-size:11px;color:var(--muted2)">'+p.name+'</div></td>'+
         '<td>'+p.fee_percent+'%</td><td>'+p.priority+'</td>'+
-        '<td><span class="status-badge '+(p.is_active?'status-active':'status-inactive')+'">'+(p.is_active?'Активен':'Неактивен')+'</span></td>'+
-        '<td><div class="table-actions"><button class="btn-icon '+(p.is_active?'btn-delete':'btn-edit')+'" onclick="toggleProvider('+p.id+','+(p.is_active?'false':'true')+')">'+(p.is_active?'⏸️':'▶️')+'</button></div></td></tr>';
+        '<td><span class="tag '+tagClass+'">'+tagText+'</span></td>'+
+        '<td><div class="row-actions"><button class="act-btn '+(p.is_active?'del':'')+'" onclick="toggleProvider('+p.id+','+(p.is_active?'false':'true')+')">'+(p.is_active?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2v8M8 2v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>':'<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 2l7 4-7 4V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>')+'</button></div></td></tr>';
     });
-    document.getElementById('providersTbody').innerHTML=html||'<tr><td colspan="5" style="text-align:center;padding:2rem;color:#666">Нет данных</td></tr>';
+    document.getElementById('providersTbody').innerHTML=html||'<tr><td colspan="5" class="loading-state">'+t('reqEmpty')+'</td></tr>';
   }catch(e){console.error('loadProviders:',e);}
 }
 
 async function toggleProvider(id,newState){
   const p=providers.find(function(x){return x.id===id;});
-  if(p&&p.is_active&&providers.filter(function(x){return x.is_active;}).length<=1){
-    alert('Нельзя отключить последний активный провайдер!');return;
-  }
+  if(p&&p.is_active&&providers.filter(function(x){return x.is_active;}).length<=1){alert(t('alertProviderLast'));return;}
   try{
     await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'billing_providers',action:'update',data:{id:id,is_active:newState}})});
     await loadProviders();
-  }catch(e){alert('Ошибка: '+e.message);}
+  }catch(e){alert('Помилка: '+e.message);}
 }
 
+/* ── DIRECTOR INFO ── */
 function showDirectorInfo(id){
   var dir=directors.find(function(d){return d.id===id;});
   if(!dir)return;
   window._infoDirectorId=id;
   var au=dir.active_until?new Date(dir.active_until).toLocaleDateString('ru-RU'):'—';
   var dl=dir.active_until?Math.ceil((new Date(dir.active_until)-new Date())/864e5):null;
-  var dls=dl!==null?(dl>0?dl+' дн.':(dl===0?'Истекает сегодня':'Истёк')):'—';
-  var statusMap={'trial':'Пробный','active':'Активна','grace':'Льготный','blocked':'Заблокирована'};
+  var dls=dl!==null?(dl>0?dl+' дн.':(dl===0?'Сьогодні':'Прострочено')):'—';
+  var statusMap={'trial':t('statusTrial'),'active':t('statusActive'),'grace':t('statusGrace'),'blocked':t('statusBlocked')};
   document.getElementById('directorInfoTitle').textContent=dir.first_name+' '+dir.last_name;
   document.getElementById('directorInfoBody').innerHTML=
-    '<div style="display:grid;gap:.75rem">'+
-    '<div><span style="color:#888;font-size:.85rem">Email</span><div style="font-weight:600">'+dir.email+'</div></div>'+
-    '<div><span style="color:#888;font-size:.85rem">Телефон</span><div style="font-weight:600">'+(dir.phone||'—')+'</div></div>'+
-    '<div><span style="color:#888;font-size:.85rem">Групп</span><div style="font-weight:600">'+(dir.groups_count||0)+'</div></div>'+
-    '<div><span style="color:#888;font-size:.85rem">Статус подписки</span><div style="font-weight:600">'+(statusMap[dir.subscription_status]||dir.subscription_status||'—')+'</div></div>'+
-    '<div><span style="color:#888;font-size:.85rem">Активен до</span><div style="font-weight:600">'+au+'</div></div>'+
-    '<div><span style="color:#888;font-size:.85rem">Осталось</span><div style="font-weight:600">'+dls+'</div></div>'+
-    '<div><span style="color:#888;font-size:.85rem">Лимит групп</span><div style="font-weight:600">'+(dir.groups_limit||'—')+'</div></div>'+
+    '<div class="info-grid">'+
+    '<div class="info-row"><label>'+t('infoEmail')+'</label><div class="info-val">'+dir.email+'</div></div>'+
+    '<div class="info-row"><label>'+t('infoPhone')+'</label><div class="info-val">'+(dir.phone||'—')+'</div></div>'+
+    '<div class="info-row"><label>'+t('infoGroups')+'</label><div class="info-val">'+(dir.groups_count||0)+'</div></div>'+
+    '<div class="info-row"><label>'+t('infoSubStatus')+'</label><div class="info-val">'+(statusMap[dir.subscription_status]||dir.subscription_status||'—')+'</div></div>'+
+    '<div class="info-row"><label>'+t('infoUntil')+'</label><div class="info-val">'+au+'</div></div>'+
+    '<div class="info-row"><label>'+t('infoLeft')+'</label><div class="info-val">'+dls+'</div></div>'+
+    '<div class="info-row"><label>'+t('infoLimit')+'</label><div class="info-val">'+(dir.groups_limit||'—')+'</div></div>'+
     '</div>';
-  document.getElementById('directorInfoModal').classList.add('active');
-  document.body.style.overflow='hidden';
+  document.getElementById('directorInfoModal').classList.add('active');document.body.style.overflow='hidden';
 }
-function closeDirectorInfo(){
-  document.getElementById('directorInfoModal').classList.remove('active');
-  document.body.style.overflow='';
-}
+function closeDirectorInfo(){document.getElementById('directorInfoModal').classList.remove('active');document.body.style.overflow='';}
 
-loadUserInfo();
-loadDirectors();
-loadRequestsBadge();
-loadPlans();
-loadSAUnreadCount();
-setInterval(loadSAUnreadCount, 30000);
-
-function openSendMessageFromBtn(btn){
-  openSendMessage(parseInt(btn.dataset.dirid), btn.dataset.dirname);
-}
-function openSendMessage(dirId, dirName){
-  document.getElementById('sendMsgTitle').textContent='Написать: '+dirName;
+/* ── MESSAGES ── */
+function openSendMessageFromBtn(btn){openSendMessage(parseInt(btn.dataset.dirid),btn.dataset.dirname);}
+function openSendMessage(dirId,dirName){
+  document.getElementById('sendMsgTitle').textContent=dirName;
   document.getElementById('sendMsgToId').value=dirId;
   document.getElementById('sendMsgText').value='';
-  document.getElementById('sendMsgModal').classList.add('active');
-  document.body.style.overflow='hidden';
+  document.getElementById('sendMsgModal').classList.add('active');document.body.style.overflow='hidden';
 }
 function closeSendMessage(){document.getElementById('sendMsgModal').classList.remove('active');document.body.style.overflow='';}
 
 async function sendMsgToDirector(){
   var text=document.getElementById('sendMsgText').value.trim();
   var toId=parseInt(document.getElementById('sendMsgToId').value);
-  if(!text){alert('Введите сообщение');return;}
+  if(!text){alert(t('errMsg'));return;}
   try{
     var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'admin_messages',action:'send',
         data:{to_user_id:toId,message:text,type:'message'}})});
-    var t=await r.text();
-    if(!t||!t.trim()){alert('Ошибка: пустой ответ');return;}
-    var res=JSON.parse(t);
+    var txt=await r.text();
+    if(!txt||!txt.trim()){alert(t('errEmpty'));return;}
+    var res=JSON.parse(txt);
     var result=res.merged&&res.merged[0];
-    if(result&&result.id){closeSendMessage();alert('Сообщение отправлено!');}
-    else{alert('Ошибка: '+JSON.stringify(res));}
-  }catch(e){alert('Ошибка: '+e.message);}
+    if(result&&result.id){closeSendMessage();alert(t('alertMsgSent'));}
+    else{alert('Помилка: '+JSON.stringify(res));}
+  }catch(e){alert('Помилка: '+e.message);}
 }
 
 async function loadSAUnreadCount(){
@@ -663,79 +1130,65 @@ async function loadSAUnreadCount(){
 
 function updateSABadge(count){
   var badge=document.getElementById('saMsgBadge');
-  if(count>0){badge.textContent=count;badge.style.display='flex';}
-  else{badge.style.display='none';}
+  var mobDot=document.getElementById('mobMsgDot');
+  if(count>0){badge.textContent=count;badge.style.display='inline-block';if(mobDot)mobDot.style.display='block';}
+  else{badge.style.display='none';if(mobDot)mobDot.style.display='none';}
 }
 
 async function loadSAMessages(){
   var loading=document.getElementById('messagesLoading');
   var list=document.getElementById('messagesList');
-  loading.style.display='block';
-  list.innerHTML='';
+  loading.style.display='block';list.innerHTML='';
   try{
     var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'admin_messages',action:'list',data:{}})});
     var text=await r.text();
     loading.style.display='none';
-    if(!text||!text.trim()){list.innerHTML='<div style="text-align:center;padding:3rem;color:#666">Нет сообщений</div>';return;}
+    if(!text||!text.trim()){list.innerHTML='<div class="empty-state"><div class="empty-icon">💬</div><div class="empty-text">'+t('noMessages')+'</div></div>';return;}
     var d=JSON.parse(text);
     var msgs=(d.merged||d||[]).filter(function(m){return m&&m.id;});
-    if(!msgs.length){list.innerHTML='<div style="text-align:center;padding:3rem;color:#666">Нет сообщений</div>';return;}
+    if(!msgs.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">💬</div><div class="empty-text">'+t('noMessages')+'</div></div>';return;}
     list.innerHTML=msgs.map(function(m){
       var date=new Date(m.created_at).toLocaleDateString('ru-RU');
-      var isFromDir=m.from_user_id!==7;
-      var bg=isFromDir?(m.is_read?'#fff':'#e8f4fd'):'#f0fff0';
-      var typeLabel=m.type==='renewal_request'?'🔄 Запрос продления':m.type==='reply'?'↩️ Ответ':'💬 Сообщение';
-      var fromName=(m.from_first_name||'')+' '+(m.from_last_name||'');
-      var toName=(m.to_first_name||'')+' '+(m.to_last_name||'');
-      var replyBtn=isFromDir?'<button class="msg-btn-inline" data-dirid="'+m.from_user_id+'" data-dirname="'+fromName.trim()+'" onclick="openSendMessageFromBtn(this)">↩️ Ответить</button>':'';
-      return '<div style="background:'+bg+';border-radius:12px;padding:1.25rem;border:1px solid #e0e0e0">'+
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">'+
-        '<div><strong>'+fromName+'</strong><span style="color:#888;font-size:.85rem"> → '+toName+'</span></div>'+
-        '<div style="display:flex;align-items:center;gap:.5rem">'+
-        '<span style="font-size:.8rem;color:#888">'+typeLabel+' • '+date+'</span>'+
-        (isFromDir&&!m.is_read?'<span style="font-size:.75rem;background:#dc3545;color:#fff;border-radius:10px;padding:0 6px">Новое</span>':'')+
+      var isFromDir=m.from_user_id!==SUPERADMIN_ID;
+      var typeLabel=m.type==='renewal_request'?t('msgTypeRenewal'):m.type==='reply'?t('msgTypeReply'):t('msgTypeMsg');
+      var fromName=((m.from_first_name||'')+' '+(m.from_last_name||'')).trim();
+      var toName=((m.to_first_name||'')+' '+(m.to_last_name||'')).trim();
+      var replyBtn=isFromDir?'<button class="btn-ghost" style="font-size:11px;padding:5px 10px" data-dirid="'+m.from_user_id+'" data-dirname="'+fromName+'" onclick="openSendMessageFromBtn(this)">'+t('msgReply')+'</button>':'';
+      return '<div class="msg-card'+(isFromDir&&!m.is_read?' unread':'')+'">'+
+        '<div class="msg-card-header">'+
+        '<div><span class="msg-card-from">'+fromName+'</span><span style="color:var(--muted2);font-size:11px"> → '+toName+'</span></div>'+
+        '<div style="display:flex;align-items:center;gap:6px">'+
+        '<span class="tag tag-gray" style="font-size:10px">'+typeLabel+'</span>'+
+        (isFromDir&&!m.is_read?'<span class="tag tag-blue" style="font-size:10px">'+t('msgNew')+'</span>':'')+
+        '<span class="msg-card-meta">'+date+'</span>'+
         '</div></div>'+
-        '<div style="margin-bottom:.75rem">'+m.message+'</div>'+replyBtn+
-        '</div>';
+        '<div class="msg-card-text">'+m.message+'</div>'+
+        replyBtn+'</div>';
     }).join('');
     await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'admin_messages',action:'mark_read',data:{}})});
     updateSABadge(0);
   }catch(e){console.error(e);loading.style.display='none';}
 }
+
+/* ── INIT ── */
+loadUserInfo();
+loadDirectors();
+loadRequestsBadge();
+loadPlans();
+loadSAUnreadCount();
+setInterval(loadSAUnreadCount,30000);
+applyLang();
+
+(function(){
+  const s=localStorage.getItem('theme');
+  if(s==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('icon-sun').style.display='none';
+    document.getElementById('icon-moon').style.display='block';
+  }
+})();
 </script>
-<div class="modal" id="sendMsgModal">
-<div class="modal-content" style="max-width:500px">
-<div class="modal-header">
-<h2 class="modal-title" id="sendMsgTitle">✉️ Написать директору</h2>
-<button class="modal-close" onclick="closeSendMessage()">✕</button>
-</div>
-<div class="modal-body">
-<input type="hidden" id="sendMsgToId">
-<div class="form-group">
-<label class="form-label">Сообщение *</label>
-<textarea id="sendMsgText" class="form-input" style="min-height:120px;resize:vertical" placeholder="Введите сообщение..."></textarea>
-</div>
-</div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeSendMessage()">Отмена</button>
-<button class="btn btn-save" onclick="sendMsgToDirector()">Отправить</button>
-</div>
-</div>
-</div>
-<div class="modal" id="directorInfoModal">
-<div class="modal-content" style="max-width:480px">
-<div class="modal-header">
-<h2 class="modal-title" id="directorInfoTitle">Информация о директоре</h2>
-<button class="modal-close" onclick="closeDirectorInfo()">✕</button>
-</div>
-<div class="modal-body" id="directorInfoBody"></div>
-<div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeDirectorInfo()">Закрыть</button>
-<button class="btn btn-save" onclick="closeDirectorInfo();editDirector(window._infoDirectorId)">✏️ Редактировать</button>
-</div>
-</div>
-</div>
 </body>
 </html>
