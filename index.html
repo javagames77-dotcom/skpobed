@@ -1,493 +1,695 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Вход — InSkill Online</title>
+<title>InSkill.online — Вхід</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --primary: #0066CC;
-  --secondary: #FF9933;
-  --dark: #1a1a1a;
-  --light: #f8f9fa;
-  --border: #e0e0e0;
-  --success: #28a745;
-  --danger: #dc3545;
+/* ── TOKENS ── */
+[data-theme="light"] {
+  --bg:              #ffffff;
+  --bg2:             #fafafa;
+  --bg3:             #f5f5f5;
+  --border:          #e8e8e8;
+  --border2:         #d0d0d0;
+  --text:            #1a1a1a;
+  --muted:           #6b6b6b;
+  --muted2:          #b0b0b0;
+  --black:           #0a0a0a;
+  --nav-bg:          rgba(255,255,255,.96);
+  --input-bg:        #fafafa;
+  --theme-btn-bg:    #f0f0f0;
+  --theme-btn-color: #6b6b6b;
+  --card-shadow:     0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+  --accent:          #E53935;
+}
+[data-theme="dark"] {
+  --bg:              #0a0a0a;
+  --bg2:             #181818;
+  --bg3:             #222222;
+  --border:          #3d3d3d;
+  --border2:         #505050;
+  --text:            #ffffff;
+  --muted:           #bbbbbb;
+  --muted2:          #999999;
+  --black:           #ffffff;
+  --nav-bg:          rgba(10,10,10,.97);
+  --input-bg:        #181818;
+  --theme-btn-bg:    #222222;
+  --theme-btn-color: #bbbbbb;
+  --card-shadow:     0 1px 3px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  --accent:          #E53935;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #0066CC 0%, #0052a3 100%);
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg2);
+  color: var(--text);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  transition: background .2s, color .2s;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 24px 16px;
 }
 
-.login-container {
-  width: 100%;
-  max-width: 420px;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  overflow: hidden;
-}
-
-.login-header {
-  background: white;
-  padding: 2.5rem 2rem 1.5rem;
-  text-align: center;
-}
-
-.logo {
-  display: inline-flex;
+/* ── TOP BAR ── */
+.top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 48px;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary);
+  padding: 0 20px;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: background .2s, border-color .2s;
+}
+.top-bar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   text-decoration: none;
-  margin-bottom: 1rem;
+}
+.logo-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--black);
+  letter-spacing: -.03em;
+  transition: color .2s;
+}
+.logo-text span { font-weight: 300; color: var(--accent); }
+
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
 }
 
-.logo-icon {
-  width: 60px;
-  height: 60px;
-  background: var(--primary);
-  border-radius: 12px;
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  width: 32px; height: 32px;
+  background: var(--theme-btn-bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+  transition: all .15s;
+  flex-shrink: 0;
+  color: var(--theme-btn-color);
 }
+.theme-toggle:hover { border-color: var(--border2); }
 
-.logo-bars {
+/* ── LANG SWITCHER ── */
+.lang-switcher {
   display: flex;
-  gap: 4px;
-  align-items: flex-end;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 3px;
+  transition: background .2s, border-color .2s;
+}
+.lang-btn {
+  padding: 3px 8px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .15s;
+  letter-spacing: .02em;
+}
+.lang-btn.active {
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0,0,0,.1);
 }
 
-.logo-bar {
-  width: 8px;
-  background: white;
-  border-radius: 3px;
+/* ── CARD ── */
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  margin-top: 48px;
+  transition: background .2s, border-color .2s, box-shadow .2s;
 }
 
-.logo-bar:nth-child(1) { height: 16px; }
-.logo-bar:nth-child(2) { height: 26px; background: var(--secondary); }
-.logo-bar:nth-child(3) { height: 36px; background: var(--secondary); }
-
-.login-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--dark);
-  margin-bottom: 0.5rem;
+.card-header {
+  padding: 32px 32px 24px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  transition: border-color .2s;
 }
 
-.login-subtitle {
-  color: #666;
-  font-size: 0.95rem;
+.card-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  text-decoration: none;
+}
+.card-logo-text {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--black);
+  letter-spacing: -.03em;
+  transition: color .2s;
+}
+.card-logo-text span { font-weight: 300; color: var(--accent); }
+
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 4px;
+  letter-spacing: -.02em;
+  transition: color .2s;
+}
+.card-sub {
+  font-size: 12px;
+  color: var(--muted);
+  transition: color .2s;
 }
 
-.login-body {
-  padding: 2rem;
-  background: #fafafa;
+.card-body { padding: 24px 32px 32px; }
+
+/* ── ROLE SWITCHER ── */
+.role-sw {
+  display: flex;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 3px;
+  margin-bottom: 20px;
+  gap: 3px;
+  transition: background .2s, border-color .2s;
+}
+.role-btn {
+  flex: 1;
+  padding: 7px 8px;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  background: transparent;
+  color: var(--muted);
+  transition: all .15s;
+  white-space: nowrap;
+}
+.role-btn.active {
+  background: var(--bg);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0,0,0,.1);
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
-}
+/* ── FORM ── */
+.form-group { margin-bottom: 14px; }
 
 .form-label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #555;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  transition: color .2s;
 }
 
 .form-input {
   width: 100%;
-  padding: 0.95rem 1rem;
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  font-size: 1rem;
-  transition: all 0.3s;
-  background: white;
-}
-
-.form-input:focus {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--input-bg);
+  color: var(--text);
+  transition: border-color .15s, box-shadow .15s, background .2s, color .2s;
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(0,102,204,0.1);
 }
-
-.form-input::placeholder {
-  color: #999;
+.form-input:focus {
+  border-color: var(--border2);
+  box-shadow: 0 0 0 3px rgba(0,0,0,.06);
 }
-
-.password-wrapper {
-  position: relative;
+[data-theme="dark"] .form-input:focus {
+  box-shadow: 0 0 0 3px rgba(255,255,255,.06);
 }
+.form-input::placeholder { color: var(--muted2); }
 
-.toggle-password {
+.pw-wrap { position: relative; }
+.pw-toggle {
   position: absolute;
-  right: 1rem;
-  top: 50%;
+  right: 10px; top: 50%;
   transform: translateY(-50%);
-  background: none;
-  border: none;
+  background: none; border: none;
   cursor: pointer;
-  font-size: 1.2rem;
-  color: #999;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: var(--muted2);
+  padding: 4px;
+  display: flex; align-items: center;
+  transition: color .15s;
+  line-height: 1;
 }
+.pw-toggle:hover { color: var(--text); }
 
-.toggle-password:hover {
-  color: var(--primary);
-}
-
+/* ── FORM FOOTER ── */
 .form-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
+  margin-bottom: 16px;
+  margin-top: 4px;
 }
-
-.remember-me {
+.remember {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 6px;
   cursor: pointer;
+  font-size: 12px;
+  color: var(--muted);
+  transition: color .2s;
+  user-select: none;
 }
-
-.remember-me input {
-  width: 18px;
-  height: 18px;
+.remember input {
+  width: 14px; height: 14px;
   cursor: pointer;
+  accent-color: var(--black);
 }
-
-.forgot-password {
-  color: var(--primary);
+.forgot {
+  font-size: 12px;
+  color: var(--muted);
   text-decoration: none;
-  font-weight: 500;
+  transition: color .15s;
 }
+.forgot:hover { color: var(--text); }
 
-.forgot-password:hover {
-  text-decoration: underline;
-}
-
+/* ── BUTTON ── */
 .btn-login {
   width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--secondary), #ff8800);
-  color: white;
+  padding: 10px;
+  background: var(--black);
+  color: var(--bg);
   border: none;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  font-weight: 700;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
   cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(255,153,51,0.3);
+  transition: opacity .15s, background .2s, color .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
+.btn-login:hover:not(:disabled) { opacity: .85; }
+.btn-login:disabled { opacity: .4; cursor: not-allowed; }
 
-.btn-login:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255,153,51,0.4);
+/* ── SPINNER ── */
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,.25);
+  border-radius: 50%;
+  border-top-color: var(--bg);
+  animation: spin .6s linear infinite;
+  display: none;
+  flex-shrink: 0;
 }
-
-.btn-login:active {
-  transform: translateY(0);
+[data-theme="dark"] .spinner {
+  border-color: rgba(0,0,0,.25);
+  border-top-color: var(--bg);
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.btn-login:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-
+/* ── DIVIDER ── */
 .divider {
-  text-align: center;
-  margin: 1.5rem 0;
-  position: relative;
-  color: #999;
-  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0;
+  color: var(--muted2);
+  font-size: 11px;
+  transition: color .2s;
 }
-
-.divider:before,
-.divider:after {
+.divider::before, .divider::after {
   content: '';
-  position: absolute;
-  top: 50%;
-  width: 40%;
+  flex: 1;
   height: 1px;
   background: var(--border);
+  transition: background .2s;
 }
 
-.divider:before { left: 0; }
-.divider:after { right: 0; }
-
-.signup-link {
+/* ── SIGNUP ── */
+.signup {
   text-align: center;
-  color: #666;
-  font-size: 0.95rem;
+  font-size: 12px;
+  color: var(--muted);
+  transition: color .2s;
 }
-
-.signup-link a {
-  color: var(--primary);
+.signup a {
+  color: var(--text);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
+  transition: color .2s;
 }
+.signup a:hover { text-decoration: underline; }
 
-.signup-link a:hover {
-  text-decoration: underline;
-}
-
+/* ── ALERTS ── */
 .alert {
-  padding: 0.85rem 1rem;
+  padding: 9px 12px;
   border-radius: 8px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+  margin-bottom: 14px;
+  font-size: 12px;
   display: none;
+  border: 1px solid transparent;
+  line-height: 1.4;
 }
-
 .alert-error {
-  background: #ffe6e6;
-  color: var(--danger);
-  border-left: 4px solid var(--danger);
+  background: #fff0f0;
+  color: #c0392b;
+  border-color: #ffd0d0;
 }
-
+[data-theme="dark"] .alert-error {
+  background: #2a1010;
+  color: #ff7070;
+  border-color: #4a2020;
+}
 .alert-success {
-  background: #e6ffe6;
-  color: var(--success);
-  border-left: 4px solid var(--success);
+  background: #f0fff4;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+[data-theme="dark"] .alert-success {
+  background: #0a2010;
+  color: #4ade80;
+  border-color: #1a4030;
 }
 
-.role-switcher {
-  display: flex;
-  background: #f0f2f5;
-  border-radius: 10px;
-  padding: 4px;
-  margin-bottom: 1.5rem;
-  gap: 4px;
-}
-
-.role-btn {
-  flex: 1;
-  padding: .6rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: .88rem;
-  font-weight: 600;
-  background: transparent;
-  color: #666;
-  transition: all .2s;
-}
-
-.role-btn.active {
-  background: #fff;
-  color: var(--primary);
-  box-shadow: 0 2px 8px rgba(0,0,0,.1);
-}
-
-.loading-spinner {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 0.6s linear infinite;
-  margin-right: 0.5rem;
-  vertical-align: middle;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-  .login-container {
-    border-radius: 16px;
-  }
-
-  .login-header {
-    padding: 2rem 1.5rem 1rem;
-  }
-
-  .logo {
-    font-size: 1.75rem;
-  }
-
-  .logo-icon {
-    width: 50px;
-    height: 50px;
-  }
-
-  .logo-bar:nth-child(1) { height: 14px; }
-  .logo-bar:nth-child(2) { height: 22px; }
-  .logo-bar:nth-child(3) { height: 30px; }
-
-  .login-title {
-    font-size: 1.35rem;
-  }
-
-  .login-body {
-    padding: 1.5rem;
-  }
-
-  .form-footer {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-  }
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+  body { padding: 16px 12px; justify-content: flex-start; padding-top: 64px; }
+  .login-card { border-radius: 12px; margin-top: 0; }
+  .card-header { padding: 24px 20px 18px; }
+  .card-body { padding: 18px 20px 24px; }
+  .top-bar { padding: 0 16px; }
+  .lang-btn { padding: 3px 6px; font-size: 10px; }
+  .form-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
 }
 </style>
 </head>
 <body>
 
-<div class="login-container">
-  <div class="login-header">
-    <div class="logo">
-      <div class="logo-icon">
-        <div class="logo-bars">
-          <div class="logo-bar"></div>
-          <div class="logo-bar"></div>
-          <div class="logo-bar"></div>
-        </div>
-      </div>
-      <span>InSkill<span style="color: var(--secondary)">.online</span></span>
+<!-- TOP BAR -->
+<div class="top-bar">
+  <a href="/" class="top-bar-logo">
+    <svg width="23" height="23" viewBox="0 0 20 20" fill="none">
+      <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+      <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="logo-text">InSkill<span>.online</span></span>
+  </a>
+  <div class="top-bar-right">
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
     </div>
-    <h1 class="login-title">Добро пожаловать!</h1>
-    <p class="login-subtitle">Войдите чтобы продолжить</p>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <svg id="icon-sun" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.8 2.8l1.1 1.1M10.1 10.1l1.1 1.1M2.8 11.2l1.1-1.1M10.1 3.9l1.1-1.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      <svg id="icon-moon" width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:none">
+        <path d="M11.5 8.5A5 5 0 015.5 2.5a5 5 0 100 9 5 5 0 006-3z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- LOGIN CARD -->
+<div class="login-card">
+  <div class="card-header">
+    <a href="/" class="card-logo">
+      <svg width="32" height="32" viewBox="0 0 20 20" fill="none">
+        <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+        <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+        <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="card-logo-text">InSkill<span>.online</span></span>
+    </a>
+    <div class="card-title" id="t-title"></div>
+    <div class="card-sub" id="t-sub"></div>
   </div>
 
-  <div class="login-body">
+  <div class="card-body">
     <div class="alert alert-error" id="errorAlert"></div>
     <div class="alert alert-success" id="successAlert"></div>
 
-    <div class="role-switcher">
-      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">👔 Тренер / Директор1</button>
-      <button type="button" class="role-btn" id="btnAthlete" onclick="switchRole('athlete')">🥋 Спортсмен</button>
+    <div class="role-sw">
+      <button type="button" class="role-btn active" id="btnStaff" onclick="switchRole('staff')">
+        👔 <span id="t-role-staff-label"></span>
+      </button>
+      <button type="button" class="role-btn" id="btnAthlete" onclick="switchRole('athlete')">
+        🥋 <span id="t-role-athlete-label"></span>
+      </button>
     </div>
 
-    <!-- Форма тренера/директора — отдельная форма для правильного autocomplete -->
+    <!-- Staff form -->
     <form id="staffForm" onsubmit="handleStaffLogin(event)" autocomplete="on">
       <div class="form-group">
-        <label class="form-label" for="staffEmail">Email</label>
-        <input
-          type="email"
-          class="form-input"
-          id="staffEmail"
-          name="email"
-          placeholder="your@email.com"
-          autocomplete="email"
-          required
-        >
+        <label class="form-label" id="t-email-label" for="staffEmail"></label>
+        <input type="email" class="form-input" id="staffEmail" name="email"
+          placeholder="your@email.com" autocomplete="email" required>
       </div>
-
       <div class="form-group">
-        <label class="form-label" for="staffPassword">Пароль</label>
-        <div class="password-wrapper">
-          <input
-            type="password"
-            class="form-input"
-            id="staffPassword"
-            name="password"
-            placeholder="••••••••"
-            required
-            autocomplete="current-password"
-          >
-          <button type="button" class="toggle-password" onclick="togglePassword('staffPassword', this)">👁️</button>
+        <label class="form-label" id="t-password-label" for="staffPassword"></label>
+        <div class="pw-wrap">
+          <input type="password" class="form-input" id="staffPassword" name="password"
+            placeholder="••••••••" autocomplete="current-password" required style="padding-right:38px">
+          <button type="button" class="pw-toggle" onclick="togglePassword('staffPassword',this)">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 7.5S3.5 3 7.5 3s6.5 4.5 6.5 4.5S11.5 12 7.5 12 1 7.5 1 7.5z" stroke="currentColor" stroke-width="1.2"/><circle cx="7.5" cy="7.5" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
+          </button>
         </div>
       </div>
-
       <div class="form-footer">
-        <label class="remember-me">
+        <label class="remember">
           <input type="checkbox" id="rememberMeStaff" name="remember">
-          <span>Запомнить меня</span>
+          <span id="t-remember"></span>
         </label>
-        <a href="#" class="forgot-password">Забыли пароль?</a>
+        <a href="#" class="forgot" id="t-forgot"></a>
       </div>
-
       <button type="submit" class="btn-login" id="staffLoginBtn">
-        Войти
+        <span class="spinner" id="staffSpinner"></span>
+        <span id="t-login-btn"></span>
       </button>
     </form>
 
-    <!-- Форма спортсмена — полностью отдельная форма -->
+    <!-- Athlete form -->
     <form id="athleteForm" onsubmit="handleAthleteLogin(event)" autocomplete="on" style="display:none">
       <div class="form-group">
-        <label class="form-label" for="athleteLogin">Логин спортсмена</label>
-        <input
-          type="text"
-          class="form-input"
-          id="athleteLogin"
-          name="athlete-username"
-          placeholder="ivan.donetsky42"
-          autocomplete="username"
-          required
-        >
+        <label class="form-label" id="t-athlete-login-label" for="athleteLogin"></label>
+        <input type="text" class="form-input" id="athleteLogin" name="athlete-username"
+          placeholder="ivan.donetsky42" autocomplete="username" required>
       </div>
-
       <div class="form-group">
-        <label class="form-label" for="athletePassword">Пароль</label>
-        <div class="password-wrapper">
-          <input
-            type="password"
-            class="form-input"
-            id="athletePassword"
-            name="athlete-password"
-            placeholder="••••••••"
-            required
-            autocomplete="current-password"
-          >
-          <button type="button" class="toggle-password" onclick="togglePassword('athletePassword', this)">👁️</button>
+        <label class="form-label" id="t-athlete-password-label" for="athletePassword"></label>
+        <div class="pw-wrap">
+          <input type="password" class="form-input" id="athletePassword" name="athlete-password"
+            placeholder="••••••••" autocomplete="current-password" required style="padding-right:38px">
+          <button type="button" class="pw-toggle" onclick="togglePassword('athletePassword',this)">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 7.5S3.5 3 7.5 3s6.5 4.5 6.5 4.5S11.5 12 7.5 12 1 7.5 1 7.5z" stroke="currentColor" stroke-width="1.2"/><circle cx="7.5" cy="7.5" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>
+          </button>
         </div>
       </div>
-
       <div class="form-footer">
-        <label class="remember-me">
+        <label class="remember">
           <input type="checkbox" id="rememberMeAthlete" name="remember">
-          <span>Запомнить меня</span>
+          <span id="t-remember2"></span>
         </label>
-        <a href="#" class="forgot-password">Забыли пароль?</a>
+        <a href="#" class="forgot" id="t-forgot2"></a>
       </div>
-
       <button type="submit" class="btn-login" id="athleteLoginBtn">
-        Войти
+        <span class="spinner" id="athleteSpinner"></span>
+        <span id="t-athlete-login-btn"></span>
       </button>
     </form>
 
-    <div class="divider">или</div>
+    <div class="divider"><span id="t-or"></span></div>
 
-    <div class="signup-link">
-      Нет аккаунта? <a href="/register.html">Зарегистрироваться</a>
+    <div class="signup">
+      <span id="t-no-account"></span>&nbsp;<a href="/register.html" id="t-register"></a>
     </div>
   </div>
 </div>
 
 <script>
-const AUTH_URL = 'https://primary-production-4b93e.up.railway.app/webhook/auth/register';
+const AUTH_URL        = 'https://primary-production-4b93e.up.railway.app/webhook/auth/register';
 const ATHLETE_AUTH_URL = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-login';
 
-// Check if already logged in
+/* ── i18n ── */
+const i18n = {
+  uk: {
+    pageTitle:         'InSkill.online — Вхід',
+    title:             'Ласкаво просимо',
+    sub:               'Увійдіть, щоб продовжити',
+    roleStaff:         'Тренер / Директор',
+    roleAthlete:       'Спортсмен',
+    emailLabel:        'Email',
+    passwordLabel:     'Пароль',
+    athleteLoginLabel: 'Логін спортсмена',
+    athletePassLabel:  'Пароль',
+    remember:          "Запам'ятати мене",
+    forgot:            'Забули пароль?',
+    loginBtn:          'Увійти',
+    or:                'або',
+    noAccount:         'Немає акаунту?',
+    register:          'Зареєструватись',
+    errEmail:          'Введіть email',
+    errPassword:       'Введіть пароль',
+    errLogin:          'Введіть логін',
+    successLogin:      'Успішний вхід! Перенаправлення...',
+    errConnection:     "Помилка з'єднання з сервером",
+    errWrongCreds:     'Невірний email або пароль',
+    errWrongCredsAth:  'Невірний логін або пароль',
+    connecting:        'Підключення...',
+    entering:          'Вхід...',
+  },
+  ru: {
+    pageTitle:         'InSkill.online — Вход',
+    title:             'Добро пожаловать',
+    sub:               'Войдите чтобы продолжить',
+    roleStaff:         'Тренер / Директор',
+    roleAthlete:       'Спортсмен',
+    emailLabel:        'Email',
+    passwordLabel:     'Пароль',
+    athleteLoginLabel: 'Логин спортсмена',
+    athletePassLabel:  'Пароль',
+    remember:          'Запомнить меня',
+    forgot:            'Забыли пароль?',
+    loginBtn:          'Войти',
+    or:                'или',
+    noAccount:         'Нет аккаунта?',
+    register:          'Зарегистрироваться',
+    errEmail:          'Введите email',
+    errPassword:       'Введите пароль',
+    errLogin:          'Введите логин',
+    successLogin:      'Успешный вход! Перенаправление...',
+    errConnection:     'Ошибка соединения с сервером',
+    errWrongCreds:     'Неверный email или пароль',
+    errWrongCredsAth:  'Неверный логин или пароль',
+    connecting:        'Подключение...',
+    entering:          'Вход...',
+  },
+  en: {
+    pageTitle:         'InSkill.online — Login',
+    title:             'Welcome back',
+    sub:               'Sign in to continue',
+    roleStaff:         'Coach / Director',
+    roleAthlete:       'Athlete',
+    emailLabel:        'Email',
+    passwordLabel:     'Password',
+    athleteLoginLabel: 'Athlete login',
+    athletePassLabel:  'Password',
+    remember:          'Remember me',
+    forgot:            'Forgot password?',
+    loginBtn:          'Sign in',
+    or:                'or',
+    noAccount:         'No account?',
+    register:          'Sign up',
+    errEmail:          'Enter email',
+    errPassword:       'Enter password',
+    errLogin:          'Enter login',
+    successLogin:      'Success! Redirecting...',
+    errConnection:     'Connection error',
+    errWrongCreds:     'Wrong email or password',
+    errWrongCredsAth:  'Wrong login or password',
+    connecting:        'Connecting...',
+    entering:          'Signing in...',
+  }
+};
+
+let currentLang = localStorage.getItem('lang') || 'uk';
+
+function t(key) { return (i18n[currentLang] || i18n['uk'])[key] || key; }
+
+function applyLang() {
+  document.documentElement.lang = currentLang === 'uk' ? 'uk' : currentLang === 'ru' ? 'ru' : 'en';
+  document.title = t('pageTitle');
+  document.getElementById('t-title').textContent             = t('title');
+  document.getElementById('t-sub').textContent               = t('sub');
+  document.getElementById('t-role-staff-label').textContent  = t('roleStaff');
+  document.getElementById('t-role-athlete-label').textContent= t('roleAthlete');
+  document.getElementById('t-email-label').textContent       = t('emailLabel');
+  document.getElementById('t-password-label').textContent    = t('passwordLabel');
+  document.getElementById('t-athlete-login-label').textContent = t('athleteLoginLabel');
+  document.getElementById('t-athlete-password-label').textContent = t('athletePassLabel');
+  document.getElementById('t-remember').textContent          = t('remember');
+  document.getElementById('t-remember2').textContent         = t('remember');
+  document.getElementById('t-forgot').textContent            = t('forgot');
+  document.getElementById('t-forgot2').textContent           = t('forgot');
+  document.getElementById('t-login-btn').textContent         = t('loginBtn');
+  document.getElementById('t-athlete-login-btn').textContent = t('loginBtn');
+  document.getElementById('t-or').textContent                = t('or');
+  document.getElementById('t-no-account').textContent        = t('noAccount');
+  document.getElementById('t-register').textContent          = t('register');
+  // Update lang buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    const map = { 'UA': 'uk', 'RU': 'ru', 'EN': 'en' };
+    btn.classList.toggle('active', map[btn.textContent] === currentLang);
+  });
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  applyLang();
+}
+
+/* ── THEME ── */
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  document.getElementById('icon-sun').style.display  = isDark ? 'none'  : 'block';
+  document.getElementById('icon-moon').style.display = isDark ? 'block' : 'none';
+}
+
+// Apply saved theme on load
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    document.getElementById('icon-sun').style.display  = 'none';
+    document.getElementById('icon-moon').style.display = 'block';
+  }
+})();
+
+/* ── AUTH CHECK ── */
 const token = localStorage.getItem('token');
 if (token) {
   const u = JSON.parse(localStorage.getItem('user') || '{}');
@@ -497,18 +699,13 @@ if (token) {
     body: JSON.stringify({ action: 'me', token })
   })
   .then(res => res.json())
-  .then(data => {
-    if (data.success !== false) {
-      redirectByRole(u.role);
-    }
-  })
+  .then(data => { if (data.success !== false) redirectByRole(u.role); })
   .catch(err => console.error('Token check error:', err));
 }
 
 function redirectByRole(role) {
   if (role === 'athlete') {
-    const aid = localStorage.getItem('athlete_id');
-    window.location.href = '/athlete-profile-athlete.html?id=' + aid;
+    window.location.href = '/athlete-profile-athlete.html?id=' + localStorage.getItem('athlete_id');
   } else if (role === 'director') {
     window.location.href = '/director-dashboard.html';
   } else if (role === 'superadmin') {
@@ -521,52 +718,50 @@ function redirectByRole(role) {
 }
 
 function switchRole(role) {
-  document.getElementById('btnStaff').classList.toggle('active', role === 'staff');
+  document.getElementById('btnStaff').classList.toggle('active',   role === 'staff');
   document.getElementById('btnAthlete').classList.toggle('active', role === 'athlete');
-  document.getElementById('staffForm').style.display = role === 'staff' ? '' : 'none';
+  document.getElementById('staffForm').style.display   = role === 'staff'   ? '' : 'none';
   document.getElementById('athleteForm').style.display = role === 'athlete' ? '' : 'none';
-  // Clear alerts on switch
-  document.getElementById('errorAlert').style.display = 'none';
+  document.getElementById('errorAlert').style.display   = 'none';
   document.getElementById('successAlert').style.display = 'none';
 }
 
 function togglePassword(fieldId, btn) {
   const input = document.getElementById(fieldId);
-  if (input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '🙈';
-  } else {
-    input.type = 'password';
-    btn.textContent = '👁️';
-  }
+  const isText = input.type === 'text';
+  input.type = isText ? 'password' : 'text';
+  btn.innerHTML = isText
+    ? '<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 7.5S3.5 3 7.5 3s6.5 4.5 6.5 4.5S11.5 12 7.5 12 1 7.5 1 7.5z" stroke="currentColor" stroke-width="1.2"/><circle cx="7.5" cy="7.5" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>'
+    : '<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2l11 11M6.2 6.3A1.5 1.5 0 009.7 9M4.5 4.6C2.8 5.7 1 7.5 1 7.5S3.5 12 7.5 12c1.2 0 2.3-.4 3.2-1M7.5 3c4 0 6.5 4.5 6.5 4.5s-.7 1.1-1.9 2.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
 }
 
-function showError(message) {
-  const alert = document.getElementById('errorAlert');
-  alert.textContent = message;
-  alert.style.display = 'block';
+function showError(msg) {
+  const el = document.getElementById('errorAlert');
+  el.textContent = msg; el.style.display = 'block';
   document.getElementById('successAlert').style.display = 'none';
-  setTimeout(() => { alert.style.display = 'none'; }, 5000);
+  setTimeout(() => { el.style.display = 'none'; }, 5000);
 }
 
-function showSuccess(message) {
-  const alert = document.getElementById('successAlert');
-  alert.textContent = message;
-  alert.style.display = 'block';
+function showSuccess(msg) {
+  const el = document.getElementById('successAlert');
+  el.textContent = msg; el.style.display = 'block';
   document.getElementById('errorAlert').style.display = 'none';
 }
 
 async function handleStaffLogin(event) {
   event.preventDefault();
-  const email = document.getElementById('staffEmail').value.trim();
+  const email    = document.getElementById('staffEmail').value.trim();
   const password = document.getElementById('staffPassword').value;
-  const btn = document.getElementById('staffLoginBtn');
+  const btn      = document.getElementById('staffLoginBtn');
+  const spinner  = document.getElementById('staffSpinner');
+  const btnText  = document.getElementById('t-login-btn');
 
-  if (!email) { showError('Введите email'); return; }
-  if (!password) { showError('Введите пароль'); return; }
+  if (!email)    { showError(t('errEmail'));    return; }
+  if (!password) { showError(t('errPassword')); return; }
 
   btn.disabled = true;
-  btn.innerHTML = '<span class="loading-spinner"></span>Вход...';
+  spinner.style.display = 'block';
+  btnText.textContent = t('entering');
 
   try {
     const response = await fetch(AUTH_URL, {
@@ -575,41 +770,42 @@ async function handleStaffLogin(event) {
       body: JSON.stringify({ action: 'login', email, password })
     });
     const data = await response.json();
-
     if (data.success && data.token) {
-      showSuccess('Успешный вход! Перенаправление...');
+      showSuccess(t('successLogin'));
       localStorage.setItem('token', data.token);
       if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
-      setTimeout(() => {
-        redirectByRole(data.user?.role || 'trainer');
-      }, 1000);
+      setTimeout(() => { redirectByRole(data.user?.role || 'trainer'); }, 1000);
     } else {
-      showError(data.error || 'Неверный email или пароль');
+      showError(data.error || t('errWrongCreds'));
       btn.disabled = false;
-      btn.textContent = 'Войти';
+      spinner.style.display = 'none';
+      btnText.textContent = t('loginBtn');
     }
   } catch (error) {
     console.error('Login error:', error);
-    showError('Ошибка соединения с сервером');
+    showError(t('errConnection'));
     btn.disabled = false;
-    btn.textContent = 'Войти';
+    spinner.style.display = 'none';
+    btnText.textContent = t('loginBtn');
   }
 }
 
 async function handleAthleteLogin(event) {
   event.preventDefault();
-  const login = document.getElementById('athleteLogin').value.trim();
+  const login    = document.getElementById('athleteLogin').value.trim();
   const password = document.getElementById('athletePassword').value;
-  const btn = document.getElementById('athleteLoginBtn');
+  const btn      = document.getElementById('athleteLoginBtn');
+  const spinner  = document.getElementById('athleteSpinner');
+  const btnText  = document.getElementById('t-athlete-login-btn');
 
-  if (!login) { showError('Введите логин'); return; }
-  if (!password) { showError('Введите пароль'); return; }
+  if (!login)    { showError(t('errLogin'));    return; }
+  if (!password) { showError(t('errPassword')); return; }
 
   btn.disabled = true;
-  btn.innerHTML = '<span class="loading-spinner"></span>Вход...';
+  spinner.style.display = 'block';
+  btnText.textContent = t('entering');
 
   try {
-    // Retry once if Railway cold start returns empty response
     let data = null;
     for (let attempt = 1; attempt <= 2; attempt++) {
       const response = await fetch(ATHLETE_AUTH_URL, {
@@ -620,7 +816,7 @@ async function handleAthleteLogin(event) {
       const text = await response.text();
       if (!text || !text.trim()) {
         if (attempt === 1) {
-          btn.innerHTML = '<span class="loading-spinner"></span>Подключение...';
+          btnText.textContent = t('connecting');
           await new Promise(r => setTimeout(r, 2500));
           continue;
         }
@@ -629,13 +825,11 @@ async function handleAthleteLogin(event) {
       data = JSON.parse(text);
       break;
     }
-
     if (data.success && data.token && data.child) {
-      showSuccess('Успешный вход!');
+      showSuccess(t('successLogin'));
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify({
-        role: 'athlete',
-        id: data.child.id,
+        role: 'athlete', id: data.child.id,
         first_name: data.child.first_name,
         last_name: data.child.last_name
       }));
@@ -646,18 +840,22 @@ async function handleAthleteLogin(event) {
         window.location.href = '/athlete-profile-athlete.html?id=' + data.child.id;
       }, 800);
     } else {
-      showError(data.error || 'Неверный логин или пароль');
+      showError(data.error || t('errWrongCredsAth'));
       btn.disabled = false;
-      btn.textContent = 'Войти';
+      spinner.style.display = 'none';
+      btnText.textContent = t('loginBtn');
     }
   } catch (error) {
     console.error('Athlete login error:', error);
-    showError('Ошибка соединения с сервером');
+    showError(t('errConnection'));
     btn.disabled = false;
-    btn.textContent = 'Войти';
+    spinner.style.display = 'none';
+    btnText.textContent = t('loginBtn');
   }
 }
-</script>
 
+// Init lang
+applyLang();
+</script>
 </body>
 </html>
