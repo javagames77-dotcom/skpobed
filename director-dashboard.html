@@ -606,7 +606,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <!-- Сайдбар -->
     <div class="chat-mob-list" id="chatMobList" style="width:250px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--bg2)">
       <div style="padding:.6rem .75rem;border-bottom:1px solid var(--border);font-weight:600;font-size:.85rem;display:flex;justify-content:space-between;align-items:center">
-        <span data-i18n="chatContacts">Контакты</span>
+        <span class="chat-contacts-title" data-i18n="chatContacts">Контакты</span>
         <span id="chatTotalUnread" style="font-size:.75rem;color:#ef4444;font-weight:700"></span>
       </div>
       <div style="padding:.4rem .6rem;border-bottom:1px solid var(--border)">
@@ -698,15 +698,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
 <div style="font-size:11px;color:var(--muted2);font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em" data-i18n="lblSubUsage">Использование за месяц</div>
 <div style="margin-bottom:1.5rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubDocs" data-i18n="lblSubDocs">📄 Документы</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubDocs">📄 Документы</div>
 <div id="subDocsUsed" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 <div style="margin-bottom:1.5rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubChanges" data-i18n="lblSubChanges">🔄 Смены групп</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubChanges">🔄 Смены групп</div>
 <div id="subChangesUsed" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 <div style="margin-bottom:1rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubOverage" data-i18n="lblSubOverage">💰 Сумма превышений</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubOverage">💰 Сумма превышений</div>
 <div id="subOverage" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 </div>
@@ -867,8 +867,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </form>
 </div>
 <div class="modal-footer">
-<button class="btn btn-cancel" id="m-btn-cancel-trainer" onclick="closeTrainerModal()">Отмена</button>
-<button class="btn btn-save" id="m-btn-save-trainer" onclick="document.getElementById('trainerForm').requestSubmit()">Сохранить</button>
+<button class="btn btn-cancel" data-i18n="btnCancel" onclick="closeTrainerModal()">Отмена</button>
+<button class="btn btn-save" data-i18n="btnSave" onclick="document.getElementById('trainerForm').requestSubmit()">Сохранить</button>
 </div>
 </div>
 </div>
@@ -926,8 +926,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </form>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-cancel" data-i18n="btnCancel" onclick="closeSourceModal()">Отмена</button>
-  <button class="btn btn-save" data-i18n="btnSave" onclick="document.getElementById('sourceForm').requestSubmit()">Сохранить</button>
+  <button class="btn btn-cancel" onclick="closeSourceModal()">Отмена</button>
+  <button class="btn btn-save" onclick="document.getElementById('sourceForm').requestSubmit()">Сохранить</button>
 </div>
 </div>
 </div>
@@ -994,15 +994,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <form id="childForm" onsubmit="saveChild(event)">
 <input type="hidden" id="childId">
 <div class="form-group">
-<label class="form-label" data-i18n="lblChildFirstName">Имя *</label>
+<label class="form-label">Имя *</label>
 <input type="text" class="form-input" id="childFirstName" required>
 </div>
 <div class="form-group">
-<label class="form-label" data-i18n="lblChildLastName">Фамилия *</label>
+<label class="form-label">Фамилия *</label>
 <input type="text" class="form-input" id="childLastName" required>
 </div>
 <div class="form-group">
-<label class="form-label" data-i18n="lblBirthDate">Дата рождения</label>
+<label class="form-label">Дата рождения</label>
 <div class="date-inputs">
 <div class="form-group"><select class="form-input" id="childBirthDay"><option value="">День</option></select></div>
 <div class="form-group"><select class="form-input" id="childBirthMonth"><option value="">Месяц</option></select></div>
@@ -1019,10 +1019,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <img id="childPreviewImage" style="max-width:100px;max-height:100px;border-radius:8px;border:2px solid var(--b)">
 </div>
 <input type="file" class="form-input" id="childPhotoFile" accept="image/*" style="padding:.5rem" onchange="previewChildPhoto(this)">
-<p style="color:var(--muted2);font-size:.8rem;margin-top:.4rem" data-i18n="hintPhotoChange" data-i18n="lblChildPhotoHint">Выберите новое фото только если хотите его заменить</p>
+<p style="color:var(--muted2);font-size:.8rem;margin-top:.4rem" data-i18n="hintPhotoChange">Выберите новое фото только если хотите его заменить</p>
 </div>
 <div style="border-top:1px solid var(--b);margin:.5rem 0 1rem;padding-top:1rem">
-<div style="font-weight:500;font-size:.9rem;color:var(--muted);margin-bottom:.75rem" data-i18n="lblAthleteAccess" data-i18n="lblAthleteAccess">🔐 Доступ спортсмена</div>
+<div style="font-weight:500;font-size:.9rem;color:var(--muted);margin-bottom:.75rem" data-i18n="lblAthleteAccess">🔐 Доступ спортсмена</div>
 <div class="form-group" style="margin-bottom:.75rem">
 <label class="form-label" data-i18n="lblLogin">Логин</label>
 <div style="display:flex;gap:.5rem">
@@ -1106,6 +1106,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 
 <script>
+
 const i18n={
   uk:{
     navBadge:'ДИРЕКТОР',logout:'Вийти',
@@ -1116,6 +1117,14 @@ const i18n={
     mobTrainers:'Співроб.',mobAthletes:'Спортсм.',mobChat:'Чат',mobNews:'Новини',mobMore:'Ще',
     mobClubs:'Клуби',mobGroups:'Групи',mobBelts:'Пояси',mobEvents:'Заходи',mobSubscription:'Підписка',
     mobAccounting:'Бухгалт.',mobMessages:'Повідом.',mobLogout:'Вийти',
+    tabClubs:'Мої клуби',tabGroups:'Групи',tabTrainers:'Співробітники',
+    tabAthletes:'Всі спортсмени',tabBelts:'Пояси та ступені',
+    tabEvents:'Заходи',tabChat:'Чат',tabSubscription:'Моя підписка',
+    chatContacts:'Контакти',chatSelectContact:'Оберіть контакт',chatBack:'← Назад',
+    btnBroadcast:'Написати всім',modalBroadcast:'📢 Написати всім спортсменам',
+    filterSearch:"Ім'я...",filterAll:'Всі',filterClub:'Клуб',filterGroup:'Група',
+    monthNames:['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
+    dayPh:'День',monthPh:'Місяць',yearPh:'Рік',
   },
     editClub:'Редагувати клуб',deleteClub:'Видалити клуб',
     editGroup:'Редагувати групу',deleteGroup:'Видалити групу',
@@ -1136,7 +1145,7 @@ const i18n={
     chatBack:'← Назад',noData:'Немає даних',
     // Модалки — labels
     lblName:'Назва *',lblAddress:'Адреса',lblRole:'Роль *',lblEmail:'Email *',
-    lblPassword:'Пароль *',lblFirstName:"Ім'я *",lblLastName:'Прізвище *',lblChildFirstName:'Ім\'я *',lblChildLastName:'Прізвище *',
+    lblPassword:'Пароль *',lblFirstName:"Ім'я *",lblLastName:'Прізвище *',
     lblClub:'Клуб *',lblBirthDate:'Дата народження',lblPhone:'Телефон',
     lblQualification:'Кваліфікація',lblTrainerGroups:'🥋 Групи тренера',
     lblAccountingGroups:'💰 Групи для бухгалтерії',lblBeltColor:'Колір поясу',
@@ -1177,6 +1186,14 @@ const i18n={
     mobTrainers:'Сотрудн.',mobAthletes:'Спортсм.',mobChat:'Чат',mobNews:'Новости',mobMore:'Ещё',
     mobClubs:'Клубы',mobGroups:'Группы',mobBelts:'Пояса',mobEvents:'Меропр.',mobSubscription:'Подписка',
     mobAccounting:'Бухгалт.',mobMessages:'Сообщ.',mobLogout:'Выход',
+    tabClubs:'Мои клубы',tabGroups:'Группы',tabTrainers:'Сотрудники',
+    tabAthletes:'Все спортсмены',tabBelts:'Пояса и степени',
+    tabEvents:'Мероприятия',tabChat:'Чат',tabSubscription:'Моя подписка',
+    chatContacts:'Контакты',chatSelectContact:'Выберите контакт',chatBack:'← Назад',
+    btnBroadcast:'Написать всем',modalBroadcast:'📢 Написать всем спортсменам',
+    filterSearch:'Имя...',filterAll:'Все',filterClub:'Клуб',filterGroup:'Группа',
+    monthNames:['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+    dayPh:'День',monthPh:'Месяц',yearPh:'Год',
   },
     editClub:'Редактировать клуб',deleteClub:'Удалить клуб',
     editGroup:'Редактировать группу',deleteGroup:'Удалить группу',
@@ -1197,7 +1214,7 @@ const i18n={
     chatBack:'← Назад',noData:'Нет данных',
     // Модалки — labels
     lblName:'Название *',lblAddress:'Адрес',lblRole:'Роль *',lblEmail:'Email *',
-    lblPassword:'Пароль *',lblFirstName:'Имя *',lblLastName:'Фамилия *',lblChildFirstName:'Имя *',lblChildLastName:'Фамилия *',
+    lblPassword:'Пароль *',lblFirstName:'Имя *',lblLastName:'Фамилия *',
     lblClub:'Клуб *',lblBirthDate:'Дата рождения',lblPhone:'Телефон',
     lblQualification:'Квалификация',lblTrainerGroups:'🥋 Группы тренера',
     lblAccountingGroups:'💰 Группы для бухгалтерии',lblBeltColor:'Цвет пояса',
@@ -1257,7 +1274,7 @@ const i18n={
     chatBack:'← Back',noData:'No data',
     // Modal labels
     lblName:'Name *',lblAddress:'Address',lblRole:'Role *',lblEmail:'Email *',
-    lblPassword:'Password *',lblFirstName:'First name *',lblLastName:'Last name *',lblChildFirstName:'First name *',lblChildLastName:'Last name *',
+    lblPassword:'Password *',lblFirstName:'First name *',lblLastName:'Last name *',
     lblClub:'Club *',lblBirthDate:'Date of birth',lblPhone:'Phone',
     lblQualification:'Qualification',lblTrainerGroups:'🥋 Trainer groups',
     lblAccountingGroups:'💰 Accounting groups',lblBeltColor:'Belt color',
@@ -1289,11 +1306,18 @@ const i18n={
     phUrl:'https://...',phLocation:'Address or venue name...',
     phLogin:'ivan.ivanenko',phPasswordEmpty:'Leave empty to keep unchanged',
     phMessage:'Enter message...',phRenewal:'E.g.: want to extend for 3 months...',
+    tabClubs:'My clubs',tabGroups:'Groups',tabTrainers:'Staff',
+    tabAthletes:'All athletes',tabBelts:'Belts & grades',
+    tabEvents:'Events',tabChat:'Chat',tabSubscription:'My subscription',
+    chatContacts:'Contacts',chatSelectContact:'Select contact',chatBack:'← Back',
+    btnBroadcast:'Broadcast',modalBroadcast:'📢 Broadcast to all athletes',
+    filterSearch:'Name...',filterAll:'All',filterClub:'Club',filterGroup:'Group',
+    monthNames:['January','February','March','April','May','June','July','August','September','October','November','December'],
+    dayPh:'Day',monthPh:'Month',yearPh:'Year',
   }
 };
 let currentLang=localStorage.getItem('lang')||'uk';
 function t(k){return (i18n[currentLang]||i18n.ru)[k]||k;}
-
 
 
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
@@ -2843,6 +2867,85 @@ function applyLang(){
     // Только если не был изменён JS (не содержит 'Редакт' и не 'Принять')
     if(el&&!el.dataset.jsSet) el.textContent=t(key);
   });
+
+  // ── Заголовки вкладок (.page-title внутри каждого tab)
+  const tabTitles = {
+    'tab-clubs':'tabClubs','tab-groups':'tabGroups','tab-trainers':'tabTrainers',
+    'tab-athletes':'tabAthletes','tab-belts':'tabBelts','tab-events':'tabEvents',
+    'tab-news':'tabNews','tab-chat':'tabChat','tab-subscription':'tabSubscription',
+  };
+  Object.entries(tabTitles).forEach(([tabId,key])=>{
+    const el=document.querySelector('#'+tabId+' .page-title');
+    if(el) el.textContent=t(key);
+  });
+
+  // ── Заголовки таблиц
+  const thMap={
+    'th-clubs-name':'thName','th-clubs-addr':'thAddress','th-clubs-groups':'thGroups',
+    'th-gr-name':'thName','th-gr-club':'thClub','th-gr-children':'thChildren','th-gr-trainers':'thTrainers',
+    'th-tr-fio':'thFIO','th-tr-email':'thEmail','th-tr-role':'thRole','th-tr-club':'thClub','th-tr-groups':'thGroups',
+    'th-at-photo':'thPhoto','th-at-fio':'thFIO','th-at-group':'thGroup','th-at-club':'thClub','th-at-belt':'thBelt',
+    'th-belt-order':'thOrder','th-belt-name':'thName','th-belt-color':'thColor','th-belt-min':'thMinTerm',
+    'th-ev-title':'thTitle','th-ev-date':'thDate','th-ev-deadline':'thDeadline',
+    'th-ev-loc':'thLocation','th-ev-fee':'thFee','th-ev-reg':'thReg',
+  };
+  Object.entries(thMap).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=t(key);});
+
+  // ── Кнопки добавления
+  const btnAddMap={
+    'btn-add-club':'addClub','btn-add-group':'addGroup','btn-add-trainer':'addTrainer',
+    'btn-add-belt':'addBelt','btn-add-event':'addEvent',
+  };
+  Object.entries(btnAddMap).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=t(key);});
+
+  // ── Фильтры спортсменов
+  const srch=document.getElementById('athleteSearch');
+  if(srch) srch.placeholder=t('filterSearch');
+  const cf=document.getElementById('athleteClubFilter');
+  if(cf&&cf.options[0]) cf.options[0].text=t('filterAll');
+  const gf=document.getElementById('athleteGroupFilter');
+  if(gf&&gf.options[0]) gf.options[0].text=t('filterAll');
+
+  // ── Месяцы в select
+  const months=t('monthNames');
+  if(Array.isArray(months)){
+    ['trainerBirthMonth','childBirthMonth'].forEach(function(sid){
+      const sel=document.getElementById(sid);
+      if(!sel) return;
+      for(let i=0;i<12;i++){if(sel.options[i+1]) sel.options[i+1].text=months[i];}
+    });
+  }
+  // Day/Month/Year placeholders
+  ['trainerBirthDay','childBirthDay'].forEach(function(sid){
+    const sel=document.getElementById(sid);
+    if(sel&&sel.options[0]) sel.options[0].text=t('dayPh');
+  });
+  ['trainerBirthMonth','childBirthMonth'].forEach(function(sid){
+    const sel=document.getElementById(sid);
+    if(sel&&sel.options[0]) sel.options[0].text=t('monthPh');
+  });
+  ['trainerBirthYear','childBirthYear'].forEach(function(sid){
+    const sel=document.getElementById(sid);
+    if(sel&&sel.options[0]) sel.options[0].text=t('yearPh');
+  });
+
+  // ── Чат
+  const ctitle=document.querySelector('.chat-contacts-title');
+  if(ctitle) ctitle.textContent=t('chatContacts');
+  const csearch=document.querySelector('.chat-search-input');
+  if(csearch) csearch.placeholder=t('filterSearch');
+  const cempty=document.querySelector('#chatEmpty div:last-child');
+  if(cempty) cempty.textContent=t('chatSelectContact');
+  const cbback=document.getElementById('mob-chat-back');
+  if(cbback) cbback.textContent=t('chatBack');
+
+  // ── Перерисовываем таблицы если данные загружены (для перевода контента)
+  if(typeof clubs!=='undefined'&&clubs.length) renderClubsTable();
+  if(typeof groups!=='undefined'&&groups.length) renderGroupsTable();
+  if(typeof trainers!=='undefined'&&trainers.length) renderTrainersTable();
+  if(typeof allAthletes!=='undefined'&&allAthletes.length) renderAthletesTable(allAthletes);
+  if(typeof belts!=='undefined'&&belts.length) renderBeltsTable();
+  if(typeof events!=='undefined'&&events.length) renderEventsTable();
 }
 function setLang(lang){currentLang=lang;localStorage.setItem('lang',lang);applyLang();}
 
