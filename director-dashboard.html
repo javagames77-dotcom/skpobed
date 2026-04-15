@@ -1202,7 +1202,9 @@ const i18n={
     phLogin:'ivan.ivanenko',phPasswordEmpty:'Залиште порожнім щоб не змінювати',
     phMessage:'Введіть повідомлення...',phRenewal:'Наприклад: хочу продовжити на 3 місяці...',
     lblYears:'Років',lblMonths:'Місяців',
-    lblExamHint:'Спортсмен побачить зворотній відлік до екзамену'
+    lblExamHint:'Спортсмен побачить зворотній відлік до екзамену',
+    subTrial:'Пробний період',subActive:'Активна',subGrace:'Пільговий період',
+    subExpiredShort:'Вичерпано',subPerMonth:'на місяць'
   },
   ru:{
     navBadge:'ДИРЕКТОР',logout:'Выход',
@@ -1251,7 +1253,13 @@ const i18n={
     lblBeltColor:'Цвет пояса',lblOrder:'Порядковый номер *',
     lblMinTerm:'⏱ Мин. срок до следующего экзамена',
     lblYears:'Лет',lblMonths:'Месяцев',
-    lblExamHint:'Спортсмен увидит обратный отсчёт до экзамена'
+    lblExamHint:'Спортсмен увидит обратный отсчёт до экзамена',
+    lblSubStatus:'Статус',lblSubPlan:'Тарифный план',lblSubUntil:'Активен до',
+    lblSubLeft:'Осталось дней',lblSubGroupsLimit:'Лимит групп',
+    lblSubGroupsActive:'Активных групп',lblSubDocs:'📄 Документы',
+    lblSubChanges:'🔄 Смены групп',lblSubOverage:'💰 Сумма превышений',
+    subTrial:'Пробный период',subActive:'Активна',subGrace:'Льготный период',
+    subExpiredShort:'Истёк',subPerMonth:'в месяц'
   },
     editClub:'Редактировать клуб',deleteClub:'Удалить клуб',
     editGroup:'Редактировать группу',deleteGroup:'Удалить группу',
@@ -1381,7 +1389,9 @@ const i18n={
     filterClub:'Club',filterGroup:'Group',
     subExpired:'Subscription expired!',btnRenewalRequest:'Request renewal',
     lblYears:'Years',lblMonths:'Months',
-    lblExamHint:'Athlete will see countdown to exam'
+    lblExamHint:'Athlete will see countdown to exam',
+    subTrial:'Trial period',subActive:'Active',subGrace:'Grace period',
+    subExpiredShort:'Expired',subPerMonth:'per month'
   }
 };
 let currentLang=localStorage.getItem('lang')||'uk';
@@ -1445,7 +1455,7 @@ async function loadSubscription(){
     const arr=Array.isArray(d.merged)?d.merged:(Array.isArray(d)?d:[]);
     const sub=arr[0];
     if(!sub||!sub.id){document.getElementById('subEmpty').style.display='block';return;}
-    const statusMap={'trial':'Пробный период','active':'Активна','grace':'Льготный период','blocked':'Заблокирована'};
+    const statusMap={'trial':t('subTrial'),'active':t('subActive'),'grace':t('subGrace'),'blocked':'Заблокирована'};
     const statusColors={'trial':'#ff9933','active':'#22c55e','grace':'#f59e0b','blocked':'#ef4444'};
     const st=sub.status||'trial';
     document.getElementById('subStatus').innerHTML='<span style="color:'+(statusColors[st]||'#666')+'">'+(statusMap[st]||st)+'</span>';
@@ -1453,7 +1463,7 @@ async function loadSubscription(){
     const au=sub.trial_ends_at?new Date(sub.trial_ends_at):null;
     document.getElementById('subActiveUntil').textContent=au?au.toLocaleDateString('ru-RU'):'—';
     const dl=au?Math.ceil((au-new Date())/864e5):null;
-    document.getElementById('subDaysLeft').innerHTML=dl!==null?(dl>0?'<span style="color:#22c55e">'+dl+' дн.</span>':'<span style="color:#ef4444">Истёк</span>'):'—';
+    document.getElementById('subDaysLeft').innerHTML=dl!==null?(dl>0?'<span style="color:#22c55e">'+dl+' дн.</span>':'<span style="color:#ef4444">'+t('subExpiredShort')+'</span>'):'—';
     var banner=document.getElementById('subBanner');
     if(dl!==null&&dl<=0){
       banner.className='sub-banner sub-banner-danger';
@@ -1471,8 +1481,8 @@ async function loadSubscription(){
     var freeChanges=sub.free_group_changes_per_month_per_group||100;
     var changesUsed=parseInt(sub.group_changes_used_month)||0;
     var overageSum=parseFloat(sub.overage_sum_month)||0;
-    document.getElementById('subDocsUsed').innerHTML=docsUsed+' / '+freeDocs+' в месяц'+(docsUsed>=freeDocs?' <span style="color:#ef4444">⚠️ лимит</span>':'');
-    document.getElementById('subChangesUsed').innerHTML=changesUsed+' / '+freeChanges+' в месяц'+(changesUsed>=freeChanges?' <span style="color:#ef4444">⚠️ лимит</span>':'');
+    document.getElementById('subDocsUsed').innerHTML=docsUsed+' / '+freeDocs+' '+t('subPerMonth')+(docsUsed>=freeDocs?' <span style="color:#ef4444">⚠️ лимит</span>':'');
+    document.getElementById('subChangesUsed').innerHTML=changesUsed+' / '+freeChanges+' '+t('subPerMonth')+(changesUsed>=freeChanges?' <span style="color:#ef4444">⚠️ лимит</span>':'');
     document.getElementById('subOverage').innerHTML=overageSum>0?'<span style="color:#ef4444">$'+overageSum.toFixed(2)+'</span>':'<span style="color:#22c55e">$0.00</span>';
     document.getElementById('subData').style.display='block';
   }catch(e){console.error(e);document.getElementById('subLoading').style.display='none';document.getElementById('subEmpty').style.display='block';}
