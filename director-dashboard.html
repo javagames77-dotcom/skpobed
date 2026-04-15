@@ -3055,7 +3055,23 @@ function applyLang(){
   if(acfl) acfl.textContent=t('filterClub');
   const agfl=document.querySelector('label[for="athleteGroupFilter"]');
   if(agfl) agfl.textContent=t('filterGroup');}
-function setLang(lang){currentLang=lang;localStorage.setItem('lang',lang);applyLang();}
+function setLang(lang){
+  currentLang=lang;
+  localStorage.setItem('lang',lang);
+  applyLang();
+  // Перерисовываем данные зависящие от языка
+  if(typeof clubs!=='undefined'&&clubs.length) renderClubsTable();
+  if(typeof groups!=='undefined'&&groups.length) renderGroupsTable();
+  if(typeof trainers!=='undefined'&&trainers.length) renderTrainersTable();
+  if(typeof allAthletes!=='undefined'&&allAthletes.length) renderAthletesTable(allAthletes);
+  if(typeof belts!=='undefined'&&belts.length) renderBeltsTable();
+  if(typeof events!=='undefined'&&events.length) renderEventsTable();
+  // Перезагружаем подписку если вкладка активна
+  var subTab=document.getElementById('tab-subscription');
+  if(subTab&&subTab.classList.contains('active')&&typeof loadSubscription==='function') loadSubscription();
+  // Перезаполняем месяцы
+  if(typeof populateDateSelects==='function') populateDateSelects();
+}
 
 /* ── THEME ── */
 function toggleTheme(){
