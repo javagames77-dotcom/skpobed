@@ -249,7 +249,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   .chat-mob-conv{display:none;flex-direction:column;height:100%}
   .chat-mob-conv.active{display:flex}
   .chat-mob-list.hidden{display:none}
-  .chat-mob-back{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:500;color:var(--black);background:var(--bg);cursor:pointer;border:none;width:100%;font-family:inherit;transition:background .15s}
+  .chat-mob-back{display:none;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:500;color:var(--black);background:var(--bg);cursor:pointer;border-left:none;border-right:none;border-top:none;width:100%;font-family:inherit;transition:background .15s;flex-shrink:0}
+.chat-mob-back-icon{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
+.chat-mob-back:hover .chat-mob-back-icon{border-color:var(--border2);background:var(--bg)}
+@media(max-width:768px){.chat-mob-back{display:flex}#chatMobList{width:100%!important}#chatMobConv{width:100%!important}}
   .chat-mob-back:hover{background:var(--bg3)}
   .chat-mob-back svg{flex-shrink:0}
 }
@@ -620,9 +623,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
     <!-- Основная область -->
     <div class="chat-mob-conv" id="chatMobConv" style="flex:1;display:flex;flex-direction:column;min-width:0">
-      <button class="chat-mob-back" id="mob-chat-back-btn" onclick="mobChatBack()" style="display:none">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        ← Назад
+      <button class="chat-mob-back" id="mob-chat-back-btn" onclick="mobChatBack()">
+        <span class="chat-mob-back-icon">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2L3 6l4.5 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span id="t-chat-back">Назад</span>
       </button>
       <div id="chatEmpty" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;color:#aaa">
         <div style="font-size:2.5rem">💬</div>
@@ -3060,7 +3065,10 @@ function applyLang(){
   const acfl=document.querySelector('label[for="athleteClubFilter"]');
   if(acfl) acfl.textContent=t('filterClub');
   const agfl=document.querySelector('label[for="athleteGroupFilter"]');
-  if(agfl) agfl.textContent=t('filterGroup');}
+  if(agfl) agfl.textContent=t('filterGroup');
+  // Кнопка назад в чате
+  const cbb=document.getElementById('t-chat-back');
+  if(cbb) cbb.textContent=t('chatBack');}
 function setLang(lang){
   currentLang=lang;
   localStorage.setItem('lang',lang);
