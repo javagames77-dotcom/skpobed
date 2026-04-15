@@ -1463,7 +1463,7 @@ async function loadSubscription(){
     const au=sub.trial_ends_at?new Date(sub.trial_ends_at):null;
     document.getElementById('subActiveUntil').textContent=au?au.toLocaleDateString('ru-RU'):'—';
     const dl=au?Math.ceil((au-new Date())/864e5):null;
-    document.getElementById('subDaysLeft').innerHTML=dl!==null?(dl>0?'<span style="color:#22c55e">'+dl+' дн.</span>':'<span style="color:#ef4444">'+t('subExpiredShort')+'</span>'):'—';
+    document.getElementById('subDaysLeft').innerHTML=dl!==null?(dl>0?'<span style="color:#22c55e">'+dl+' '+t('days')+'</span>':'<span style="color:#ef4444">'+t('subExpiredShort')+'</span>'):'—';
     var banner=document.getElementById('subBanner');
     if(dl!==null&&dl<=0){
       banner.className='sub-banner sub-banner-danger';
