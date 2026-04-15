@@ -246,13 +246,18 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 /* Мобильный чат — Telegram стиль */
 @media(max-width:768px){
   .chat-mob-list{display:flex;flex-direction:column;height:100%}
-  .chat-mob-conv{display:none;flex-direction:column;height:100%}
-  .chat-mob-conv.active{display:flex}
+  .chat-mob-conv{flex-direction:column;height:100%}
   .chat-mob-list.hidden{display:none}
   .chat-mob-back{display:none;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:500;color:var(--black);background:var(--bg);cursor:pointer;border-left:none;border-right:none;border-top:none;width:100%;font-family:inherit;transition:background .15s;flex-shrink:0}
 .chat-mob-back-icon{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
 .chat-mob-back:hover .chat-mob-back-icon{border-color:var(--border2);background:var(--bg)}
-@media(max-width:768px){.chat-mob-back{display:flex}#chatMobList{width:100%!important}#chatMobConv{width:100%!important}}
+@media(max-width:768px){
+  .chat-mob-back{display:flex!important}
+  #chatMobList{width:100%!important;flex:1}
+  #chatMobConv{width:100%!important;position:fixed;top:48px;left:0;right:0;bottom:56px;background:var(--bg);z-index:100;display:none;flex-direction:column}
+  #chatMobConv.mob-open{display:flex!important}
+  #tab-chat .chat-wrap{position:relative;overflow:hidden}
+}
   .chat-mob-back:hover{background:var(--bg3)}
   .chat-mob-back svg{flex-shrink:0}
 }
@@ -604,7 +609,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <button class="btn-add" onclick="openBroadcast()"><span>📢</span><span data-i18n="btnBroadcast">Написать всем</span></button>
 </div>
 <div style="background:var(--card-bg);border-radius:12px;border:1px solid var(--border);overflow:hidden">
-  <div style="display:flex;height:560px">
+  <div class="chat-wrap" style="display:flex;height:560px;position:relative">
 
     <!-- Сайдбар -->
     <div class="chat-mob-list" id="chatMobList" style="width:250px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--bg2)">
@@ -3176,23 +3181,17 @@ function patchBadges(){
 
 // === МОБИЛЬНЫЙ ЧАТ ===
 function mobChatOpen(){
-  // Только на мобильном
   if(window.innerWidth > 768) return;
   const list = document.getElementById('chatMobList');
   const conv = document.getElementById('chatMobConv');
-  const backBtn = document.getElementById('mob-chat-back-btn');
-  if(list) list.classList.add('hidden');
-  if(conv) conv.classList.add('active');
-  if(backBtn) backBtn.style.display = 'flex';
+  if(list) list.style.display = 'none';
+  if(conv){ conv.classList.add('mob-open'); conv.classList.remove('active'); }
 }
 function mobChatBack(){
   const list = document.getElementById('chatMobList');
   const conv = document.getElementById('chatMobConv');
-  const backBtn = document.getElementById('mob-chat-back-btn');
-  if(list) list.classList.remove('hidden');
-  if(conv) conv.classList.remove('active');
-  if(backBtn) backBtn.style.display = 'none';
-  // Скрываем чат area, показываем empty
+  if(list) list.style.display = '';
+  if(conv) conv.classList.remove('mob-open');
   const activeArea = document.getElementById('chatActiveArea');
   const chatEmpty = document.getElementById('chatEmpty');
   if(activeArea) activeArea.style.display = 'none';
