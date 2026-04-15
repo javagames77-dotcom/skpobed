@@ -1204,7 +1204,8 @@ const i18n={
     lblYears:'Років',lblMonths:'Місяців',
     lblExamHint:'Спортсмен побачить зворотній відлік до екзамену',
     subTrial:'Пробний період',subActive:'Активна',subGrace:'Пільговий період',
-    subExpiredShort:'Вичерпано',subPerMonth:'на місяць'
+    subExpiredShort:'Вичерпано',subPerMonth:'на місяць',
+    subGroups:'груп'
   },
   ru:{
     navBadge:'ДИРЕКТОР',logout:'Выход',
@@ -1259,7 +1260,8 @@ const i18n={
     lblSubGroupsActive:'Активных групп',lblSubDocs:'📄 Документы',
     lblSubChanges:'🔄 Смены групп',lblSubOverage:'💰 Сумма превышений',
     subTrial:'Пробный период',subActive:'Активна',subGrace:'Льготный период',
-    subExpiredShort:'Истёк',subPerMonth:'в месяц'
+    subExpiredShort:'Истёк',subPerMonth:'в месяц',
+    subGroups:'групп'
   },
     editClub:'Редактировать клуб',deleteClub:'Удалить клуб',
     editGroup:'Редактировать группу',deleteGroup:'Удалить группу',
@@ -1391,7 +1393,8 @@ const i18n={
     lblYears:'Years',lblMonths:'Months',
     lblExamHint:'Athlete will see countdown to exam',
     subTrial:'Trial period',subActive:'Active',subGrace:'Grace period',
-    subExpiredShort:'Expired',subPerMonth:'per month'
+    subExpiredShort:'Expired',subPerMonth:'per month',
+    subGroups:'groups'
   }
 };
 let currentLang=localStorage.getItem('lang')||'uk';
@@ -1474,8 +1477,8 @@ async function loadSubscription(){
       banner.innerHTML='⚠️ Подписка истекает через '+dl+' дн. <button onclick="openRenewalModal()" style="margin-left:1rem;padding:.3rem .8rem;background:#856404;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">Запросить продление</button>';
       banner.style.display='block';
     }else{banner.style.display='none';}
-    document.getElementById('subGroupsLimit').textContent=(sub.groups_limit||'—')+' групп';
-    document.getElementById('subGroupsActive').textContent=(sub.groups_count||0)+' групп';
+    document.getElementById('subGroupsLimit').textContent=(sub.groups_limit||'—')+' '+t('subGroups');
+    document.getElementById('subGroupsActive').textContent=(sub.groups_count||0)+' '+t('subGroups');
     var freeDocs=sub.free_docs_per_month_per_group||70;
     var docsUsed=parseInt(sub.docs_used_month)||0;
     var freeChanges=sub.free_group_changes_per_month_per_group||100;
