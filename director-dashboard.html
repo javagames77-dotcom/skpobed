@@ -1201,6 +1201,8 @@ const i18n={
     phUrl:'https://...',phLocation:'Адреса або назва місця...',
     phLogin:'ivan.ivanenko',phPasswordEmpty:'Залиште порожнім щоб не змінювати',
     phMessage:'Введіть повідомлення...',phRenewal:'Наприклад: хочу продовжити на 3 місяці...',
+    lblYears:'Років',lblMonths:'Місяців',
+    lblExamHint:'Спортсмен побачить зворотній відлік до екзамену'
   },
   ru:{
     navBadge:'ДИРЕКТОР',logout:'Выход',
@@ -1243,7 +1245,13 @@ const i18n={
     hintPhotoChange:'Выберите новое фото только если хотите заменить',
     filterClub:'Клуб',filterGroup:'Группа',
     phPasswordEmpty:'Оставьте пустым чтобы не менять',
-    subExpired:'Срок подписки истёк!',btnRenewalRequest:'Запросить продление'
+    subExpired:'Срок подписки истёк!',btnRenewalRequest:'Запросить продление',
+    thOrder:'#',thColor:'Цвет',thMinTerm:'Мин. срок',
+    addBelt:'Добавить степень',editBelt:'Редактировать степень',
+    lblBeltColor:'Цвет пояса',lblOrder:'Порядковый номер *',
+    lblMinTerm:'⏱ Мин. срок до следующего экзамена',
+    lblYears:'Лет',lblMonths:'Месяцев',
+    lblExamHint:'Спортсмен увидит обратный отсчёт до экзамена'
   },
     editClub:'Редактировать клуб',deleteClub:'Удалить клуб',
     editGroup:'Редактировать группу',deleteGroup:'Удалить группу',
@@ -1371,7 +1379,9 @@ const i18n={
     phSearch:'Name',phNewPassword:'Leave empty to keep unchanged',phPasswordEmpty:'Leave empty to keep unchanged',
     hintPhotoChange:'Select new photo only if you want to replace it',
     filterClub:'Club',filterGroup:'Group',
-    subExpired:'Subscription expired!',btnRenewalRequest:'Request renewal'
+    subExpired:'Subscription expired!',btnRenewalRequest:'Request renewal',
+    lblYears:'Years',lblMonths:'Months',
+    lblExamHint:'Athlete will see countdown to exam'
   }
 };
 let currentLang=localStorage.getItem('lang')||'uk';
@@ -1705,10 +1715,20 @@ function formatMinDays(min_days){
   if(!min_days||min_days<=0) return '—';
   const years=Math.floor(min_days/365);
   const months=Math.floor((min_days%365)/30);
-  let parts=[];
-  if(years>0) parts.push(years+'л');
-  if(months>0) parts.push(months+'мес');
-  return parts.length?parts.join(' '):(min_days+'дн');
+  const parts=[];
+  if(years>0){
+    const y=years;
+    const yl=currentLang==='en'?(y===1?'year':'years'):currentLang==='uk'?(y===1?'рік':y<5?'роки':'років'):(y===1?'год':y<5?'года':'лет');
+    parts.push(y+' '+yl);
+  }
+  if(months>0){
+    const m=months;
+    const ml=currentLang==='en'?(m===1?'month':'months'):currentLang==='uk'?(m===1?'місяць':m<5?'місяці':'місяців'):(m===1?'месяц':m<5?'месяца':'месяцев');
+    parts.push(m+' '+ml);
+  }
+  if(parts.length) return parts.join(' ');
+  const ml2=currentLang==='en'?'d':currentLang==='uk'?'дн':'дн';
+  return min_days+' '+ml2;
 }
 function renderBeltsTable(){
   const tb=document.getElementById('beltsTableBody');
@@ -1717,7 +1737,7 @@ function renderBeltsTable(){
     const dot=b.color?`<span class="color-dot" style="background:${b.color}"></span>`:'';
     const minDaysStr=formatMinDays(b.min_days);
     const r=document.createElement('tr');
-    r.innerHTML=`<td style="color:var(--muted)">${b.order_index||'—'}</td><td><strong style="color:var(--black)">${b.name}</strong></td><td>${dot}<span style="color:var(--muted);font-size:11px">${b.color||'—'}</span></td><td style="color:${b.min_days>0?'var(--p)':'var(--muted2)'}">${minDaysStr}</td><td><div class="row-actions"><button class="act-btn" onclick="editBelt(${b.id})" title="${t('editBelt')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button><button class="act-btn del" onclick="deleteBelt(${b.id})" title="${t('deleteBelt')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>`;
+    r.innerHTML=`<td style="color:var(--muted)">${b.order_index||'—'}</td><td><strong style="color:var(--black)">${b.name}</strong></td><td>${dot}</td><td style="color:${b.min_days>0?'var(--p)':'var(--muted2)'}">${minDaysStr}</td><td><div class="row-actions"><button class="act-btn" onclick="editBelt(${b.id})" title="${t('editBelt')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button><button class="act-btn del" onclick="deleteBelt(${b.id})" title="${t('deleteBelt')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>`;
     tb.appendChild(r);
   });
 }
@@ -1729,7 +1749,7 @@ function _minDaysToYearsMonths(min_days){
   return{y,m};
 }
 function addBelt(){
-  document.getElementById('beltModalTitle').textContent='Добавить степень';
+  document.getElementById('beltModalTitle').textContent=t('addBelt');
   document.getElementById('beltId').value='';
   document.getElementById('beltClubId').value=clubs[0]?.id||'';
   document.getElementById('beltName').value='';
@@ -1741,7 +1761,7 @@ function addBelt(){
 }
 function editBelt(id){
   const b=allBelts.find(x=>x.id===id);if(!b)return;
-  document.getElementById('beltModalTitle').textContent='Редактировать степень';
+  document.getElementById('beltModalTitle').textContent=t('editBelt');
   document.getElementById('beltId').value=b.id;
   document.getElementById('beltClubId').value=b.club_id||'';
   document.getElementById('beltName').value=b.name;
@@ -2941,7 +2961,7 @@ function applyLang(){
     'th-gr-name':'thName','th-gr-club':'thClub','th-gr-children':'thChildren','th-gr-trainers':'thTrainers',
     'th-tr-fio':'thFIO','th-tr-email':'thEmail','th-tr-role':'thRole','th-tr-club':'thClub','th-tr-groups':'thGroups',
     'th-at-photo':'thPhoto','th-at-fio':'thFIO','th-at-group':'thGroup','th-at-club':'thClub','th-at-belt':'thBelt',
-    'th-belt-order':'thOrder','th-belt-name':'thName','th-belt-color':'thColor','th-belt-min':'thMinTerm',
+    'th-belts-order':'thOrder','th-belts-name':'thName','th-belts-color':'thColor','th-belts-minterm':'thMinTerm',
     'th-ev-title':'thTitle','th-ev-date':'thDate','th-ev-deadline':'thDeadline',
     'th-ev-loc':'thLocation','th-ev-fee':'thFee','th-ev-reg':'thReg',
   };
