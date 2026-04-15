@@ -994,15 +994,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <form id="childForm" onsubmit="saveChild(event)">
 <input type="hidden" id="childId">
 <div class="form-group">
-<label class="form-label">Имя *</label>
+<label class="form-label" data-i18n="lblChildFirstName">Имя *</label>
 <input type="text" class="form-input" id="childFirstName" required>
 </div>
 <div class="form-group">
-<label class="form-label">Фамилия *</label>
+<label class="form-label" data-i18n="lblChildLastName">Фамилия *</label>
 <input type="text" class="form-input" id="childLastName" required>
 </div>
 <div class="form-group">
-<label class="form-label">Дата рождения</label>
+<label class="form-label" data-i18n="lblChildBirth">Дата рождения</label>
 <div class="date-inputs">
 <div class="form-group"><select class="form-input" id="childBirthDay"><option value="">День</option></select></div>
 <div class="form-group"><select class="form-input" id="childBirthMonth"><option value="">Месяц</option></select></div>
@@ -1142,7 +1142,13 @@ const i18n={
     lblLogin:'Логін',lblNewPassword:'Новий пароль',btnGenerate:'🔄 Генерувати',
     lblChildPhotoHint:'Виберіть нове фото тільки якщо хочете замінити',
     beltCanExam:'✅ Можна здавати!',beltUntilExam:'⏳ До екзамену:',
-    beltMonths:'міс',beltDays:'дн'
+    beltMonths:'міс',beltDays:'дн',
+    editAthlete:'Редагувати спортсмена',
+    lblChildFirstName:"Ім'я *",lblChildLastName:'Прізвище *',lblChildBirth:'Дата народження',
+    phSearch:"Ім'я...",phLogin:'ivan.ivanenko',phNewPassword:'Залиште порожнім щоб не змінювати',
+    hintPhotoChange:'Виберіть нове фото тільки якщо хочете замінити',
+    filterSearch:"Ім'я...",filterClub:'Клуб',filterGroup:'Група',
+    phPasswordEmpty:'Залиште порожнім щоб не змінювати'
   },
     editClub:'Редагувати клуб',deleteClub:'Видалити клуб',
     editGroup:'Редагувати групу',deleteGroup:'Видалити групу',
@@ -1229,7 +1235,13 @@ const i18n={
     lblLogin:'Логин',lblNewPassword:'Новый пароль',btnGenerate:'🔄 Генерировать',
     lblChildPhotoHint:'Выберите новое фото только если хотите заменить',
     beltCanExam:'✅ Можно сдавать!',beltUntilExam:'⏳ До экзамена:',
-    beltMonths:'мес',beltDays:'дн'
+    beltMonths:'мес',beltDays:'дн',
+    editAthlete:'Редактировать спортсмена',
+    lblChildFirstName:'Имя *',lblChildLastName:'Фамилия *',lblChildBirth:'Дата рождения',
+    phSearch:'Имя...',phLogin:'ivan.donetsky',phNewPassword:'Оставьте пустым чтобы не менять',
+    hintPhotoChange:'Выберите новое фото только если хотите заменить',
+    filterSearch:'Имя...',filterClub:'Клуб',filterGroup:'Группа',
+    phPasswordEmpty:'Оставьте пустым чтобы не менять'
   },
     editClub:'Редактировать клуб',deleteClub:'Удалить клуб',
     editGroup:'Редактировать группу',deleteGroup:'Удалить группу',
@@ -1352,7 +1364,11 @@ const i18n={
     dayPh:'Day',monthPh:'Month',yearPh:'Year',
     lblChildPhotoHint:'Select new photo only if you want to replace it',
     beltCanExam:'✅ Can take exam!',beltUntilExam:'⏳ Until exam:',
-    beltMonths:'mo',beltDays:'d'
+    beltMonths:'mo',beltDays:'d',
+    lblChildFirstName:'First name *',lblChildLastName:'Last name *',lblChildBirth:'Date of birth',
+    phSearch:'Name...',phNewPassword:'Leave empty to keep unchanged',phPasswordEmpty:'Leave empty to keep unchanged',
+    hintPhotoChange:'Select new photo only if you want to replace it',
+    filterSearch:'Name...',filterClub:'Club',filterGroup:'Group'
   }
 };
 let currentLang=localStorage.getItem('lang')||'uk';
@@ -1644,8 +1660,7 @@ async function clubAddressInput(val) {
         div.onclick = () => clubSelectAddress(res.display_name, res.lat, res.lon);
         box.appendChild(div);
       });
-    } catch(e) { box.style.display='none'; }
-  }, 400);
+    } catch(e) { box.style.display='none'; }  }, 400);
 }
 
 function clubSelectAddress(name, lat, lng) {
@@ -2704,7 +2719,7 @@ async function editChild(id){
   populateChildDateSelects();
   const c=allAthletes.find(x=>x.id===id);
   if(!c)return;
-  document.getElementById('childModalTitle').textContent='Редактировать спортсмена';
+  document.getElementById('childModalTitle').textContent=t('editAthlete');
   document.getElementById('childId').value=c.id;
   document.getElementById('childFirstName').value=c.first_name;
   document.getElementById('childLastName').value=c.last_name;
@@ -2995,7 +3010,14 @@ function applyLang(){
   const acf=document.getElementById('athleteClubFilter');
   if(acf&&acf.options[0]) acf.options[0].text=t('filterAll');
   const agf=document.getElementById('athleteGroupFilter');
-  if(agf&&agf.options[0]) agf.options[0].text=t('filterAll');}
+  if(agf&&agf.options[0]) agf.options[0].text=t('filterAll');
+  // Athlete filter labels
+  const asl=document.querySelector('label[for="athleteSearch"]');
+  if(asl) asl.textContent=t('filterSearch');
+  const acfl=document.querySelector('label[for="athleteClubFilter"]');
+  if(acfl) acfl.textContent=t('filterClub');
+  const agfl=document.querySelector('label[for="athleteGroupFilter"]');
+  if(agfl) agfl.textContent=t('filterGroup');}
 function setLang(lang){currentLang=lang;localStorage.setItem('lang',lang);applyLang();}
 
 /* ── THEME ── */
