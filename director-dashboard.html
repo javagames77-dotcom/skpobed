@@ -80,7 +80,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .table tbody tr:hover td{background:var(--tbl-hover)}
 .table-actions{display:flex;gap:4px}
 .row-actions{display:flex;gap:4px}
+.act-btn{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
 .btn-icon{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0;font-size:13px}
+.act-btn:hover{border-color:var(--border2);color:var(--text)}
+.act-btn.del:hover{border-color:var(--tag-red);color:var(--tag-red);background:var(--tag-red-bg)}
 .btn-icon:hover{border-color:var(--border2);color:var(--text)}
 .btn-edit:hover{border-color:var(--p);color:var(--p)}
 .btn-delete:hover{border-color:var(--tag-red);color:var(--tag-red);background:var(--tag-red-bg)}
@@ -666,34 +669,34 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 <div id="subscriptionContent" style="max-width:600px">
 <div style="background:var(--card-bg);border-radius:12px;border:1px solid var(--border);padding:1.5rem">
-<div id="subLoading" style="text-align:center;color:var(--muted);padding:2rem;text-align:center">Загрузка...</div>
+<div id="subLoading" style="text-align:center;color:var(--muted);padding:2rem" data-i18n="loading">Загрузка...</div>
 <div id="subData" style="display:none">
 <div style="margin-bottom:1.5rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Статус</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubStatus">Статус</div>
 <div id="subStatus" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 <div style="margin-bottom:1.5rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Тарифный план</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubPlan">Тарифный план</div>
 <div id="subPlan" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 <div style="margin-bottom:1.5rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Активен до</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubUntil">Активен до</div>
 <div id="subActiveUntil" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 <div style="margin-bottom:1.5rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Осталось дней</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubLeft">Осталось дней</div>
 <div id="subDaysLeft" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 <div style="margin-bottom:1.5rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Лимит групп</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubGroupsLimit">Лимит групп</div>
 <div id="subGroupsLimit" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 <div style="margin-bottom:1.5rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Активных групп</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubGroupsActive">Активных групп</div>
 <div id="subGroupsActive" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
-<div style="font-size:11px;color:var(--muted2);font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em">Использование за месяц</div>
+<div style="font-size:11px;color:var(--muted2);font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em" data-i18n="lblSubUsage">Использование за месяц</div>
 <div style="margin-bottom:1.5rem">
 <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">📄 Документы</div>
 <div id="subDocsUsed" style="font-size:14px;font-weight:600;color:var(--black)"></div>
@@ -707,7 +710,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div id="subOverage" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 </div>
-<div id="subEmpty" style="display:none;text-align:center;color:var(--muted);padding:2rem;text-align:center">Подписка не найдена. Обратитесь к администратору.</div>
+<div id="subEmpty" style="display:none;text-align:center;color:var(--muted);padding:2rem" data-i18n="lblSubNotFound">Підписку не знайдено. Зверніться до адміністратора.</div>
 </div>
 </div>
 </div>
@@ -794,9 +797,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 
 <!-- MODALS -->
-<div class="modal" id="clubModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2><button class="modal-close" onclick="closeClubModal()">✕</button></div><div class="modal-body"><form id="clubForm" onsubmit="saveClub(event)"><input type="hidden" id="clubId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="clubName" required></div><div class="form-group"><label class="form-label">Адрес</label><input type="text" class="form-input" id="clubAddress" autocomplete="off" oninput="clubAddressInput(this.value)"><div id="clubAddressSuggestions" style="display:none;background:var(--bg);border:1px solid #ddd;border-radius:8px;max-height:200px;overflow-y:auto;margin-top:2px"></div></div><div id="clubMapDiv" style="height:220px;margin-top:.75rem;border-radius:8px;border:1px solid #ddd;overflow:hidden"></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeClubModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()">Сохранить</button></div></div></div>
+<div class="modal" id="clubModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="clubModalTitle">Добавить клуб</h2><button class="modal-close" onclick="closeClubModal()">✕</button></div><div class="modal-body"><form id="clubForm" onsubmit="saveClub(event)"><input type="hidden" id="clubId"><div class="form-group"><label class="form-label" data-i18n="lblName">Название *</label><input type="text" class="form-input" id="clubName" required></div><div class="form-group"><label class="form-label" data-i18n="lblAddress">Адрес</label><input type="text" class="form-input" id="clubAddress" autocomplete="off" oninput="clubAddressInput(this.value)"><div id="clubAddressSuggestions" style="display:none;background:var(--bg);border:1px solid #ddd;border-radius:8px;max-height:200px;overflow-y:auto;margin-top:2px"></div></div><div id="clubMapDiv" style="height:220px;margin-top:.75rem;border-radius:8px;border:1px solid #ddd;overflow:hidden"></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeClubModal()" data-i18n="btnCancel">Отмена</button><button class="btn btn-save" onclick="document.getElementById('clubForm').requestSubmit()" data-i18n="btnSave">Сохранить</button></div></div></div>
 
-<div class="modal" id="groupModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="groupModalTitle">Добавить группу</h2><button class="modal-close" onclick="closeGroupModal()">✕</button></div><div class="modal-body"><form id="groupForm" onsubmit="saveGroup(event)"><input type="hidden" id="groupId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="groupName" required></div><div class="form-group"><label class="form-label">Клуб *</label><select class="form-input" id="groupClubId" required><option value="">Выберите</option></select></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeGroupModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()">Сохранить</button></div></div></div>
+<div class="modal" id="groupModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="groupModalTitle">Добавить группу</h2><button class="modal-close" onclick="closeGroupModal()">✕</button></div><div class="modal-body"><form id="groupForm" onsubmit="saveGroup(event)"><input type="hidden" id="groupId"><div class="form-group"><label class="form-label" data-i18n="lblName">Название *</label><input type="text" class="form-input" id="groupName" required></div><div class="form-group"><label class="form-label" data-i18n="lblClub">Клуб *</label><select class="form-input" id="groupClubId" required><option value="">Выберите</option></select></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeGroupModal()" data-i18n="btnCancel">Отмена</button><button class="btn btn-save" onclick="document.getElementById('groupForm').requestSubmit()" data-i18n="btnSave">Сохранить</button></div></div></div>
 
 <div class="modal" id="trainerModal">
 <div class="modal-content">
@@ -808,37 +811,37 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <form id="trainerForm" onsubmit="saveTrainer(event)">
 <input type="hidden" id="trainerId">
 <div class="form-group" id="trainerRoleWrap">
-<label class="form-label">Роль *</label>
+<label class="form-label" data-i18n="lblRole">Роль *</label>
 <select class="form-input" id="trainerRole" onchange="onTrainerRoleChange()">
 <option value="trainer">🥋 Тренер</option>
 <option value="accountant">💰 Бухгалтер</option>
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">Email *</label>
+<label class="form-label" data-i18n="lblEmail">Email *</label>
 <input type="email" class="form-input" id="trainerEmail" required>
 </div>
 <div class="form-group">
-<label class="form-label">Пароль *</label>
+<label class="form-label" data-i18n="lblPassword">Пароль *</label>
 <input type="password" class="form-input" id="trainerPassword" required>
-<small style="color:#666">Минимум 6 символов</small>
+<small style="color:var(--muted2)" data-i18n="hintMinPassword">Минимум 6 символов</small>
 </div>
 <div class="form-group">
-<label class="form-label">Имя *</label>
+<label class="form-label" data-i18n="lblFirstName">Имя *</label>
 <input type="text" class="form-input" id="trainerFirstName" required>
 </div>
 <div class="form-group">
-<label class="form-label">Фамилия *</label>
+<label class="form-label" data-i18n="lblLastName">Фамилия *</label>
 <input type="text" class="form-input" id="trainerLastName" required>
 </div>
 <div class="form-group">
-<label class="form-label">Клуб *</label>
+<label class="form-label" data-i18n="lblClub">Клуб *</label>
 <select class="form-input" id="trainerClubId" required>
 <option value="">Выберите клуб</option>
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">Дата рождения</label>
+<label class="form-label" data-i18n="lblBirthDate">Дата рождения</label>
 <div style="display:flex;gap:0.75rem">
 <select class="form-input" id="trainerBirthDay" style="flex:1"><option value="">День</option></select>
 <select class="form-input" id="trainerBirthMonth" style="flex:1"><option value="">Месяц</option></select>
@@ -846,19 +849,19 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 </div>
 <div class="form-group">
-<label class="form-label">Телефон</label>
+<label class="form-label" data-i18n="lblPhone">Телефон</label>
 <input type="tel" class="form-input" id="trainerPhone">
 </div>
 <div class="form-group">
-<label class="form-label">Квалификация</label>
+<label class="form-label" data-i18n="lblQualification">Квалификация</label>
 <input type="text" class="form-input" id="trainerQualification">
 </div>
 <div class="form-group" id="trainerGroupsWrap">
-<label class="form-label">🥋 Группы тренера</label>
+<label class="form-label" data-i18n="lblTrainerGroups">🥋 Группы тренера</label>
 <div id="trainerGroupsCheckboxes" style="max-height:160px;overflow-y:auto;border:1px solid var(--b);padding:1rem;border-radius:8px;background:#f9f9f9"></div>
 </div>
 <div class="form-group" id="accountingGroupsWrap" style="display:none">
-<label class="form-label">💰 Группы для бухгалтерии</label>
+<label class="form-label" data-i18n="lblAccountingGroups">💰 Группы для бухгалтерии</label>
 <div id="accountingGroupsCheckboxes" style="max-height:160px;overflow-y:auto;border:1px solid var(--b);padding:1rem;border-radius:8px;background:#f9f9f9"></div>
 </div>
 </form>
@@ -871,7 +874,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 
 <!-- Belt Modal -->
-<div class="modal" id="beltModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="beltModalTitle">Добавить степень</h2><button class="modal-close" onclick="closeBeltModal()">&#x2715;</button></div><div class="modal-body"><form id="beltForm" onsubmit="saveBelt(event)"><input type="hidden" id="beltId"><input type="hidden" id="beltClubId"><div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="beltName" placeholder="Например: Белый пояс, 1-я кю..." required></div><div class="form-group"><label class="form-label">Цвет пояса</label><div style="display:flex;gap:.75rem;align-items:center"><input type="color" id="beltColor" value="#ffffff" style="width:60px;height:44px;border:2px solid var(--b);border-radius:8px;padding:2px;cursor:pointer"><span style="font-size:.9rem;color:#666">Цвет для отображения</span></div></div><div class="form-group"><label class="form-label">Порядковый номер *</label><input type="number" class="form-input" id="beltOrder" min="1" placeholder="1 — первый (начальный)" required></div><div class="form-group"><label class="form-label">⏱ Минимальный срок до следующего экзамена</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem"><div><input type="number" class="form-input" id="beltMinYears" min="0" max="10" value="0" placeholder="0"><small style="color:#888;display:block;margin-top:.25rem">Лет</small></div><div><input type="number" class="form-input" id="beltMinMonths" min="0" max="11" value="0" placeholder="0"><small style="color:#888;display:block;margin-top:.25rem">Месяцев</small></div></div><small style="color:#aaa;margin-top:.35rem;display:block">Спортсмен увидит обратный отсчёт до экзамена</small></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeBeltModal()">Отмена</button><button class="btn btn-save" onclick="document.getElementById('beltForm').requestSubmit()">Сохранить</button></div></div></div>
+<div class="modal" id="beltModal"><div class="modal-content"><div class="modal-header"><h2 class="modal-title" id="beltModalTitle">Добавить степень</h2><button class="modal-close" onclick="closeBeltModal()">&#x2715;</button></div><div class="modal-body"><form id="beltForm" onsubmit="saveBelt(event)"><input type="hidden" id="beltId"><input type="hidden" id="beltClubId"><div class="form-group"><label class="form-label" data-i18n="lblName">Название *</label><input type="text" class="form-input" id="beltName" placeholder="Например: Белый пояс, 1-я кю..." data-i18n-ph="phBeltName" required></div><div class="form-group"><label class="form-label" data-i18n="lblBeltColor">Цвет пояса</label><div style="display:flex;gap:.75rem;align-items:center"><input type="color" id="beltColor" value="#ffffff" style="width:60px;height:44px;border:2px solid var(--b);border-radius:8px;padding:2px;cursor:pointer"><span style="font-size:.9rem;color:#666">Цвет для отображения</span></div></div><div class="form-group"><label class="form-label" data-i18n="lblOrder">Порядковый номер *</label><input type="number" class="form-input" id="beltOrder" min="1" placeholder="1 — первый (начальный)" data-i18n-ph="phBeltOrder" required></div><div class="form-group"><label class="form-label" data-i18n="lblMinTerm">⏱ Минимальный срок до следующего экзамена</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem"><div><input type="number" class="form-input" id="beltMinYears" min="0" max="10" value="0" placeholder="0"><small style="color:#888;display:block;margin-top:.25rem">Лет</small></div><div><input type="number" class="form-input" id="beltMinMonths" min="0" max="11" value="0" placeholder="0"><small style="color:#888;display:block;margin-top:.25rem">Месяцев</small></div></div><small style="color:#aaa;margin-top:.35rem;display:block">Спортсмен увидит обратный отсчёт до экзамена</small></div></form></div><div class="modal-footer"><button class="btn btn-cancel" onclick="closeBeltModal()" data-i18n="btnCancel">Отмена</button><button class="btn btn-save" onclick="document.getElementById('beltForm').requestSubmit()" data-i18n="btnSave">Сохранить</button></div></div></div>
 
 
 
@@ -886,12 +889,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <form id="sourceForm" onsubmit="saveSource(event)">
 <input type="hidden" id="sourceId">
 <div class="form-group">
-  <label class="form-label">URL источника *</label>
-  <input type="url" class="form-input" id="sourceUrl" placeholder="https://..." required>
-  <small style="color:#888;margin-top:.3rem;display:block">Сайт, RSS-лента или Telegram-канал (https://t.me/s/channelname)</small>
+  <label class="form-label" data-i18n="lblSourceUrl">URL источника *</label>
+  <input type="url" class="form-input" id="sourceUrl" placeholder="https://..." data-i18n-ph="phUrl" required>
+  <small style="color:var(--muted2);margin-top:.3rem;display:block" data-i18n="hintSourceUrl">Сайт, RSS-лента или Telegram-канал</small>
 </div>
 <div class="form-group">
-  <label class="form-label">Тип источника</label>
+  <label class="form-label" data-i18n="lblSourceType">Тип источника</label>
   <select class="form-input" id="sourceType">
     <option value="website">🌐 Веб-сайт</option>
     <option value="rss">📡 RSS-лента</option>
@@ -899,13 +902,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   </select>
 </div>
 <div class="form-group">
-  <label class="form-label">Промпт для AI *</label>
+  <label class="form-label" data-i18n="lblSourcePrompt">Промпт для AI *</label>
   <textarea class="form-input" id="sourcePrompt" rows="4" style="resize:vertical" required placeholder="Найди анонсы соревнований и турниров. Извлеки: название, дату, место, стоимость участия, описание. Верни только реальные мероприятия с датами."></textarea>
-  <small style="color:#888;margin-top:.3rem;display:block">Чем точнее промпт — тем лучше результат AI</small>
+  <small style="color:var(--muted2);margin-top:.3rem;display:block" data-i18n="hintPrompt">Чем точнее промпт — тем лучше результат AI</small>
 </div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
   <div class="form-group">
-    <label class="form-label">Частота парсинга</label>
+    <label class="form-label" data-i18n="lblFrequency">Частота парсинга</label>
     <select class="form-input" id="sourceFrequency">
       <option value="daily">Ежедневно</option>
       <option value="weekly">Еженедельно</option>
@@ -913,10 +916,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     </select>
   </div>
   <div class="form-group">
-    <label class="form-label">Статус</label>
+    <label class="form-label" data-i18n="lblStatus">Статус</label>
     <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;padding:.75rem;border:2px solid var(--b);border-radius:8px;margin-top:.5rem">
       <input type="checkbox" id="sourceActive" checked style="width:18px;height:18px;accent-color:var(--p)">
-      <span style="font-size:.9rem;font-weight:600">Активен</span>
+      <span style="font-size:.9rem;font-weight:500" data-i18n="lblActive">Активен</span>
     </label>
   </div>
 </div>
@@ -946,7 +949,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 <div class="form-group">
 <label class="form-label">Место проведения</label>
-<input type="text" class="form-input" id="eventLocation" placeholder="Адрес или название места..." oninput="previewMap()">
+<input type="text" class="form-input" id="eventLocation" placeholder="Адрес или название места..." data-i18n-ph="phLocation" oninput="previewMap()">
 <div id="mapPreview" style="margin-top:0.5rem;border-radius:8px;overflow:hidden;display:none">
 <iframe id="mapFrame" width="100%" height="200" frameborder="0" style="border:0;border-radius:8px" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
 </div>
@@ -1007,36 +1010,36 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 </div>
 <div class="form-group">
-<label class="form-label">Группы *</label>
+<label class="form-label" data-i18n="lblGroups">Группы *</label>
 <div id="childGroupsCheckboxes" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);padding:1rem;border-radius:8px;background:#f9f9f9"></div>
 </div>
 <div class="form-group">
-<label class="form-label">Фото</label>
+<label class="form-label" data-i18n="lblPhoto">Фото</label>
 <div id="childPhotoPreview" style="margin-bottom:.75rem;display:none">
 <img id="childPreviewImage" style="max-width:100px;max-height:100px;border-radius:8px;border:2px solid var(--b)">
 </div>
 <input type="file" class="form-input" id="childPhotoFile" accept="image/*" style="padding:.5rem" onchange="previewChildPhoto(this)">
-<p style="color:#888;font-size:.8rem;margin-top:.4rem">Выберите новое фото только если хотите его заменить</p>
+<p style="color:var(--muted2);font-size:.8rem;margin-top:.4rem" data-i18n="hintPhotoChange">Выберите новое фото только если хотите его заменить</p>
 </div>
 <div style="border-top:1px solid var(--b);margin:.5rem 0 1rem;padding-top:1rem">
-<div style="font-weight:600;font-size:.9rem;color:#555;margin-bottom:.75rem">🔐 Доступ спортсмена</div>
+<div style="font-weight:500;font-size:.9rem;color:var(--muted);margin-bottom:.75rem" data-i18n="lblAthleteAccess">🔐 Доступ спортсмена</div>
 <div class="form-group" style="margin-bottom:.75rem">
-<label class="form-label">Логин</label>
+<label class="form-label" data-i18n="lblLogin">Логин</label>
 <div style="display:flex;gap:.5rem">
-<input type="text" class="form-input" id="childLogin" placeholder="ivan.donetsky" style="flex:1">
-<button type="button" onclick="generateCredentials()" style="padding:.5rem .75rem;background:#6c63ff;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;white-space:nowrap">🔄 Генерировать</button>
+<input type="text" class="form-input" id="childLogin" placeholder="ivan.donetsky" data-i18n-ph="phLogin" style="flex:1">
+<button type="button" onclick="generateCredentials()" style="padding:.5rem .75rem;background:#6c63ff;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;white-space:nowrap" data-i18n="btnGenerate">🔄 Генерировать</button>
 </div>
 </div>
 <div class="form-group" style="margin-bottom:0">
-<label class="form-label">Новый пароль</label>
-<input type="text" class="form-input" id="childPassword" placeholder="Оставьте пустым чтобы не менять">
+<label class="form-label" data-i18n="lblNewPassword">Новый пароль</label>
+<input type="text" class="form-input" id="childPassword" placeholder="Оставьте пустым чтобы не менять" data-i18n-ph="phPasswordEmpty">
 </div>
 </div>
 </form>
 </div>
 <div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeChildModal()">Отмена</button>
-<button class="btn btn-save" onclick="document.getElementById('childForm').requestSubmit()">Сохранить</button>
+<button class="btn btn-cancel" onclick="closeChildModal()" data-i18n="btnCancel">Отмена</button>
+<button class="btn btn-save" onclick="document.getElementById('childForm').requestSubmit()" data-i18n="btnSave">Сохранить</button>
 </div>
 </div>
 </div>
@@ -1045,15 +1048,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="modal" id="inboxModal">
 <div class="modal-content" style="max-width:600px">
 <div class="modal-header">
-<h2 class="modal-title">📬 Сообщения от администратора</h2>
+<h2 class="modal-title" data-i18n="inboxTitle">📬 Сообщения от администратора</h2>
 <button class="modal-close" onclick="closeInbox()">✕</button>
 </div>
 <div class="modal-body">
 <div id="inboxList" style="max-height:400px;overflow-y:auto"></div>
 </div>
 <div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeInbox()">Закрыть</button>
-<button class="btn btn-save" onclick="openMessageModal()">✏️ Написать</button>
+<button class="btn btn-cancel" onclick="closeInbox()" data-i18n="btnClose">Закрыть</button>
+<button class="btn btn-save" onclick="openMessageModal()" data-i18n="btnWrite">✏️ Написать</button>
 </div>
 </div>
 </div>
@@ -1062,19 +1065,19 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="modal" id="messageModal">
 <div class="modal-content" style="max-width:500px">
 <div class="modal-header">
-<h2 class="modal-title" id="messageModalTitle">✉️ Написать администратору</h2>
+<h2 class="modal-title" id="messageModalTitle" data-i18n="msgToAdminTitle">✉️ Написать администратору</h2>
 <button class="modal-close" onclick="closeMessageModal()">✕</button>
 </div>
 <div class="modal-body">
 <input type="hidden" id="messageParentId">
 <div class="form-group" style="margin-bottom:1rem">
-<label style="display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem">Сообщение *</label>
-<textarea id="messageText" style="width:100%;padding:.75rem;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;min-height:120px;resize:vertical" placeholder="Введите сообщение..."></textarea>
+<label style="display:block;margin-bottom:.5rem;font-weight:500;color:var(--muted);font-size:.9rem" data-i18n="lblMessage">Сообщение *</label>
+<textarea id="messageText" style="width:100%;padding:.75rem;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;min-height:120px;resize:vertical" placeholder="Введите сообщение..." data-i18n-ph="phMessage"></textarea>
 </div>
 </div>
 <div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeMessageModal()">Отмена</button>
-<button class="btn btn-save" onclick="sendMessage()">Отправить</button>
+<button class="btn btn-cancel" onclick="closeMessageModal()" data-i18n="btnCancel">Отмена</button>
+<button class="btn btn-save" onclick="sendMessage()" data-i18n="btnSend">Отправить</button>
 </div>
 </div>
 </div>
@@ -1083,18 +1086,18 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="modal" id="renewalModal">
 <div class="modal-content" style="max-width:500px">
 <div class="modal-header">
-<h2 class="modal-title">🔄 Запрос на продление подписки</h2>
+<h2 class="modal-title" data-i18n="renewalTitle">🔄 Запрос на продление подписки</h2>
 <button class="modal-close" onclick="closeRenewalModal()">✕</button>
 </div>
 <div class="modal-body">
 <div class="form-group" style="margin-bottom:1rem">
-<label style="display:block;margin-bottom:.5rem;font-weight:600;color:#555;font-size:.9rem">Комментарий (необязательно)</label>
-<textarea id="renewalComment" style="width:100%;padding:.75rem;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;min-height:100px;resize:vertical" placeholder="Например: хочу продлить на 3 месяца..."></textarea>
+<label style="display:block;margin-bottom:.5rem;font-weight:500;color:var(--muted);font-size:.9rem" data-i18n="lblComment">Комментарий (необязательно)</label>
+<textarea id="renewalComment" style="width:100%;padding:.75rem;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;min-height:100px;resize:vertical" placeholder="Например: хочу продлить на 3 месяца..." data-i18n-ph="phRenewal"></textarea>
 </div>
 </div>
 <div class="modal-footer">
-<button class="btn btn-cancel" onclick="closeRenewalModal()">Отмена</button>
-<button class="btn btn-save" onclick="sendRenewalRequest()">Отправить запрос</button>
+<button class="btn btn-cancel" onclick="closeRenewalModal()" data-i18n="btnCancel">Отмена</button>
+<button class="btn btn-save" onclick="sendRenewalRequest()" data-i18n="btnRenewalSend">Отправить запрос</button>
 </div>
 </div>
 </div>
@@ -2610,6 +2613,40 @@ const i18n={
     addBelt:'Додати ступінь',addEvent:'Додати захід',
     filterSearch:'Ім\u0027я...',filterAll:'Всі',
     chatBack:'← Назад',noData:'Немає даних',
+    // Модалки — labels
+    lblName:'Назва *',lblAddress:'Адреса',lblRole:'Роль *',lblEmail:'Email *',
+    lblPassword:'Пароль *',lblFirstName:"Ім'я *",lblLastName:'Прізвище *',
+    lblClub:'Клуб *',lblBirthDate:'Дата народження',lblPhone:'Телефон',
+    lblQualification:'Кваліфікація',lblTrainerGroups:'🥋 Групи тренера',
+    lblAccountingGroups:'💰 Групи для бухгалтерії',lblBeltColor:'Колір поясу',
+    lblOrder:'Порядковий номер *',lblMinTerm:'⏱ Мінімальний строк до наступного екзамену',
+    lblSourceUrl:'URL джерела *',lblSourceType:'Тип джерела',lblSourcePrompt:'Промпт для AI *',
+    lblFrequency:'Частота парсингу',lblStatus:'Статус',lblActive:'Активний',
+    lblLogin:'Логін',lblNewPassword:'Новий пароль',lblPhoto:'Фото',lblGroups:'Групи *',
+    lblMessage:'Повідомлення *',lblComment:'Коментар (необов\u0027язково)',
+    lblAthleteAccess:'🔐 Доступ спортсмена',
+    // Кнопки модалок
+    btnCancel:'Скасувати',btnSave:'Зберегти',btnClose:'Закрити',btnWrite:'✏️ Написати',
+    btnSend:'Надіслати',btnRenewalSend:'Надіслати запит',btnGenerate:'🔄 Генерувати',
+    // Подписка
+    addSource:'+ Додати',
+    lblSubStatus:'Статус',lblSubPlan:'Тарифний план',lblSubUntil:'Активний до',
+    lblSubLeft:'Залишилось днів',lblSubGroupsLimit:'Ліміт груп',
+    lblSubGroupsActive:'Активних груп',lblSubUsage:'Використання за місяць',
+    lblSubDocs:'📄 Документи',lblSubChanges:'🔄 Зміни груп',lblSubOverage:'💰 Сума перевищень',
+    lblSubNotFound:'Підписку не знайдено. Зверніться до адміністратора.',
+    // Инбокс
+    inboxTitle:'📬 Повідомлення від адміністратора',
+    msgToAdminTitle:'✉️ Написати адміністратору',
+    renewalTitle:'🔄 Запит на продовження підписки',
+    // Хинты
+    hintMinPassword:'Мінімум 6 символів',hintPhotoChange:'Виберіть нове фото тільки якщо хочете його замінити',
+    hintSourceUrl:'Сайт, RSS-стрічка або Telegram-канал',hintPrompt:'Чим точніший промпт — тим кращий результат AI',
+    // Плейсхолдери
+    phBeltName:'Наприклад: Білий пояс, 1-й кю...',phBeltOrder:'1 — перший (початковий)',
+    phUrl:'https://...',phLocation:'Адреса або назва місця...',
+    phLogin:'ivan.ivanenko',phPasswordEmpty:'Залиште порожнім щоб не змінювати',
+    phMessage:'Введіть повідомлення...',phRenewal:'Наприклад: хочу продовжити на 3 місяці...',
   ru:{
     navBadge:'ДИРЕКТОР',logout:'Выход',
     sClubLabel:'Клуб',sClubs:'Мои клубы',sGroups:'Группы',sPeopleLabel:'Люди',
@@ -2637,6 +2674,40 @@ const i18n={
     addBelt:'Добавить степень',addEvent:'Добавить мероприятие',
     filterSearch:'Имя...',filterAll:'Все',
     chatBack:'← Назад',noData:'Нет данных',
+    // Модалки — labels
+    lblName:'Название *',lblAddress:'Адрес',lblRole:'Роль *',lblEmail:'Email *',
+    lblPassword:'Пароль *',lblFirstName:'Имя *',lblLastName:'Фамилия *',
+    lblClub:'Клуб *',lblBirthDate:'Дата рождения',lblPhone:'Телефон',
+    lblQualification:'Квалификация',lblTrainerGroups:'🥋 Группы тренера',
+    lblAccountingGroups:'💰 Группы для бухгалтерии',lblBeltColor:'Цвет пояса',
+    lblOrder:'Порядковый номер *',lblMinTerm:'⏱ Минимальный срок до следующего экзамена',
+    lblSourceUrl:'URL источника *',lblSourceType:'Тип источника',lblSourcePrompt:'Промпт для AI *',
+    lblFrequency:'Частота парсинга',lblStatus:'Статус',lblActive:'Активен',
+    lblLogin:'Логин',lblNewPassword:'Новый пароль',lblPhoto:'Фото',lblGroups:'Группы *',
+    lblMessage:'Сообщение *',lblComment:'Комментарий (необязательно)',
+    lblAthleteAccess:'🔐 Доступ спортсмена',
+    // Кнопки модалок
+    btnCancel:'Отмена',btnSave:'Сохранить',btnClose:'Закрыть',btnWrite:'✏️ Написать',
+    btnSend:'Отправить',btnRenewalSend:'Отправить запрос',btnGenerate:'🔄 Генерировать',
+    // Подписка
+    addSource:'+ Добавить',
+    lblSubStatus:'Статус',lblSubPlan:'Тарифный план',lblSubUntil:'Активен до',
+    lblSubLeft:'Осталось дней',lblSubGroupsLimit:'Лимит групп',
+    lblSubGroupsActive:'Активных групп',lblSubUsage:'Использование за месяц',
+    lblSubDocs:'📄 Документы',lblSubChanges:'🔄 Смены групп',lblSubOverage:'💰 Сумма превышений',
+    lblSubNotFound:'Подписка не найдена. Обратитесь к администратору.',
+    // Инбокс
+    inboxTitle:'📬 Сообщения от администратора',
+    msgToAdminTitle:'✉️ Написать администратору',
+    renewalTitle:'🔄 Запрос на продление подписки',
+    // Хинты
+    hintMinPassword:'Минимум 6 символов',hintPhotoChange:'Выберите новое фото только если хотите его заменить',
+    hintSourceUrl:'Сайт, RSS-лента или Telegram-канал',hintPrompt:'Чем точнее промпт — тем лучше результат AI',
+    // Плейсхолдеры
+    phBeltName:'Например: Белый пояс, 1-я кю...',phBeltOrder:'1 — первый (начальный)',
+    phUrl:'https://...',phLocation:'Адрес или название места...',
+    phLogin:'ivan.donetsky',phPasswordEmpty:'Оставьте пустым чтобы не менять',
+    phMessage:'Введите сообщение...',phRenewal:'Например: хочу продлить на 3 месяца...',
   en:{
     navBadge:'DIRECTOR',logout:'Logout',
     sClubLabel:'Club',sClubs:'My clubs',sGroups:'Groups',sPeopleLabel:'People',
@@ -2663,6 +2734,40 @@ const i18n={
     addBelt:'Add belt',addEvent:'Add event',
     filterSearch:'Name...',filterAll:'All',
     chatBack:'← Back',noData:'No data',
+    // Modal labels
+    lblName:'Name *',lblAddress:'Address',lblRole:'Role *',lblEmail:'Email *',
+    lblPassword:'Password *',lblFirstName:'First name *',lblLastName:'Last name *',
+    lblClub:'Club *',lblBirthDate:'Date of birth',lblPhone:'Phone',
+    lblQualification:'Qualification',lblTrainerGroups:'🥋 Trainer groups',
+    lblAccountingGroups:'💰 Accounting groups',lblBeltColor:'Belt color',
+    lblOrder:'Order number *',lblMinTerm:'⏱ Min. term until next exam',
+    lblSourceUrl:'Source URL *',lblSourceType:'Source type',lblSourcePrompt:'AI prompt *',
+    lblFrequency:'Parsing frequency',lblStatus:'Status',lblActive:'Active',
+    lblLogin:'Login',lblNewPassword:'New password',lblPhoto:'Photo',lblGroups:'Groups *',
+    lblMessage:'Message *',lblComment:'Comment (optional)',
+    lblAthleteAccess:'🔐 Athlete access',
+    // Modal buttons
+    btnCancel:'Cancel',btnSave:'Save',btnClose:'Close',btnWrite:'✏️ Write',
+    btnSend:'Send',btnRenewalSend:'Send request',btnGenerate:'🔄 Generate',
+    // Subscription
+    addSource:'+ Add',
+    lblSubStatus:'Status',lblSubPlan:'Billing plan',lblSubUntil:'Active until',
+    lblSubLeft:'Days left',lblSubGroupsLimit:'Groups limit',
+    lblSubGroupsActive:'Active groups',lblSubUsage:'Usage this month',
+    lblSubDocs:'📄 Documents',lblSubChanges:'🔄 Group changes',lblSubOverage:'💰 Overage amount',
+    lblSubNotFound:'Subscription not found. Contact administrator.',
+    // Inbox
+    inboxTitle:'📬 Messages from administrator',
+    msgToAdminTitle:'✉️ Write to administrator',
+    renewalTitle:'🔄 Subscription renewal request',
+    // Hints
+    hintMinPassword:'Minimum 6 characters',hintPhotoChange:'Select new photo only if you want to replace it',
+    hintSourceUrl:'Website, RSS feed or Telegram channel',hintPrompt:'More precise prompt = better AI result',
+    // Placeholders
+    phBeltName:'E.g.: White belt, 1st kyu...',phBeltOrder:'1 — first (beginner)',
+    phUrl:'https://...',phLocation:'Address or venue name...',
+    phLogin:'ivan.ivanenko',phPasswordEmpty:'Leave empty to keep unchanged',
+    phMessage:'Enter message...',phRenewal:'E.g.: want to extend for 3 months...',
   }
 };
 let currentLang=localStorage.getItem('lang')||'uk';
@@ -2713,6 +2818,29 @@ function applyLang(){
   Object.entries(filt).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.placeholder=t(key);});
   // Кнопка чат назад
   const cb=document.getElementById('mob-chat-back-btn');if(cb)cb.textContent=t('chatBack');
+  // Переводим все data-i18n атрибуты (кнопки, labels, spans)
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key=el.getAttribute('data-i18n');
+    const val=t(key);
+    if(val) el.textContent=val;
+  });
+  // Переводим data-i18n-ph (placeholders)
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const key=el.getAttribute('data-i18n-ph');
+    const val=t(key);
+    if(val) el.placeholder=val;
+  });
+  // Переводим modal titles (через JS динамически)
+  const modalTitles={
+    'clubModalTitle':'addClub','groupModalTitle':'addGroup',
+    'trainerModalTitle':'addTrainer','beltModalTitle':'addBelt',
+    'sourceModalTitle':'addSource','eventModalTitle':'addEvent',
+  };
+  Object.entries(modalTitles).forEach(([id,key])=>{
+    const el=document.getElementById(id);
+    // Только если не был изменён JS (не содержит 'Редакт' и не 'Принять')
+    if(el&&!el.dataset.jsSet) el.textContent=t(key);
+  });
 }
 function setLang(lang){currentLang=lang;localStorage.setItem('lang',lang);applyLang();}
 
