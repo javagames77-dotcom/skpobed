@@ -1147,8 +1147,9 @@ const i18n={
     lblChildFirstName:"Ім'я *",lblChildLastName:'Прізвище *',lblChildBirth:'Дата народження',
     phSearch:"Ім'я",phLogin:'ivan.ivanenko',phNewPassword:'Залиште порожнім щоб не змінювати',
     hintPhotoChange:'Виберіть нове фото тільки якщо хочете замінити',
-    filterSearch:"Ім'я...",filterClub:'Клуб',filterGroup:'Група',
-    phPasswordEmpty:'Залиште порожнім щоб не змінювати'
+
+    phPasswordEmpty:'Залиште порожнім щоб не змінювати',
+    subExpired:'Термін підписки вичерпано!',btnRenewalRequest:'Запросити продовження'
   },
     editClub:'Редагувати клуб',deleteClub:'Видалити клуб',
     editGroup:'Редагувати групу',deleteGroup:'Видалити групу',
@@ -1240,8 +1241,9 @@ const i18n={
     lblChildFirstName:'Имя *',lblChildLastName:'Фамилия *',lblChildBirth:'Дата рождения',
     phSearch:'Имя',phLogin:'ivan.donetsky',phNewPassword:'Оставьте пустым чтобы не менять',
     hintPhotoChange:'Выберите новое фото только если хотите заменить',
-    filterSearch:'Имя...',filterClub:'Клуб',filterGroup:'Группа',
-    phPasswordEmpty:'Оставьте пустым чтобы не менять'
+    filterClub:'Клуб',filterGroup:'Группа',
+    phPasswordEmpty:'Оставьте пустым чтобы не менять',
+    subExpired:'Срок подписки истёк!',btnRenewalRequest:'Запросить продление'
   },
     editClub:'Редактировать клуб',deleteClub:'Удалить клуб',
     editGroup:'Редактировать группу',deleteGroup:'Удалить группу',
@@ -1359,7 +1361,7 @@ const i18n={
     tabEvents:'Events',tabChat:'Chat',tabSubscription:'My subscription',
     chatContacts:'Contacts',chatSelectContact:'Select contact',chatBack:'← Back',
     btnBroadcast:'Broadcast',modalBroadcast:'📢 Broadcast to all athletes',
-    filterSearch:'Name...',filterAll:'All',filterClub:'Club',filterGroup:'Group',
+    filterAll:'All',filterClub:'Club',filterGroup:'Group',
     monthNames:['January','February','March','April','May','June','July','August','September','October','November','December'],
     dayPh:'Day',monthPh:'Month',yearPh:'Year',
     lblChildPhotoHint:'Select new photo only if you want to replace it',
@@ -1368,7 +1370,8 @@ const i18n={
     lblChildFirstName:'First name *',lblChildLastName:'Last name *',lblChildBirth:'Date of birth',
     phSearch:'Name',phNewPassword:'Leave empty to keep unchanged',phPasswordEmpty:'Leave empty to keep unchanged',
     hintPhotoChange:'Select new photo only if you want to replace it',
-    filterSearch:'Name...',filterClub:'Club',filterGroup:'Group'
+    filterClub:'Club',filterGroup:'Group',
+    subExpired:'Subscription expired!',btnRenewalRequest:'Request renewal'
   }
 };
 let currentLang=localStorage.getItem('lang')||'uk';
@@ -1444,7 +1447,7 @@ async function loadSubscription(){
     var banner=document.getElementById('subBanner');
     if(dl!==null&&dl<=0){
       banner.className='sub-banner sub-banner-danger';
-      banner.innerHTML='⛔ Срок подписки истёк! <button onclick="openRenewalModal()" style="margin-left:1rem;padding:.3rem .8rem;background:#dc3545;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">Запросить продление</button>';
+      banner.innerHTML='⛔ '+t('subExpired')+' <button onclick="openRenewalModal()" style="margin-left:1rem;padding:.3rem .8rem;background:#dc3545;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">'+t('btnRenewalRequest')+'</button>';
       banner.style.display='block';
     }else if(dl!==null&&dl<=7){
       banner.className='sub-banner sub-banner-warning';
