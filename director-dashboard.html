@@ -2864,8 +2864,7 @@ function applyLang(){
   };
   Object.entries(modalTitles).forEach(([id,key])=>{
     const el=document.getElementById(id);
-    // Только если не был изменён JS (не содержит 'Редакт' и не 'Принять')
-    if(el&&!el.dataset.jsSet) el.textContent=t(key);
+    if(el) el.textContent=t(key);
   });
 
   // ── Заголовки вкладок (.page-title внутри каждого tab)
