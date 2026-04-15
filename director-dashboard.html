@@ -1206,7 +1206,12 @@ const i18n={
     subTrial:'Пробний період',subActive:'Активна',subGrace:'Пільговий період',
     subExpiredShort:'Вичерпано',subPerMonth:'на місяць',
     subGroups:'груп'
-  },
+  ,
+    msgTypeRenewal:'🔄 Запит продовження',msgTypeReply:'↩️ Відповідь',msgTypeMessage:'💬 Повідомлення',
+    msgReply:'↩️ Відповісти',
+    renewalMsgPrefix:'Запит на продовження підписки.',
+    renewalCommentPrefix:' Коментар: ',
+    msgReplyAdmin:'Відповісти адміністратору'},
   ru:{
     navBadge:'ДИРЕКТОР',logout:'Выход',
     sClubLabel:'Клуб',sClubs:'Мои клубы',sGroups:'Группы',sPeopleLabel:'Люди',
@@ -1314,7 +1319,7 @@ const i18n={
     phUrl:'https://...',phLocation:'Адрес или название места...',
     phLogin:'ivan.donetsky',phPasswordEmpty:'Оставьте пустым чтобы не менять',
     phMessage:'Введите сообщение...',phRenewal:'Например: хочу продлить на 3 месяца...',
-  },
+    msgReplyAdmin:'Ответить администратору',msgTypeRenewal:'🔄 Запрос продления',msgTypeReply:'↩️ Ответ',msgTypeMessage:'💬 Сообщение',msgReply:'↩️ Ответить',renewalMsgPrefix:'Запрос на продление подписки.',renewalCommentPrefix:' Комментарий: '},
   en:{
     navBadge:'DIRECTOR',logout:'Logout',
     sClubLabel:'Club',sClubs:'My clubs',sGroups:'Groups',sPeopleLabel:'People',
@@ -1396,7 +1401,8 @@ const i18n={
     subTrial:'Trial period',subActive:'Active',subGrace:'Grace period',
     subExpiredShort:'Expired',subPerMonth:'per month',
     subGroups:'groups'
-  }
+  ,
+    msgReplyAdmin:'Reply to administrator',msgTypeRenewal:'🔄 Renewal request',msgTypeReply:'↩️ Reply',msgTypeMessage:'💬 Message',msgReply:'↩️ Reply',renewalMsgPrefix:'Subscription renewal request.',renewalCommentPrefix:' Comment: '}
 };
 let currentLang=localStorage.getItem('lang')||'uk';
 function t(k){return (i18n[currentLang]||i18n.ru)[k]||k;}
@@ -2592,7 +2598,7 @@ async function openInbox(){
       var date=new Date(m.created_at).toLocaleDateString('ru-RU');
       var isFromAdmin=m.from_user_id!==user.id;
       var bg=isFromAdmin?(m.is_read?'#f8f9fa':'#e8f4fd'):'#f0fff0';
-      var typeLabel=m.type==='renewal_request'?'🔄 Запрос продления':m.type==='reply'?'↩️ Ответ':'💬 Сообщение';
+      var typeLabel=m.type==='renewal_request'?t('msgTypeRenewal'):m.type==='reply'?t('msgTypeReply'):t('msgTypeMessage');
       return '<div style="padding:1rem;border-radius:8px;margin-bottom:.75rem;background:'+bg+';border:1px solid #e0e0e0">'+
         '<div style="display:flex;justify-content:space-between;margin-bottom:.5rem">'+
         '<span style="font-size:.8rem;color:#888">'+typeLabel+' • '+date+'</span>'+
@@ -2619,7 +2625,7 @@ function openMessageModal(){
 }
 
 function openReply(parentId){
-  document.getElementById('messageModalTitle').textContent='↩️ Ответить администратору';
+  document.getElementById('messageModalTitle').textContent='↩️ '+t('msgReplyAdmin');
   document.getElementById('messageParentId').value=parentId;
   document.getElementById('messageText').value='';
   document.getElementById('inboxModal').classList.remove('active');
@@ -2656,7 +2662,7 @@ function closeRenewalModal(){document.getElementById('renewalModal').classList.r
 
 async function sendRenewalRequest(){
   var comment=document.getElementById('renewalComment').value.trim();
-  var msg='Запрос на продление подписки.'+(comment?' Комментарий: '+comment:'');
+  var msg=t('renewalMsgPrefix')+(comment?t('renewalCommentPrefix')+comment:'');
   try{
     var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'admin_messages',action:'send',
