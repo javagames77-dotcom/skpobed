@@ -2604,7 +2604,7 @@ async function openInbox(){
         '<span style="font-size:.8rem;color:#888">'+typeLabel+' • '+date+'</span>'+
         (isFromAdmin&&!m.is_read?'<span style="font-size:.75rem;background:#dc3545;color:#fff;border-radius:10px;padding:0 6px">Новое</span>':'')+'</div>'+
         '<div style="margin-bottom:.75rem">'+m.message+'</div>'+
-        (isFromAdmin?'<button onclick="openReply('+m.id+')" style="padding:.3rem .8rem;background:#0066CC;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.85rem">↩️ Ответить</button>':'')+
+        (isFromAdmin?'<button onclick="openReply('+m.id+')" style="padding:.3rem .8rem;background:#0066CC;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.85rem">↩️ '+t('msgReply')+'</button>':'')+
         '</div>';
     }).join('');
     // Mark all as read
