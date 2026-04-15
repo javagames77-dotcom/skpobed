@@ -247,6 +247,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 @media(max-width:768px){
   .chat-mob-list{display:flex;flex-direction:column;height:100%}
   .chat-mob-conv{flex-direction:column;height:100%}
+@media(max-width:768px){.chat-mob-conv{display:none!important}}
+@media(max-width:768px){.chat-mob-conv.mob-open{display:flex!important}}
   .chat-mob-list.hidden{display:none}
   .chat-mob-back{display:none;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:500;color:var(--black);background:var(--bg);cursor:pointer;border-left:none;border-right:none;border-top:none;width:100%;font-family:inherit;transition:background .15s;flex-shrink:0}
 .chat-mob-back-icon{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
@@ -254,7 +256,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 @media(max-width:768px){
   .chat-mob-back{display:flex!important}
   #chatMobList{width:100%!important;flex:1}
-  #chatMobConv{width:100%!important;position:fixed;top:48px;left:0;right:0;bottom:56px;background:var(--bg);z-index:100;display:none;flex-direction:column}
+  #chatMobConv{width:100%!important;background:var(--bg);flex-direction:column}
   #chatMobConv.mob-open{display:flex!important}
   #tab-chat .chat-wrap{position:relative;overflow:hidden}
 }
@@ -3181,15 +3183,11 @@ function patchBadges(){
 
 // === МОБИЛЬНЫЙ ЧАТ ===
 function mobChatOpen(){
-  console.log('[CHAT] mobChatOpen called, width='+window.innerWidth);
-  if(window.innerWidth > 768){ console.log('[CHAT] desktop, skip'); return; }
+  if(window.innerWidth > 768) return;
   const list = document.getElementById('chatMobList');
   const conv = document.getElementById('chatMobConv');
-  console.log('[CHAT] list='+list+' conv='+conv);
-  if(conv) console.log('[CHAT] conv computed display='+window.getComputedStyle(conv).display);
   if(list) list.style.display = 'none';
-  if(conv){ conv.classList.add('mob-open'); conv.classList.remove('active'); }
-  if(conv) console.log('[CHAT] after: conv display='+window.getComputedStyle(conv).display);
+  if(conv) conv.classList.add('mob-open');
 }
 function mobChatBack(){
   const list = document.getElementById('chatMobList');
@@ -3213,13 +3211,6 @@ window.openChat = function(childId, childName){
 document.addEventListener("DOMContentLoaded", function(){
   applyLang();
   setTimeout(patchBadges, 500);
-  // Диагностика чата
-  setTimeout(function(){
-    const conv = document.getElementById('chatMobConv');
-    if(conv) console.log('[CHAT INIT] chatMobConv display='+window.getComputedStyle(conv).display+' classes='+conv.className);
-    const list = document.getElementById('chatMobList');
-    if(list) console.log('[CHAT INIT] chatMobList display='+window.getComputedStyle(list).display);
-  }, 1000);
 });
 </script>
 </body>
