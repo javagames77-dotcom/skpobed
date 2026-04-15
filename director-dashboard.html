@@ -1462,7 +1462,7 @@ function show(name,clickedEl){
   if(name==='chat')initChat();
   if(name==='subscription')loadSubscription();
   const mm=document.getElementById('mob-more-menu');
-  if(mm)mm.style.display='none';
+  if(mm)mm.classList.remove('open');
   const mainEl=document.querySelector('.main');
   if(mainEl)mainEl.scrollTop=0;
 }
