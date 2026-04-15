@@ -3140,8 +3140,10 @@ window.openChat = function(childId, childName){
 };
 
 // Init
-applyLang();
-setTimeout(patchBadges, 500);
+document.addEventListener("DOMContentLoaded", function(){
+  applyLang();
+  setTimeout(patchBadges, 500);
+});
 </script>
 </body>
 </html>
