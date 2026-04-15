@@ -3181,11 +3181,15 @@ function patchBadges(){
 
 // === МОБИЛЬНЫЙ ЧАТ ===
 function mobChatOpen(){
-  if(window.innerWidth > 768) return;
+  console.log('[CHAT] mobChatOpen called, width='+window.innerWidth);
+  if(window.innerWidth > 768){ console.log('[CHAT] desktop, skip'); return; }
   const list = document.getElementById('chatMobList');
   const conv = document.getElementById('chatMobConv');
+  console.log('[CHAT] list='+list+' conv='+conv);
+  if(conv) console.log('[CHAT] conv computed display='+window.getComputedStyle(conv).display);
   if(list) list.style.display = 'none';
   if(conv){ conv.classList.add('mob-open'); conv.classList.remove('active'); }
+  if(conv) console.log('[CHAT] after: conv display='+window.getComputedStyle(conv).display);
 }
 function mobChatBack(){
   const list = document.getElementById('chatMobList');
@@ -3209,6 +3213,13 @@ window.openChat = function(childId, childName){
 document.addEventListener("DOMContentLoaded", function(){
   applyLang();
   setTimeout(patchBadges, 500);
+  // Диагностика чата
+  setTimeout(function(){
+    const conv = document.getElementById('chatMobConv');
+    if(conv) console.log('[CHAT INIT] chatMobConv display='+window.getComputedStyle(conv).display+' classes='+conv.className);
+    const list = document.getElementById('chatMobList');
+    if(list) console.log('[CHAT INIT] chatMobList display='+window.getComputedStyle(list).display);
+  }, 1000);
 });
 </script>
 </body>
