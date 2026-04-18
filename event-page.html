@@ -227,7 +227,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
             <thead>
               <tr>
                 <th id="th-athlete">Спортсмен</th>
-                <th id="th-fee">Взнос (грн)</th>
+                <th id="th-fee">Взнос</th>
                 <th id="th-paid">Оплатил</th>
               </tr>
             </thead>
@@ -458,7 +458,10 @@ function renderEvent(){
   const ev=eventData;
   document.getElementById('heroTitle').textContent=ev.title||'—';
 
-  // Chips — сначала статус регистрации, потом дата и остальное
+  // Заголовок колонки взноса с символом валюты
+  const cur=ev.currency||'грн';
+  const thFee=document.getElementById('th-fee');
+  if(thFee) thFee.textContent=t('thFee').replace('грн',cur).replace('UAH',cur);
   const chips=document.getElementById('heroChips');
   chips.innerHTML='';
 
@@ -548,8 +551,8 @@ function renderEvent(){
     [t('infoDate'), fmtDateLong(ev.event_date)],
     [t('infoDeadline'), dl?fmtDateLong(dl):'—'],
     [t('infoLoc'), ev.location||'—'],
-    [t('infoBudget'), ev.budget?ev.budget+' грн':'—'],
-    [t('infoFee'), ev.entry_fee?ev.entry_fee+' грн':'—'],
+    [t('infoBudget'), ev.budget?ev.budget+' '+(ev.currency||'грн'):'—'],
+    [t('infoFee'), ev.entry_fee?ev.entry_fee+' '+(ev.currency||'грн'):'—'],
   ];
   document.getElementById('infoRows').innerHTML=rows.map(([k,v])=>
     `<div class="info-row"><span class="info-key">${k}</span><span class="info-val">${v}</span></div>`
@@ -607,7 +610,7 @@ function renderRegistrations(){
 
   document.getElementById('statReg').textContent=registrations.length;
   document.getElementById('statPaid').textContent=totalPaid;
-  document.getElementById('statTotal').textContent=totalFee>0?totalFee+' грн':'';
+  document.getElementById('statTotal').textContent=totalFee>0?totalFee+' '+(eventData.currency||'грн'):'';
   document.getElementById('regCountBadge').textContent=registrations.length;
 
   if(registrations.length===0){
@@ -676,7 +679,7 @@ async function saveFee(regId){
       const reg=registrations.find(r=>r.id===regId);
       if(reg)reg.entry_fee=newFee;
       const totalFee=registrations.reduce((s,r)=>s+(parseFloat(r.entry_fee)||0),0);
-      document.getElementById('statTotal').textContent=totalFee>0?totalFee+' грн':'';
+      document.getElementById('statTotal').textContent=totalFee>0?totalFee+' '+(eventData.currency||'грн'):'';
       showToast(t('feeOk'));
     }else{
       showToast(t('feeSaveErr'),'error');
