@@ -1,228 +1,234 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Мероприятие — InSkill Online</title>
+<title>Мероприятие — InSkill.online</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0;
-  --green:#28a745;--red:#dc3545;--orange:#FF9933;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--l);color:var(--d)}
+[data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--input-bg:#fafafa;--card-bg:#ffffff;--card-shadow:0 1px 3px rgba(0,0,0,.06);--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green:#16a34a;--tag-red-bg:#fff0f0;--tag-red:#c0392b;--tag-orange-bg:#fff8e1;--tag-orange:#e65100;--tag-blue-bg:#eff6ff;--tag-blue:#1d4ed8;--p:#0066CC;--s:#FF9933}
+[data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--input-bg:#181818;--card-bg:#181818;--card-shadow:0 1px 3px rgba(0,0,0,.3);--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green:#4ade80;--tag-red-bg:#2a1010;--tag-red:#ff7070;--tag-orange-bg:#2a1800;--tag-orange:#fbbf24;--tag-blue-bg:#0c1a3a;--tag-blue:#93c5fd;--p:#4d9de0;--s:#FF9933}
 
-/* ── HEADER ── */
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05);position:sticky;top:0;z-index:100}
-.header-content{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:.75rem;font-size:1.4rem;font-weight:700;color:var(--p);text-decoration:none}
-.logo-icon{width:36px;height:36px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
-.logo-bars{display:flex;gap:3px;align-items:flex-end}
-.logo-bar{width:5px;background:#fff;border-radius:2px}
-.logo-bar:nth-child(1){height:10px}
-.logo-bar:nth-child(2){height:16px;background:var(--s)}
-.logo-bar:nth-child(3){height:22px;background:var(--s)}
-.back-btn{display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--l);border:1px solid var(--b);border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600;color:var(--d);text-decoration:none}
-.back-btn:hover{background:#e9ecef}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
 
-/* ── LAYOUT ── */
-.container{max-width:1200px;margin:2rem auto;padding:0 2rem;display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start}
-@media(max-width:900px){.container{grid-template-columns:1fr;padding:0 1rem}}
+/* NAV */
+.nav{height:48px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:600;color:var(--black);letter-spacing:-.03em}
+.logo-text span{font-weight:300;color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-divider{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.nav-btn{font-size:12px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer;font-family:inherit;transition:all .12s;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.nav-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg2)}
+.theme-toggle{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;transition:all .15s}
+.theme-toggle:hover{border-color:var(--border2)}
+.lang-switcher{display:flex;align-items:center;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:3px}
+.lang-btn{padding:3px 8px;border:none;border-radius:5px;background:transparent;color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.lang-btn.active{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
 
-/* ── CARDS ── */
-.card{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);overflow:hidden}
-.card-header{padding:1.25rem 1.5rem;border-bottom:2px solid var(--l);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-size:1.1rem;font-weight:700;color:var(--d)}
-.card-body{padding:1.5rem}
+/* LAYOUT */
+.page{max-width:1100px;margin:0 auto;padding:24px 20px}
+@media(max-width:640px){.page{padding:16px 12px}}
 
-/* ── EVENT HERO ── */
-.event-hero{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:2rem;margin-bottom:1.5rem}
-.event-title{font-size:2rem;font-weight:800;color:var(--d);margin-bottom:.5rem;line-height:1.2}
-.event-meta{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1rem}
-.meta-chip{display:flex;align-items:center;gap:.4rem;padding:.4rem .9rem;border-radius:20px;font-size:.9rem;font-weight:500}
-.meta-chip.date{background:#e3f2fd;color:var(--p)}
-.meta-chip.location{background:#f3e5f5;color:#7b1fa2;cursor:pointer}
-.meta-chip.location:hover{background:#e8d5f0}
-.meta-chip.groups{background:#e8f5e9;color:#2e7d32}
-.event-desc{margin-top:1.25rem;color:#444;line-height:1.7;font-size:.95rem}
-
-/* ── COUNTDOWN STRIP ── */
-.countdown-strip{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
-@media(max-width:600px){.countdown-strip{grid-template-columns:1fr}}
-.countdown-card{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem}
-.countdown-icon{font-size:2rem;flex-shrink:0}
-.countdown-info{}
-.countdown-label{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#888;margin-bottom:.25rem}
-.countdown-value{font-size:1.5rem;font-weight:800;color:var(--d);line-height:1}
-.countdown-sub{font-size:.8rem;color:#888;margin-top:.2rem}
-.countdown-value.urgent{color:var(--red)}
-.countdown-value.soon{color:var(--orange)}
-.countdown-value.ok{color:var(--green)}
-.countdown-value.closed{color:var(--red);font-size:1rem}
-
-/* ── MAP ── */
-.map-container{border-radius:12px;overflow:hidden;margin-top:1rem}
-.map-container iframe{display:block;width:100%;height:280px;border:0}
-.no-map{padding:2rem;text-align:center;color:#999;background:var(--l);border-radius:12px;font-size:.9rem}
-
-/* ── STATS ROW ── */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
-.stat-box{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);padding:1.25rem;text-align:center}
-.stat-num{font-size:1.8rem;font-weight:800;color:var(--p)}
-.stat-label{font-size:.8rem;color:#888;font-weight:600;margin-top:.25rem;text-transform:uppercase}
-
-/* ── REGISTRATIONS TABLE ── */
-.reg-table{width:100%;border-collapse:collapse}
-.reg-table th{padding:.75rem 1rem;text-align:left;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;border-bottom:2px solid var(--b)}
-.reg-table td{padding:.75rem 1rem;border-bottom:1px solid var(--l);vertical-align:middle}
-.reg-table tr:last-child td{border-bottom:none}
-.reg-table tr:hover td{background:#fafbff}
-.athlete-row{display:flex;align-items:center;gap:.75rem}
-.athlete-photo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--b);flex-shrink:0}
-.athlete-name{font-weight:600;font-size:.95rem}
-.athlete-group{font-size:.8rem;color:#888}
-.fee-input{width:90px;padding:.4rem .6rem;border:2px solid var(--b);border-radius:6px;font-size:.9rem;text-align:center;transition:border-color .2s}
-.fee-input:focus{outline:none;border-color:var(--p)}
-.fee-input.changed{border-color:var(--s)}
-.fee-save-btn{padding:.35rem .6rem;background:var(--s);color:#fff;border:none;border-radius:6px;font-size:.8rem;font-weight:600;cursor:pointer;display:none}
-.fee-save-btn.visible{display:inline-block}
-.paid-checkbox{width:20px;height:20px;cursor:pointer;accent-color:var(--green)}
-.paid-label{display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.85rem}
-.paid-label.is-paid{color:var(--green);font-weight:600}
-.paid-label.not-paid{color:#aaa}
-.badge-paid{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:10px;font-size:.75rem;font-weight:600}
-.badge-paid.yes{background:#e8f5e9;color:var(--green)}
-.badge-paid.no{background:#fff3e0;color:#e65100}
-
-/* ── EMPTY ── */
-.empty-regs{padding:3rem;text-align:center;color:#aaa}
-.empty-regs .big{font-size:3rem;margin-bottom:.5rem}
-.athlete-avatar{width:40px;height:40px;border-radius:50%;background:var(--p);color:#fff;font-size:.85rem;font-weight:700;flex-shrink:0;align-items:center;justify-content:center;text-transform:uppercase;letter-spacing:-.5px}
-
-/* ── LOADING ── */
-.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;height:1.2em}
+/* SKELETON */
+.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--border) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* ── SIDEBAR INFO ── */
-.info-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--l)}
-.info-row:last-child{border-bottom:none}
-.info-key{font-size:.85rem;color:#888;font-weight:500}
-.info-val{font-size:.9rem;font-weight:600;color:var(--d);text-align:right;max-width:60%}
-.deadline-closed{color:var(--red)}
-.deadline-soon{color:var(--orange)}
-.deadline-ok{color:var(--green)}
+/* CARD */
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);overflow:hidden;transition:all .2s}
+.card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600;color:var(--black)}
+.card-body{padding:16px}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:2rem;right:2rem;padding:.75rem 1.25rem;background:#333;color:#fff;border-radius:10px;font-size:.9rem;font-weight:500;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+/* HERO */
+.hero{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);padding:20px 24px;margin-bottom:16px}
+.hero-title{font-size:22px;font-weight:700;color:var(--black);line-height:1.25;margin-bottom:10px;letter-spacing:-.03em}
+.hero-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.chip-date{background:var(--tag-blue-bg);color:var(--tag-blue)}
+.chip-loc{background:var(--tag-green-bg);color:var(--tag-green);cursor:pointer}
+.chip-loc:hover{opacity:.8}
+.chip-groups{background:var(--bg3);color:var(--muted)}
+.chip-closed{background:var(--tag-red-bg);color:var(--tag-red)}
+.chip-soon{background:var(--tag-orange-bg);color:var(--tag-orange)}
+.hero-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-top:8px;border-top:1px solid var(--border);padding-top:12px}
+
+/* STRIP */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+@media(max-width:700px){.strip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:400px){.strip{grid-template-columns:1fr 1fr}}
+.strip-item{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;box-shadow:var(--card-shadow)}
+.strip-label{font-size:10px;font-weight:500;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.strip-value{font-size:20px;font-weight:700;color:var(--black);line-height:1}
+.strip-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.strip-value.urgent{color:var(--tag-red)}
+.strip-value.soon{color:var(--tag-orange)}
+.strip-value.ok{color:var(--tag-green)}
+.strip-value.closed{color:var(--muted);font-size:13px;font-weight:600}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:1fr 320px;gap:14px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+
+/* TABLE */
+.reg-table{width:100%;border-collapse:collapse}
+.reg-table th{padding:9px 14px;text-align:left;font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.reg-table td{padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}
+.reg-table tbody tr:last-child td{border-bottom:none}
+.reg-table tbody tr:hover td{background:var(--tbl-hover)}
+.athlete-row{display:flex;align-items:center;gap:8px}
+.athlete-avatar{width:32px;height:32px;border-radius:50%;background:var(--p);color:#fff;font-size:11px;font-weight:600;flex-shrink:0;display:flex;align-items:center;justify-content:center;text-transform:uppercase}
+.athlete-photo{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0}
+.athlete-name{font-weight:500;color:var(--black);font-size:12px}
+.athlete-group{font-size:11px;color:var(--muted)}
+.fee-input{width:80px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;text-align:center;background:var(--input-bg);color:var(--text);font-family:inherit;outline:none;transition:border-color .15s}
+.fee-input:focus{border-color:var(--border2)}
+.fee-input.changed{border-color:var(--s)}
+.fee-save-btn{padding:4px 8px;background:var(--s);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:none;font-family:inherit}
+.fee-save-btn.visible{display:inline-block}
+.paid-label{display:inline-flex;align-items:center;gap:4px;cursor:pointer;font-size:12px}
+.paid-label.is-paid{color:var(--tag-green);font-weight:500}
+.paid-label.not-paid{color:var(--muted)}
+.paid-checkbox{width:15px;height:15px;cursor:pointer;accent-color:var(--tag-green)}
+
+/* SIDEBAR INFO */
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)}
+.info-row:last-child{border-bottom:none}
+.info-key{font-size:11px;color:var(--muted);font-weight:500}
+.info-val{font-size:12px;font-weight:600;color:var(--black);text-align:right;max-width:60%}
+
+/* MAP */
+.map-wrap{border-radius:8px;overflow:hidden;margin-top:0}
+.map-wrap iframe{display:block;width:100%;height:220px;border:0}
+
+/* EMPTY */
+.empty-state{padding:32px;text-align:center;color:var(--muted2)}
+.empty-icon{font-size:2.5rem;margin-bottom:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;padding:8px 14px;background:var(--black);color:var(--bg);border-radius:8px;font-size:12px;font-weight:500;z-index:9999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0)}
-.toast.success{background:var(--green)}
-.toast.error{background:var(--red)}
+.toast.error{background:var(--tag-red)}
+.toast.success{background:var(--tag-green)}
 </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="header-content">
-    <a href="/" class="logo">
-      <div class="logo-icon"><div class="logo-bars"><div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div></div></div>
-      <span>InSkill<span style="color:var(--s)">.online</span></span>
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <svg width="23" height="23" viewBox="0 0 20 20" fill="none">
+      <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+      <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="logo-text">InSkill<span>.online</span></span>
+  </a>
+  <div class="nav-right">
+    <a href="/director-dashboard.html#events" class="nav-btn" id="btn-back">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2L3.5 6l4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Назад</span>
     </a>
-    <a href="/director-dashboard.html" class="back-btn">← Назад к панели</a>
-  </div>
-</header>
-
-<div id="mainContent" style="max-width:1200px;margin:2rem auto;padding:0 2rem">
-  <!-- Loading state -->
-  <div id="loadingState">
-    <div style="background:#fff;border-radius:16px;padding:2rem;margin-bottom:1.5rem">
-      <div class="skeleton" style="width:60%;height:2.5rem;margin-bottom:1rem"></div>
-      <div class="skeleton" style="width:40%;height:1rem;margin-bottom:.5rem"></div>
-      <div class="skeleton" style="width:30%;height:1rem"></div>
+    <div class="nav-divider"></div>
+    <div class="lang-switcher">
+      <button class="lang-btn" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
     </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="icon-sun" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.6 3.6l1.3 1.3M11.1 11.1l1.3 1.3M3.6 12.4l1.3-1.3M11.1 4.9l1.3-1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg id="icon-moon" width="15" height="15" viewBox="0 0 16 16" fill="none" style="display:none"><path d="M13.5 10A6 6 0 015 2.5a6 6 0 108 8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+    </button>
   </div>
-  <div id="errorState" style="display:none;text-align:center;padding:4rem;color:#aaa">
-    <div style="font-size:3rem">😕</div>
-    <div style="margin-top:1rem;font-size:1.2rem;font-weight:600">Мероприятие не найдено</div>
-    <a href="/director-dashboard.html" style="display:inline-block;margin-top:1.5rem;color:var(--p)">← Вернуться</a>
+</nav>
+
+<!-- LOADING -->
+<div id="loadingState" class="page">
+  <div class="hero" style="margin-bottom:16px">
+    <div class="skeleton" style="width:55%;height:28px;margin-bottom:10px"></div>
+    <div class="skeleton" style="width:35%;height:18px;margin-bottom:6px"></div>
+    <div class="skeleton" style="width:25%;height:18px"></div>
   </div>
-</div>
-
-<div id="pageContent" style="display:none">
-
-<!-- EVENT HERO -->
-<div style="max-width:1200px;margin:2rem auto 0;padding:0 2rem">
-  <div class="event-hero">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
-      <div style="flex:1">
-        <div id="heroTitle" class="event-title">—</div>
-        <div id="heroMeta" class="event-meta"></div>
-      </div>
-      <div id="deadlineStatus" style="flex-shrink:0"></div>
-    </div>
-    <div id="heroDesc" class="event-desc" style="display:none"></div>
+  <div class="strip">
+    <div class="strip-item"><div class="skeleton" style="height:20px;margin-bottom:6px"></div><div class="skeleton" style="height:14px;width:60%"></div></div>
+    <div class="strip-item"><div class="skeleton" style="height:20px;margin-bottom:6px"></div><div class="skeleton" style="height:14px;width:60%"></div></div>
+    <div class="strip-item"><div class="skeleton" style="height:20px;margin-bottom:6px"></div><div class="skeleton" style="height:14px;width:60%"></div></div>
+    <div class="strip-item"><div class="skeleton" style="height:20px;margin-bottom:6px"></div><div class="skeleton" style="height:14px;width:60%"></div></div>
   </div>
 </div>
 
-<!-- COUNTDOWN + STATS -->
-<div style="max-width:1200px;margin:1rem auto 0;padding:0 2rem">
-  <div class="countdown-strip">
-    <div class="countdown-card">
-      <div class="countdown-icon">📅</div>
-      <div class="countdown-info">
-        <div class="countdown-label">До мероприятия</div>
-        <div id="cdEvent" class="countdown-value">—</div>
-        <div id="cdEventSub" class="countdown-sub"></div>
-      </div>
-    </div>
-    <div class="countdown-card">
-      <div class="countdown-icon">⏰</div>
-      <div class="countdown-info">
-        <div class="countdown-label">Срок регистрации</div>
-        <div id="cdDeadline" class="countdown-value">—</div>
-        <div id="cdDeadlineSub" class="countdown-sub"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="stats-row">
-    <div class="stat-box">
-      <div id="statReg" class="stat-num">—</div>
-      <div class="stat-label">Записалось</div>
-    </div>
-    <div class="stat-box">
-      <div id="statPaid" class="stat-num">—</div>
-      <div class="stat-label">Оплатили</div>
-    </div>
-    <div class="stat-box">
-      <div id="statTotal" class="stat-num">—</div>
-      <div class="stat-label">Сумма взносов</div>
+<!-- ERROR -->
+<div id="errorState" style="display:none" class="page">
+  <div class="card">
+    <div class="card-body" style="text-align:center;padding:48px">
+      <div style="font-size:2.5rem;margin-bottom:12px">😕</div>
+      <div style="font-size:15px;font-weight:600;color:var(--black);margin-bottom:6px" id="errTitle">Мероприятие не найдено</div>
+      <a href="/director-dashboard.html" style="font-size:12px;color:var(--p)" id="errBack">← Вернуться</a>
     </div>
   </div>
 </div>
 
-<!-- MAIN GRID -->
-<div class="container">
+<!-- PAGE -->
+<div id="pageContent" style="display:none" class="page">
 
-  <!-- LEFT: registrations -->
-  <div>
+  <!-- HERO -->
+  <div class="hero">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap">
+      <div style="flex:1;min-width:0">
+        <div id="heroTitle" class="hero-title">—</div>
+        <div id="heroChips" class="hero-chips"></div>
+      </div>
+      <div id="deadlineBadge"></div>
+    </div>
+    <div id="heroDesc" class="hero-desc" style="display:none"></div>
+  </div>
+
+  <!-- STRIP -->
+  <div class="strip">
+    <div class="strip-item">
+      <div class="strip-label" id="lbl-cd-event">До мероприятия</div>
+      <div id="cdEvent" class="strip-value">—</div>
+      <div id="cdEventSub" class="strip-sub"></div>
+    </div>
+    <div class="strip-item">
+      <div class="strip-label" id="lbl-cd-deadline">Срок регистрации</div>
+      <div id="cdDeadline" class="strip-value">—</div>
+      <div id="cdDeadlineSub" class="strip-sub"></div>
+    </div>
+    <div class="strip-item">
+      <div class="strip-label" id="lbl-stat-reg">Записалось</div>
+      <div id="statReg" class="strip-value">—</div>
+    </div>
+    <div class="strip-item">
+      <div class="strip-label" id="lbl-stat-paid">Оплатили</div>
+      <div id="statPaid" class="strip-value">—</div>
+      <div id="statTotal" class="strip-sub"></div>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid">
+
+    <!-- LEFT: registrations -->
     <div class="card">
       <div class="card-header">
-        <span class="card-title">Записавшиеся спортсмены</span>
-        <span id="regCountBadge" style="background:var(--p);color:#fff;padding:.2rem .7rem;border-radius:20px;font-size:.85rem;font-weight:600">0</span>
+        <span class="card-title" id="lbl-regs-title">Записавшиеся спортсмены</span>
+        <span id="regCountBadge" style="background:var(--p);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">0</span>
       </div>
-      <div class="card-body" style="padding:0">
-        <div id="loadingRegs" style="padding:2rem;text-align:center;color:var(--p)">Загрузка...</div>
-        <div id="emptyRegs" class="empty-regs" style="display:none">
-          <div class="big">🏃</div>
-          <div>Пока никто не записался</div>
+      <div>
+        <div id="loadingRegs" style="padding:24px;text-align:center;color:var(--muted);font-size:12px">...</div>
+        <div id="emptyRegs" style="display:none" class="empty-state">
+          <div class="empty-icon">🏃</div>
+          <div id="lbl-empty-regs">Пока никто не записался</div>
         </div>
         <div id="regsTableWrap" style="display:none;overflow-x:auto">
           <table class="reg-table">
             <thead>
               <tr>
-                <th>Спортсмен</th>
-                <th>Взнос (грн)</th>
-                <th>Оплатил</th>
+                <th id="th-athlete">Спортсмен</th>
+                <th id="th-fee">Взнос (грн)</th>
+                <th id="th-paid">Оплатил</th>
               </tr>
             </thead>
             <tbody id="regsTableBody"></tbody>
@@ -230,381 +236,477 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- RIGHT: sidebar -->
-  <div>
-
-    <!-- Info card -->
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-header"><span class="card-title">📋 Детали</span></div>
-      <div class="card-body">
-        <div id="infoRows"></div>
+    <!-- RIGHT: sidebar -->
+    <div>
+      <!-- Details -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-header">
+          <span class="card-title" id="lbl-details">📋 Детали</span>
+        </div>
+        <div class="card-body" style="padding:12px 16px">
+          <div id="infoRows"></div>
+        </div>
       </div>
-    </div>
 
-    <!-- Map card -->
-    <div class="card" id="mapCard" style="display:none">
-      <div class="card-header">
-        <span class="card-title">📍 Место проведения</span>
-        <a id="mapLink" href="#" target="_blank" style="font-size:.8rem;color:var(--p);font-weight:600">Открыть в Maps</a>
-      </div>
-      <div class="card-body" style="padding:.5rem">
-        <div class="map-container">
-          <iframe id="mapIframe" src="" frameborder="0" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <!-- Map -->
+      <div class="card" id="mapCard" style="display:none">
+        <div class="card-header">
+          <span class="card-title" id="lbl-map">📍 Место проведения</span>
+          <a id="mapLink" href="#" target="_blank" style="font-size:11px;color:var(--p);font-weight:500" id="lbl-maps-link">Открыть в Maps</a>
+        </div>
+        <div style="padding:8px">
+          <div class="map-wrap">
+            <iframe id="mapIframe" src="" frameborder="0" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
         </div>
       </div>
     </div>
 
   </div>
-</div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
-// No API key - using OpenStreetMap
-let token = localStorage.getItem('token');
-let eventId = null;
-let eventData = null;
-let registrations = [];
+/* ── i18n ── */
+const i18n={
+  uk:{
+    back:'← Назад',
+    errTitle:'Захід не знайдено',errBack:'← Повернутись',
+    cdEvent:'До заходу',cdDeadline:'Термін реєстрації',
+    statReg:'Записалось',statPaid:'Сплатили',
+    regsTitle:'Спортсмени, що записались',
+    emptyRegs:'Поки ніхто не записався',
+    thAthlete:'Спортсмен',thFee:'Внесок (грн)',thPaid:'Сплатив',
+    details:'📋 Деталі',
+    infoDate:'Дата',infoDeadline:'Дедлайн реєстрації',
+    infoLoc:'Місце',infoBudget:'Бюджет',infoFee:'Сума внеску',
+    mapTitle:'📍 Місце проведення',mapsLink:'Відкрити в Maps',
+    statTotalLabel:'Сума внесків',
+    daysAgo:'дн. тому',daysLeft:'дн.',
+    passed:'Пройшов',today:'Сьогодні!',
+    regClosed:'🔒 Реєстрацію закрито',regLastDay:'⚡ Останній день!',regSoon:'⏳ Скоро закриється',
+    notSet:'Не задано',regOpen:'Відкрито',
+    feeOk:'Внесок збережено',feeSaveErr:'Помилка збереження',
+    paidOk:'Позначено як сплатив',unpaidOk:'Позначку знято',
+    saveErr:'Помилка: ',
+    isPaid:'✅ Сплатив',notPaid:'Не сплатив'
+  },
+  ru:{
+    back:'← Назад',
+    errTitle:'Мероприятие не найдено',errBack:'← Вернуться',
+    cdEvent:'До мероприятия',cdDeadline:'Срок регистрации',
+    statReg:'Записалось',statPaid:'Оплатили',
+    regsTitle:'Записавшиеся спортсмены',
+    emptyRegs:'Пока никто не записался',
+    thAthlete:'Спортсмен',thFee:'Взнос (грн)',thPaid:'Оплатил',
+    details:'📋 Детали',
+    infoDate:'Дата',infoDeadline:'Дедлайн регистрации',
+    infoLoc:'Место',infoBudget:'Бюджет',infoFee:'Сумма взноса',
+    mapTitle:'📍 Место проведения',mapsLink:'Открыть в Maps',
+    statTotalLabel:'Сумма взносов',
+    daysAgo:'дн. назад',daysLeft:'дн.',
+    passed:'Прошло',today:'Сегодня!',
+    regClosed:'🔒 Регистрация закрыта',regLastDay:'⚡ Последний день!',regSoon:'⏳ Скоро закрывается',
+    notSet:'Не задан',regOpen:'Открыта',
+    feeOk:'Взнос сохранён',feeSaveErr:'Ошибка сохранения',
+    paidOk:'Отмечен как оплативший',unpaidOk:'Отметка снята',
+    saveErr:'Ошибка: ',
+    isPaid:'✅ Оплатил',notPaid:'Не оплатил'
+  },
+  en:{
+    back:'← Back',
+    errTitle:'Event not found',errBack:'← Return',
+    cdEvent:'Until event',cdDeadline:'Reg. deadline',
+    statReg:'Registered',statPaid:'Paid',
+    regsTitle:'Registered athletes',
+    emptyRegs:'No registrations yet',
+    thAthlete:'Athlete',thFee:'Fee (UAH)',thPaid:'Paid',
+    details:'📋 Details',
+    infoDate:'Date',infoDeadline:'Registration deadline',
+    infoLoc:'Venue',infoBudget:'Budget',infoFee:'Entry fee',
+    mapTitle:'📍 Venue',mapsLink:'Open in Maps',
+    statTotalLabel:'Total fees',
+    daysAgo:'d. ago',daysLeft:'d.',
+    passed:'Passed',today:'Today!',
+    regClosed:'🔒 Registration closed',regLastDay:'⚡ Last day!',regSoon:'⏳ Closing soon',
+    notSet:'Not set',regOpen:'Open',
+    feeOk:'Fee saved',feeSaveErr:'Save error',
+    paidOk:'Marked as paid',unpaidOk:'Mark removed',
+    saveErr:'Error: ',
+    isPaid:'✅ Paid',notPaid:'Not paid'
+  }
+};
+let currentLang=localStorage.getItem('lang')||'uk';
+function t(k){return(i18n[currentLang]||i18n.ru)[k]||k;}
 
-if (!token) { window.location.href = '/'; throw new Error('No auth'); }
-
-// ── Toast ─────────────────────────────────────────────────────────────────────
-function showToast(msg, type='success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast show ${type}`;
-  setTimeout(() => t.className = 'toast', 2500);
+function applyLang(){
+  document.documentElement.lang=currentLang;
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    const map={'UA':'uk','RU':'ru','EN':'en'};
+    btn.classList.toggle('active',map[btn.textContent]===currentLang);
+  });
+  const el=id=>document.getElementById(id);
+  const set=(id,key)=>{const e=el(id);if(e)e.textContent=t(key);};
+  set('btn-back','back');
+  set('errTitle','errTitle');set('errBack','errBack');
+  set('lbl-cd-event','cdEvent');set('lbl-cd-deadline','cdDeadline');
+  set('lbl-stat-reg','statReg');set('lbl-stat-paid','statPaid');
+  set('lbl-regs-title','regsTitle');
+  set('lbl-empty-regs','emptyRegs');
+  set('th-athlete','thAthlete');set('th-fee','thFee');set('th-paid','thPaid');
+  set('lbl-details','details');
+  set('lbl-map','mapTitle');
+  const ml=el('mapLink');if(ml)ml.textContent=t('mapsLink');
 }
 
-// ── Days remaining ────────────────────────────────────────────────────────────
-function daysUntil(dateStr) {
-  if (!dateStr) return null;
-  const target = new Date(dateStr);
-  target.setHours(23, 59, 59);
-  const now = new Date();
-  return Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+function setLang(lang){
+  currentLang=lang;
+  localStorage.setItem('lang',lang);
+  applyLang();
+  if(eventData) renderEvent();
+  if(registrations.length) renderRegistrations();
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return '—';
-  return new Date(dateStr).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+/* ── THEME ── */
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  const n=isDark?'light':'dark';
+  html.setAttribute('data-theme',n);
+  localStorage.setItem('theme',n);
+  document.getElementById('icon-sun').style.display=isDark?'block':'none';
+  document.getElementById('icon-moon').style.display=isDark?'none':'block';
+}
+(function(){
+  const s=localStorage.getItem('theme');
+  if(s==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('icon-sun').style.display='none';
+    document.getElementById('icon-moon').style.display='block';
+  }
+})();
+
+/* ── API ── */
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+let token=localStorage.getItem('token');
+let eventId=null;
+let eventData=null;
+let registrations=[];
+
+if(!token){window.location.href='/';throw new Error('No auth');}
+
+/* ── TOAST ── */
+function showToast(msg,type='success'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='toast show '+(type||'');
+  setTimeout(()=>el.className='toast',2500);
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
-async function init() {
-  const params = new URLSearchParams(location.search);
-  eventId = params.get('id');
-  if (!eventId) { showError(); return; }
+/* ── DATE UTILS ── */
+function daysUntil(dateStr){
+  if(!dateStr)return null;
+  const target=new Date(dateStr);
+  target.setHours(23,59,59);
+  return Math.ceil((target-new Date())/(1000*60*60*24));
+}
+function fmtDate(dateStr){
+  if(!dateStr)return '—';
+  return new Date(dateStr).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function fmtDateLong(dateStr){
+  if(!dateStr)return '—';
+  const loc=currentLang==='en'?'en-GB':currentLang==='uk'?'uk-UA':'ru-RU';
+  return new Date(dateStr).toLocaleDateString(loc,{day:'numeric',month:'long',year:'numeric'});
+}
 
-  try {
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'events', action: 'get', data: { id: parseInt(eventId) } })
+/* ── INIT ── */
+async function init(){
+  applyLang();
+  const params=new URLSearchParams(location.search);
+  eventId=params.get('id');
+  if(!eventId){showError();return;}
+  try{
+    const r=await fetch(API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'events',action:'get',data:{id:parseInt(eventId)}})
     });
-    const d = await r.json();
-    eventData = (d.merged && d.merged[0]) || (Array.isArray(d) ? d[0] : d);
-    if (!eventData || !eventData.id) { showError(); return; }
+    const d=await r.json();
+    eventData=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
+    if(!eventData||!eventData.id){showError();return;}
+    document.getElementById('loadingState').style.display='none';
+    document.getElementById('pageContent').style.display='block';
+    document.title=(eventData.title||'Event')+' — InSkill.online';
     renderEvent();
     await loadRegistrations();
-  } catch(e) {
+  }catch(e){
     console.error(e);
     showError();
   }
 }
 
-function showError() {
-  document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('errorState').style.display = 'block';
+function showError(){
+  document.getElementById('loadingState').style.display='none';
+  document.getElementById('errorState').style.display='block';
 }
 
-// ── Render event data ─────────────────────────────────────────────────────────
-function renderEvent() {
-  document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('pageContent').style.display = 'block';
-  document.title = (eventData.title || 'Мероприятие') + ' — InSkill Online';
+/* ── RENDER EVENT ── */
+function renderEvent(){
+  const ev=eventData;
+  document.getElementById('heroTitle').textContent=ev.title||'—';
 
-  // Hero
-  document.getElementById('heroTitle').textContent = eventData.title || '—';
-
-  const meta = document.getElementById('heroMeta');
-  meta.innerHTML = '';
-  if (eventData.event_date) {
-    meta.innerHTML += `<span class="meta-chip date">📅 ${formatDate(eventData.event_date)}</span>`;
+  // Chips
+  const chips=document.getElementById('heroChips');
+  chips.innerHTML='';
+  if(ev.event_date){
+    chips.innerHTML+=`<span class="chip chip-date">📅 ${fmtDateLong(ev.event_date)}</span>`;
   }
-  if (eventData.location) {
-    const chip = document.createElement('span');
-    chip.className = 'meta-chip location';
-    chip.innerHTML = `📍 ${eventData.location}`;
-    chip.onclick = () => window.open(`https://www.google.com/maps/search/${encodeURIComponent(eventData.location)}`, '_blank');
-    meta.appendChild(chip);
+  if(ev.location){
+    const chip=document.createElement('span');
+    chip.className='chip chip-loc';
+    chip.innerHTML=`📍 ${ev.location}`;
+    chip.onclick=()=>window.open(`https://www.google.com/maps/search/${encodeURIComponent(ev.location)}`,'_blank');
+    chips.appendChild(chip);
   }
-  if (eventData.group_names && eventData.group_names !== 'Все группы') {
-    meta.innerHTML += `<span class="meta-chip groups">👥 ${eventData.group_names}</span>`;
+  if(ev.group_names){
+    chips.innerHTML+=`<span class="chip chip-groups">👥 ${ev.group_names}</span>`;
   }
 
-  if (eventData.description) {
-    const desc = document.getElementById('heroDesc');
-    desc.textContent = eventData.description;
-    desc.style.display = 'block';
+  // Description
+  if(ev.description){
+    const desc=document.getElementById('heroDesc');
+    desc.textContent=ev.description;
+    desc.style.display='block';
   }
 
   // Countdown — event
-  const dEvent = daysUntil(eventData.event_date);
-  const cdEvent = document.getElementById('cdEvent');
-  const cdEventSub = document.getElementById('cdEventSub');
-  if (dEvent === null) {
-    cdEvent.textContent = '—';
-  } else if (dEvent < 0) {
-    cdEvent.className = 'countdown-value closed';
-    cdEvent.textContent = 'Прошло';
-    cdEventSub.textContent = `${Math.abs(dEvent)} дн. назад`;
-  } else if (dEvent === 0) {
-    cdEvent.className = 'countdown-value urgent';
-    cdEvent.textContent = 'Сегодня!';
-  } else if (dEvent <= 7) {
-    cdEvent.className = 'countdown-value soon';
-    cdEvent.textContent = `${dEvent} дн.`;
-    cdEventSub.textContent = formatDate(eventData.event_date);
-  } else {
-    cdEvent.className = 'countdown-value ok';
-    cdEvent.textContent = `${dEvent} дн.`;
-    cdEventSub.textContent = formatDate(eventData.event_date);
+  const dEv=daysUntil(ev.event_date);
+  const cdEv=document.getElementById('cdEvent');
+  const cdEvSub=document.getElementById('cdEventSub');
+  if(dEv===null){
+    cdEv.textContent='—';
+  }else if(dEv<0){
+    cdEv.className='strip-value closed';
+    cdEv.textContent=t('passed');
+    cdEvSub.textContent=Math.abs(dEv)+' '+t('daysAgo');
+  }else if(dEv===0){
+    cdEv.className='strip-value urgent';
+    cdEv.textContent=t('today');
+  }else if(dEv<=7){
+    cdEv.className='strip-value soon';
+    cdEv.textContent=dEv+' '+t('daysLeft');
+    cdEvSub.textContent=fmtDate(ev.event_date);
+  }else{
+    cdEv.className='strip-value ok';
+    cdEv.textContent=dEv+' '+t('daysLeft');
+    cdEvSub.textContent=fmtDate(ev.event_date);
   }
 
   // Countdown — deadline
-  const dl = eventData.registration_deadline;
-  const dDl = daysUntil(dl);
-  const cdDl = document.getElementById('cdDeadline');
-  const cdDlSub = document.getElementById('cdDeadlineSub');
-  const deadlineStatus = document.getElementById('deadlineStatus');
+  const dl=ev.registration_deadline;
+  const dDl=daysUntil(dl);
+  const cdDl=document.getElementById('cdDeadline');
+  const cdDlSub=document.getElementById('cdDeadlineSub');
+  const dlBadge=document.getElementById('deadlineBadge');
 
-  if (!dl) {
-    cdDl.textContent = 'Не задан';
-    cdDl.className = 'countdown-value';
-    cdDlSub.textContent = 'Открыта';
-  } else if (dDl < 0) {
-    cdDl.className = 'countdown-value closed';
-    cdDl.textContent = 'Закрыта';
-    cdDlSub.textContent = `Дедлайн: ${formatDate(dl)}`;
-    deadlineStatus.innerHTML = `<span style="padding:.4rem 1rem;background:#ffebee;color:var(--red);border-radius:20px;font-size:.85rem;font-weight:700">🔒 Регистрация закрыта</span>`;
-  } else if (dDl === 0) {
-    cdDl.className = 'countdown-value urgent';
-    cdDl.textContent = 'Сегодня!';
-    cdDlSub.textContent = 'Последний день';
-    deadlineStatus.innerHTML = `<span style="padding:.4rem 1rem;background:#fff3e0;color:var(--orange);border-radius:20px;font-size:.85rem;font-weight:700">⚡ Последний день!</span>`;
-  } else if (dDl <= 3) {
-    cdDl.className = 'countdown-value soon';
-    cdDl.textContent = `${dDl} дн.`;
-    cdDlSub.textContent = `До ${formatDate(dl)}`;
-    deadlineStatus.innerHTML = `<span style="padding:.4rem 1rem;background:#fff3e0;color:var(--orange);border-radius:20px;font-size:.85rem;font-weight:700">⏳ Скоро закрывается</span>`;
-  } else {
-    cdDl.className = 'countdown-value ok';
-    cdDl.textContent = `${dDl} дн.`;
-    cdDlSub.textContent = `До ${formatDate(dl)}`;
+  if(!dl){
+    cdDl.className='strip-value';
+    cdDl.textContent=t('notSet');
+    cdDlSub.textContent=t('regOpen');
+  }else if(dDl<0){
+    cdDl.className='strip-value closed';
+    cdDl.textContent=t('passed');
+    cdDlSub.textContent=fmtDate(dl);
+    dlBadge.innerHTML=`<span class="chip chip-closed">${t('regClosed')}</span>`;
+  }else if(dDl===0){
+    cdDl.className='strip-value urgent';
+    cdDl.textContent=t('today');
+    cdDlSub.textContent='';
+    dlBadge.innerHTML=`<span class="chip chip-soon">${t('regLastDay')}</span>`;
+  }else if(dDl<=3){
+    cdDl.className='strip-value soon';
+    cdDl.textContent=dDl+' '+t('daysLeft');
+    cdDlSub.textContent=fmtDate(dl);
+    dlBadge.innerHTML=`<span class="chip chip-soon">${t('regSoon')}</span>`;
+  }else{
+    cdDl.className='strip-value ok';
+    cdDl.textContent=dDl+' '+t('daysLeft');
+    cdDlSub.textContent=fmtDate(dl);
   }
 
-  // Sidebar info rows
-  const rows = [
-    ['Дата', formatDate(eventData.event_date)],
-    ['Дедлайн регистрации', dl ? formatDate(dl) : '—'],
-    ['Место', eventData.location || '—'],
-    ['Бюджет', eventData.budget ? eventData.budget + ' грн' : '—'],
-    ['Сумма взноса', eventData.entry_fee ? eventData.entry_fee + ' грн' : '—'],
+  // Sidebar info
+  const rows=[
+    [t('infoDate'), fmtDateLong(ev.event_date)],
+    [t('infoDeadline'), dl?fmtDateLong(dl):'—'],
+    [t('infoLoc'), ev.location||'—'],
+    [t('infoBudget'), ev.budget?ev.budget+' грн':'—'],
+    [t('infoFee'), ev.entry_fee?ev.entry_fee+' грн':'—'],
   ];
-  document.getElementById('infoRows').innerHTML = rows.map(([k,v]) =>
+  document.getElementById('infoRows').innerHTML=rows.map(([k,v])=>
     `<div class="info-row"><span class="info-key">${k}</span><span class="info-val">${v}</span></div>`
   ).join('');
 
-  // Map
-  if (eventData.location) {
-    const mapCard = document.getElementById('mapCard');
-    const q = encodeURIComponent(eventData.location);
-    document.getElementById('mapLink').href = `https://www.google.com/maps/search/${q}`;
-    mapCard.style.display = 'block';
-    // Geocode via Nominatim then show OSM embed
-    fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {headers:{'Accept-Language':'ru'}})
-      .then(r => r.json())
-      .then(data => {
-        if (data && data[0]) {
-          const lat = parseFloat(data[0].lat), lon = parseFloat(data[0].lon), d = 0.012;
-          document.getElementById('mapIframe').src =
-            `https://www.openstreetmap.org/export/embed.html?bbox=${lon-d},${lat-d},${lon+d},${lat+d}&layer=mapnik&marker=${lat},${lon}`;
-        } else {
-          mapCard.style.display = 'none';
-        }
-      })
-      .catch(() => { mapCard.style.display = 'none'; });
+  // Map — используем geocode через наш прокси (без CORS)
+  if(ev.location){
+    const mapCard=document.getElementById('mapCard');
+    const q=encodeURIComponent(ev.location);
+    document.getElementById('mapLink').href=`https://www.google.com/maps/search/${q}`;
+    mapCard.style.display='block';
+    fetch('https://primary-production-4b93e.up.railway.app/webhook/geocode',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({address:ev.location})
+    })
+    .then(r=>r.json())
+    .then(data=>{
+      const results=data.results||data;
+      if(results&&results[0]&&results[0].lat){
+        const lat=parseFloat(results[0].lat),lon=parseFloat(results[0].lon),d=0.012;
+        document.getElementById('mapIframe').src=
+          `https://www.openstreetmap.org/export/embed.html?bbox=${lon-d},${lat-d},${lon+d},${lat+d}&layer=mapnik&marker=${lat},${lon}`;
+      }else{
+        mapCard.style.display='none';
+      }
+    })
+    .catch(()=>{mapCard.style.display='none';});
   }
 }
 
-// ── Load registrations ────────────────────────────────────────────────────────
-async function loadRegistrations() {
-  try {
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'event_registrations', action: 'list', data: { event_id: parseInt(eventId) } })
+/* ── REGISTRATIONS ── */
+async function loadRegistrations(){
+  try{
+    const r=await fetch(API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'event_registrations',action:'list',data:{event_id:parseInt(eventId)}})
     });
-    const d = await r.json();
-    registrations = d.merged || d || [];
+    const d=await r.json();
+    registrations=d.merged||d||[];
     renderRegistrations();
-  } catch(e) {
-    document.getElementById('loadingRegs').textContent = 'Ошибка загрузки';
+  }catch(e){
+    document.getElementById('loadingRegs').textContent=t('saveErr')+e.message;
   }
 }
 
-function renderRegistrations() {
-  document.getElementById('loadingRegs').style.display = 'none';
-  const tbody = document.getElementById('regsTableBody');
-  tbody.innerHTML = '';
+function renderRegistrations(){
+  document.getElementById('loadingRegs').style.display='none';
+  const tbody=document.getElementById('regsTableBody');
+  tbody.innerHTML='';
 
-  const totalPaid = registrations.filter(r => r.is_paid).length;
-  const totalFee = registrations.reduce((s, r) => s + (parseFloat(r.entry_fee) || 0), 0);
+  const totalPaid=registrations.filter(r=>r.is_paid).length;
+  const totalFee=registrations.reduce((s,r)=>s+(parseFloat(r.entry_fee)||0),0);
 
-  document.getElementById('statReg').textContent = registrations.length;
-  document.getElementById('statPaid').textContent = totalPaid;
-  document.getElementById('statTotal').textContent = totalFee > 0 ? totalFee + ' грн' : '0';
-  document.getElementById('regCountBadge').textContent = registrations.length;
+  document.getElementById('statReg').textContent=registrations.length;
+  document.getElementById('statPaid').textContent=totalPaid;
+  document.getElementById('statTotal').textContent=totalFee>0?totalFee+' грн':'';
+  document.getElementById('regCountBadge').textContent=registrations.length;
 
-  if (registrations.length === 0) {
-    document.getElementById('emptyRegs').style.display = 'block';
-    document.getElementById('regsTableWrap').style.display = 'none';
+  if(registrations.length===0){
+    document.getElementById('emptyRegs').style.display='block';
+    document.getElementById('regsTableWrap').style.display='none';
     return;
   }
+  document.getElementById('emptyRegs').style.display='none';
+  document.getElementById('regsTableWrap').style.display='block';
 
-  document.getElementById('emptyRegs').style.display = 'none';
-  document.getElementById('regsTableWrap').style.display = 'block';
-
-  const defaultFee = eventData.entry_fee || 0;
-
-  registrations.forEach(reg => {
-    const tr = document.createElement('tr');
-    const photo = reg.photo_url || null;
-    const fee = reg.entry_fee !== null && reg.entry_fee !== undefined ? reg.entry_fee : defaultFee;
-    const isPaid = !!reg.is_paid;
-
-    tr.innerHTML = `
+  const defaultFee=eventData.entry_fee||0;
+  registrations.forEach(reg=>{
+    const tr=document.createElement('tr');
+    const photo=reg.photo_url||null;
+    const fee=reg.entry_fee!==null&&reg.entry_fee!==undefined?reg.entry_fee:defaultFee;
+    const isPaid=!!reg.is_paid;
+    tr.innerHTML=`
       <td>
         <div class="athlete-row">
-          ${photo
-            ? `<img src="${photo}" class="athlete-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-            : ''}
-          <div class="athlete-avatar" style="display:${photo?'none':'flex'}">
-            ${(reg.first_name||'?')[0]}${(reg.last_name||'')[0]||''}
-          </div>
+          ${photo?`<img src="${photo}" class="athlete-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:``}
+          <div class="athlete-avatar" style="display:${photo?'none':'flex'}">${(reg.first_name||'?')[0]}${(reg.last_name||'')[0]||''}</div>
           <div>
-            <div class="athlete-name">${reg.first_name || ''} ${reg.last_name || ''}</div>
-            <div class="athlete-group">${reg.group_name || ''}</div>
+            <div class="athlete-name">${reg.first_name||''} ${reg.last_name||''}</div>
+            <div class="athlete-group">${reg.group_name||''}</div>
           </div>
         </div>
       </td>
       <td>
-        <div style="display:flex;align-items:center;gap:.4rem">
-          <input
-            type="number"
-            class="fee-input"
-            id="fee_${reg.id}"
-            value="${fee}"
-            min="0"
-            onchange="onFeeChange(${reg.id}, this)"
-            oninput="onFeeChange(${reg.id}, this)"
-          >
+        <div style="display:flex;align-items:center;gap:4px">
+          <input type="number" class="fee-input" id="fee_${reg.id}" value="${fee}" min="0"
+            onchange="onFeeChange(${reg.id},this)" oninput="onFeeChange(${reg.id},this)">
           <button class="fee-save-btn" id="feebtn_${reg.id}" onclick="saveFee(${reg.id})">✓</button>
         </div>
       </td>
       <td>
-        <label class="paid-label ${isPaid ? 'is-paid' : 'not-paid'}" id="paidlabel_${reg.id}">
-          <input
-            type="checkbox"
-            class="paid-checkbox"
-            id="paid_${reg.id}"
-            ${isPaid ? 'checked' : ''}
-            onchange="togglePaid(${reg.id}, this)"
-          >
-          ${isPaid ? '✅ Оплатил' : 'Не оплатил'}
+        <label class="paid-label ${isPaid?'is-paid':'not-paid'}" id="paidlabel_${reg.id}">
+          <input type="checkbox" class="paid-checkbox" id="paid_${reg.id}" ${isPaid?'checked':''}
+            onchange="togglePaid(${reg.id},this)">
+          ${isPaid?t('isPaid'):t('notPaid')}
         </label>
-      </td>
-    `;
+      </td>`;
     tbody.appendChild(tr);
   });
 }
 
-// ── Fee change ────────────────────────────────────────────────────────────────
-function onFeeChange(regId, input) {
+/* ── FEE ── */
+function onFeeChange(regId,input){
   input.classList.add('changed');
-  const btn = document.getElementById(`feebtn_${regId}`);
-  btn.classList.add('visible');
+  document.getElementById('feebtn_'+regId).classList.add('visible');
 }
 
-async function saveFee(regId) {
-  const input = document.getElementById(`fee_${regId}`);
-  const newFee = parseInt(input.value) || 0;
-  try {
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token, resource: 'event_registrations', action: 'update',
-        data: { id: regId, entry_fee: newFee }
-      })
+async function saveFee(regId){
+  const input=document.getElementById('fee_'+regId);
+  const newFee=parseInt(input.value)||0;
+  try{
+    const r=await fetch(API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'event_registrations',action:'update',data:{id:regId,entry_fee:newFee}})
     });
-    const d = await r.json();
-    const ok = (d.merged && d.merged[0]?.id) || d.id || d.success;
-    if (ok) {
+    const d=await r.json();
+    const ok=(d.merged&&d.merged[0]?.id)||d.id||d.success;
+    if(ok){
       input.classList.remove('changed');
-      document.getElementById(`feebtn_${regId}`).classList.remove('visible');
-      // update local data
-      const reg = registrations.find(r => r.id === regId);
-      if (reg) reg.entry_fee = newFee;
-      // recalc total
-      const totalFee = registrations.reduce((s, r) => s + (parseFloat(r.entry_fee) || 0), 0);
-      document.getElementById('statTotal').textContent = totalFee > 0 ? totalFee + ' грн' : '0';
-      showToast('Взнос сохранён');
-    } else {
-      showToast('Ошибка сохранения', 'error');
+      document.getElementById('feebtn_'+regId).classList.remove('visible');
+      const reg=registrations.find(r=>r.id===regId);
+      if(reg)reg.entry_fee=newFee;
+      const totalFee=registrations.reduce((s,r)=>s+(parseFloat(r.entry_fee)||0),0);
+      document.getElementById('statTotal').textContent=totalFee>0?totalFee+' грн':'';
+      showToast(t('feeOk'));
+    }else{
+      showToast(t('feeSaveErr'),'error');
     }
-  } catch(e) {
-    showToast('Ошибка: ' + e.message, 'error');
+  }catch(e){
+    showToast(t('saveErr')+e.message,'error');
   }
 }
 
-// ── Toggle paid ───────────────────────────────────────────────────────────────
-async function togglePaid(regId, checkbox) {
-  const isPaid = checkbox.checked;
-  const label = document.getElementById(`paidlabel_${regId}`);
-
-  try {
-    const r = await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token, resource: 'event_registrations', action: 'update',
-        data: { id: regId, is_paid: isPaid }
-      })
+/* ── PAID ── */
+async function togglePaid(regId,checkbox){
+  const isPaid=checkbox.checked;
+  const label=document.getElementById('paidlabel_'+regId);
+  try{
+    const r=await fetch(API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'event_registrations',action:'update',data:{id:regId,is_paid:isPaid}})
     });
-    const d = await r.json();
-    const ok = (d.merged && d.merged[0]?.id) || d.id || d.success;
-    if (ok) {
-      label.className = `paid-label ${isPaid ? 'is-paid' : 'not-paid'}`;
-      label.innerHTML = `<input type="checkbox" class="paid-checkbox" id="paid_${regId}" ${isPaid ? 'checked' : ''} onchange="togglePaid(${regId}, this)">${isPaid ? '✅ Оплатил' : 'Не оплатил'}`;
-      // update local
-      const reg = registrations.find(r => r.id === regId);
-      if (reg) reg.is_paid = isPaid;
-      const totalPaid = registrations.filter(r => r.is_paid).length;
-      document.getElementById('statPaid').textContent = totalPaid;
-      showToast(isPaid ? 'Отмечен как оплативший' : 'Отметка снята');
-    } else {
-      checkbox.checked = !isPaid;
-      showToast('Ошибка сохранения', 'error');
+    const d=await r.json();
+    const ok=(d.merged&&d.merged[0]?.id)||d.id||d.success;
+    if(ok){
+      label.className='paid-label '+(isPaid?'is-paid':'not-paid');
+      label.innerHTML=`<input type="checkbox" class="paid-checkbox" id="paid_${regId}" ${isPaid?'checked':''} onchange="togglePaid(${regId},this)">${isPaid?t('isPaid'):t('notPaid')}`;
+      const reg=registrations.find(r=>r.id===regId);
+      if(reg)reg.is_paid=isPaid;
+      const totalPaid=registrations.filter(r=>r.is_paid).length;
+      document.getElementById('statPaid').textContent=totalPaid;
+      showToast(isPaid?t('paidOk'):t('unpaidOk'));
+    }else{
+      checkbox.checked=!isPaid;
+      showToast(t('feeSaveErr'),'error');
     }
-  } catch(e) {
-    checkbox.checked = !isPaid;
-    showToast('Ошибка: ' + e.message, 'error');
+  }catch(e){
+    checkbox.checked=!isPaid;
+    showToast(t('saveErr')+e.message,'error');
   }
 }
 
