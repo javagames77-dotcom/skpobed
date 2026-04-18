@@ -211,7 +211,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div class="grid">
 
     <!-- LEFT: registrations -->
-    <div class="card">
+    <div class="card" id="regsCard">
       <div class="card-header">
         <span class="card-title" id="lbl-regs-title">Записавшиеся спортсмены</span>
         <span id="regCountBadge" style="background:var(--p);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">0</span>
@@ -614,10 +614,10 @@ function renderRegistrations(){
   document.getElementById('regCountBadge').textContent=registrations.length;
 
   if(registrations.length===0){
-    document.getElementById('emptyRegs').style.display='block';
-    document.getElementById('regsTableWrap').style.display='none';
+    document.getElementById('regsCard').style.display='none';
     return;
   }
+  document.getElementById('regsCard').style.display='block';
   document.getElementById('emptyRegs').style.display='none';
   document.getElementById('regsTableWrap').style.display='block';
 
