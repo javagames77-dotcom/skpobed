@@ -593,7 +593,7 @@ async function loadRegistrations(){
       body:JSON.stringify({token,resource:'event_registrations',action:'list',data:{event_id:parseInt(eventId)}})
     });
     const d=await r.json();
-    registrations=d.merged||d||[];
+    registrations=(d.merged||d||[]).filter(r=>r&&r.id);
     renderRegistrations();
   }catch(e){
     document.getElementById('loadingRegs').textContent=t('saveErr')+e.message;
