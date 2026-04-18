@@ -3061,6 +3061,10 @@ function applyLang(){
     if(sel&&sel.options[0]) sel.options[0].text=t('yearPh');
   });
 
+  // ── lang на date inputs (формат дд.мм.гггг / mm/dd/yyyy)
+  const dateLang=currentLang==='en'?'en-GB':'uk-UA';
+  document.querySelectorAll('input[type="date"]').forEach(el=>el.setAttribute('lang',dateLang));
+
   // ── Чат
   const ctitle=document.querySelector('.chat-contacts-title');
   if(ctitle) ctitle.textContent=t('chatContacts');
