@@ -972,6 +972,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="form-group"><label class="form-label" data-i18n="lblEventFee">Сумма взноса (грн)</label><input type="number" class="form-input" id="eventEntryFee" min="0" placeholder="0"></div>
 </div>
 <div class="form-group">
+<label class="form-label" data-i18n="lblEventCurrency">Валюта</label>
+<select class="form-input" id="eventCurrency">
+<option value="грн">🇺🇦 Гривня (грн)</option>
+<option value="$">🇺🇸 Доллар ($)</option>
+<option value="₽">🇷🇺 Рубль (₽)</option>
+</select>
+</div>
+<div class="form-group">
 <label class="form-label" data-i18n="lblEventClubFilter">Клуб (для фильтра групп)</label>
 <select class="form-input" id="eventClubIdFilter" onchange="filterEventGroups()"><option value="">Все клубы</option></select>
 </div>
@@ -1228,7 +1236,7 @@ const i18n={
     lblEventName:'Назва *',
     lblEventDate:'Дата заходу *',lblEventDeadline:'Крайній термін реєстрації',
     lblEventLocation:'Місце проведення',lblEventDesc:'Опис',
-    lblEventBudget:'Бюджет (грн)',lblEventFee:'Сума внеску (грн)',lblEventClubFilter:'Клуб (для фільтру груп)',
+    lblEventBudget:'Бюджет (грн)',lblEventFee:'Сума внеску (грн)',lblEventCurrency:'Валюта',lblEventClubFilter:'Клуб (для фільтру груп)',
     groupsLabel:'Групи (бачать захід)',selectAllGroups:'Вибрати всі',
     addEvent:'Додати захід',editEvent:'Редагувати захід',
     chatInputPh:'Написати повідомлення...'},
@@ -1344,7 +1352,7 @@ const i18n={
     lblEventName:'Название *',
     lblEventDate:'Дата мероприятия *',lblEventDeadline:'Крайний срок регистрации',
     lblEventLocation:'Место проведения',lblEventDesc:'Описание',
-    lblEventBudget:'Бюджет (грн)',lblEventFee:'Сумма взноса (грн)',lblEventClubFilter:'Клуб (для фильтра групп)',
+    lblEventBudget:'Бюджет (грн)',lblEventFee:'Сумма взноса (грн)',lblEventCurrency:'Валюта',lblEventClubFilter:'Клуб (для фильтра групп)',
     groupsLabel:'Группы (видят мероприятие)',selectAllGroups:'Выбрать все',
     chatInputPh:'Написать сообщение...'},
   en:{
@@ -1434,7 +1442,7 @@ const i18n={
     lblEventName:'Name *',
     lblEventDate:'Event date *',lblEventDeadline:'Registration deadline',
     lblEventLocation:'Venue',lblEventDesc:'Description',
-    lblEventBudget:'Budget (UAH)',lblEventFee:'Entry fee (UAH)',lblEventClubFilter:'Club (to filter groups)',
+    lblEventBudget:'Budget (UAH)',lblEventFee:'Entry fee (UAH)',lblEventCurrency:'Currency',lblEventClubFilter:'Club (to filter groups)',
     groupsLabel:'Groups (see event)',selectAllGroups:'Select all',
     chatInputPh:'Write a message...'}
 };
@@ -1945,6 +1953,7 @@ async function addEvent(){
   document.getElementById('eventDesc').value='';
   document.getElementById('eventBudget').value='';
   document.getElementById('eventEntryFee').value='';
+  document.getElementById('eventCurrency').value='грн';
   document.getElementById('mapPreview').style.display='none';
   if(groups.length===0)await loadGroups();
   // populate club filter in modal
@@ -1965,6 +1974,7 @@ async function editEvent(id){
   document.getElementById('eventDesc').value=ev.description||'';
   document.getElementById('eventBudget').value=ev.budget||'';
   document.getElementById('eventEntryFee').value=ev.entry_fee||'';
+  document.getElementById('eventCurrency').value=ev.currency||'грн';
   // map preview
   if(ev.location)previewMap();else document.getElementById('mapPreview').style.display='none';
   if(groups.length===0)await loadGroups();
@@ -1985,11 +1995,13 @@ async function saveEvent(e){
   const description=document.getElementById('eventDesc').value.trim();
   const budget=document.getElementById('eventBudget').value;
   const entry_fee=document.getElementById('eventEntryFee').value;
+  const currency=document.getElementById('eventCurrency').value||'грн';
   const group_ids=Array.from(document.querySelectorAll('#eventGroupsCheckboxes input:checked')).map(cb=>parseInt(cb.value));
   if(!title||!event_date){alert('Заполните обязательные поля');return}
   const data={title,event_date,registration_deadline,location,description,
     budget:budget?parseInt(budget):null,
     entry_fee:entry_fee?parseInt(entry_fee):null,
+    currency,
     group_ids,created_by:user.id};
   if(id)data.id=parseInt(id);
   try{
@@ -2103,7 +2115,7 @@ function renderNewsCards(news){
         ${dateStr?`<span class="ntag ntag-date">📅 ${dateStr}</span>`:''}
         ${n.location?`<span class="ntag ntag-loc">📍 ${n.location}</span>`:''}
         ${srcDomain?`<span class="ntag ntag-src">${srcIcon} ${srcDomain}</span>`:''}
-        ${n.entry_fee?`<span class="ntag ntag-fee">💰 ${n.entry_fee} грн</span>`:''}
+        ${n.entry_fee?`<span class="ntag ntag-fee">💰 ${n.entry_fee} ${n.currency||'грн'}</span>`:''}
         ${n.event_type?`<span class="ntag ntag-type">${n.event_type}</span>`:''}
       </div>
       ${n.description?`<div class="news-card-desc">${n.description.substring(0,240)}${n.description.length>240?'…':''}</div>`:''}
@@ -2146,6 +2158,7 @@ async function createEventFromNews(newsId){
   document.getElementById('eventDesc').value=n.description||'';
   document.getElementById('eventBudget').value='';
   document.getElementById('eventEntryFee').value=n.entry_fee||'';
+  document.getElementById('eventCurrency').value='грн';
   document.getElementById('mapPreview').style.display='none';
   if(n.location) setTimeout(previewMap,100);
   if(groups.length===0) await loadGroups();
