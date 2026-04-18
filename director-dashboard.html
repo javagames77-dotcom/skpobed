@@ -495,8 +495,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 <div class="filters">
 <div class="filter-group">
-<label class="filter-label">Клуб</label>
-<select class="filter-select" id="eventClubFilter" onchange="filterEventsByClub()"><option value="">Все клубы</option></select>
+<label class="filter-label" data-i18n="filterClub">Клуб</label>
+<select class="filter-select" id="eventClubFilter" onchange="filterEventsByClub()"><option value="" data-i18n="allClubs">Все клубы</option></select>
 </div>
 </div>
 <div class="table-container">
@@ -954,7 +954,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="modal-body">
 <form id="eventForm" onsubmit="saveEvent(event)">
 <input type="hidden" id="eventId"><input type="hidden" id="pendingNewsId">
-<div class="form-group"><label class="form-label">Название *</label><input type="text" class="form-input" id="eventName" required></div>
+<div class="form-group"><label class="form-label" data-i18n="lblEventName">Название *</label><input type="text" class="form-input" id="eventName" required></div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
 <div class="form-group"><label class="form-label" data-i18n="lblEventDate">Дата мероприятия *</label><input type="date" class="form-input" id="eventDate" required></div>
 <div class="form-group"><label class="form-label" data-i18n="lblEventDeadline">Крайний срок регистрации</label><input type="date" class="form-input" id="eventDeadline"></div>
@@ -977,8 +977,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 <div class="form-group">
 <label class="form-label" style="display:flex;justify-content:space-between;align-items:center">
-<span>Группы (видят мероприятие)</span>
-<span style="font-size:.8rem;color:var(--p);cursor:pointer;font-weight:400" onclick="toggleAllGroups(true)">Выбрать все</span>
+<span data-i18n="groupsLabel">Группы (видят мероприятие)</span>
+<span style="font-size:.8rem;color:var(--p);cursor:pointer;font-weight:400" onclick="toggleAllGroups(true)" data-i18n="selectAllGroups">Выбрать все</span>
 </label>
 <div id="eventGroupsCheckboxes" style="max-height:200px;overflow-y:auto;border:1px solid var(--b);padding:0.75rem;border-radius:8px;background:var(--bg3)"></div>
 </div>
@@ -1224,6 +1224,12 @@ const i18n={
     renewalMsgPrefix:'Запит на продовження підписки.',
     renewalCommentPrefix:' Коментар: ',
     msgReplyAdmin:'Відповісти адміністратору',
+    allClubs:'Всі клуби',
+    lblEventName:'Назва *',
+    lblEventDate:'Дата заходу *',lblEventLocation:'Місце проведення',
+    lblEventBudget:'Бюджет (грн)',lblEventClubFilter:'Клуб (для фільтру груп)',
+    groupsLabel:'Групи (бачать захід)',selectAllGroups:'Вибрати всі',
+    addEvent:'Додати захід',editEvent:'Редагувати захід',
     chatInputPh:'Написати повідомлення...'},
   ru:{
     navBadge:'ДИРЕКТОР',logout:'Выход',
@@ -1333,6 +1339,11 @@ const i18n={
     phLogin:'ivan.donetsky',phPasswordEmpty:'Оставьте пустым чтобы не менять',
     phMessage:'Введите сообщение...',phRenewal:'Например: хочу продлить на 3 месяца...',
     msgReplyAdmin:'Ответить администратору',msgTypeRenewal:'🔄 Запрос продления',msgTypeReply:'↩️ Ответ',msgTypeMessage:'💬 Сообщение',msgReply:'↩️ Ответить',renewalMsgPrefix:'Запрос на продление подписки.',renewalCommentPrefix:' Комментарий: ',
+    allClubs:'Все клубы',
+    lblEventName:'Название *',
+    lblEventDate:'Дата мероприятия *',lblEventLocation:'Место проведения',
+    lblEventBudget:'Бюджет (грн)',lblEventClubFilter:'Клуб (для фильтра групп)',
+    groupsLabel:'Группы (видят мероприятие)',selectAllGroups:'Выбрать все',
     chatInputPh:'Написать сообщение...'},
   en:{
     navBadge:'DIRECTOR',logout:'Logout',
@@ -1417,6 +1428,11 @@ const i18n={
     subGroups:'groups'
   ,
     msgReplyAdmin:'Reply to administrator',msgTypeRenewal:'🔄 Renewal request',msgTypeReply:'↩️ Reply',msgTypeMessage:'💬 Message',msgReply:'↩️ Reply',renewalMsgPrefix:'Subscription renewal request.',renewalCommentPrefix:' Comment: ',
+    allClubs:'All clubs',
+    lblEventName:'Name *',
+    lblEventDate:'Event date *',lblEventLocation:'Venue',
+    lblEventBudget:'Budget (UAH)',lblEventClubFilter:'Club (to filter groups)',
+    groupsLabel:'Groups (see event)',selectAllGroups:'Select all',
     chatInputPh:'Write a message...'}
 };
 let currentLang=localStorage.getItem('lang')||'uk';
@@ -1878,7 +1894,7 @@ function renderEventsTable(){
     const fee=ev.entry_fee?`${ev.entry_fee} ${ev.currency||'грн'}`:'—';
     const reg=ev.registrations_count||0;
     const r=document.createElement('tr');
-    r.innerHTML=`<td><div style="font-weight:500;color:var(--black)">${ev.title}</div><div style="font-size:11px;color:var(--muted2)">${ev.location||''}</div></td><td style="font-size:12px;color:var(--muted)">${dateStr}</td><td>${dlTag}</td><td style="font-size:12px;color:var(--muted)">${ev.location||'—'}</td><td style="font-size:12px">${fee}</td><td style="font-size:12px;color:${reg>0?'var(--tag-green)':'var(--muted2)'};font-weight:${reg>0?'500':'400'}">${reg}</td><td><div class="row-actions"><button class="act-btn" onclick="editEvent(${ev.id})" title="${t('editEvent')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button><button class="act-btn del" onclick="deleteEvent(${ev.id})" title="${t('deleteEvent')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>`;
+    r.innerHTML=`<td><strong><a href="/event-page.html?id=${ev.id}" style="color:var(--p);text-decoration:none">${ev.title}</a></strong><div style="font-size:11px;color:var(--muted2)">${ev.location||''}</div></td><td style="font-size:12px;color:var(--muted)">${dateStr}</td><td>${dlTag}</td><td style="font-size:12px;color:var(--muted)">${ev.location||'—'}</td><td style="font-size:12px">${fee}</td><td style="font-size:12px;color:${reg>0?'var(--tag-green)':'var(--muted2)'};font-weight:${reg>0?'500':'400'}">${reg}</td><td><div class="row-actions"><button class="act-btn" onclick="editEvent(${ev.id})" title="${t('editEvent')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button><button class="act-btn del" onclick="deleteEvent(${ev.id})" title="${t('deleteEvent')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>`;
     tb.appendChild(r);
   });
 }
@@ -1915,7 +1931,7 @@ function toggleAllGroups(state){
   document.querySelectorAll('#eventGroupsCheckboxes input[type=checkbox]').forEach(cb=>cb.checked=state);
 }
 async function addEvent(){
-  document.getElementById('eventModalTitle').textContent='Добавить мероприятие';
+  document.getElementById('eventModalTitle').textContent=t('addEvent');
   document.getElementById('eventId').value='';
   document.getElementById('eventName').value='';
   document.getElementById('eventDate').value='';
@@ -1928,14 +1944,14 @@ async function addEvent(){
   if(groups.length===0)await loadGroups();
   // populate club filter in modal
   const sel=document.getElementById('eventClubIdFilter');
-  sel.innerHTML='<option value="">Все клубы</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  sel.innerHTML=`<option value="">${t('allClubs')}</option>`+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   // all groups checked by default
   document.getElementById('eventGroupsCheckboxes').innerHTML=groups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" checked>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');
   openEventModal();
 }
 async function editEvent(id){
   const ev=allEvents.find(x=>x.id===id);if(!ev)return;
-  document.getElementById('eventModalTitle').textContent='Редактировать мероприятие';
+  document.getElementById('eventModalTitle').textContent=t('editEvent');
   document.getElementById('eventId').value=ev.id;
   document.getElementById('eventName').value=ev.title||'';
   document.getElementById('eventDate').value=ev.event_date?ev.event_date.split('T')[0]:'';
@@ -1948,7 +1964,7 @@ async function editEvent(id){
   if(ev.location)previewMap();else document.getElementById('mapPreview').style.display='none';
   if(groups.length===0)await loadGroups();
   const sel=document.getElementById('eventClubIdFilter');
-  sel.innerHTML='<option value="">Все клубы</option>'+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  sel.innerHTML=`<option value="">${t('allClubs')}</option>`+clubs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   const selIds=(ev.group_ids||[]).map(Number);
   document.getElementById('eventGroupsCheckboxes').innerHTML=groups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" ${selIds.includes(g.id)?'checked':''}>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');
   openEventModal();
@@ -2129,7 +2145,7 @@ async function createEventFromNews(newsId){
   if(n.location) setTimeout(previewMap,100);
   if(groups.length===0) await loadGroups();
   const sel=document.getElementById('eventClubIdFilter');
-  sel.innerHTML='<option value="">Все клубы</option>'+clubs.map(cl=>`<option value="${cl.id}">${cl.name}</option>`).join('');
+  sel.innerHTML=`<option value="">${t('allClubs')}</option>`+clubs.map(cl=>`<option value="${cl.id}">${cl.name}</option>`).join('');
   document.getElementById('eventGroupsCheckboxes').innerHTML=groups.map(g=>`<label class="group-checkbox"><input type="checkbox" value="${g.id}" checked>${g.name} <span style="color:#666">(${g.club_name||'—'})</span></label>`).join('');
   // Show source reference
   const srcUrl=n.original_url||n.source_url;
