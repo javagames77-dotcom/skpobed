@@ -1226,8 +1226,9 @@ const i18n={
     msgReplyAdmin:'Відповісти адміністратору',
     allClubs:'Всі клуби',
     lblEventName:'Назва *',
-    lblEventDate:'Дата заходу *',lblEventLocation:'Місце проведення',
-    lblEventBudget:'Бюджет (грн)',lblEventClubFilter:'Клуб (для фільтру груп)',
+    lblEventDate:'Дата заходу *',lblEventDeadline:'Крайній термін реєстрації',
+    lblEventLocation:'Місце проведення',
+    lblEventBudget:'Бюджет (грн)',lblEventFee:'Сума внеску (грн)',lblEventClubFilter:'Клуб (для фільтру груп)',
     groupsLabel:'Групи (бачать захід)',selectAllGroups:'Вибрати всі',
     addEvent:'Додати захід',editEvent:'Редагувати захід',
     chatInputPh:'Написати повідомлення...'},
@@ -1341,8 +1342,9 @@ const i18n={
     msgReplyAdmin:'Ответить администратору',msgTypeRenewal:'🔄 Запрос продления',msgTypeReply:'↩️ Ответ',msgTypeMessage:'💬 Сообщение',msgReply:'↩️ Ответить',renewalMsgPrefix:'Запрос на продление подписки.',renewalCommentPrefix:' Комментарий: ',
     allClubs:'Все клубы',
     lblEventName:'Название *',
-    lblEventDate:'Дата мероприятия *',lblEventLocation:'Место проведения',
-    lblEventBudget:'Бюджет (грн)',lblEventClubFilter:'Клуб (для фильтра групп)',
+    lblEventDate:'Дата мероприятия *',lblEventDeadline:'Крайний срок регистрации',
+    lblEventLocation:'Место проведения',
+    lblEventBudget:'Бюджет (грн)',lblEventFee:'Сумма взноса (грн)',lblEventClubFilter:'Клуб (для фильтра групп)',
     groupsLabel:'Группы (видят мероприятие)',selectAllGroups:'Выбрать все',
     chatInputPh:'Написать сообщение...'},
   en:{
@@ -1430,8 +1432,9 @@ const i18n={
     msgReplyAdmin:'Reply to administrator',msgTypeRenewal:'🔄 Renewal request',msgTypeReply:'↩️ Reply',msgTypeMessage:'💬 Message',msgReply:'↩️ Reply',renewalMsgPrefix:'Subscription renewal request.',renewalCommentPrefix:' Comment: ',
     allClubs:'All clubs',
     lblEventName:'Name *',
-    lblEventDate:'Event date *',lblEventLocation:'Venue',
-    lblEventBudget:'Budget (UAH)',lblEventClubFilter:'Club (to filter groups)',
+    lblEventDate:'Event date *',lblEventDeadline:'Registration deadline',
+    lblEventLocation:'Venue',
+    lblEventBudget:'Budget (UAH)',lblEventFee:'Entry fee (UAH)',lblEventClubFilter:'Club (to filter groups)',
     groupsLabel:'Groups (see event)',selectAllGroups:'Select all',
     chatInputPh:'Write a message...'}
 };
@@ -1899,6 +1902,7 @@ function renderEventsTable(){
   });
 }
 
+let mapTimer=null;
 async function previewMap(){
   const loc=document.getElementById('eventLocation').value.trim();
   const preview=document.getElementById('mapPreview');
