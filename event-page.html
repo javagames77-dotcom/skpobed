@@ -179,7 +179,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
         <div id="heroTitle" class="hero-title">—</div>
         <div id="heroChips" class="hero-chips"></div>
       </div>
-      <div id="deadlineBadge"></div>
+      <div id="deadlineBadge" style="display:none"></div>
     </div>
     <div id="heroDesc" class="hero-desc" style="display:none"></div>
   </div>
@@ -291,7 +291,7 @@ const i18n={
     feeOk:'Внесок збережено',feeSaveErr:'Помилка збереження',
     paidOk:'Позначено як сплатив',unpaidOk:'Позначку знято',
     saveErr:'Помилка: ',
-    isPaid:'✅ Сплатив',notPaid:'Не сплатив'
+    isPaid:'Сплатив',notPaid:'Не сплатив'
   },
   ru:{
     back:'← Назад',
@@ -313,7 +313,7 @@ const i18n={
     feeOk:'Взнос сохранён',feeSaveErr:'Ошибка сохранения',
     paidOk:'Отмечен как оплативший',unpaidOk:'Отметка снята',
     saveErr:'Ошибка: ',
-    isPaid:'✅ Оплатил',notPaid:'Не оплатил'
+    isPaid:'Оплатил',notPaid:'Не оплатил'
   },
   en:{
     back:'← Back',
@@ -335,7 +335,7 @@ const i18n={
     feeOk:'Fee saved',feeSaveErr:'Save error',
     paidOk:'Marked as paid',unpaidOk:'Mark removed',
     saveErr:'Error: ',
-    isPaid:'✅ Paid',notPaid:'Not paid'
+    isPaid:'Paid',notPaid:'Not paid'
   }
 };
 let currentLang=localStorage.getItem('lang')||'uk';
@@ -458,9 +458,21 @@ function renderEvent(){
   const ev=eventData;
   document.getElementById('heroTitle').textContent=ev.title||'—';
 
-  // Chips
+  // Chips — сначала статус регистрации, потом дата и остальное
   const chips=document.getElementById('heroChips');
   chips.innerHTML='';
+
+  // Статус регистрации (если дедлайн задан и прошёл)
+  const dl=ev.registration_deadline;
+  const dDl=daysUntil(dl);
+  if(dl&&dDl<0){
+    chips.innerHTML+=`<span class="chip chip-closed">${t('regClosed')}</span>`;
+  }else if(dl&&dDl===0){
+    chips.innerHTML+=`<span class="chip chip-soon">${t('regLastDay')}</span>`;
+  }else if(dl&&dDl<=3){
+    chips.innerHTML+=`<span class="chip chip-soon">${t('regSoon')}</span>`;
+  }
+
   if(ev.event_date){
     chips.innerHTML+=`<span class="chip chip-date">📅 ${fmtDateLong(ev.event_date)}</span>`;
   }
@@ -506,11 +518,8 @@ function renderEvent(){
   }
 
   // Countdown — deadline
-  const dl=ev.registration_deadline;
-  const dDl=daysUntil(dl);
   const cdDl=document.getElementById('cdDeadline');
   const cdDlSub=document.getElementById('cdDeadlineSub');
-  const dlBadge=document.getElementById('deadlineBadge');
 
   if(!dl){
     cdDl.className='strip-value';
@@ -520,17 +529,14 @@ function renderEvent(){
     cdDl.className='strip-value closed';
     cdDl.textContent=t('passed');
     cdDlSub.textContent=fmtDate(dl);
-    dlBadge.innerHTML=`<span class="chip chip-closed">${t('regClosed')}</span>`;
   }else if(dDl===0){
     cdDl.className='strip-value urgent';
     cdDl.textContent=t('today');
     cdDlSub.textContent='';
-    dlBadge.innerHTML=`<span class="chip chip-soon">${t('regLastDay')}</span>`;
   }else if(dDl<=3){
     cdDl.className='strip-value soon';
     cdDl.textContent=dDl+' '+t('daysLeft');
     cdDlSub.textContent=fmtDate(dl);
-    dlBadge.innerHTML=`<span class="chip chip-soon">${t('regSoon')}</span>`;
   }else{
     cdDl.className='strip-value ok';
     cdDl.textContent=dDl+' '+t('daysLeft');
