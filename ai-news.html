@@ -115,13 +115,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .page-info{font-size:11px;color:var(--muted);padding:0 6px}
 
 /* ── SOURCE CARD ── */
-.source-card{background:var(--card-bg);border-radius:8px;border:1px solid var(--border);padding:.9rem 1rem;margin-bottom:.5rem;display:flex;align-items:flex-start;gap:.75rem;transition:all .15s}
+.source-card{background:var(--card-bg);border-radius:8px;border:1px solid var(--border);padding:.75rem;margin-bottom:.5rem;transition:all .15s}
 .source-card:hover{border-color:var(--border2)}
-.source-card-body{flex:1;min-width:0}
-.source-card-name{font-size:12px;font-weight:600;color:var(--black)}
-.source-card-url{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-.source-card-prompt{font-size:11px;color:var(--muted2);margin-top:.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.source-card-meta{font-size:11px;color:var(--muted2);margin-top:.2rem}
+.source-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.source-card-name{font-size:12px;font-weight:600;color:var(--black);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}
+.source-card-url{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:3px}
+.source-card-prompt{font-size:11px;color:var(--muted2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.source-card-meta{font-size:11px;color:var(--muted2);margin-top:3px}
 .source-actions{display:flex;gap:4px;flex-shrink:0}
 
 /* ── PARAMS SECTION ── */
@@ -1064,17 +1064,16 @@ function renderSources(){
     const displayUrl=url?url.replace(/^https?:\/\//,'').substring(0,40):'';
     const name=s.name||displayUrl;
     return `<div class="source-card">
-      <div style="flex-shrink:0;color:var(--muted);margin-top:1px">${srcIcons[s.type]||SVG_WEB}</div>
-      <div class="source-card-body">
+      <div class="source-card-top">
         <div class="source-card-name">${name}</div>
-        ${s.name&&displayUrl?`<div class="source-card-url">${displayUrl}</div>`:''}
-        <div class="source-card-prompt" title="${s.prompt||''}">${s.prompt?s.prompt.substring(0,65)+'…':t('promptEmpty')}</div>
-        <div class="source-card-meta">${freqLabel[s.frequency]||''} · ${s.is_active?`<span style="color:var(--tag-green)">${t('activeLabel')}</span>`:`<span style="color:var(--muted2)">${t('inactiveLabel')}</span>`}</div>
+        <div class="source-actions">
+          <button class="act-btn" onclick="editSource(${s.id})" style="width:24px;height:24px">${SVG_EDIT}</button>
+          <button class="act-btn del" onclick="deleteSource(${s.id})" style="width:24px;height:24px">${SVG_TRASH}</button>
+        </div>
       </div>
-      <div class="source-actions">
-        <button class="act-btn" onclick="editSource(${s.id})" style="width:24px;height:24px">${SVG_EDIT}</button>
-        <button class="act-btn del" onclick="deleteSource(${s.id})" style="width:24px;height:24px">${SVG_TRASH}</button>
-      </div>
+      ${s.name&&displayUrl?`<div class="source-card-url">${displayUrl}</div>`:''}
+      <div class="source-card-prompt" title="${s.prompt||''}">${s.prompt?s.prompt.substring(0,65)+'…':t('promptEmpty')}</div>
+      <div class="source-card-meta">${srcIcons[s.type]||SVG_WEB} ${freqLabel[s.frequency]||''} · ${s.is_active?`<span style="color:var(--tag-green)">${t('activeLabel')}</span>`:`<span style="color:var(--muted2)">${t('inactiveLabel')}</span>`}</div>
     </div>`;
   }).join('');
 }
