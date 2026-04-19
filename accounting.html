@@ -468,6 +468,7 @@ const i18n={
     statusSessions:'По тренуванням',statusExpiredSess:'Закінчились',
     statusNone:'Немає оплат',
     sessLeft:'Залишилось: ',sessOf:' з ',
+    until:'до',currency:'грн',
     cash:'Готівка',card:'Картка',bank:'Банк',
     typeMonthly:'Місячний',typeDays:'По днях',
     typeSessions:'По тренуванням',typeSingle:'Разовий',typeFree:'Пільга',
@@ -513,6 +514,7 @@ const i18n={
     statusSessions:'По тренировкам',statusExpiredSess:'Закончились',
     statusNone:'Нет оплат',
     sessLeft:'Осталось: ',sessOf:' из ',
+    until:'до',currency:'грн',
     cash:'Нал',card:'Карта',bank:'Банк',
     typeMonthly:'Месячный',typeDays:'По дням',
     typeSessions:'По тренировкам',typeSingle:'Разовый',typeFree:'Льгота',
@@ -558,6 +560,7 @@ const i18n={
     statusSessions:'By sessions',statusExpiredSess:'Expired',
     statusNone:'No payments',
     sessLeft:'Left: ',sessOf:' of ',
+    until:'until',currency:'UAH',
     cash:'Cash',card:'Card',bank:'Bank',
     typeMonthly:'Monthly',typeDays:'By days',
     typeSessions:'By sessions',typeSingle:'Single',typeFree:'Free',
@@ -627,6 +630,9 @@ function applyLang(){
 function setLang(lang){
   currentLang=lang;localStorage.setItem('lang',lang);
   applyLang();
+  updateMonthLabel();
+  if(groupAthletes.length)renderTable();
+  if(user&&(user.role==='director'||user.role==='accountant'))loadStats();
 }
 
 /* ── THEME ── */
@@ -675,17 +681,21 @@ function showToast(msg,type='success'){
 }
 
 /* ── HELPERS ── */
+function getLocale(){return currentLang==='en'?'en-GB':currentLang==='uk'?'uk-UA':'ru-RU';}
 function formatDate(str){
   if(!str)return '—';
-  return new Date(str).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+  return new Date(str).toLocaleDateString(getLocale(),{day:'2-digit',month:'2-digit',year:'numeric'});
 }
 function formatDateTime(str){
   if(!str)return '—';
   const d=new Date(str);
-  return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})+' '+
-    d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+  return d.toLocaleDateString(getLocale(),{day:'2-digit',month:'2-digit'})+' '+
+    d.toLocaleTimeString(getLocale(),{hour:'2-digit',minute:'2-digit'});
 }
-function formatMoney(n){return Math.round(n).toLocaleString('ru-RU')+' грн';}
+function formatMoney(n){
+  const loc=currentLang==='en'?'en-US':'ru-RU';
+  return Math.round(n).toLocaleString(loc)+' '+t('currency');
+}
 function getMonthName(m){return t('months')[m-1]||'';}
 
 /* ── MONTH NAV ── */
@@ -902,21 +912,21 @@ function renderTable(){
       if(paidUntilDate>=monthStart){
         if(isPastM){
           statusHtml=`<span class="status-badge status-active">${t('statusActive')}</span>`;
-          periodHtml=`<span class="paid-until">до ${formatDate(lastPay.paid_until)}</span>`;
+          periodHtml=`<span class="paid-until">${t('until')} ${formatDate(lastPay.paid_until)}</span>`;
         }else{
           const diffDays=Math.ceil((paidUntilDate-today)/(1000*60*60*24));
           const cls=diffDays>=0&&diffDays<=7?'soon':'';
           if(diffDays>=0){
             statusHtml=`<span class="status-badge status-active">${t('statusActive')}</span>`;
-            periodHtml=`<span class="paid-until ${cls}">до ${formatDate(lastPay.paid_until)}</span>`;
+            periodHtml=`<span class="paid-until ${cls}">${t('until')} ${formatDate(lastPay.paid_until)}</span>`;
           }else{
             statusHtml=`<span class="status-badge status-overdue">${t('statusOverdue')}</span>`;
-            periodHtml=`<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
+            periodHtml=`<span class="paid-until overdue">${t('until')} ${formatDate(lastPay.paid_until)}</span>`;
           }
         }
       }else{
         statusHtml=`<span class="status-badge status-overdue">${t('statusOverdue')}</span>`;
-        periodHtml=`<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
+        periodHtml=`<span class="paid-until overdue">${t('until')} ${formatDate(lastPay.paid_until)}</span>`;
       }
     }else if(lastPay&&!lastPay.paid_until&&!lastPay.sessions_paid){
       statusHtml=`<span class="status-badge status-trial"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="6" width="14" height="9" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M1 9h14M8 6v9" stroke="currentColor" stroke-width="1.2"/></svg> ${t('typeFree')}</span>`;
@@ -1034,7 +1044,7 @@ function renderHistory(childId){
   return pd.history.sort((a,b)=>new Date(b.paid_at)-new Date(a.paid_at)).slice(0,10)
     .map(p=>`<div class="history-item">
       <span class="history-date">${formatDateTime(p.paid_at)}</span>
-      <span class="history-amount">${p.amount} грн</span>
+      <span class="history-amount">${p.amount} ${t('currency')}</span>
       <span class="history-type">${typeMap[p.payment_type]||p.payment_type||'—'}</span>
       <span class="history-period">${p.period_label||'—'}</span>
       <span class="history-comment">${p.comment||''}</span>
@@ -1054,7 +1064,7 @@ async function loadGroupTariffs(){
     const sel=document.getElementById('activeTariff');
     const icons={monthly:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>',days:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M5 9.5l2 2 4-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',sessions:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r=".8" fill="currentColor"/></svg>',free:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="6" width="14" height="9" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M1 9h14M8 6v9" stroke="currentColor" stroke-width="1.2"/></svg>',single:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>'};
     sel.innerHTML=`<option value="">${t('optSelectTariff')}</option>`+
-      groupTariffs.map(t=>`<option value="${t.id}">${icons[t.plan_type]||''} ${t.name} — ${t.price} грн</option>`).join('');
+      groupTariffs.map(t=>`<option value="${t.id}">${icons[t.plan_type]||''} ${t.name} — ${t.price} ${i18n[currentLang].currency||'грн'}</option>`).join('');
     if(groupTariffs.length===1)sel.value=groupTariffs[0].id;
   }catch(e){console.error(e);}
 }
@@ -1336,7 +1346,7 @@ function renderTariffsList(){
           ${t.sessions_limit?t.sessions_limit+' '+i18n[currentLang].tariffSess:''}
         </div>
       </div>
-      <div class="tariff-item-price">${t.price} грн</div>
+      <div class="tariff-item-price">${t.price} ${i18n[currentLang].currency||'грн'}</div>
       <div class="tariff-actions">
         <button class="act-btn" onclick="editTariff(${t.id})" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
         <button class="act-btn del" onclick="deleteTariff(${t.id})" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
