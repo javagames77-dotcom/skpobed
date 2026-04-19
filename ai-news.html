@@ -824,19 +824,11 @@ async function loadNews(){
     const srcSel=document.getElementById('newsSourceFilter');
     const srcMap=new Map();
     allNews.forEach(n=>{
-      if(n.source_id){
-        if(!srcMap.has('id:'+n.source_id)){
-          const src=allSources.find(s=>s.id===n.source_id);
-          const label=src?.name||n.source_url||String(n.source_id);
-          srcMap.set('id:'+n.source_id,{value:n.source_url,label});
-        }
-      } else if(n.source_url){
-        const key='url:'+n.source_url;
-        if(!srcMap.has(key)){
-          const label=n.source_url.replace(/^https?:\/\//,'').split('/')[0].substring(0,35);
-          srcMap.set(key,{value:n.source_url,label});
-        }
-      }
+      if(!n.source_id)return;
+      if(srcMap.has(n.source_id))return;
+      const src=allSources.find(s=>s.id===n.source_id);
+      if(!src)return;
+      srcMap.set(n.source_id,{value:n.source_url,label:src.name||src.url});
     });
     srcSel.innerHTML=`<option value="">${t('filterAllSrc')}</option>`+
       [...srcMap.values()].map(({value,label})=>`<option value="${value}">${label}</option>`).join('');
