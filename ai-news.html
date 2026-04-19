@@ -285,7 +285,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
             <option value="new" id="opt-new">Нові</option>
             <option value="processed" id="opt-processed">Оброблені</option>
             <option value="added" id="opt-added">Додані</option>
-            <option value="dismissed" id="opt-dismissed">Відхилені</option>
+
           </select>
           <select class="filter-select" id="newsSourceFilter" onchange="filterNews()" style="flex:1;min-width:0">
             <option value="" id="opt-all-src">Всі джерела</option>
@@ -968,9 +968,8 @@ async function dismissNews(newsId){
   if(!confirm(t('confirmDismiss')))return;
   try{
     await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'news_items',action:'update',data:{id:newsId,status:'dismissed'}})});
-    const item=allNews.find(n=>n.id===newsId);
-    if(item)item.status='dismissed';
+      body:JSON.stringify({token,resource:'news_items',action:'delete',data:{id:newsId}})});
+    allNews=allNews.filter(n=>n.id!==newsId);
     updateNewsStats();filterNews();
   }catch(e){showToast(t('logError')+e.message,'error');}
 }
