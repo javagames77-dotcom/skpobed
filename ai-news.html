@@ -91,7 +91,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .news-card.status-dismissed{border-left-color:var(--border);opacity:.5}
 .news-card-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.35;margin-bottom:.5rem}
 .news-card-meta{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.5rem}
-.news-card-meta-row{display:flex;gap:.3rem;flex-wrap:nowrap;align-items:center}
+.news-card-meta-row{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center}
 .ntag{display:inline-flex;align-items:center;gap:.25rem;padding:2px 7px;border-radius:6px;font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .ntag-date{background:var(--tag-blue-bg);color:var(--tag-blue)}
 .ntag-loc{background:var(--tag-green-bg);color:var(--tag-green);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -129,7 +129,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 /* ── FILTERS ── */
 .filters-bar{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.9rem}
-.filter-select{padding:.4rem .75rem;border:1px solid var(--border);border-radius:7px;font-size:.82rem;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s;cursor:pointer}
+.filter-select{padding:.35rem .5rem;border:1px solid var(--border);border-radius:7px;font-size:.78rem;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s;cursor:pointer;min-width:0;width:100%}
 .filter-select:focus{border-color:var(--border2)}
 .filter-input{padding:.4rem .75rem;border:1px solid var(--border);border-radius:7px;font-size:.82rem;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s}
 .filter-input:focus{border-color:var(--border2)}
@@ -250,10 +250,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <main class="main">
 
   <!-- PAGE HEADER -->
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:16px">
     <div>
       <h1 style="font-size:16px;font-weight:600;color:var(--black);letter-spacing:-.02em" id="page-title">AI-Пошук заходів</h1>
-      <p style="color:var(--muted);margin-top:.3rem;font-size:.82rem" id="page-sub">Автоматичний моніторинг джерел · Аналіз через OpenAI · Одним кліком у план</p>
+      <p style="color:var(--muted);margin-top:.3rem;font-size:.82rem;word-break:break-word" id="page-sub">Автоматичний моніторинг джерел · Аналіз через OpenAI · Одним кліком у план</p>
     </div>
     <button class="run-btn" id="runParseBtn" onclick="runParsing()">
       <div class="spinner"></div>
@@ -276,8 +276,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <!-- LEFT: news feed -->
     <div>
       <div class="filters-bar">
-        <div style="display:flex;align-items:center;gap:.4rem;width:100%;flex-wrap:nowrap">
-          <span style="font-size:.88rem;font-weight:600;color:var(--black);white-space:nowrap;margin-right:2px" id="news-found-title">Знайдені заходи</span>
+        <span style="font-size:.88rem;font-weight:600;color:var(--black)" id="news-found-title">Знайдені заходи</span>
+        <div style="display:flex;gap:.4rem">
           <select class="filter-select" id="newsStatusFilter" onchange="filterNews()" style="flex:1;min-width:0">
             <option value="" id="opt-all">Всі статуси</option>
             <option value="new" id="opt-new">Нові</option>
@@ -934,7 +934,7 @@ function renderNewsCards(news){
         <span class="ntag ntag-status-${st}" style="flex-shrink:0;white-space:nowrap">${statusLabel[st]||st}</span>
       </div>
       <div class="news-card-meta">
-        <div class="news-card-meta-row" style="flex-wrap:wrap">
+        <div class="news-card-meta-row">
           ${dateStr?`<span class="ntag ntag-date" style="flex-shrink:0">${SVG_DATE} ${dateStr}</span>`:''}
           ${n.location?`<span class="ntag ntag-loc" style="min-width:0;flex-shrink:1">${SVG_LOC} ${n.location}</span>`:''}
         </div>
