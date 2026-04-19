@@ -824,7 +824,11 @@ async function loadNews(){
     const srcSel=document.getElementById('newsSourceFilter');
     const domains=new Set(allNews.map(n=>n.source_url).filter(Boolean));
     srcSel.innerHTML=`<option value="">${t('filterAllSrc')}</option>`+
-      [...domains].map(u=>`<option value="${u}">${u.replace(/^https?:\/\//,'').split('/')[0].substring(0,35)}</option>`).join('');
+      [...domains].map(u=>{
+        const src=allSources.find(s=>s.url===u);
+        const label=src?.name||u.replace(/^https?:\/\//,'').split('/')[0].substring(0,35);
+        return `<option value="${u}">${label}</option>`;
+      }).join('');
     document.getElementById('loadingNews').style.display='none';
     updateNewsStats();
     filterNews();
@@ -925,6 +929,7 @@ function renderNewsCards(news){
     const srcDomain=n.source_url?n.source_url.replace(/^https?:\/\//,'').split('/')[0]:'';
     const src=allSources.find(s=>s.url===n.source_url);
     const srcLabel=src?(src.name||srcTypeLabel[src.type]||srcDomain):srcDomain;
+    const srcShow=src?.name||srcDomain;
     // п.6: перевод event_type
     const rawType=n.event_type||'';
     const translatedType=rawType?(eventTypeMap[rawType.toLowerCase()]||eventTypeMap[rawType]||rawType):'';
@@ -938,8 +943,8 @@ function renderNewsCards(news){
           ${dateStr?`<span class="ntag ntag-date" style="flex-shrink:0">${SVG_DATE} ${dateStr}</span>`:''}
           ${n.location?`<span class="ntag ntag-loc" style="min-width:0;flex-shrink:1">${SVG_LOC} ${n.location}</span>`:''}
         </div>
-        ${(srcDomain||n.entry_fee||translatedType)?`<div class="news-card-meta-row">
-          ${srcDomain?`<span class="ntag ntag-src" style="flex-shrink:0">${SVG_SRC} ${srcLabel}</span>`:''}
+        ${(srcShow||n.entry_fee||translatedType)?`<div class="news-card-meta-row">
+          ${srcShow?`<span class="ntag ntag-src" style="flex-shrink:0">${SVG_SRC} ${srcLabel}</span>`:''}
           ${n.entry_fee?`<span class="ntag ntag-fee" style="flex-shrink:0">${SVG_FEE} ${n.entry_fee} ${n.currency||'грн'}</span>`:''}
           ${translatedType?`<span class="ntag ntag-type" style="flex-shrink:0">${translatedType}</span>`:''}
         </div>`:''}
