@@ -823,12 +823,8 @@ async function loadNews(){
     // populate source filter
     const srcSel=document.getElementById('newsSourceFilter');
     const srcMap=new Map();
-    allNews.forEach(n=>{
-      if(!n.source_id)return;
-      if(srcMap.has(n.source_id))return;
-      const src=allSources.find(s=>s.id===n.source_id);
-      if(!src)return;
-      srcMap.set(n.source_id,{value:n.source_url,label:src.name||src.url});
+    allSources.forEach(src=>{
+      srcMap.set(src.id,{value:String(src.id),label:src.name||src.url});
     });
     srcSel.innerHTML=`<option value="">${t('filterAllSrc')}</option>`+
       [...srcMap.values()].map(({value,label})=>`<option value="${value}">${label}</option>`).join('');
@@ -848,7 +844,7 @@ function filterNews(){
   const q=(document.getElementById('newsSearchInput').value||'').toLowerCase();
   filteredNews=allNews;
   if(status)filteredNews=filteredNews.filter(n=>(n.status||'new')===status);
-  if(src){const srcId=allSources.find(s=>s.url===src)?.id;filteredNews=filteredNews.filter(n=>srcId?n.source_id===srcId:n.source_url===src);}
+  if(src){const srcId=parseInt(src);filteredNews=filteredNews.filter(n=>n.source_id===srcId);}
   if(q)filteredNews=filteredNews.filter(n=>(n.title||'').toLowerCase().includes(q)||(n.description||'').toLowerCase().includes(q));
   currentPage=1;
   renderPage();
