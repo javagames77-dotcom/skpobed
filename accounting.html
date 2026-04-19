@@ -1,762 +1,990 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Бухгалтерия — InSkill Online</title>
+<title>Бухгалтерія — InSkill.online</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0;--green:#28a745;--red:#dc3545;--yellow:#ffc107}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
+[data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--sidebar-bg:#ffffff;--input-bg:#fafafa;--card-bg:#ffffff;--card-shadow:0 1px 3px rgba(0,0,0,.06);--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green:#16a34a;--tag-red-bg:#fff0f0;--tag-red:#c0392b;--tag-yellow-bg:#fffbeb;--tag-yellow:#d97706;--tag-blue-bg:#eff6ff;--tag-blue:#1d4ed8;--tag-gray-bg:#f5f5f5;--tag-gray:#6b6b6b;--p:#0066CC;--s:#FF9933}
+[data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--sidebar-bg:#0a0a0a;--input-bg:#181818;--card-bg:#181818;--card-shadow:0 1px 3px rgba(0,0,0,.3);--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green:#4ade80;--tag-red-bg:#2a1010;--tag-red:#ff7070;--tag-yellow-bg:#2a1800;--tag-yellow:#fbbf24;--tag-blue-bg:#0c1a3a;--tag-blue:#93c5fd;--tag-gray-bg:#222222;--tag-gray:#999999;--p:#4d9de0;--s:#FF9933}
 
-/* HEADER */
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.header-content{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:.75rem;font-size:1.5rem;font-weight:700;color:var(--p);text-decoration:none}
-.logo-icon{width:40px;height:40px;background:var(--p);border-radius:8px;display:flex;align-items:center;justify-content:center}
-.logo-bars{display:flex;gap:3px;align-items:flex-end}
-.logo-bar{width:6px;background:#fff;border-radius:2px}
-.logo-bar:nth-child(1){height:12px}
-.logo-bar:nth-child(2){height:18px;background:var(--s)}
-.logo-bar:nth-child(3){height:24px;background:var(--s)}
-.badge-role{padding:.25rem .75rem;background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff;border-radius:20px;font-size:.85rem;font-weight:600}
-.btn-logout{padding:.5rem 1rem;background:#fff;border:1px solid var(--b);border-radius:6px;cursor:pointer;font-size:.9rem}
-.btn-logout:hover{background:#fee2e2;border-color:#dc3545;color:#dc3545}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
 
-/* LAYOUT */
-.container{max-width:1400px;margin:0 auto;padding:1.5rem 2rem}
-.layout{display:flex;gap:1.5rem;align-items:flex-start}
+/* ── NAV ── */
+.nav{height:48px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:background .2s,border-color .2s}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:600;color:var(--black);letter-spacing:-.03em;transition:color .2s}
+.logo-text span{font-weight:300;color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-badge{font-size:10px;font-weight:500;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;letter-spacing:.02em}
+.nav-divider{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.theme-toggle{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;transition:all .15s}
+.theme-toggle:hover{border-color:var(--border2)}
+.lang-switcher{display:flex;align-items:center;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:3px;transition:all .2s}
+.lang-btn{padding:3px 8px;border:none;border-radius:5px;background:transparent;color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.lang-btn.active{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.nav-btn{font-size:12px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer;font-family:inherit;transition:all .12s;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.nav-btn:hover{border-color:var(--border2);color:var(--text)}
 
-/* STATS BAR - только для director/accountant */
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
-.stat-card{background:#fff;border-radius:12px;padding:1.25rem;box-shadow:0 2px 8px rgba(0,0,0,.05);text-align:center}
-.stat-value{font-size:1.8rem;font-weight:800;color:var(--p)}
-.stat-value.red{color:var(--red)}
-.stat-value.green{color:var(--green)}
-.stat-label{font-size:.78rem;color:#888;margin-top:.25rem;font-weight:500;text-transform:uppercase}
+/* ── LAYOUT ── */
+.layout-outer{display:flex;height:calc(100vh - 48px)}
 
-/* SIDEBAR — группы */
-.sidebar{width:260px;flex-shrink:0;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
-.sidebar-title{padding:.85rem 1rem;font-weight:700;font-size:.9rem;background:linear-gradient(135deg,var(--p),#0052a3);color:#fff;display:flex;justify-content:space-between;align-items:center}
-.group-item{padding:.75rem 1rem;cursor:pointer;border-bottom:1px solid #f0f0f0;transition:background .15s;display:flex;flex-direction:column;gap:.2rem}
-.group-item:hover{background:#f0f4ff}
-.group-item.active{background:#e8eeff;border-left:3px solid var(--p)}
-.group-item-name{font-size:.88rem;font-weight:600}
-.group-item-club{font-size:.75rem;color:#888}
-.group-item-stats{display:flex;gap:.5rem;margin-top:.2rem}
-.group-badge-mini{font-size:.7rem;padding:.1rem .4rem;border-radius:8px;font-weight:600}
-.group-badge-green{background:#d4edda;color:#155724}
-.group-badge-red{background:#f8d7da;color:#721c24}
+/* ── LEFT SIDEBAR (nav) ── */
+.sidebar-nav{width:200px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:background .2s,border-color .2s;overflow-y:auto}
+.sidebar-user{padding:14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-avatar{width:32px;height:32px;border-radius:50%;background:var(--black);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.sidebar-user-name{font-size:12px;font-weight:500;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-id{font-size:10px;color:var(--muted2)}
+.sidebar-section{padding:14px 12px 6px;font-size:10px;font-weight:500;color:var(--muted2);letter-spacing:.08em;text-transform:uppercase}
+.sitem{display:flex;align-items:center;gap:9px;padding:7px 12px;margin:1px 6px;border:none;border-radius:7px;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;text-align:left;width:calc(100% - 12px);text-decoration:none}
+.sitem:hover{background:var(--bg3);color:var(--text)}
+.sitem.active{background:var(--bg3);color:var(--black)}
+.sitem svg{flex-shrink:0}
 
-/* MAIN CONTENT */
-.main{flex:1;min-width:0}
-.main-header{background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
-.main-title{font-size:1.1rem;font-weight:700;color:var(--p)}
-.main-actions{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+/* ── CENTER (groups sidebar + main) ── */
+.center{flex:1;display:flex;overflow:hidden}
 
-/* MONTH SELECTOR */
-.month-nav{display:flex;align-items:center;gap:.5rem;background:#f0f4ff;border-radius:8px;padding:.35rem .6rem}
-.month-btn{background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--p);padding:0 .2rem;line-height:1}
-.month-label{font-size:.85rem;font-weight:600;color:var(--p);min-width:110px;text-align:center}
+/* ── GROUPS SIDEBAR ── */
+.groups-panel{width:220px;flex-shrink:0;background:var(--card-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:all .2s}
+.groups-panel-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.groups-panel-title{font-size:12px;font-weight:600;color:var(--black)}
+.groups-panel-count{font-size:11px;color:var(--muted)}
+.groups-list{flex:1;overflow-y:auto}
+.group-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
+.group-item:hover{background:var(--tbl-hover)}
+.group-item.active{background:var(--tag-blue-bg);border-left:3px solid var(--p)}
+.group-item.active .group-item-name{color:var(--p)}
+.group-item-name{font-size:12px;font-weight:500;color:var(--black)}
+.group-item-club{font-size:11px;color:var(--muted);margin-top:2px}
 
-/* TARIFF SELECTOR */
-.tariff-select-wrap{display:flex;align-items:center;gap:.5rem}
-.tariff-select-wrap label{font-size:.82rem;color:#666;white-space:nowrap}
-.tariff-select{padding:.4rem .65rem;border:1.5px solid var(--b);border-radius:8px;font-size:.82rem;font-family:inherit;outline:none;cursor:pointer}
-.tariff-select:focus{border-color:var(--p)}
+/* ── MAIN AREA ── */
+.main-area{flex:1;overflow-y:auto;padding:16px}
 
-/* BUTTONS */
-.btn{padding:.5rem 1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .15s}
-.btn-primary{background:var(--p);color:#fff}
-.btn-primary:hover{background:#0052a3}
-.btn-orange{background:var(--s);color:#fff}
-.btn-orange:hover{background:#e68a00}
-.btn-green{background:var(--green);color:#fff}
-.btn-green:hover{background:#1e7e34}
-.btn-ghost{background:#f0f4ff;color:var(--p);border:1.5px solid #c8d8f0}
-.btn-ghost:hover{background:#e0eaff}
-.btn-sm{padding:.35rem .7rem;font-size:.78rem}
-.btn-icon{background:none;border:none;cursor:pointer;padding:.25rem .4rem;border-radius:4px;font-size:.85rem;transition:background .15s}
-.btn-icon:hover{background:#f0f0f0}
+/* ── STATS STRIP ── */
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat-box{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;box-shadow:var(--card-shadow)}
+.stat-value{font-size:18px;font-weight:700;color:var(--black);line-height:1}
+.stat-value.green{color:var(--tag-green)}
+.stat-value.red{color:var(--tag-red)}
+.stat-label{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.05em;margin-top:4px;font-weight:500}
 
-/* ACCEPT ALL BUTTON */
-.btn-accept-all{background:linear-gradient(135deg,var(--green),#1e7e34);color:#fff;padding:.5rem 1.1rem;border:none;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s}
-.btn-accept-all:hover{opacity:.9;transform:translateY(-1px)}
+/* ── CARD ── */
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);overflow:hidden;transition:all .2s}
+.card-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.card-title{font-size:13px;font-weight:600;color:var(--black)}
 
-/* TABLE */
-.table-wrap{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden}
+/* ── TABLE ── */
 .acc-table{width:100%;border-collapse:collapse}
-.acc-table thead{background:linear-gradient(135deg,var(--p),#0052a3);color:#fff}
-.acc-table th{padding:.75rem .85rem;text-align:left;font-size:.78rem;font-weight:600;text-transform:uppercase;white-space:nowrap}
-.acc-table td{padding:.6rem .85rem;border-bottom:1px solid #f0f2f5;vertical-align:middle}
-.acc-table tbody tr:hover{background:#f8f9ff}
+.acc-table thead tr{border-bottom:1px solid var(--border)}
+.acc-table th{padding:9px 10px;text-align:left;font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.acc-table td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}
+.acc-table tbody tr:last-child td{border-bottom:none}
+.acc-table tbody tr:hover td{background:var(--tbl-hover)}
 
-/* ATHLETE ROW */
-.athlete-info{display:flex;align-items:center;gap:.6rem}
-.athlete-photo{width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--b);flex-shrink:0}
-.athlete-name{font-size:.88rem;font-weight:600}
-.athlete-sub{font-size:.73rem;color:#888}
+/* ── ATHLETE ── */
+.athlete-info{display:flex;align-items:center;gap:8px}
+.athlete-photo{width:30px;height:30px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0}
+.athlete-photo-placeholder{width:30px;height:30px;border-radius:50%;background:var(--p);color:#fff;font-size:10px;font-weight:600;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.athlete-name{font-size:12px;font-weight:500;color:var(--black)}
 
-/* STATUS BADGE */
-.status-badge{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .6rem;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap}
-.status-active{background:#d4edda;color:#155724}
-.status-overdue{background:#f8d7da;color:#721c24}
-.status-trial{background:#fff3cd;color:#856404}
-.status-expired{background:#e2e3e5;color:#383d41}
-.status-none{background:#f0f0f0;color:#888}
+/* ── STATUS BADGES ── */
+.status-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.status-active{background:var(--tag-green-bg);color:var(--tag-green)}
+.status-overdue{background:var(--tag-red-bg);color:var(--tag-red)}
+.status-trial{background:var(--tag-yellow-bg);color:var(--tag-yellow)}
+.status-none{background:var(--tag-gray-bg);color:var(--tag-gray)}
+.paid-until{font-size:11px;color:var(--muted);white-space:nowrap}
+.paid-until.soon{color:var(--tag-yellow);font-weight:600}
+.paid-until.overdue{color:var(--tag-red);font-weight:600}
 
-/* PAID UNTIL */
-.paid-until{font-size:.8rem;color:#666;white-space:nowrap}
-.paid-until.soon{color:var(--yellow);font-weight:700}
-.paid-until.overdue{color:var(--red);font-weight:700}
+/* ── PAYMENT ROW ── */
+.pay-row{display:flex;align-items:center;gap:4px}
+.sessions-btn{width:22px;height:22px;border-radius:5px;border:1px solid var(--border);background:var(--bg);cursor:pointer;font-size:.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--text);transition:all .12s;flex-shrink:0}
+.sessions-btn:hover{border-color:var(--p);background:var(--tag-blue-bg);color:var(--p)}
+.amount-input{width:70px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-size:12px;text-align:center;font-family:inherit;outline:none;background:var(--input-bg);color:var(--text);transition:border-color .15s}
+.amount-input:focus{border-color:var(--border2)}
+.amount-input.filled{border-color:var(--tag-green);background:var(--tag-green-bg)}
+.pay-type-select{padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-size:11px;font-family:inherit;outline:none;cursor:pointer;background:var(--input-bg);color:var(--text)}
+.pay-type-select:focus{border-color:var(--border2)}
 
-/* PAYMENT ROW INPUT */
-.pay-row{display:flex;align-items:center;gap:.4rem}
-.sessions-ctrl{display:flex;align-items:center;gap:.2rem}
-.sessions-btn{width:24px;height:24px;border-radius:6px;border:1.5px solid var(--b);background:#fff;cursor:pointer;font-size:.9rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.sessions-btn:hover{border-color:var(--p);background:#f0f4ff}
-.amount-input{width:90px;padding:.4rem .5rem;border:1.5px solid var(--b);border-radius:8px;font-size:.88rem;text-align:center;font-family:inherit;outline:none;transition:border-color .15s}
-.amount-input:focus{border-color:var(--p)}
-.amount-input.filled{border-color:var(--green);background:#f0fff4}
-.pay-type-select{padding:.4rem .5rem;border:1.5px solid var(--b);border-radius:8px;font-size:.78rem;font-family:inherit;outline:none;cursor:pointer}
-.pay-type-select:focus{border-color:var(--p)}
-.comment-input{width:110px;padding:.4rem .5rem;border:1.5px solid var(--b);border-radius:8px;font-size:.78rem;font-family:inherit;outline:none}
-.comment-input:focus{border-color:var(--p)}
+/* ── ACCEPT BUTTONS ── */
+.btn-accept{background:var(--tag-green);color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .12s}
+.btn-accept:hover{opacity:.85}
+.btn-accept:disabled{background:var(--muted2);cursor:not-allowed}
+.btn-accepted{background:var(--tag-green-bg);color:var(--tag-green);border:1px solid var(--tag-green);border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit}
+.btn-accept-warn{background:var(--tag-yellow);color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit}
 
-/* ACCEPT BTN per row */
-.btn-accept{background:var(--green);color:#fff;border:none;border-radius:8px;padding:.4rem .7rem;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s}
-.btn-accept:hover{background:#1e7e34}
-.btn-accept:disabled{background:#ccc;cursor:not-allowed}
-.btn-accepted{background:#e9f7ef;color:var(--green);border:1.5px solid #a8d5b5;border-radius:8px;padding:.4rem .7rem;font-size:.78rem;font-weight:700;cursor:default;white-space:nowrap}
-
-/* PAYMENT HISTORY */
-.history-row{background:#f8f9ff}
-.history-inner{padding:.5rem .85rem .75rem 3.5rem}
-.history-title{font-size:.75rem;font-weight:700;color:#666;margin-bottom:.4rem;text-transform:uppercase}
-.history-item{display:flex;align-items:center;gap:.75rem;padding:.3rem 0;border-bottom:1px solid #eef;font-size:.8rem}
+/* ── HISTORY ── */
+.history-row{background:var(--bg3)}
+.history-inner{padding:8px 10px 10px 44px}
+.history-title{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.history-item{display:flex;align-items:center;gap:10px;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px}
 .history-item:last-child{border-bottom:none}
-.history-date{color:#666;min-width:80px}
-.history-amount{font-weight:700;color:var(--green);min-width:80px}
-.history-type{color:#888;min-width:60px}
-.history-period{color:var(--p);min-width:100px}
-.history-comment{color:#999;font-style:italic}
-.history-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:.8rem;padding:.1rem .3rem;border-radius:3px}
-.history-del:hover{color:var(--red);background:#fee2e2}
-.no-history{color:#bbb;font-size:.8rem;font-style:italic}
+.history-date{color:var(--muted);min-width:80px}
+.history-amount{font-weight:600;color:var(--tag-green);min-width:70px}
+.history-type{color:var(--muted);min-width:60px}
+.history-period{color:var(--p);min-width:90px}
+.history-comment{color:var(--muted2);font-style:italic;flex:1}
+.history-del{background:none;border:none;cursor:pointer;color:var(--muted2);font-size:12px;padding:2px 4px;border-radius:4px;transition:all .12s}
+.history-del:hover{color:var(--tag-red);background:var(--tag-red-bg)}
+.no-history{color:var(--muted2);font-size:11px;font-style:italic}
 
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:3rem;color:#aaa}
-.empty-icon{font-size:3rem;margin-bottom:.75rem}
-.empty-text{font-size:.95rem}
+/* ── MONTH NAV ── */
+.month-nav{display:flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:3px 6px}
+.month-btn{background:none;border:none;cursor:pointer;font-size:1rem;color:var(--p);padding:0 2px;line-height:1}
+.month-label{font-size:12px;font-weight:600;color:var(--black);min-width:100px;text-align:center}
 
-/* LOADING */
-.loading{text-align:center;padding:2.5rem;color:var(--p);font-size:.9rem}
+/* ── ACTION BUTTONS ── */
+.btn{padding:5px 12px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:var(--black);color:var(--bg)}
+.btn-primary:hover{opacity:.85}
+.btn-ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2)}
+.btn-green{background:var(--tag-green);color:#fff}
+.btn-green:hover{opacity:.85}
+.btn-sm{padding:4px 10px;font-size:11px}
 
-/* MODAL */
-.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
-.modal.open{display:flex}
-.modal-box{background:#fff;border-radius:16px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.modal-hdr{padding:1.25rem 1.5rem;border-bottom:2px solid var(--b);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:1.1rem;font-weight:700;color:var(--p)}
-.modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;line-height:1}
-.modal-close:hover{color:var(--red)}
-.modal-body{padding:1.25rem 1.5rem}
-.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--b);display:flex;justify-content:flex-end;gap:.75rem}
+/* ── TARIFF BADGE ── */
+.plan-badge{display:inline-flex;align-items:center;padding:2px 6px;border-radius:5px;font-size:10px;font-weight:600}
+.plan-monthly{background:var(--tag-blue-bg);color:var(--tag-blue)}
+.plan-sessions{background:var(--tag-green-bg);color:var(--tag-green)}
+.plan-single{background:var(--tag-yellow-bg);color:var(--tag-yellow)}
+.plan-days{background:#f3e5f5;color:#7b1fa2}
+[data-theme="dark"] .plan-days{background:#2a1040;color:#c084fc}
+.plan-free{background:var(--tag-gray-bg);color:var(--tag-gray)}
 
-/* FORM */
-.form-group{margin-bottom:1rem}
-.form-label{display:block;font-size:.85rem;font-weight:600;color:#555;margin-bottom:.35rem}
-.form-input,.form-select{width:100%;padding:.7rem .9rem;border:1.5px solid var(--b);border-radius:8px;font-size:.9rem;font-family:inherit;outline:none}
-.form-input:focus,.form-select:focus{border-color:var(--p)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+/* ── EMPTY / LOADING ── */
+.empty-state{padding:32px;text-align:center;color:var(--muted2)}
+.empty-icon{font-size:2.5rem;margin-bottom:8px}
+.loading-state{padding:24px;text-align:center;color:var(--muted);font-size:12px}
+.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--border) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* TARIFF LIST */
-.tariff-list{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem}
-.tariff-item{display:flex;align-items:center;justify-content:space-between;padding:.7rem 1rem;background:#f8f9ff;border-radius:10px;border:1.5px solid #e0e8f0}
-.tariff-item-info{flex:1}
-.tariff-item-name{font-size:.9rem;font-weight:600}
-.tariff-item-details{font-size:.78rem;color:#888;margin-top:.15rem}
-.tariff-item-price{font-size:1rem;font-weight:800;color:var(--p);margin:0 1rem}
-.tariff-actions{display:flex;gap:.4rem}
+/* ── TARIFF LIST ── */
+.tariff-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);margin-bottom:6px}
+.tariff-item-name{font-size:12px;font-weight:500;color:var(--black)}
+.tariff-item-details{font-size:11px;color:var(--muted);margin-top:2px}
+.tariff-item-price{font-size:13px;font-weight:700;color:var(--p);margin:0 12px}
+.tariff-actions{display:flex;gap:4px}
 
-/* PLAN TYPE BADGES */
-.plan-monthly{background:#dbeafe;color:#1e3a8a;padding:.15rem .5rem;border-radius:6px;font-size:.72rem;font-weight:700}
-.plan-sessions{background:#dcfce7;color:#14532d;padding:.15rem .5rem;border-radius:6px;font-size:.72rem;font-weight:700}
-.plan-single{background:#fef9c3;color:#713f12;padding:.15rem .5rem;border-radius:6px;font-size:.72rem;font-weight:700}
+/* ── MODAL ── */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal.active{display:flex}
+.modal-content{background:var(--bg);border:1px solid var(--border);border-radius:14px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:13px;font-weight:600;color:var(--black)}
+.modal-close{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;transition:all .12s}
+.modal-close:hover{border-color:var(--border2);color:var(--text)}
+.modal-body{padding:16px 18px}
+.modal-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.form-group{margin-bottom:12px}
+.form-label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:4px}
+.form-input,.form-select{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s}
+.form-input:focus,.form-select:focus{border-color:var(--border2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-/* PAID UNTIL SELECTOR in modal */
-.period-options{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem}
-.period-option{display:flex;align-items:center;gap:.6rem;padding:.6rem .85rem;border:1.5px solid var(--b);border-radius:8px;cursor:pointer;transition:all .15s}
-.period-option:hover{border-color:var(--p);background:#f0f4ff}
-.period-option.selected{border-color:var(--p);background:#e8eeff}
-.period-option input[type=radio]{accent-color:var(--p)}
-.period-label{font-size:.88rem;font-weight:500;flex:1}
-.period-date{font-size:.82rem;color:var(--p);font-weight:700}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;padding:8px 14px;background:var(--black);color:var(--bg);border-radius:8px;font-size:12px;font-weight:500;z-index:9999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.error{background:var(--tag-red)}
+.toast.success{background:var(--tag-green)}
 
-/* TOOLTIP */
-.tooltip{position:relative;display:inline-block}
-.tooltip-text{visibility:hidden;background:#333;color:#fff;font-size:.75rem;border-radius:6px;padding:.3rem .6rem;position:absolute;bottom:125%;left:50%;transform:translateX(-50%);white-space:nowrap;z-index:10}
-.tooltip:hover .tooltip-text{visibility:visible}
+/* ── MOBILE NAV ── */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--nav-bg);border-top:1px solid var(--border);z-index:200;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.mob-nav-items{display:flex;height:100%}
+.mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);font-size:9px;font-weight:500;font-family:inherit;cursor:pointer;transition:color .15s;text-decoration:none}
+.mob-nav-btn.active{color:var(--black)}
 
-@media(max-width:900px){
-  .layout{flex-direction:column}
-  .sidebar{width:100%}
-  .stats-bar{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:600px){
-  .stats-bar{grid-template-columns:1fr 1fr}
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){.stats-strip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+  .sidebar-nav{display:none}
+  .groups-panel{display:none}
+  .mob-nav{display:block}
+  .main-area{padding:12px 10px 72px}
+  .stats-strip{grid-template-columns:1fr 1fr}
   .pay-row{flex-wrap:wrap}
-  .comment-input{display:none}
 }
 </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="header-content">
-    <a class="logo" href="#">
-      <div class="logo-icon">
-        <div class="logo-bars">
-          <div class="logo-bar"></div><div class="logo-bar"></div><div class="logo-bar"></div>
-        </div>
-      </div>
-      InSkill.online
-    </a>
-    <div style="display:flex;align-items:center;gap:1rem">
-      <span id="userBadge" class="badge-role">💰 БУХГАЛТЕРИЯ</span>
-      <span id="userName" style="font-weight:600;font-size:.9rem">—</span>
-      <button class="btn-logout" onclick="goBack()" style="background:#f0f4ff;border-color:var(--p);color:var(--p)">← Назад</button>
-      <button class="btn-logout" onclick="logout()">Выйти11</button>
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <svg width="23" height="23" viewBox="0 0 20 20" fill="none">
+      <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+      <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="logo-text">InSkill<span>.online</span></span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-badge" id="nav-badge">ДИРЕКТОР</span>
+    <div class="nav-divider"></div>
+    <div class="lang-switcher">
+      <button class="lang-btn" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="icon-sun" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.6 3.6l1.3 1.3M11.1 11.1l1.3 1.3M3.6 12.4l1.3-1.3M11.1 4.9l1.3-1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg id="icon-moon" width="15" height="15" viewBox="0 0 16 16" fill="none" style="display:none"><path d="M13.5 10A6 6 0 015 2.5a6 6 0 108 8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- OUTER LAYOUT -->
+<div class="layout-outer">
+
+<!-- LEFT NAV SIDEBAR -->
+<aside class="sidebar-nav">
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sideInitials">ДР</div>
+    <div>
+      <div class="sidebar-user-name" id="sideUserName">—</div>
+      <div class="sidebar-user-id" id="sideUserId"></div>
     </div>
   </div>
-</header>
+  <div class="sidebar-section" id="lbl-side-section">Бухгалтерія</div>
+  <a href="#" class="sitem active">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <span id="lbl-side-acc">Бухгалтерія</span>
+  </a>
+  <div class="sidebar-section" id="lbl-side-nav">Навігація</div>
+  <a href="/director-dashboard.html" class="sitem" id="lbl-back-link">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="lbl-back">Панель директора</span>
+  </a>
+</aside>
 
-<div class="container">
+<!-- CENTER -->
+<div class="center">
 
-  <!-- STATS BAR (только director/accountant) -->
-  <div class="stats-bar" id="statsBar" style="display:none">
-    <div class="stat-card">
-      <div class="stat-value green" id="statCollected">—</div>
-      <div class="stat-label">💰 Собрано за месяц</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value red" id="statDebt">—</div>
-      <div class="stat-label">🔴 Общий долг</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value red" id="statDebtors">—</div>
-      <div class="stat-label">👥 Должников</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" id="statActive">—</div>
-      <div class="stat-label">✅ Активных</div>
-    </div>
+<!-- GROUPS PANEL -->
+<div class="groups-panel">
+  <div class="groups-panel-header">
+    <span class="groups-panel-title" id="lbl-groups-title">📋 Групи</span>
+    <span class="groups-panel-count" id="groupCount"></span>
   </div>
-
-  <div class="layout">
-
-    <!-- SIDEBAR — группы -->
-    <div class="sidebar">
-      <div class="sidebar-title">
-        <span>📋 Группы</span>
-        <span id="groupCount" style="font-size:.75rem;opacity:.8"></span>
-      </div>
-      <div id="groupList">
-        <div class="loading">Загрузка...</div>
-      </div>
-    </div>
-
-    <!-- MAIN -->
-    <div class="main">
-      <div id="mainEmpty" class="empty-state">
-        <div class="empty-icon">💰</div>
-        <div class="empty-text">Выберите группу слева</div>
-      </div>
-
-      <div id="mainContent" style="display:none">
-
-        <!-- Header группы -->
-        <div class="main-header">
-          <div>
-            <div class="main-title" id="groupTitle">—</div>
-            <div style="font-size:.78rem;color:#888;margin-top:.2rem" id="groupSubtitle"></div>
-          </div>
-          <div class="main-actions">
-            <!-- Навигация по месяцам -->
-            <div class="month-nav">
-              <button class="month-btn" onclick="changeMonth(-1)">‹</button>
-              <span class="month-label" id="monthLabel"></span>
-              <button class="month-btn" onclick="changeMonth(1)">›</button>
-            </div>
-            <!-- Выбор тарифа -->
-            <div class="tariff-select-wrap">
-              <label>Тариф:</label>
-              <select class="tariff-select" id="activeTariff" onchange="onTariffChange()">
-                <option value="">— выберите —</option>
-              </select>
-            </div>
-            <!-- Кнопки -->
-            <button class="btn btn-ghost btn-sm" onclick="fillByTariff()" id="btnFill">📋 По тарифу</button>
-            <button class="btn-accept-all" onclick="acceptAll()" id="btnAcceptAll">✅ Принять все</button>
-            <button class="btn btn-primary btn-sm" onclick="openTariffsModal()" id="btnTariffs">⚙️ Тарифы</button>
-          </div>
-        </div>
-
-        <!-- Таблица спортсменов -->
-        <div class="table-wrap">
-          <div id="tableLoading" class="loading" style="display:none">Загрузка...</div>
-          <table class="acc-table" id="accTable" style="display:none">
-            <thead>
-              <tr>
-                <th style="width:28px"></th>
-                <th>Спортсмен</th>
-                <th>Статус</th>
-                <th>Период</th>
-                <th>Тариф</th>
-                <th>Сумма</th>
-                <th>Тип</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="accTableBody"></tbody>
-          </table>
-          <div id="tableEmpty" class="empty-state" style="display:none">
-            <div class="empty-icon">👥</div>
-            <div class="empty-text">В группе нет спортсменов</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
+  <div class="groups-list" id="groupList">
+    <div class="loading-state">...</div>
   </div>
 </div>
 
-<!-- MODAL: Тарифные планы -->
+<!-- MAIN AREA -->
+<div class="main-area">
+
+  <!-- STATS (director/accountant only) -->
+  <div class="stats-strip" id="statsBar" style="display:none">
+    <div class="stat-box">
+      <div class="stat-value green" id="statCollected">—</div>
+      <div class="stat-label" id="lbl-stat-collected">💰 Зібрано за місяць</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value red" id="statDebt">—</div>
+      <div class="stat-label" id="lbl-stat-debt">🔴 Загальний борг</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value red" id="statDebtors">—</div>
+      <div class="stat-label" id="lbl-stat-debtors">👥 Боржників</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="statActive">—</div>
+      <div class="stat-label" id="lbl-stat-active">✅ Активних</div>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div id="mainEmpty" class="card" style="margin-bottom:0">
+    <div class="empty-state">
+      <div class="empty-icon">💰</div>
+      <div id="lbl-select-group">Оберіть групу зліва</div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="mainContent" style="display:none">
+
+    <!-- GROUP HEADER -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-header">
+        <div>
+          <div class="card-title" id="groupTitle">—</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px" id="groupSubtitle"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <!-- Month nav -->
+          <div class="month-nav">
+            <button class="month-btn" onclick="changeMonth(-1)">‹</button>
+            <span class="month-label" id="monthLabel"></span>
+            <button class="month-btn" onclick="changeMonth(1)">›</button>
+          </div>
+          <!-- Tariff selector -->
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--muted)" id="lbl-tariff">Тариф:</span>
+            <select class="pay-type-select" id="activeTariff" onchange="onTariffChange()" style="font-size:12px;padding:5px 8px">
+              <option value="" id="opt-select-tariff">— оберіть —</option>
+            </select>
+          </div>
+          <!-- Action buttons -->
+          <button class="btn btn-ghost btn-sm" onclick="fillByTariff()" id="btnFill">📋 <span id="lbl-by-tariff">По тарифу</span></button>
+          <button class="btn btn-green btn-sm" onclick="acceptAll()" id="btnAcceptAll">✅ <span id="lbl-accept-all">Прийняти всіх</span></button>
+          <button class="btn btn-ghost btn-sm" onclick="openTariffsModal()" id="btnTariffs" style="display:none">⚙️ <span id="lbl-tariffs-btn">Тарифи</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card">
+      <div id="tableLoading" class="loading-state" style="display:none">...</div>
+      <div id="tableEmpty" class="empty-state" style="display:none">
+        <div class="empty-icon">👥</div>
+        <div id="lbl-no-athletes">У групі немає спортсменів</div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="acc-table" id="accTable" style="display:none">
+          <thead>
+            <tr>
+              <th style="width:24px"></th>
+              <th id="th-athlete">Спортсмен</th>
+              <th id="th-status">Статус</th>
+              <th id="th-period">Період</th>
+              <th id="th-tariff-col">Тариф</th>
+              <th id="th-amount">Сума</th>
+              <th id="th-type">Тип</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="accTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /mainContent -->
+</div><!-- /main-area -->
+</div><!-- /center -->
+</div><!-- /layout-outer -->
+
+<!-- MOBILE NAV -->
+<nav class="mob-nav">
+  <div class="mob-nav-items">
+    <a href="/director-dashboard.html" class="mob-nav-btn">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="mob-lbl-back">Назад</span>
+    </a>
+    <button class="mob-nav-btn" onclick="showMobGroups()">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="7" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="4" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="7" width="6" height="8" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="10" width="6" height="5" rx="1.2" stroke="currentColor" stroke-width="1.2"/></svg>
+      <span id="mob-lbl-groups">Групи</span>
+    </button>
+    <button class="mob-nav-btn active" onclick="hideMobGroups()">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span id="mob-lbl-acc">Оплати</span>
+    </button>
+    <button class="mob-nav-btn" onclick="scrollToStats()">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M2 12l3-4 3 2 3-5 3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="mob-lbl-stats">Статистика</span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE GROUPS OVERLAY -->
+<div id="mobGroupsOverlay" style="display:none;position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto;padding-bottom:72px">
+  <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--nav-bg);backdrop-filter:blur(10px)">
+    <span style="font-size:13px;font-weight:600;color:var(--black)" id="mob-groups-title">Групи</span>
+    <button onclick="hideMobGroups()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted)">✕</button>
+  </div>
+  <div id="mobGroupList"></div>
+</div>
+
+<!-- TARIFFS MODAL -->
 <div class="modal" id="tariffsModal">
-  <div class="modal-box">
-    <div class="modal-hdr">
-      <span class="modal-title">⚙️ Тарифные планы</span>
-      <button class="modal-close" onclick="closeTariffsModal()">×</button>
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="modal-title" id="lbl-tariffs-modal-title">⚙️ Тарифні плани</span>
+      <button class="modal-close" onclick="closeTariffsModal()">✕</button>
     </div>
     <div class="modal-body">
-      <div id="tariffsList" class="tariff-list"></div>
-      <button class="btn btn-primary" onclick="openAddTariff()">➕ Добавить тариф</button>
-
-      <!-- Форма добавления/редактирования -->
-      <div id="tariffForm" style="display:none;margin-top:1.25rem;padding-top:1.25rem;border-top:1.5px solid var(--b)">
-        <div style="font-size:.9rem;font-weight:700;color:var(--p);margin-bottom:.85rem" id="tariffFormTitle">Новый тариф</div>
+      <div id="tariffsList" style="margin-bottom:12px"></div>
+      <button class="btn btn-primary btn-sm" onclick="openAddTariff()">
+        <svg width="10" height="10" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span id="lbl-add-tariff">Додати тариф</span>
+      </button>
+      <!-- Tariff form -->
+      <div id="tariffForm" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:600;color:var(--black);margin-bottom:10px" id="tariffFormTitle">Новий тариф</div>
         <input type="hidden" id="tariffEditId">
         <div class="form-group">
-          <label class="form-label">Название *</label>
-          <input class="form-input" id="tariffName" placeholder="Напр: Месячный абонемент">
+          <label class="form-label" id="lbl-tariff-name">Назва *</label>
+          <input class="form-input" id="tariffName" placeholder="Напр: Місячний абонемент">
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Тип *</label>
+            <label class="form-label" id="lbl-tariff-type">Тип *</label>
             <select class="form-select" id="tariffType" onchange="onTariffTypeChange()">
-              <option value="monthly">📅 Месячный (до конца месяца)</option>
-              <option value="days">📆 По дням (напр. 30 дней)</option>
-              <option value="sessions">🎯 По тренировкам</option>
-              <option value="single">1️⃣ Разовый</option>
-              <option value="free">🎁 Бесплатно (льгота)</option>
+              <option value="monthly" id="opt-monthly">📅 Місячний</option>
+              <option value="days" id="opt-days">📆 По днях</option>
+              <option value="sessions" id="opt-sessions">🎯 По тренуванням</option>
+              <option value="single" id="opt-single">1️⃣ Разовий</option>
+              <option value="free" id="opt-free">🎁 Безкоштовно</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Цена (грн) *</label>
+            <label class="form-label" id="lbl-tariff-price">Ціна *</label>
             <input class="form-input" id="tariffPrice" type="number" min="0" placeholder="1200">
           </div>
         </div>
-        <div class="form-row" id="tariffExtraFields">
+        <div class="form-row">
           <div class="form-group" id="tariffDurationWrap">
-            <label class="form-label">Дней действия</label>
+            <label class="form-label" id="lbl-tariff-duration">Днів дії</label>
             <input class="form-input" id="tariffDuration" type="number" min="1" placeholder="30">
           </div>
           <div class="form-group" id="tariffSessionsWrap" style="display:none">
-            <label class="form-label">Количество тренировок</label>
+            <label class="form-label" id="lbl-tariff-sessions">Кількість тренувань</label>
             <input class="form-input" id="tariffSessions" type="number" min="1" placeholder="10">
           </div>
         </div>
-        <div style="display:flex;gap:.75rem;justify-content:flex-end">
-          <button class="btn btn-ghost" onclick="closeTariffForm()">Отмена</button>
-          <button class="btn btn-primary" onclick="saveTariff()">Сохранить</button>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn btn-ghost btn-sm" onclick="closeTariffForm()" id="lbl-tariff-cancel">Скасувати</button>
+          <button class="btn btn-primary btn-sm" onclick="saveTariff()" id="lbl-tariff-save">Зберегти</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
-const token = localStorage.getItem('token');
-let user = null;
-let currentGroupId = null;
-let currentGroupData = null;
-let allGroups = [];
-let groupAthletes = [];
-let groupPayments = {};  // child_id -> last paid_until
-let groupTariffs = [];
-let currentMonth = new Date().getMonth() + 1;
-let currentYear = new Date().getFullYear();
+/* ── i18n ── */
+const i18n={
+  uk:{
+    navBadge:'ДИРЕКТОР',roleDir:'👔 ДИРЕКТОР',roleAcc:'💰 БУХГАЛТЕР',roleTr:'🥋 ТРЕНЕР',
+    sideSection:'Бухгалтерія',sideAcc:'Бухгалтерія',sideNav:'Навігація',
+    back:'Панель директора',
+    groupsTitle:'📋 Групи',
+    statCollected:'💰 Зібрано за місяць',statDebt:'🔴 Загальний борг',
+    statDebtors:'👥 Боржників',statActive:'✅ Активних',
+    selectGroup:'Оберіть групу зліва',
+    lblTariff:'Тариф:',optSelectTariff:'— оберіть —',
+    byTariff:'По тарифу',acceptAll:'Прийняти всіх',tariffsBtn:'Тарифи',
+    thAthlete:'Спортсмен',thStatus:'Статус',thPeriod:'Період',
+    thTariffCol:'Тариф',thAmount:'Сума',thType:'Тип',
+    noAthletes:'У групі немає спортсменів',
+    statusActive:'🟢 Активний',statusOverdue:'🔴 Прострочений',
+    statusSessions:'🎯 По тренуванням',statusExpiredSess:'🔴 Закінчились',
+    statusNone:'⚫ Немає оплат',
+    sessLeft:'Залишилось: ',sessOf:' з ',
+    cash:'💵 Готівка',card:'💳 Картка',bank:'🏦 Банк',
+    typeMonthly:'📅 Місячний',typeDays:'📆 По днях',
+    typeSessions:'🎯 По тренуванням',typeSingle:'1️⃣ Разовий',typeFree:'🎁 Пільга',
+    btnAccept:'✅ Прийняти',btnAccepted:'✅ Оплачено',btnWarn:'⚠️ Прийняти',
+    historyTitle:'Історія платежів',noHistory:'Немає платежів',
+    tariffsModalTitle:'⚙️ Тарифні плани',
+    addTariff:'Додати тариф',
+    newTariff:'Новий тариф',editTariff:'Редагувати тариф',
+    lblTariffName:'Назва *',lblTariffType:'Тип *',lblTariffPrice:'Ціна *',
+    lblTariffDuration:'Днів дії',lblTariffDurationDays:'Кількість днів *',
+    lblTariffSessions:'Кількість тренувань',
+    optMonthly:'📅 Місячний (до кінця місяця)',optDays:'📆 По днях (напр. 30 днів)',
+    optSessions:'🎯 По тренуванням',optSingle:'1️⃣ Разовий',optFree:'🎁 Безкоштовно (пільга)',
+    tariffCancel:'Скасувати',tariffSave:'Зберегти',
+    noTariffs:'Немає тарифів для цього клубу',
+    noGroups:'Немає груп',
+    fillRequired:'Оберіть тариф зверху',acceptRequired:'Введіть суму',
+    confirmAcceptAll:'Прийняти оплату від {n} спортсменів?',
+    confirmDouble:'Спортсмен вже оплатив цей місяць. Все одно додати платіж?',
+    confirmDelete:'Видалити платіж?',confirmDeleteTariff:'Видалити тариф?',
+    months:['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
+    periodMonth:'{m} {y}',periodDays:'{n} днів',periodSessions:'{n} тренувань',
+    periodSingle:'1 тренування',periodFree:'Пільга',
+    accepted:'Прийнято!',saveErr:'Помилка збереження',tariffSaved:'Тариф збережено',
+    fillPriceRequired:'Введіть назву та ціну',noClub:'Немає клубу',
+    tariffDays:'днів',tariffSess:'тренувань',
+    mobBack:'Назад',mobGroups:'Групи',mobAcc:'Оплати',mobStats:'Статистика'
+  },
+  ru:{
+    navBadge:'ДИРЕКТОР',roleDir:'👔 ДИРЕКТОР',roleAcc:'💰 БУХГАЛТЕР',roleTr:'🥋 ТРЕНЕР',
+    sideSection:'Бухгалтерия',sideAcc:'Бухгалтерия',sideNav:'Навигация',
+    back:'Панель директора',
+    groupsTitle:'📋 Группы',
+    statCollected:'💰 Собрано за месяц',statDebt:'🔴 Общий долг',
+    statDebtors:'👥 Должников',statActive:'✅ Активных',
+    selectGroup:'Выберите группу слева',
+    lblTariff:'Тариф:',optSelectTariff:'— выберите —',
+    byTariff:'По тарифу',acceptAll:'Принять всех',tariffsBtn:'Тарифы',
+    thAthlete:'Спортсмен',thStatus:'Статус',thPeriod:'Период',
+    thTariffCol:'Тариф',thAmount:'Сумма',thType:'Тип',
+    noAthletes:'В группе нет спортсменов',
+    statusActive:'🟢 Активен',statusOverdue:'🔴 Просрочен',
+    statusSessions:'🎯 По тренировкам',statusExpiredSess:'🔴 Закончились',
+    statusNone:'⚫ Нет оплат',
+    sessLeft:'Осталось: ',sessOf:' из ',
+    cash:'💵 Нал',card:'💳 Карта',bank:'🏦 Банк',
+    typeMonthly:'📅 Месячный',typeDays:'📆 По дням',
+    typeSessions:'🎯 По тренировкам',typeSingle:'1️⃣ Разовый',typeFree:'🎁 Льгота',
+    btnAccept:'✅ Принять',btnAccepted:'✅ Оплачен',btnWarn:'⚠️ Принять',
+    historyTitle:'История платежей',noHistory:'Нет платежей',
+    tariffsModalTitle:'⚙️ Тарифные планы',
+    addTariff:'Добавить тариф',
+    newTariff:'Новый тариф',editTariff:'Редактировать тариф',
+    lblTariffName:'Название *',lblTariffType:'Тип *',lblTariffPrice:'Цена *',
+    lblTariffDuration:'Дней действия',lblTariffDurationDays:'Количество дней *',
+    lblTariffSessions:'Количество тренировок',
+    optMonthly:'📅 Месячный (до конца месяца)',optDays:'📆 По дням (напр. 30 дней)',
+    optSessions:'🎯 По тренировкам',optSingle:'1️⃣ Разовый',optFree:'🎁 Бесплатно (льгота)',
+    tariffCancel:'Отмена',tariffSave:'Сохранить',
+    noTariffs:'Нет тарифов для этого клуба',
+    noGroups:'Нет групп',
+    fillRequired:'Выберите тариф сверху',acceptRequired:'Введите сумму',
+    confirmAcceptAll:'Принять оплату от {n} спортсменов?',
+    confirmDouble:'Спортсмен уже оплатил этот месяц. Всё равно добавить платёж?',
+    confirmDelete:'Удалить платёж?',confirmDeleteTariff:'Удалить тариф?',
+    months:['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+    periodMonth:'{m} {y}',periodDays:'{n} дней',periodSessions:'{n} тренировок',
+    periodSingle:'1 тренировка',periodFree:'Льгота',
+    accepted:'Принято!',saveErr:'Ошибка сохранения',tariffSaved:'Тариф сохранён',
+    fillPriceRequired:'Заполните название и цену',noClub:'Нет клуба',
+    tariffDays:'дней',tariffSess:'тренировок',
+    mobBack:'Назад',mobGroups:'Группы',mobAcc:'Оплаты',mobStats:'Статистика'
+  },
+  en:{
+    navBadge:'DIRECTOR',roleDir:'👔 DIRECTOR',roleAcc:'💰 ACCOUNTANT',roleTr:'🥋 TRAINER',
+    sideSection:'Accounting',sideAcc:'Accounting',sideNav:'Navigation',
+    back:'Director panel',
+    groupsTitle:'📋 Groups',
+    statCollected:'💰 Collected this month',statDebt:'🔴 Total debt',
+    statDebtors:'👥 Debtors',statActive:'✅ Active',
+    selectGroup:'Select a group on the left',
+    lblTariff:'Plan:',optSelectTariff:'— select —',
+    byTariff:'By plan',acceptAll:'Accept all',tariffsBtn:'Plans',
+    thAthlete:'Athlete',thStatus:'Status',thPeriod:'Period',
+    thTariffCol:'Plan',thAmount:'Amount',thType:'Type',
+    noAthletes:'No athletes in this group',
+    statusActive:'🟢 Active',statusOverdue:'🔴 Overdue',
+    statusSessions:'🎯 By sessions',statusExpiredSess:'🔴 Expired',
+    statusNone:'⚫ No payments',
+    sessLeft:'Left: ',sessOf:' of ',
+    cash:'💵 Cash',card:'💳 Card',bank:'🏦 Bank',
+    typeMonthly:'📅 Monthly',typeDays:'📆 By days',
+    typeSessions:'🎯 By sessions',typeSingle:'1️⃣ Single',typeFree:'🎁 Free',
+    btnAccept:'✅ Accept',btnAccepted:'✅ Paid',btnWarn:'⚠️ Accept',
+    historyTitle:'Payment history',noHistory:'No payments',
+    tariffsModalTitle:'⚙️ Billing plans',
+    addTariff:'Add plan',
+    newTariff:'New plan',editTariff:'Edit plan',
+    lblTariffName:'Name *',lblTariffType:'Type *',lblTariffPrice:'Price *',
+    lblTariffDuration:'Days valid',lblTariffDurationDays:'Number of days *',
+    lblTariffSessions:'Number of sessions',
+    optMonthly:'📅 Monthly (until end of month)',optDays:'📆 By days (e.g. 30 days)',
+    optSessions:'🎯 By sessions',optSingle:'1️⃣ Single session',optFree:'🎁 Free (benefit)',
+    tariffCancel:'Cancel',tariffSave:'Save',
+    noTariffs:'No plans for this club',
+    noGroups:'No groups',
+    fillRequired:'Select a plan above',acceptRequired:'Enter amount',
+    confirmAcceptAll:'Accept payment from {n} athletes?',
+    confirmDouble:'Athlete already paid this month. Add payment anyway?',
+    confirmDelete:'Delete payment?',confirmDeleteTariff:'Delete plan?',
+    months:['January','February','March','April','May','June','July','August','September','October','November','December'],
+    periodMonth:'{m} {y}',periodDays:'{n} days',periodSessions:'{n} sessions',
+    periodSingle:'1 session',periodFree:'Free',
+    accepted:'Accepted!',saveErr:'Save error',tariffSaved:'Plan saved',
+    fillPriceRequired:'Enter name and price',noClub:'No club',
+    tariffDays:'days',tariffSess:'sessions',
+    mobBack:'Back',mobGroups:'Groups',mobAcc:'Payments',mobStats:'Stats'
+  }
+};
+let currentLang=localStorage.getItem('lang')||'uk';
+function t(k){return(i18n[currentLang]||i18n.ru)[k]||k;}
 
-// ============================
-// INIT
-// ============================
-if (!token) window.location.href = '/';
+function applyLang(){
+  document.documentElement.lang=currentLang;
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    const map={'UA':'uk','RU':'ru','EN':'en'};
+    btn.classList.toggle('active',map[btn.textContent]===currentLang);
+  });
+  const s=(id,key)=>{const e=document.getElementById(id);if(e)e.textContent=t(key);};
+  s('nav-badge','navBadge');
+  s('lbl-side-section','sideSection');s('lbl-side-acc','sideAcc');s('lbl-side-nav','sideNav');
+  s('lbl-back','back');
+  s('lbl-groups-title','groupsTitle');
+  s('lbl-stat-collected','statCollected');s('lbl-stat-debt','statDebt');
+  s('lbl-stat-debtors','statDebtors');s('lbl-stat-active','statActive');
+  s('lbl-select-group','selectGroup');
+  s('lbl-tariff','lblTariff');
+  const optSel=document.getElementById('opt-select-tariff');if(optSel)optSel.textContent=t('optSelectTariff');
+  s('lbl-by-tariff','byTariff');s('lbl-accept-all','acceptAll');s('lbl-tariffs-btn','tariffsBtn');
+  s('th-athlete','thAthlete');s('th-status','thStatus');s('th-period','thPeriod');
+  s('th-tariff-col','thTariffCol');s('th-amount','thAmount');s('th-type','thType');
+  s('lbl-no-athletes','noAthletes');
+  s('lbl-tariffs-modal-title','tariffsModalTitle');s('lbl-add-tariff','addTariff');
+  s('lbl-tariff-name','lblTariffName');s('lbl-tariff-type','lblTariffType');
+  s('lbl-tariff-price','lblTariffPrice');s('lbl-tariff-duration','lblTariffDuration');
+  s('lbl-tariff-sessions','lblTariffSessions');
+  s('lbl-tariff-cancel','tariffCancel');s('lbl-tariff-save','tariffSave');
+  s('opt-monthly','optMonthly');s('opt-days','optDays');s('opt-sessions','optSessions');
+  s('opt-single','optSingle');s('opt-free','optFree');
+  s('mob-lbl-back','mobBack');s('mob-lbl-groups','mobGroups');
+  s('mob-lbl-acc','mobAcc');s('mob-lbl-stats','mobStats');
+  s('mob-groups-title','groupsTitle');
+  updateMonthLabel();
+  if(currentGroupId) renderTable();
+}
 
-async function init() {
-  user = JSON.parse(localStorage.getItem('user') || '{}');
-  if (!user || !user.role) { window.location.href = '/'; return; }
+function setLang(lang){
+  currentLang=lang;localStorage.setItem('lang',lang);
+  applyLang();
+}
 
-  const allowed = ['director', 'accountant', 'trainer'];
-  if (!allowed.includes(user.role)) { window.location.href = '/'; return; }
+/* ── THEME ── */
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  const n=isDark?'light':'dark';
+  html.setAttribute('data-theme',n);localStorage.setItem('theme',n);
+  document.getElementById('icon-sun').style.display=isDark?'block':'none';
+  document.getElementById('icon-moon').style.display=isDark?'none':'block';
+}
+(function(){
+  const s=localStorage.getItem('theme');
+  if(s==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('icon-sun').style.display='none';
+    document.getElementById('icon-moon').style.display='block';
+  }
+})();
 
-  // UI по роли
-  document.getElementById('userName').textContent = `${user.first_name || ''} ${user.last_name || ''}`.trim();
-  const roleLabels = { director: '👔 ДИРЕКТОР', accountant: '💰 БУХГАЛТЕР', trainer: '🥋 ТРЕНЕР' };
-  document.getElementById('userBadge').textContent = roleLabels[user.role] || user.role;
+/* ── MOBILE ── */
+function showMobGroups(){document.getElementById('mobGroupsOverlay').style.display='block';}
+function hideMobGroups(){document.getElementById('mobGroupsOverlay').style.display='none';}
+function scrollToStats(){const el=document.getElementById('statsBar');if(el)el.scrollIntoView({behavior:'smooth'});}
 
-  // Статистика только для director/accountant
-  if (user.role === 'director' || user.role === 'accountant') {
-    document.getElementById('statsBar').style.display = 'grid';
-    document.getElementById('btnTariffs').style.display = '';
-  } else {
-    document.getElementById('btnTariffs').style.display = 'none';
+/* ── API & STATE ── */
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const token=localStorage.getItem('token');
+let user=null;
+let currentGroupId=null;
+let currentGroupData=null;
+let allGroups=[];
+let groupAthletes=[];
+let groupPayments={};
+let groupTariffs=[];
+let currentMonth=new Date().getMonth()+1;
+let currentYear=new Date().getFullYear();
+
+if(!token)window.location.href='/';
+
+/* ── TOAST ── */
+function showToast(msg,type='success'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast show '+(type||'');
+  setTimeout(()=>el.className='toast',2500);
+}
+
+/* ── HELPERS ── */
+function formatDate(str){
+  if(!str)return '—';
+  return new Date(str).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function formatDateTime(str){
+  if(!str)return '—';
+  const d=new Date(str);
+  return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})+' '+
+    d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+}
+function formatMoney(n){return Math.round(n).toLocaleString('ru-RU')+' грн';}
+function getMonthName(m){return t('months')[m-1]||'';}
+
+/* ── MONTH NAV ── */
+function updateMonthLabel(){
+  document.getElementById('monthLabel').textContent=getMonthName(currentMonth)+' '+currentYear;
+}
+function changeMonth(delta){
+  currentMonth+=delta;
+  if(currentMonth>12){currentMonth=1;currentYear++;}
+  if(currentMonth<1){currentMonth=12;currentYear--;}
+  updateMonthLabel();
+  if(currentGroupId)loadGroupAthletes();
+  if(user&&(user.role==='director'||user.role==='accountant'))loadStats();
+}
+
+/* ── INIT ── */
+async function init(){
+  user=JSON.parse(localStorage.getItem('user')||'{}');
+  if(!user||!user.role){window.location.href='/';return;}
+  const allowed=['director','accountant','trainer'];
+  if(!allowed.includes(user.role)){window.location.href='/';return;}
+
+  // Sidebar user info
+  try{
+    const fn=user.first_name||'',ln=user.last_name||'';
+    document.getElementById('sideInitials').textContent=(fn[0]||'')+(ln[0]||'')||'ДР';
+    document.getElementById('sideUserName').textContent=(fn+' '+ln).trim();
+    document.getElementById('sideUserId').textContent='ID: '+user.id;
+  }catch(e){}
+
+  // Nav badge by role
+  const roleKey={director:'roleDir',accountant:'roleAcc',trainer:'roleTr'};
+  document.getElementById('nav-badge').textContent=t(roleKey[user.role]||'navBadge');
+
+  // Show tariffs button and stats only for director/accountant
+  if(user.role==='director'||user.role==='accountant'){
+    document.getElementById('statsBar').style.display='grid';
+    document.getElementById('btnTariffs').style.display='';
   }
 
+  // Back link for trainer
+  if(user.role==='trainer'){
+    const bl=document.getElementById('lbl-back-link');
+    if(bl)bl.href='/children-list.html';
+  }
+
+  applyLang();
   updateMonthLabel();
   await loadGroups();
 }
 
-// ============================
-// GROUPS
-// ============================
-async function loadGroups() {
-  try {
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'groups', action: 'list' }) });
-    const d = await r.json();
-    const allFromServer = Array.isArray(d) ? d : (d.merged || []);
+/* ── GROUPS ── */
+async function loadGroups(){
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'groups',action:'list'})});
+    const d=await r.json();
+    const allFromServer=Array.isArray(d)?d:(d.merged||[]);
 
-    if (user.role === 'trainer' || user.role === 'accountant') {
-      // Для тренера/бухгалтера — показываем только группы из group_accountants
-      const ra = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, resource: 'group_accountants', action: 'list',
-          data: { user_id: user.id } }) });
-      const da = await ra.json();
-      const accGroups = Array.isArray(da) ? da : (da.merged || []);
-      const accGroupIds = accGroups.map(g => g.group_id).filter(Boolean);
-      allGroups = allFromServer.filter(g => accGroupIds.includes(g.id));
-    } else {
-      allGroups = allFromServer;
+    if(user.role==='trainer'||user.role==='accountant'){
+      const ra=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,resource:'group_accountants',action:'list',data:{user_id:user.id}})});
+      const da=await ra.json();
+      const accGroups=Array.isArray(da)?da:(da.merged||[]);
+      const accGroupIds=accGroups.map(g=>g.group_id).filter(Boolean);
+      allGroups=allFromServer.filter(g=>accGroupIds.includes(g.id));
+    }else{
+      allGroups=allFromServer;
     }
 
-    document.getElementById('groupCount').textContent = allGroups.length + ' групп';
+    document.getElementById('groupCount').textContent=allGroups.length;
     renderGroupList();
-    if (user.role === 'director' || user.role === 'accountant') {
-      await loadStats();
-    }
-  } catch(e) { console.error(e); }
+    if(user.role==='director'||user.role==='accountant')loadStats();
+  }catch(e){console.error(e);}
 }
 
-function renderGroupList() {
-  const el = document.getElementById('groupList');
-  if (!allGroups.length) {
-    el.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#aaa;font-size:.85rem">Нет групп</div>';
-    return;
-  }
-  el.innerHTML = allGroups.map(g => `
-    <div class="group-item ${g.id === currentGroupId ? 'active' : ''}" onclick="openGroup(${g.id})">
-      <div class="group-item-name">${g.name}</div>
-      <div class="group-item-club">${g.club_name || '—'}</div>
-    </div>`).join('');
+function renderGroupList(){
+  const html=allGroups.length
+    ?allGroups.map(g=>`
+      <div class="group-item ${g.id===currentGroupId?'active':''}" onclick="openGroup(${g.id})">
+        <div class="group-item-name">${g.name}</div>
+        <div class="group-item-club">${g.club_name||'—'}</div>
+      </div>`).join('')
+    :`<div style="padding:16px;text-align:center;color:var(--muted2);font-size:12px">${t('noGroups')}</div>`;
+  document.getElementById('groupList').innerHTML=html;
+  document.getElementById('mobGroupList').innerHTML=html.replace(/onclick="openGroup\((\d+)\)"/g,
+    'onclick="openGroup($1);hideMobGroups()"');
 }
 
-// ============================
-// OPEN GROUP
-// ============================
-async function openGroup(groupId) {
-  currentGroupId = groupId;
-  currentGroupData = allGroups.find(g => g.id === groupId);
+/* ── OPEN GROUP ── */
+async function openGroup(groupId){
+  currentGroupId=groupId;
+  currentGroupData=allGroups.find(g=>g.id===groupId);
   renderGroupList();
-
-  document.getElementById('mainEmpty').style.display = 'none';
-  document.getElementById('mainContent').style.display = 'block';
-  document.getElementById('groupTitle').textContent = currentGroupData?.name || '—';
-  document.getElementById('groupSubtitle').textContent = currentGroupData?.club_name || '';
-
-  await Promise.all([
-    loadGroupAthletes(),
-    loadGroupTariffs()
-  ]);
+  document.getElementById('mainEmpty').style.display='none';
+  document.getElementById('mainContent').style.display='block';
+  document.getElementById('groupTitle').textContent=currentGroupData?.name||'—';
+  document.getElementById('groupSubtitle').textContent=currentGroupData?.club_name||'';
+  await Promise.all([loadGroupAthletes(),loadGroupTariffs()]);
 }
 
-// ============================
-// ATHLETES
-// ============================
-async function loadGroupAthletes() {
-  document.getElementById('tableLoading').style.display = 'block';
-  document.getElementById('accTable').style.display = 'none';
-  document.getElementById('tableEmpty').style.display = 'none';
-
-  try {
-    // Загружаем спортсменов группы
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'children', action: 'list' }) });
-    const d = await r.json();
-    const all = Array.isArray(d) ? d : (d.merged || []);
-    // Фильтруем по группе
-    groupAthletes = all.filter(c => {
-      if (!c.group_names || c.group_names === 'Без группы') return false;
+/* ── ATHLETES ── */
+async function loadGroupAthletes(){
+  document.getElementById('tableLoading').style.display='block';
+  document.getElementById('accTable').style.display='none';
+  document.getElementById('tableEmpty').style.display='none';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'children',action:'list'})});
+    const d=await r.json();
+    const all=Array.isArray(d)?d:(d.merged||[]);
+    groupAthletes=all.filter(c=>{
+      if(!c.group_names||c.group_names==='Без группы'||c.group_names==='Без групи')return false;
       return c.group_names.split(', ').includes(currentGroupData?.name);
     });
 
-    // Загружаем платежи за текущий месяц
-    const rp = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'list',
-        data: { group_id: currentGroupId, month: currentMonth, year: currentYear } }) });
-    const dp = await rp.json();
-    const payments = Array.isArray(dp) ? dp : (dp.merged || []);
+    const rp=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'payments',action:'list',
+        data:{group_id:currentGroupId,month:currentMonth,year:currentYear}})});
+    const dp=await rp.json();
 
-    // Загружаем ВСЕ платежи спортсменов группы (общий кошелёк — без фильтра клуба)
-    const rpAll = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: { group_id: currentGroupId } }) });
-    const dpAll = await rpAll.json();
-    const allPayments = Array.isArray(dpAll) ? dpAll : (dpAll.merged || []);
+    const rpAll=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'payments',action:'list',data:{group_id:currentGroupId}})});
+    const dpAll=await rpAll.json();
+    const allPayments=Array.isArray(dpAll)?dpAll:(dpAll.merged||[]);
 
-    // Строим map child_id -> { paid_until, history, last_type }
-    groupPayments = {};
-    allPayments.forEach(p => {
-      if (!p.child_id) return;
-      if (!groupPayments[p.child_id]) groupPayments[p.child_id] = { history: [], last_type: 'cash' };
+    groupPayments={};
+    allPayments.forEach(p=>{
+      if(!p.child_id)return;
+      if(!groupPayments[p.child_id])groupPayments[p.child_id]={history:[],last_type:'cash'};
       groupPayments[p.child_id].history.push(p);
-      if (p.paid_until) {
-        if (!groupPayments[p.child_id].paid_until || p.paid_until > groupPayments[p.child_id].paid_until) {
-          groupPayments[p.child_id].paid_until = p.paid_until;
-          groupPayments[p.child_id].last_type = p.payment_type || 'cash';
+      if(p.paid_until){
+        if(!groupPayments[p.child_id].paid_until||p.paid_until>groupPayments[p.child_id].paid_until){
+          groupPayments[p.child_id].paid_until=p.paid_until;
+          groupPayments[p.child_id].last_type=p.payment_type||'cash';
         }
       }
     });
 
-    document.getElementById('tableLoading').style.display = 'none';
-
-    if (!groupAthletes.length) {
-      document.getElementById('tableEmpty').style.display = 'block';
-      return;
-    }
-
-    document.getElementById('accTable').style.display = 'table';
+    document.getElementById('tableLoading').style.display='none';
+    if(!groupAthletes.length){document.getElementById('tableEmpty').style.display='block';return;}
+    document.getElementById('accTable').style.display='table';
     renderTable();
-
-  } catch(e) {
+  }catch(e){
     console.error(e);
-    document.getElementById('tableLoading').style.display = 'none';
+    document.getElementById('tableLoading').style.display='none';
   }
 }
 
-function renderTable() {
-  const tbody = document.getElementById('accTableBody');
-  const today = new Date();
-  today.setHours(0,0,0,0);
+/* ── RENDER TABLE ── */
+function renderTable(){
+  const tbody=document.getElementById('accTableBody');
+  const today=new Date();today.setHours(0,0,0,0);
 
-  // Строим map: child_id -> агрегированные данные по всем платежам
-  const lastPayMap = {};
-  Object.keys(groupPayments).forEach(cid => {
-    const pd = groupPayments[cid];
-    if (!pd.history || !pd.history.length) return;
-    
-    const mStart = new Date(currentYear, currentMonth - 1, 1);
-    const mEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59);
-
-    // Платёж активен в месяце если:
-    // - обычный: paid_from <= конец месяца И paid_until >= начало месяца
-    // - льгота (paid_until=null): paid_from в этом месяце
-    const monthPays = pd.history.filter(p => {
-      if (!p.child_id) return false;
-      if (p.sessions_paid) return false;
-      if (!p.paid_from) return false;
-      const pf = new Date(p.paid_from);
-      if (!p.paid_until) {
-        // Льгота — paid_from должен попадать в выбранный месяц
-        return pf >= mStart && pf <= mEnd;
-      }
-      return pf <= mEnd && new Date(p.paid_until) >= mStart;
-    }).sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
-
-    // Потренировочные — берём все (общий кошелёк)
-    const sessionPays = pd.history.filter(p => p.child_id && p.sessions_paid)
-      .sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at));
-
-    const sorted = monthPays.length ? monthPays : sessionPays;
-    if (!sorted.length) return;
-    const last = sorted[0];
-    
-    // Суммируем все sessions_paid (общий кошелёк тренировок)
-    const totalSessionsPaid = sorted.reduce((sum, p) => sum + (parseInt(p.sessions_paid) || 0), 0);
-    // sessions_used берём из последнего платежа (там считается с первой оплаты)
-    const sessionsUsed = parseInt(last.sessions_used) || 0;
-    
-    // Если есть хоть один потренировочный платёж — используем суммарный счётчик
-    const hasSessionsPay = sorted.some(p => p.sessions_paid);
-    
-    lastPayMap[cid] = {
-      ...last,
-      sessions_paid: hasSessionsPay ? totalSessionsPaid : null,
-      sessions_used: hasSessionsPay ? sessionsUsed : null,
-    };
+  const lastPayMap={};
+  Object.keys(groupPayments).forEach(cid=>{
+    const pd=groupPayments[cid];
+    if(!pd.history||!pd.history.length)return;
+    const mStart=new Date(currentYear,currentMonth-1,1);
+    const mEnd=new Date(currentYear,currentMonth,0,23,59,59);
+    const monthPays=pd.history.filter(p=>{
+      if(!p.child_id)return false;
+      if(p.sessions_paid)return false;
+      if(!p.paid_from)return false;
+      const pf=new Date(p.paid_from);
+      if(!p.paid_until)return pf>=mStart&&pf<=mEnd;
+      return pf<=mEnd&&new Date(p.paid_until)>=mStart;
+    }).sort((a,b)=>new Date(b.paid_at)-new Date(a.paid_at));
+    const sessionPays=pd.history.filter(p=>p.child_id&&p.sessions_paid)
+      .sort((a,b)=>new Date(b.paid_at)-new Date(a.paid_at));
+    const sorted=monthPays.length?monthPays:sessionPays;
+    if(!sorted.length)return;
+    const last=sorted[0];
+    const totalSessionsPaid=sorted.reduce((sum,p)=>sum+(parseInt(p.sessions_paid)||0),0);
+    const sessionsUsed=parseInt(last.sessions_used)||0;
+    const hasSessionsPay=sorted.some(p=>p.sessions_paid);
+    lastPayMap[cid]={...last,
+      sessions_paid:hasSessionsPay?totalSessionsPaid:null,
+      sessions_used:hasSessionsPay?sessionsUsed:null};
   });
 
-  // Тарифные опции для каждого спортсмена
-  const tariffOptions = '<option value="">— тариф —</option>' +
-    groupTariffs.map(t => {
-      const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
-      return `<option value="${t.id}">${icon} ${t.name} — ${t.price}грн</option>`;
-    }).join('');
+  const globalTariffId=document.getElementById('activeTariff')?.value;
+  const nowMonthCheck=new Date().getMonth()+1;
+  const nowYearCheck=new Date().getFullYear();
+  const isPastMonth=(currentYear<nowYearCheck)||(currentYear===nowYearCheck&&currentMonth<nowMonthCheck);
 
-  // Общий тариф выбранный сверху
-  const globalTariffId = document.getElementById('activeTariff')?.value;
+  tbody.innerHTML=groupAthletes.map(athlete=>{
+    const lastPay=lastPayMap[athlete.id];
+    const lastType=lastPay?.payment_type||'cash';
+    const lastTariffId=athlete._lastTariffId||globalTariffId||'';
 
-  tbody.innerHTML = groupAthletes.map(athlete => {
-    const lastPay = lastPayMap[athlete.id];
-    const lastType = lastPay?.payment_type || 'cash';
-    const lastTariffId = athlete._lastTariffId || globalTariffId || '';
-
-    // ---- СТАТУС и ПЕРИОД ----
-    let statusHtml = '', periodHtml = '';
-
-    if (!lastPay) {
-      statusHtml = '<span class="status-badge status-none">⚫ Нет оплат</span>';
-      periodHtml = '<span class="paid-until">—</span>';
-    } else if (lastPay.sessions_paid) {
-      // Потренировочный тариф
-      const sessionsLeft = Math.max(0, lastPay.sessions_paid - (parseInt(lastPay.sessions_used) || 0));
-      if (sessionsLeft > 0) {
-        statusHtml = '<span class="status-badge status-active">🎯 По тренировкам</span>';
-        periodHtml = `<span class="paid-until">Осталось: <b>${sessionsLeft}</b> из ${lastPay.sessions_paid}</span>`;
-      } else {
-        statusHtml = '<span class="status-badge status-overdue">🔴 Закончились</span>';
-        periodHtml = `<span class="paid-until overdue">0 из ${lastPay.sessions_paid}</span>`;
+    // STATUS & PERIOD
+    let statusHtml='',periodHtml='';
+    if(!lastPay){
+      statusHtml=`<span class="status-badge status-none">${t('statusNone')}</span>`;
+      periodHtml=`<span class="paid-until">—</span>`;
+    }else if(lastPay.sessions_paid){
+      const sessionsLeft=Math.max(0,lastPay.sessions_paid-(parseInt(lastPay.sessions_used)||0));
+      if(sessionsLeft>0){
+        statusHtml=`<span class="status-badge status-active">${t('statusSessions')}</span>`;
+        periodHtml=`<span class="paid-until">${t('sessLeft')}<b>${sessionsLeft}</b>${t('sessOf')}${lastPay.sessions_paid}</span>`;
+      }else{
+        statusHtml=`<span class="status-badge status-overdue">${t('statusExpiredSess')}</span>`;
+        periodHtml=`<span class="paid-until overdue">0${t('sessOf')}${lastPay.sessions_paid}</span>`;
       }
-    } else if (lastPay.paid_until) {
-      const paidUntilDate = new Date(lastPay.paid_until);
-      const monthStart = new Date(currentYear, currentMonth - 1, 1);
-      const monthEnd = new Date(currentYear, currentMonth, 0);
-      const nowM = new Date().getMonth() + 1;
-      const nowY = new Date().getFullYear();
-      const isPastM = (currentYear < nowY) || (currentYear === nowY && currentMonth < nowM);
-
-      if (paidUntilDate >= monthStart) {
-        // Платёж покрывает выбранный месяц
-        if (isPastM) {
-          // Прошлый месяц — всегда "Активен" если paid_until >= начала месяца
-          statusHtml = '<span class="status-badge status-active">🟢 Активен</span>';
-          periodHtml = `<span class="paid-until">до ${formatDate(lastPay.paid_until)}</span>`;
-        } else {
-          // Текущий/будущий — сравниваем с сегодня
-          const diffDays = Math.ceil((paidUntilDate - today) / (1000*60*60*24));
-          const cls = diffDays >= 0 && diffDays <= 7 ? 'soon' : '';
-          if (diffDays >= 0) {
-            statusHtml = '<span class="status-badge status-active">🟢 Активен</span>';
-            periodHtml = `<span class="paid-until ${cls}">до ${formatDate(lastPay.paid_until)}</span>`;
-          } else {
-            statusHtml = '<span class="status-badge status-overdue">🔴 Просрочен</span>';
-            periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
+    }else if(lastPay.paid_until){
+      const paidUntilDate=new Date(lastPay.paid_until);
+      const monthStart=new Date(currentYear,currentMonth-1,1);
+      const nowM=new Date().getMonth()+1;const nowY=new Date().getFullYear();
+      const isPastM=(currentYear<nowY)||(currentYear===nowY&&currentMonth<nowM);
+      if(paidUntilDate>=monthStart){
+        if(isPastM){
+          statusHtml=`<span class="status-badge status-active">${t('statusActive')}</span>`;
+          periodHtml=`<span class="paid-until">до ${formatDate(lastPay.paid_until)}</span>`;
+        }else{
+          const diffDays=Math.ceil((paidUntilDate-today)/(1000*60*60*24));
+          const cls=diffDays>=0&&diffDays<=7?'soon':'';
+          if(diffDays>=0){
+            statusHtml=`<span class="status-badge status-active">${t('statusActive')}</span>`;
+            periodHtml=`<span class="paid-until ${cls}">до ${formatDate(lastPay.paid_until)}</span>`;
+          }else{
+            statusHtml=`<span class="status-badge status-overdue">${t('statusOverdue')}</span>`;
+            periodHtml=`<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
           }
         }
-      } else {
-        // paid_until раньше начала выбранного месяца
-        statusHtml = '<span class="status-badge status-overdue">🔴 Не оплачен</span>';
-        periodHtml = `<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
+      }else{
+        statusHtml=`<span class="status-badge status-overdue">${t('statusOverdue')}</span>`;
+        periodHtml=`<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
       }
-    } else if (lastPay.period_label === 'Льгота') {
-      statusHtml = '<span class="status-badge" style="background:#dbeafe;color:#1e40af">🎁 Льгота</span>';
-      periodHtml = '<span class="paid-until">Бесплатно</span>';
-    } else {
-      statusHtml = '<span class="status-badge status-trial">🟡 Оплата есть</span>';
-      periodHtml = '<span class="paid-until">—</span>';
+    }else if(lastPay&&!lastPay.paid_until&&!lastPay.sessions_paid){
+      statusHtml=`<span class="status-badge status-trial">🎁 ${t('typeFree')}</span>`;
+      periodHtml=`<span class="paid-until">${formatDate(lastPay.paid_from)}</span>`;
     }
 
-    // ---- ЗАЩИТА ОТ ДВОЙНОЙ ОПЛАТЫ (глобальная по спортсмену) ----
-    const today2 = new Date(); today2.setHours(0,0,0,0);
-    // Месячный: есть платёж с paid_until >= сегодня
-    const isMonthlyPaid = lastPay?.paid_until && !lastPay.sessions_paid &&
-      new Date(lastPay.paid_until) >= today2;
-    // Потренировочный: есть остаток тренировок
-    const hasActiveSessions = lastPay?.sessions_paid &&
-      (lastPay.sessions_paid - (parseInt(lastPay.sessions_used) || 0)) > 0;
-
-    let acceptBtn = '';
-    if (isMonthlyPaid) {
-      acceptBtn = `<button class="btn-accepted" onclick="confirmDoublePayment(${athlete.id})" title="Уже оплачен. Нажмите для доп. платежа">✅ Оплачен</button>`;
-    } else if (hasActiveSessions) {
-      const left = lastPay.sessions_paid - (parseInt(lastPay.sessions_used) || 0);
-      acceptBtn = `<button class="btn-accept" style="background:#f59e0b" id="btn_${athlete.id}" onclick="acceptPayment(${athlete.id})" title="Есть ${left} тренировок. Всё равно принять?">⚠️ Принять</button>`;
-    } else {
-      acceptBtn = `<button class="btn-accept" id="btn_${athlete.id}" onclick="acceptPayment(${athlete.id})">✅ Принять</button>`;
+    // ACCEPT BUTTON
+    const today2=new Date();today2.setHours(0,0,0,0);
+    const isMonthlyPaid=lastPay?.paid_until&&!lastPay.sessions_paid&&new Date(lastPay.paid_until)>=today2;
+    const hasActiveSessions=lastPay?.sessions_paid&&(lastPay.sessions_paid-(parseInt(lastPay.sessions_used)||0))>0;
+    let acceptBtn='';
+    if(isMonthlyPaid){
+      acceptBtn=`<button class="btn-accepted" onclick="confirmDoublePayment(${athlete.id})">${t('btnAccepted')}</button>`;
+    }else if(hasActiveSessions){
+      const left=lastPay.sessions_paid-(parseInt(lastPay.sessions_used)||0);
+      acceptBtn=`<button class="btn-accept-warn" id="btn_${athlete.id}" onclick="acceptPayment(${athlete.id})" title="${left} sessions left">${t('btnWarn')}</button>`;
+    }else{
+      acceptBtn=`<button class="btn-accept" id="btn_${athlete.id}" onclick="acceptPayment(${athlete.id})">${t('btnAccept')}</button>`;
     }
 
-    // ---- ФОТО ----
-    const photo = athlete.photo_url
-      ? `<img class="athlete-photo" src="${athlete.photo_url}" loading="lazy">`
-      : `<div class="athlete-photo" style="background:var(--p);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.75rem">${(athlete.first_name||'')[0]}${(athlete.last_name||'')[0]}</div>`;
+    // PHOTO
+    const photo=athlete.photo_url
+      ?`<img class="athlete-photo" src="${athlete.photo_url}" loading="lazy">`
+      :`<div class="athlete-photo-placeholder">${(athlete.first_name||'')[0]}${(athlete.last_name||'')[0]}</div>`;
 
-    // ---- ТИП ОПЛАТЫ ----
-    const typeOptions = ['cash','card','bank'].map(t =>
-      `<option value="${t}" ${t === lastType ? 'selected' : ''}>${t === 'cash' ? '💵 Нал' : t === 'card' ? '💳 Карта' : '🏦 Банк'}</option>`
-    ).join('');
+    // TYPE OPTIONS
+    const typeMap={cash:t('cash'),card:t('card'),bank:t('bank')};
+    const typeOptions=Object.entries(typeMap).map(([v,lbl])=>
+      `<option value="${v}" ${v===lastType?'selected':''}>${lbl}</option>`).join('');
 
-    // ---- ТАРИФ В СТРОКЕ ----
-    // Для прошлых месяцев — только monthly и free
-    const nowMonthCheck = new Date().getMonth() + 1;
-    const nowYearCheck = new Date().getFullYear();
-    const isPastMonth = (currentYear < nowYearCheck) || (currentYear === nowYearCheck && currentMonth < nowMonthCheck);
-    const allowedTariffs = isPastMonth
-      ? groupTariffs.filter(t => t.plan_type === 'monthly' || t.plan_type === 'free')
-      : groupTariffs;
-    // Определяем выбранный тариф для этой строки
-    const rowTariffObj = lastTariffId ? groupTariffs.find(t => t.id == lastTariffId) : null;
-    const isDays = rowTariffObj?.plan_type === 'days';
-    // Дата начала по умолчанию — сегодня
-    const defaultFrom = new Date().toISOString().split('T')[0];
-    const rowTariffSel = `<div style="display:flex;align-items:center;gap:.3rem">
-      <select class="pay-type-select" id="tariff_${athlete.id}" 
-        onchange="onRowTariffChange(${athlete.id})" style="max-width:140px;font-size:.78rem">
-        ${allowedTariffs.map(t => {
-          const icon = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
-          return `<option value="${t.id}" ${t.id == lastTariffId ? 'selected' : ''}>${icon} ${t.name}</option>`;
-        }).join('')}
-        <option value="" ${!lastTariffId ? 'selected' : ''}>— тариф —</option>
+    // TARIFF SELECT
+    const allowedTariffs=isPastMonth?groupTariffs.filter(t=>t.plan_type==='monthly'||t.plan_type==='free'):groupTariffs;
+    const rowTariffObj=lastTariffId?groupTariffs.find(t=>t.id==lastTariffId):null;
+    const isDays=rowTariffObj?.plan_type==='days';
+    const defaultFrom=new Date().toISOString().split('T')[0];
+    const tariffIcons={monthly:'📅',days:'📆',sessions:'🎯',free:'🎁',single:'1️⃣'};
+    const rowTariffSel=`<div style="display:flex;align-items:center;gap:3px">
+      <select class="pay-type-select" id="tariff_${athlete.id}" onchange="onRowTariffChange(${athlete.id})" style="max-width:130px;font-size:11px">
+        ${allowedTariffs.map(t=>`<option value="${t.id}" ${t.id==lastTariffId?'selected':''}>${tariffIcons[t.plan_type]||''} ${t.name}</option>`).join('')}
+        <option value="" ${!lastTariffId?'selected':''}>—</option>
       </select>
-      <div id="datebtn_wrap_${athlete.id}" style="display:${isDays ? 'flex' : 'none'};align-items:center;gap:.2rem">
-        <button class="btn-icon" onclick="toggleDatePicker(${athlete.id})" title="Дата начала" style="font-size:.9rem">📅</button>
+      <div id="datebtn_wrap_${athlete.id}" style="display:${isDays?'flex':'none'};align-items:center;gap:2px">
+        <button class="btn-icon" onclick="toggleDatePicker(${athlete.id})" style="font-size:.85rem;padding:2px 4px">📅</button>
         <input type="date" id="paid_from_${athlete.id}" value="${defaultFrom}"
           onchange="onPaidFromChange(${athlete.id})"
-          style="display:none;padding:.3rem .4rem;border:1.5px solid var(--p);border-radius:6px;font-size:.73rem;width:115px">
+          style="display:none;padding:3px 5px;border:1px solid var(--p);border-radius:5px;font-size:11px;width:110px;background:var(--input-bg);color:var(--text)">
       </div>
     </div>`;
 
-    // Определяем есть ли активная льгота
-    const hasFreeActive = lastPay && groupTariffs.find(t => t.id == (document.getElementById(`tariff_${athlete.id}`)?.value))?.plan_type === 'free';
-    const rowBg = hasFreeActive ? 'background:#e8f4fd;' : '';
-    return `<tr id="row_${athlete.id}" style="${rowBg}">
-      <td><button class="btn-icon" onclick="toggleHistory(${athlete.id})" title="История">📋</button></td>
-      <td>
-        <div class="athlete-info">
-          ${photo}
-          <div><div class="athlete-name">${athlete.last_name} ${athlete.first_name}</div></div>
-        </div>
-      </td>
+    return `<tr id="row_${athlete.id}">
+      <td><button class="btn-icon" onclick="toggleHistory(${athlete.id})" style="font-size:11px;padding:2px 4px;color:var(--muted)">📋</button></td>
+      <td><div class="athlete-info">${photo}<div><div class="athlete-name">${athlete.last_name} ${athlete.first_name}</div></div></div></td>
       <td>${statusHtml}</td>
       <td>${periodHtml}</td>
       <td>${rowTariffSel}</td>
       <td>
         <div class="pay-row">
-          <button class="sessions-btn" onclick="addSessions(${athlete.id}, -1)">−</button>
-          <input class="amount-input" type="number" id="amount_${athlete.id}"
-            value="" min="0" placeholder="грн" oninput="onAmountInput(${athlete.id})" style="width:75px">
-          <button class="sessions-btn" onclick="addSessions(${athlete.id}, 1)">+</button>
+          <button class="sessions-btn" onclick="addSessions(${athlete.id},-1)">−</button>
+          <input class="amount-input" type="number" id="amount_${athlete.id}" value="" min="0" placeholder="0" oninput="onAmountInput(${athlete.id})" style="width:65px">
+          <button class="sessions-btn" onclick="addSessions(${athlete.id},1)">+</button>
         </div>
       </td>
       <td><select class="pay-type-select" id="type_${athlete.id}">${typeOptions}</select></td>
@@ -766,7 +994,7 @@ function renderTable() {
     <tr id="history_${athlete.id}" class="history-row" style="display:none">
       <td colspan="9">
         <div class="history-inner">
-          <div class="history-title">История платежей</div>
+          <div class="history-title">${t('historyTitle')}</div>
           ${renderHistory(athlete.id)}
         </div>
       </td>
@@ -774,620 +1002,427 @@ function renderTable() {
   }).join('');
 }
 
-function onRowTariffChange(childId) {
-  const tariffId = document.getElementById(`tariff_${childId}`)?.value;
-  const athlete = groupAthletes.find(a => a.id === childId);
-  if (athlete) athlete._lastTariffId = tariffId;
-  // Показываем кнопку 📅 только для days
-  const tariff = tariffId ? groupTariffs.find(t => t.id == tariffId) : null;
-  const wrap = document.getElementById(`datebtn_wrap_${childId}`);
-  if (wrap) wrap.style.display = tariff?.plan_type === 'days' ? 'flex' : 'none';
-  // Скрываем датапикер при смене тарифа
-  const dp = document.getElementById(`paid_from_${childId}`);
-  if (dp) dp.style.display = 'none';
-  // Обнуляем сумму
-  const inp = document.getElementById(`amount_${childId}`);
-  if (inp) { inp.value = ''; inp.classList.remove('filled'); }
+function onRowTariffChange(childId){
+  const tariffId=document.getElementById(`tariff_${childId}`)?.value;
+  const athlete=groupAthletes.find(a=>a.id===childId);
+  if(athlete)athlete._lastTariffId=tariffId;
+  const tariff=tariffId?groupTariffs.find(t=>t.id==tariffId):null;
+  const wrap=document.getElementById(`datebtn_wrap_${childId}`);
+  if(wrap)wrap.style.display=tariff?.plan_type==='days'?'flex':'none';
+  const dp=document.getElementById(`paid_from_${childId}`);
+  if(dp)dp.style.display='none';
+  const inp=document.getElementById(`amount_${childId}`);
+  if(inp){inp.value='';inp.classList.remove('filled');}
 }
 
-function toggleDatePicker(childId) {
-  const dp = document.getElementById(`paid_from_${childId}`);
-  if (!dp) return;
-  dp.style.display = dp.style.display === 'none' ? 'block' : 'none';
-  if (dp.style.display !== 'none') dp.focus();
+function toggleDatePicker(childId){
+  const dp=document.getElementById(`paid_from_${childId}`);
+  if(!dp)return;
+  dp.style.display=dp.style.display==='none'?'block':'none';
+  if(dp.style.display!=='none')dp.focus();
 }
 
-function onPaidFromChange(childId) {
-  // При изменении даты начала — скрываем пикер
-  const dp = document.getElementById(`paid_from_${childId}`);
-  if (dp) dp.style.display = 'none';
+function onPaidFromChange(childId){
+  const dp=document.getElementById(`paid_from_${childId}`);
+  if(dp)dp.style.display='none';
 }
 
-function confirmDoublePayment(childId) {
-  if (confirm('Спортсмен уже оплатил этот месяц. Всё равно добавить платёж?')) {
-    const btn = document.getElementById(`btn_${childId}`);
-    if (btn) btn.onclick = () => acceptPayment(childId);
+function toggleHistory(childId){
+  const row=document.getElementById(`history_${childId}`);
+  row.style.display=row.style.display==='none'?'table-row':'none';
+}
+
+function renderHistory(childId){
+  const pd=groupPayments[childId];
+  if(!pd?.history?.length)return `<div class="no-history">${t('noHistory')}</div>`;
+  const typeMap={cash:t('cash'),card:t('card'),bank:t('bank')};
+  return pd.history.sort((a,b)=>new Date(b.paid_at)-new Date(a.paid_at)).slice(0,10)
+    .map(p=>`<div class="history-item">
+      <span class="history-date">${formatDateTime(p.paid_at)}</span>
+      <span class="history-amount">${p.amount} грн</span>
+      <span class="history-type">${typeMap[p.payment_type]||p.payment_type||'—'}</span>
+      <span class="history-period">${p.period_label||'—'}</span>
+      <span class="history-comment">${p.comment||''}</span>
+      <button class="history-del" onclick="deletePayment(${p.id},${childId})" title="${t('confirmDelete')}">🗑</button>
+    </div>`).join('');
+}
+
+/* ── TARIFFS ── */
+async function loadGroupTariffs(){
+  if(!currentGroupData?.club_id)return;
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'payment_plans',action:'list',data:{}})});
+    const d=await r.json();
+    const all=Array.isArray(d)?d:(d.merged||[]);
+    groupTariffs=all.filter(t=>t.is_active!==false);
+    const sel=document.getElementById('activeTariff');
+    const icons={monthly:'📅',days:'📆',sessions:'🎯',free:'🎁',single:'1️⃣'};
+    sel.innerHTML=`<option value="">${t('optSelectTariff')}</option>`+
+      groupTariffs.map(t=>`<option value="${t.id}">${icons[t.plan_type]||''} ${t.name} — ${t.price} грн</option>`).join('');
+    if(groupTariffs.length===1)sel.value=groupTariffs[0].id;
+  }catch(e){console.error(e);}
+}
+
+function onTariffChange(){if(groupAthletes.length)renderTable();}
+
+function getSinglePrice(childId){
+  const rowSel=childId?document.getElementById(`tariff_${childId}`):null;
+  const tariffId=rowSel?.value||document.getElementById('activeTariff')?.value;
+  if(!tariffId)return 0;
+  const t=groupTariffs.find(t=>t.id==tariffId);
+  if(!t)return 0;
+  if(t.plan_type==='monthly'||t.plan_type==='days'||t.plan_type==='single')return t.price;
+  if(t.plan_type==='free')return 0;
+  if(t.plan_type==='sessions'&&t.sessions_limit)return Math.round(t.price/t.sessions_limit);
+  return t.price;
+}
+
+function addSessions(childId,delta){
+  const inp=document.getElementById(`amount_${childId}`);
+  const singlePrice=getSinglePrice(childId);
+  if(!singlePrice){showToast(t('fillRequired'),'error');return;}
+  const current=parseFloat(inp.value)||0;
+  inp.value=Math.max(0,current+delta*singlePrice)||'';
+  onAmountInput(childId);
+}
+
+function onAmountInput(childId){
+  const inp=document.getElementById(`amount_${childId}`);
+  inp.classList.toggle('filled',!!inp.value);
+}
+
+function fillByTariff(){
+  const sel=document.getElementById('activeTariff');
+  if(!sel.value){showToast(t('fillRequired'),'error');return;}
+  const tariff=groupTariffs.find(t=>t.id==sel.value);
+  if(!tariff)return;
+  groupAthletes.forEach(a=>{
+    const lastPay=Object.values(groupPayments[a.id]?.history||[])
+      .sort((x,y)=>new Date(y.paid_at)-new Date(x.paid_at))[0];
+    const endOfMonth=new Date(currentYear,currentMonth,0);
+    if(lastPay?.paid_until&&!lastPay.sessions_paid&&new Date(lastPay.paid_until)>=endOfMonth)return;
+    const tariffSel=document.getElementById(`tariff_${a.id}`);
+    if(tariffSel)tariffSel.value=tariff.id;
+    const inp=document.getElementById(`amount_${a.id}`);
+    if(inp){inp.value=tariff.price;inp.classList.add('filled');}
+    a._lastTariffId=tariff.id;
+  });
+}
+
+/* ── ACCEPT PAYMENT ── */
+async function acceptPayment(childId){
+  const amount=parseFloat(document.getElementById(`amount_${childId}`)?.value)||0;
+  const rowTariffIdCheck=document.getElementById(`tariff_${childId}`)?.value;
+  const tariffCheck=rowTariffIdCheck?groupTariffs.find(t=>t.id==rowTariffIdCheck):null;
+  const isFree=tariffCheck?.plan_type==='free';
+  if(!isFree&&amount<=0){showToast(t('acceptRequired'),'error');return;}
+  const payType=document.getElementById(`type_${childId}`)?.value||'cash';
+  const comment=document.getElementById(`comment_${childId}`)?.value||'';
+  const btn=document.getElementById(`btn_${childId}`);
+  const rowTariffId=document.getElementById(`tariff_${childId}`)?.value;
+  const tariff=rowTariffId?groupTariffs.find(t=>t.id==rowTariffId):null;
+  const lastPayData=Object.values(groupPayments[childId]?.history||[])
+    .filter(p=>p.paid_until&&!p.sessions_paid)
+    .sort((a,b)=>new Date(b.paid_until)-new Date(a.paid_until))[0];
+  const currentPaidUntil=lastPayData?.paid_until||null;
+  const paidFrom=calcPaidFrom(tariff,childId);
+  const paidUntil=calcPaidUntil(tariff,currentPaidUntil,paidFrom);
+  let sessionsPaid=null;
+  if(tariff?.plan_type==='sessions'&&tariff.sessions_limit&&tariff.price){
+    const pricePerSession=Math.round(tariff.price/tariff.sessions_limit);
+    sessionsPaid=pricePerSession>0?Math.round(amount/pricePerSession):tariff.sessions_limit;
+  }
+  const periodLabel=buildPeriodLabel(tariff,sessionsPaid);
+  const clubId=currentGroupData?.club_id;
+  if(btn){btn.disabled=true;btn.textContent='⏳';}
+  try{
+    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'payments',action:'create',data:{
+        child_id:childId,club_id:clubId,amount,payment_type:payType,
+        paid_from:paidFrom,paid_until:paidUntil,period_label:periodLabel,
+        sessions_paid:sessionsPaid,comment}})});
+    const inp=document.getElementById(`amount_${childId}`);
+    if(inp){inp.value='';inp.classList.remove('filled');}
+    const commInp=document.getElementById(`comment_${childId}`);
+    if(commInp)commInp.value='';
+    if(btn){btn.textContent='✅ '+t('accepted');btn.style.background='var(--tag-green)';}
+    setTimeout(async()=>{
+      await loadGroupAthletes();
+      if(user.role==='director'||user.role==='accountant')await loadStats();
+    },800);
+  }catch(e){
+    console.error(e);
+    if(btn){btn.disabled=false;btn.textContent=t('btnAccept');}
+    showToast(t('saveErr'),'error');
+  }
+}
+
+async function acceptAll(){
+  const toAccept=groupAthletes.filter(a=>{
+    const tariffId=document.getElementById(`tariff_${a.id}`)?.value;
+    const tObj=tariffId?groupTariffs.find(t=>t.id==tariffId):null;
+    if(tObj?.plan_type==='free')return true;
+    const v=parseFloat(document.getElementById(`amount_${a.id}`)?.value);
+    return v&&v>0;
+  });
+  if(!toAccept.length){showToast(t('acceptRequired'),'error');return;}
+  if(!confirm(t('confirmAcceptAll').replace('{n}',toAccept.length)))return;
+  for(const a of toAccept)await acceptPayment(a.id);
+}
+
+function confirmDoublePayment(childId){
+  if(confirm(t('confirmDouble'))){
+    const btn=document.getElementById(`btn_${childId}`);
+    if(btn)btn.onclick=()=>acceptPayment(childId);
     acceptPayment(childId);
   }
 }
 
-function renderHistory(childId) {
-  const pd = groupPayments[childId];
-  if (!pd?.history?.length) return '<div class="no-history">Нет платежей</div>';
-  return pd.history
-    .sort((a,b) => new Date(b.paid_at) - new Date(a.paid_at))
-    .slice(0, 10)
-    .map(p => `
-      <div class="history-item">
-        <span class="history-date">${formatDateTime(p.paid_at)}</span>
-        <span class="history-amount">${p.amount} грн</span>
-        <span class="history-type">${p.payment_type === 'cash' ? '💵 Нал' : p.payment_type === 'card' ? '💳 Карта' : '🏦 Банк'}</span>
-        <span class="history-period">${p.period_label || '—'}</span>
-        <span class="history-comment">${p.comment || ''}</span>
-        <button class="history-del" onclick="deletePayment(${p.id}, ${childId})" title="Удалить">🗑</button>
-      </div>`).join('');
-}
-
-function toggleHistory(childId) {
-  const row = document.getElementById(`history_${childId}`);
-  row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
-}
-
-// ============================
-// TARIFFS
-// ============================
-async function loadGroupTariffs() {
-  if (!currentGroupData?.club_id) return;
-  try {
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payment_plans', action: 'list', data: {} }) });
-    const d = await r.json();
-    const all = Array.isArray(d) ? d : (d.merged || []);
-    groupTariffs = all.filter(t => t.is_active !== false);
-
-    const sel = document.getElementById('activeTariff');
-    sel.innerHTML = '<option value="">— выберите тариф —</option>' +
-      groupTariffs.map(t => {
-        const typeLabel = t.plan_type === 'monthly' ? '📅' : t.plan_type === 'days' ? '📆' : t.plan_type === 'sessions' ? '🎯' : t.plan_type === 'free' ? '🎁' : '1️⃣';
-        return `<option value="${t.id}">${typeLabel} ${t.name} — ${t.price} грн</option>`;
-      }).join('');
-
-    // Если один тариф — выбираем автоматически
-    if (groupTariffs.length === 1) sel.value = groupTariffs[0].id;
-  } catch(e) { console.error(e); }
-}
-
-function onTariffChange() {
-  // Обновляем суммы в строках если таблица заполнена
-  if (groupAthletes.length) renderTable();
-}
-
-function getSinglePrice(childId) {
-  const rowSel = childId ? document.getElementById(`tariff_${childId}`) : null;
-  const tariffId = rowSel?.value || document.getElementById('activeTariff')?.value;
-  if (!tariffId) return 0;
-  const t = groupTariffs.find(t => t.id == tariffId);
-  if (!t) return 0;
-  // monthly, days, single — кнопка +/- добавляет полную сумму тарифа
-  if (t.plan_type === 'monthly') return t.price;
-  if (t.plan_type === 'days') return t.price;
-  if (t.plan_type === 'single') return t.price;
-  if (t.plan_type === 'free') return 0;
-  // sessions — цена одной тренировки
-  if (t.plan_type === 'sessions' && t.sessions_limit) return Math.round(t.price / t.sessions_limit);
-  return t.price;
-}
-
-function addSessions(childId, delta) {
-  const inp = document.getElementById(`amount_${childId}`);
-  const singlePrice = getSinglePrice(childId);
-  if (!singlePrice) { alert('Выберите тариф'); return; }
-  const current = parseFloat(inp.value) || 0;
-  const newVal = Math.max(0, current + delta * singlePrice);
-  inp.value = newVal || '';
-  onAmountInput(childId);
-}
-
-function onAmountInput(childId) {
-  const inp = document.getElementById(`amount_${childId}`);
-  inp.classList.toggle('filled', !!inp.value);
-}
-
-function fillByTariff() {
-  const sel = document.getElementById('activeTariff');
-  if (!sel.value) { alert('Выберите тариф сверху'); return; }
-  const t = groupTariffs.find(t => t.id == sel.value);
-  if (!t) return;
-  groupAthletes.forEach(a => {
-    // Пропускаем тех кто уже оплачен (monthly)
-    const lastPay = Object.values(groupPayments[a.id]?.history || [])
-      .sort((x,y) => new Date(y.paid_at) - new Date(x.paid_at))[0];
-    const endOfMonth = new Date(currentYear, currentMonth, 0);
-    if (lastPay?.paid_until && !lastPay.sessions_paid && new Date(lastPay.paid_until) >= endOfMonth) return;
-    // Проставляем тариф и сумму
-    const tariffSel = document.getElementById(`tariff_${a.id}`);
-    if (tariffSel) tariffSel.value = t.id;
-    const inp = document.getElementById(`amount_${a.id}`);
-    if (inp) { inp.value = t.price; inp.classList.add('filled'); }
-    a._lastTariffId = t.id;
-  });
-}
-
-// ============================
-// ACCEPT PAYMENT
-// ============================
-async function acceptPayment(childId) {
-  const amount = parseFloat(document.getElementById(`amount_${childId}`)?.value) || 0;
-  const rowTariffIdCheck = document.getElementById(`tariff_${childId}`)?.value;
-  const tariffCheck = rowTariffIdCheck ? groupTariffs.find(t => t.id == rowTariffIdCheck) : null;
-  const isFree = tariffCheck?.plan_type === 'free';
-  if (!isFree && amount <= 0) { alert('Введите сумму'); return; }
-
-  const payType = document.getElementById(`type_${childId}`)?.value || 'cash';
-  const comment = document.getElementById(`comment_${childId}`)?.value || '';
-  const btn = document.getElementById(`btn_${childId}`);
-
-  // Берём тариф из строки спортсмена
-  const rowTariffId = document.getElementById(`tariff_${childId}`)?.value;
-  const tariff = rowTariffId ? groupTariffs.find(t => t.id == rowTariffId) : null;
-  // paid_until считается с учётом текущего срока (продление)
-  const lastPayData = Object.values(groupPayments[childId]?.history || [])
-    .filter(p => p.paid_until && !p.sessions_paid)
-    .sort((a,b) => new Date(b.paid_until) - new Date(a.paid_until))[0];
-  const currentPaidUntil = lastPayData?.paid_until || null;
-  const paidFrom = calcPaidFrom(tariff, childId);
-  const paidUntil = calcPaidUntil(tariff, currentPaidUntil, paidFrom);
-  // sessions_paid — для потренировочного тарифа считаем по сумме
-  let sessionsPaid = null;
-  if (tariff?.plan_type === 'sessions' && tariff.sessions_limit && tariff.price) {
-    const pricePerSession = Math.round(tariff.price / tariff.sessions_limit);
-    sessionsPaid = pricePerSession > 0 ? Math.round(amount / pricePerSession) : tariff.sessions_limit;
-  }
-  const periodLabel = buildPeriodLabel(tariff, sessionsPaid);
-  const clubId = currentGroupData?.club_id;
-
-  if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
-
-  try {
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'create', data: {
-        child_id: childId,
-        club_id: clubId,
-        amount: amount,
-        payment_type: payType,
-        paid_from: paidFrom,
-        paid_until: paidUntil,
-        period_label: periodLabel,
-        sessions_paid: sessionsPaid,
-        comment: comment
-      }})});
-    const res = await r.json();
-
-    // Сбрасываем поля
-    const inp = document.getElementById(`amount_${childId}`);
-    if (inp) { inp.value = ''; inp.classList.remove('filled'); }
-    const commInp = document.getElementById(`comment_${childId}`);
-    if (commInp) commInp.value = '';
-
-    // Визуальная обратная связь — кнопка зеленеет
-    if (btn) { btn.textContent = '✅ Принято!'; btn.style.background = '#1e7e34'; }
-    setTimeout(async () => {
-      await loadGroupAthletes();
-      if (user.role === 'director' || user.role === 'accountant') await loadStats();
-    }, 800);
-
-  } catch(e) {
-    console.error(e);
-    if (btn) { btn.disabled = false; btn.textContent = '✅ Принять'; }
-    alert('Ошибка сохранения');
-  }
-}
-
-async function acceptAll() {
-  const toAccept = groupAthletes.filter(a => {
-    const tariffId = document.getElementById(`tariff_${a.id}`)?.value;
-    const t = tariffId ? groupTariffs.find(t => t.id == tariffId) : null;
-    const isFree = t?.plan_type === 'free';
-    if (isFree) return true; // бесплатные всегда включаем
-    const v = parseFloat(document.getElementById(`amount_${a.id}`)?.value);
-    return v && v > 0;
-  });
-  if (!toAccept.length) { alert('Нет заполненных сумм'); return; }
-  if (!confirm(`Принять оплату от ${toAccept.length} спортсменов?`)) return;
-  for (const a of toAccept) {
-    await acceptPayment(a.id);
-  }
-}
-
-function getDefaultPaidUntil() {
-  // По умолчанию +1 месяц от сегодня
-  const d = new Date();
-  d.setMonth(d.getMonth() + 1);
-  return d.toISOString().split('T')[0];
-}
-
-function calcPaidFrom(tariff, childId) {
-  if (!tariff) return null;
-  if (tariff.plan_type === 'days' && childId) {
-    // Если есть активный paid_until — paid_from = следующий день после него
-    const lastPayData = Object.values(groupPayments[childId]?.history || [])
-      .filter(p => p.paid_until && !p.sessions_paid)
-      .sort((a,b) => new Date(b.paid_until) - new Date(a.paid_until))[0];
-    const today = new Date(); today.setHours(0,0,0,0);
-    if (lastPayData?.paid_until && new Date(lastPayData.paid_until) > today) {
-      // Продление: следующий день после текущего paid_until
-      const next = new Date(new Date(lastPayData.paid_until).getTime() + 86400000);
-      const dy = next.getFullYear();
-      const dm = String(next.getMonth()+1).padStart(2,'0');
-      const dd = String(next.getDate()).padStart(2,'0');
-      return `${dy}-${dm}-${dd}`;
+/* ── CALC HELPERS (полностью из MVP) ── */
+function calcPaidFrom(tariff,childId){
+  if(!tariff)return null;
+  if(tariff.plan_type==='days'&&childId){
+    const lastPayData=Object.values(groupPayments[childId]?.history||[])
+      .filter(p=>p.paid_until&&!p.sessions_paid)
+      .sort((a,b)=>new Date(b.paid_until)-new Date(a.paid_until))[0];
+    const today=new Date();today.setHours(0,0,0,0);
+    if(lastPayData?.paid_until&&new Date(lastPayData.paid_until)>today){
+      const next=new Date(new Date(lastPayData.paid_until).getTime()+86400000);
+      return `${next.getFullYear()}-${String(next.getMonth()+1).padStart(2,'0')}-${String(next.getDate()).padStart(2,'0')}`;
     }
-    // Новый платёж: берём дату из поля (или сегодня)
-    const dp = document.getElementById(`paid_from_${childId}`);
-    if (dp?.value) return dp.value;
-    const d = new Date();
+    const dp=document.getElementById(`paid_from_${childId}`);
+    if(dp?.value)return dp.value;
+    const d=new Date();
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   }
-  // Для monthly/free — начало выбранного месяца
-  const y = currentYear;
-  const m = String(currentMonth).padStart(2, '0');
-  return `${y}-${m}-01`;
+  return `${currentYear}-${String(currentMonth).padStart(2,'0')}-01`;
 }
 
-function calcPaidUntil(tariff, currentPaidUntil, currentPaidFrom) {
-  if (!tariff) return null;
-  if (tariff.plan_type === 'free') return null;
-  const today = new Date(); today.setHours(0,0,0,0);
-  const nowMonth = new Date().getMonth() + 1;
-  const nowYear = new Date().getFullYear();
-  const isPast = (currentYear < nowYear) || (currentYear === nowYear && currentMonth < nowMonth);
-
-  if (isPast) {
-    // Прошлый месяц — paid_until всегда конец выбранного месяца
-    const d = new Date(currentYear, currentMonth, 0);
+function calcPaidUntil(tariff,currentPaidUntil,currentPaidFrom){
+  if(!tariff)return null;
+  if(tariff.plan_type==='free')return null;
+  const today=new Date();today.setHours(0,0,0,0);
+  const nowMonth=new Date().getMonth()+1;
+  const nowYear=new Date().getFullYear();
+  const isPast=(currentYear<nowYear)||(currentYear===nowYear&&currentMonth<nowMonth);
+  if(isPast){
+    const d=new Date(currentYear,currentMonth,0);
     return d.toISOString().split('T')[0];
   }
-
-  // Текущий или будущий месяц
-  // Базовая дата: если уже активен — продлеваем от текущего paid_until
-  const base = (currentPaidUntil && new Date(currentPaidUntil) > today)
-    ? new Date(currentPaidUntil) : today;
-
-  if (tariff.plan_type === 'monthly') {
-    // Конец выбранного месяца (currentMonth/currentYear)
-    const d = new Date(currentYear, currentMonth, 0);
-    const dy = d.getFullYear();
-    const dm = String(d.getMonth()+1).padStart(2,'0');
-    const dd = String(d.getDate()).padStart(2,'0');
-    return `${dy}-${dm}-${dd}`;
+  const base=(currentPaidUntil&&new Date(currentPaidUntil)>today)?new Date(currentPaidUntil):today;
+  if(tariff.plan_type==='monthly'){
+    const d=new Date(currentYear,currentMonth,0);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   }
-  if (tariff.plan_type === 'sessions') {
-    return null;
-  }
-  if (tariff.plan_type === 'days' && tariff.duration_days) {
-    // Если есть активный paid_until — продлеваем от него
-    // Иначе берём paid_from из поля (или сегодня)
+  if(tariff.plan_type==='sessions')return null;
+  if(tariff.plan_type==='days'&&tariff.duration_days){
     let startDate;
-    if (currentPaidUntil && new Date(currentPaidUntil) > today) {
-      // Продление: следующий день после текущего paid_until
-      startDate = new Date(new Date(currentPaidUntil).getTime() + 86400000);
-    } else {
-      // Новый платёж: от выбранной даты начала
-      startDate = currentPaidFrom ? new Date(currentPaidFrom) : today;
+    if(currentPaidUntil&&new Date(currentPaidUntil)>today){
+      startDate=new Date(new Date(currentPaidUntil).getTime()+86400000);
+    }else{
+      startDate=currentPaidFrom?new Date(currentPaidFrom):today;
     }
-    const d = new Date(startDate.getTime() + tariff.duration_days * 86400000);
-    const dy = d.getFullYear();
-    const dm = String(d.getMonth()+1).padStart(2,'0');
-    const dd = String(d.getDate()).padStart(2,'0');
-    return `${dy}-${dm}-${dd}`;
+    const d=new Date(startDate.getTime()+tariff.duration_days*86400000);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
   }
-  if (tariff.plan_type === 'single') {
-    return today.toISOString().split('T')[0];
-  }
-  if (tariff.duration_days) {
-    const d = new Date(base.getTime() + tariff.duration_days * 86400000);
+  if(tariff.plan_type==='single')return today.toISOString().split('T')[0];
+  if(tariff.duration_days){
+    const d=new Date(base.getTime()+tariff.duration_days*86400000);
     return d.toISOString().split('T')[0];
   }
   return null;
 }
 
-function calcDateAfterNSessions(n) {
-  const schedule = currentGroupData?.schedule || [];
-  if (!schedule.length) return null;
-  const days = schedule.map(s => s.day).sort();
-  let count = 0;
-  let d = new Date();
-  d.setHours(0,0,0,0);
-  for (let i = 0; i < 365 && count < n; i++) {
-    if (days.includes(d.getDay())) count++;
-    if (count < n) d.setDate(d.getDate() + 1);
-  }
-  return d.toISOString().split('T')[0];
+function buildPeriodLabel(tariff,sessionsPaid){
+  const months=t('months');
+  if(!tariff)return`${months[currentMonth-1]} ${currentYear}`;
+  if(tariff.plan_type==='monthly')return t('periodMonth').replace('{m}',months[currentMonth-1]).replace('{y}',currentYear);
+  if(tariff.plan_type==='days')return t('periodDays').replace('{n}',tariff.duration_days||'?');
+  if(tariff.plan_type==='sessions')return t('periodSessions').replace('{n}',sessionsPaid||tariff.sessions_limit);
+  if(tariff.plan_type==='single')return t('periodSingle');
+  if(tariff.plan_type==='free')return t('periodFree');
+  return`${months[currentMonth-1]} ${currentYear}`;
 }
 
-function calcSessionsPaid(amount, tariff) {
-  if (tariff.plan_type === 'sessions') return tariff.sessions_limit;
-  if (tariff.plan_type === 'single') return 1;
-  const single = getSinglePrice();
-  return single ? Math.round(amount / single) : null;
-}
-
-function buildPeriodLabel(tariff, sessionsPaid) {
-  if (!tariff) return `${getMonthName(currentMonth)} ${currentYear}`;
-  const months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  if (tariff.plan_type === 'monthly') return `${months[currentMonth-1]} ${currentYear}`;
-  if (tariff.plan_type === 'days') return `${tariff.duration_days || '?'} дней`;
-  if (tariff.plan_type === 'sessions') return `${sessionsPaid || tariff.sessions_limit} тренировок`;
-  if (tariff.plan_type === 'single') return '1 тренировка';
-  if (tariff.plan_type === 'free') return 'Льгота';
-  return `${months[currentMonth-1]} ${currentYear}`;
-}
-
-// ============================
-// DELETE PAYMENT
-// ============================
-async function deletePayment(paymentId, childId) {
-  if (!confirm('Удалить платёж?')) return;
-  try {
-    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'update',
-        data: { id: paymentId, status: 'deleted' } }) });
+/* ── DELETE PAYMENT ── */
+async function deletePayment(paymentId,childId){
+  if(!confirm(t('confirmDelete')))return;
+  try{
+    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'payments',action:'update',data:{id:paymentId,status:'deleted'}})});
     await loadGroupAthletes();
-    if (user.role === 'director' || user.role === 'accountant') await loadStats();
-  } catch(e) { console.error(e); }
+    if(user.role==='director'||user.role==='accountant')await loadStats();
+  }catch(e){console.error(e);}
 }
 
-// ============================
-// STATS
-// ============================
-async function loadStats() {
-  try {
-    // Загружаем ВСЕ платежи директора (без фильтра месяца — считаем пропорционально)
-    const r = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payments', action: 'list', data: {} }) });
-    const d = await r.json();
-    const allPayments = (Array.isArray(d) ? d : (d.merged || [])).filter(p => p.status !== 'deleted' && p.child_id);
-
-    // Границы выбранного месяца
-    const mStart = new Date(currentYear, currentMonth - 1, 1);
-    const mEnd = new Date(currentYear, currentMonth, 0, 23, 59, 59);
-
-    // Пропорциональный расчёт собранного за месяц
-    let collected = 0;
-    allPayments.forEach(p => {
-      if (!p.amount) return;
-      const amount = parseFloat(p.amount);
-      if (!p.paid_from || !p.paid_until) {
-        // Нет дат — проверяем попадает ли paid_at в месяц
-        const pa = new Date(p.paid_at);
-        if (pa >= mStart && pa <= mEnd) collected += amount;
+/* ── STATS ── */
+async function loadStats(){
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'payments',action:'list',data:{}})});
+    const d=await r.json();
+    const allPayments=(Array.isArray(d)?d:(d.merged||[])).filter(p=>p.status!=='deleted'&&p.child_id);
+    const mStart=new Date(currentYear,currentMonth-1,1);
+    const mEnd=new Date(currentYear,currentMonth,0,23,59,59);
+    let collected=0;
+    allPayments.forEach(p=>{
+      if(!p.amount)return;
+      const amount=parseFloat(p.amount);
+      if(!p.paid_from||!p.paid_until){
+        const pa=new Date(p.paid_at);
+        if(pa>=mStart&&pa<=mEnd)collected+=amount;
         return;
       }
-      const pf = new Date(p.paid_from);
-      const pu = new Date(p.paid_until);
-      // Пересечение периода платежа с выбранным месяцем
-      const overlapStart = Math.max(pf.getTime(), mStart.getTime());
-      const overlapEnd = Math.min(pu.getTime(), mEnd.getTime());
-      if (overlapEnd < overlapStart) return; // нет пересечения
-      const totalDays = Math.round((pu - pf) / 86400000) + 1;
-      const overlapDays = Math.round((overlapEnd - overlapStart) / 86400000) + 1;
-      collected += Math.round(amount * overlapDays / totalDays);
+      const pf=new Date(p.paid_from),pu=new Date(p.paid_until);
+      const overlapStart=Math.max(pf.getTime(),mStart.getTime());
+      const overlapEnd=Math.min(pu.getTime(),mEnd.getTime());
+      if(overlapEnd<overlapStart)return;
+      const totalDays=Math.round((pu-pf)/86400000)+1;
+      const overlapDays=Math.round((overlapEnd-overlapStart)/86400000)+1;
+      collected+=Math.round(amount*overlapDays/totalDays);
     });
-    document.getElementById('statCollected').textContent = formatMoney(collected);
-
-    // Должники и активные — относительно выбранного месяца
-    const today = new Date(); today.setHours(0,0,0,0);
-    const nowM = today.getMonth() + 1;
-    const nowY = today.getFullYear();
-    const isCurrentMonth = (currentMonth === nowM && currentYear === nowY);
-
-    // Строим map child_id -> активен ли в выбранном месяце
-    const activeMap = {};
-    allPayments.forEach(p => {
-      if (!p.paid_from) return;
-      const pf = new Date(p.paid_from);
-      // Льгота
-      if (!p.paid_until && p.period_label === 'Льгота') {
-        if (pf >= mStart && pf <= mEnd) activeMap[p.child_id] = true;
-        return;
+    document.getElementById('statCollected').textContent=formatMoney(collected);
+    const activeMap={};
+    allPayments.forEach(p=>{
+      if(!p.paid_from)return;
+      const pf=new Date(p.paid_from);
+      if(!p.paid_until&&p.period_label===t('periodFree')){
+        if(pf>=mStart&&pf<=mEnd)activeMap[p.child_id]=true;return;
       }
-      if (!p.paid_until) return;
-      const pu = new Date(p.paid_until);
-      if (pf <= mEnd && pu >= mStart) activeMap[p.child_id] = true;
+      if(!p.paid_until)return;
+      const pu=new Date(p.paid_until);
+      if(pf<=mEnd&&pu>=mStart)activeMap[p.child_id]=true;
     });
-
-    // Все спортсмены директора
-    const rc = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'children', action: 'list' }) });
-    const dc = await rc.json();
-    const children = Array.isArray(dc) ? dc : (dc.merged || []);
-
-    let debtors = 0, active = 0;
-    children.forEach(c => {
-      if (activeMap[c.id]) active++;
-      else debtors++;
-    });
-
-    document.getElementById('statDebt').textContent = '—';
-    document.getElementById('statDebtors').textContent = debtors;
-    document.getElementById('statActive').textContent = active;
-  } catch(e) { console.error(e); }
+    const rc=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'children',action:'list'})});
+    const dc=await rc.json();
+    const children=Array.isArray(dc)?dc:(dc.merged||[]);
+    let debtors=0,active=0;
+    children.forEach(c=>{if(activeMap[c.id])active++;else debtors++;});
+    document.getElementById('statDebt').textContent='—';
+    document.getElementById('statDebtors').textContent=debtors;
+    document.getElementById('statActive').textContent=active;
+  }catch(e){console.error(e);}
 }
 
-// ============================
-// TARIFFS MODAL
-// ============================
-function openTariffsModal() {
+/* ── TARIFFS MODAL ── */
+function openTariffsModal(){
   renderTariffsList();
-  document.getElementById('tariffsModal').classList.add('open');
+  document.getElementById('tariffsModal').classList.add('active');
 }
-
-function closeTariffsModal() {
-  document.getElementById('tariffsModal').classList.remove('open');
+function closeTariffsModal(){
+  document.getElementById('tariffsModal').classList.remove('active');
   closeTariffForm();
 }
+document.getElementById('tariffsModal').addEventListener('click',function(e){
+  if(e.target===this)closeTariffsModal();
+});
 
-function renderTariffsList() {
-  const el = document.getElementById('tariffsList');
-  if (!groupTariffs.length) {
-    el.innerHTML = '<div style="color:#aaa;font-size:.85rem;padding:.5rem 0">Нет тарифов для этого клуба</div>';
+function renderTariffsList(){
+  const el=document.getElementById('tariffsList');
+  if(!groupTariffs.length){
+    el.innerHTML=`<div style="color:var(--muted2);font-size:12px;padding:4px 0">${t('noTariffs')}</div>`;
     return;
   }
-  const typeLabels = { monthly: '<span class="plan-monthly">📅 Месячный</span>', sessions: '<span class="plan-sessions">🎯 По тренировкам</span>', single: '<span class="plan-single">1️⃣ Разовый</span>' };
-  el.innerHTML = groupTariffs.map(t => `
+  const planBadges={
+    monthly:`<span class="plan-badge plan-monthly">${t('typeMonthly')}</span>`,
+    sessions:`<span class="plan-badge plan-sessions">${t('typeSessions')}</span>`,
+    single:`<span class="plan-badge plan-single">${t('typeSingle')}</span>`,
+    days:`<span class="plan-badge plan-days">${t('typeDays')}</span>`,
+    free:`<span class="plan-badge plan-free">${t('typeFree')}</span>`
+  };
+  el.innerHTML=groupTariffs.map(t=>`
     <div class="tariff-item">
-      <div class="tariff-item-info">
-        <div class="tariff-item-name">${t.name} ${typeLabels[t.plan_type] || ''}</div>
+      <div>
+        <div class="tariff-item-name">${t.name} ${planBadges[t.plan_type]||''}</div>
         <div class="tariff-item-details">
-          ${t.duration_days ? `${t.duration_days} дней` : ''}
-          ${t.sessions_limit ? `${t.sessions_limit} тренировок` : ''}
+          ${t.duration_days?t.duration_days+' '+i18n[currentLang].tariffDays:''}
+          ${t.sessions_limit?t.sessions_limit+' '+i18n[currentLang].tariffSess:''}
         </div>
       </div>
       <div class="tariff-item-price">${t.price} грн</div>
       <div class="tariff-actions">
         <button class="btn btn-ghost btn-sm" onclick="editTariff(${t.id})">✏️</button>
-        <button class="btn-icon" onclick="deleteTariff(${t.id})" title="Удалить">🗑</button>
+        <button class="history-del" onclick="deleteTariff(${t.id})">🗑</button>
       </div>
     </div>`).join('');
 }
 
-function openAddTariff() {
-  document.getElementById('tariffEditId').value = '';
-  document.getElementById('tariffName').value = '';
-  document.getElementById('tariffType').value = 'monthly';
-  document.getElementById('tariffPrice').value = '';
-  document.getElementById('tariffDuration').value = '30';
-  document.getElementById('tariffSessions').value = '';
-  document.getElementById('tariffFormTitle').textContent = 'Новый тариф';
+function openAddTariff(){
+  document.getElementById('tariffEditId').value='';
+  document.getElementById('tariffName').value='';
+  document.getElementById('tariffType').value='monthly';
+  document.getElementById('tariffPrice').value='';
+  document.getElementById('tariffDuration').value='30';
+  document.getElementById('tariffSessions').value='';
+  document.getElementById('tariffFormTitle').textContent=t('newTariff');
   onTariffTypeChange();
-  document.getElementById('tariffForm').style.display = 'block';
-  document.getElementById('tariffForm').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('tariffForm').style.display='block';
+  document.getElementById('tariffForm').scrollIntoView({behavior:'smooth'});
 }
 
-function editTariff(id) {
-  const t = groupTariffs.find(t => t.id == id);
-  if (!t) return;
-  document.getElementById('tariffEditId').value = t.id;
-  document.getElementById('tariffName').value = t.name;
-  document.getElementById('tariffType').value = t.plan_type;
-  document.getElementById('tariffPrice').value = t.price;
-  document.getElementById('tariffDuration').value = t.duration_days || '';
-  document.getElementById('tariffSessions').value = t.sessions_limit || '';
-  document.getElementById('tariffFormTitle').textContent = 'Редактировать тариф';
+function editTariff(id){
+  const tariff=groupTariffs.find(t=>t.id==id);if(!tariff)return;
+  document.getElementById('tariffEditId').value=tariff.id;
+  document.getElementById('tariffName').value=tariff.name;
+  document.getElementById('tariffType').value=tariff.plan_type;
+  document.getElementById('tariffPrice').value=tariff.price;
+  document.getElementById('tariffDuration').value=tariff.duration_days||'';
+  document.getElementById('tariffSessions').value=tariff.sessions_limit||'';
+  document.getElementById('tariffFormTitle').textContent=t('editTariff');
   onTariffTypeChange();
-  document.getElementById('tariffForm').style.display = 'block';
-  document.getElementById('tariffForm').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('tariffForm').style.display='block';
+  document.getElementById('tariffForm').scrollIntoView({behavior:'smooth'});
 }
 
-function onTariffTypeChange() {
-  const type = document.getElementById('tariffType').value;
-  document.getElementById('tariffDurationWrap').style.display = (type === 'monthly' || type === 'days') ? 'block' : 'none';
-  document.getElementById('tariffSessionsWrap').style.display = type === 'sessions' ? 'block' : 'none';
-  // Для бесплатного — цена 0
-  const priceInp = document.getElementById('tariffPrice');
-  if (type === 'free') { priceInp.value = '0'; priceInp.readOnly = true; }
-  else { priceInp.readOnly = false; }
-  // Подсказка для дней
-  const durLabel = document.querySelector('#tariffDurationWrap .form-label');
-  if (durLabel) durLabel.textContent = type === 'days' ? 'Количество дней *' : 'Дней действия';
+function onTariffTypeChange(){
+  const type=document.getElementById('tariffType').value;
+  document.getElementById('tariffDurationWrap').style.display=(type==='monthly'||type==='days')?'block':'none';
+  document.getElementById('tariffSessionsWrap').style.display=type==='sessions'?'block':'none';
+  const priceInp=document.getElementById('tariffPrice');
+  if(type==='free'){priceInp.value='0';priceInp.readOnly=true;}
+  else{priceInp.readOnly=false;}
+  const durLabel=document.getElementById('lbl-tariff-duration');
+  if(durLabel)durLabel.textContent=type==='days'?t('lblTariffDurationDays'):t('lblTariffDuration');
 }
 
-function closeTariffForm() {
-  document.getElementById('tariffForm').style.display = 'none';
+function closeTariffForm(){
+  document.getElementById('tariffForm').style.display='none';
 }
 
-async function saveTariff() {
-  const name = document.getElementById('tariffName').value.trim();
-  const price = parseFloat(document.getElementById('tariffPrice').value);
-  const planType = document.getElementById('tariffType').value;
-  const duration = parseInt(document.getElementById('tariffDuration').value) || null;
-  const sessions = parseInt(document.getElementById('tariffSessions').value) || null;
-  const editId = document.getElementById('tariffEditId').value;
-
-  if (!name || price === null || price === undefined || isNaN(price)) { alert('Заполните название и цену'); return; }
-  if (!currentGroupData?.club_id) { alert('Нет клуба'); return; }
-
-  const data = { name, plan_type: planType, price, club_id: currentGroupData.club_id,
-    duration_days: (planType === 'monthly' || planType === 'days') ? (duration || 30) : null,
-    sessions_limit: planType === 'sessions' ? sessions : null };
-
-  if (editId) data.id = parseInt(editId);
-
-  try {
-    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payment_plans', action: editId ? 'update' : 'create', data }) });
+async function saveTariff(){
+  const name=document.getElementById('tariffName').value.trim();
+  const price=parseFloat(document.getElementById('tariffPrice').value);
+  const planType=document.getElementById('tariffType').value;
+  const duration=parseInt(document.getElementById('tariffDuration').value)||null;
+  const sessions=parseInt(document.getElementById('tariffSessions').value)||null;
+  const editId=document.getElementById('tariffEditId').value;
+  if(!name||price===null||isNaN(price)){showToast(t('fillPriceRequired'),'error');return;}
+  if(!currentGroupData?.club_id){showToast(t('noClub'),'error');return;}
+  const data={name,plan_type:planType,price,club_id:currentGroupData.club_id,
+    duration_days:(planType==='monthly'||planType==='days')?(duration||30):null,
+    sessions_limit:planType==='sessions'?sessions:null};
+  if(editId)data.id=parseInt(editId);
+  try{
+    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'payment_plans',action:editId?'update':'create',data})});
     closeTariffForm();
+    showToast(t('tariffSaved'));
     await loadGroupTariffs();
     renderTariffsList();
-  } catch(e) { console.error(e); alert('Ошибка сохранения'); }
+  }catch(e){console.error(e);showToast(t('saveErr'),'error');}
 }
 
-async function deleteTariff(id) {
-  if (!confirm('Удалить тариф?')) return;
-  try {
-    await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, resource: 'payment_plans', action: 'delete', data: { id } }) });
-    await loadGroupTariffs();
-    renderTariffsList();
-  } catch(e) { console.error(e); }
+async function deleteTariff(id){
+  if(!confirm(t('confirmDeleteTariff')))return;
+  try{
+    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'payment_plans',action:'delete',data:{id}})});
+    await loadGroupTariffs();renderTariffsList();
+  }catch(e){console.error(e);}
 }
 
-// ============================
-// MONTH NAVIGATION
-// ============================
-function changeMonth(delta) {
-  currentMonth += delta;
-  if (currentMonth > 12) { currentMonth = 1; currentYear++; }
-  if (currentMonth < 1) { currentMonth = 12; currentYear--; }
-  updateMonthLabel();
-  if (currentGroupId) loadGroupAthletes();
-  if (user.role === 'director' || user.role === 'accountant') loadStats();
-}
-
-function updateMonthLabel() {
-  document.getElementById('monthLabel').textContent = `${getMonthName(currentMonth)} ${currentYear}`;
-}
-
-function getMonthName(m) {
-  return ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][m-1];
-}
-
-// ============================
-// HELPERS
-// ============================
-function formatDate(str) {
-  if (!str) return '—';
-  const d = new Date(str);
-  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' });
-}
-
-function formatDateTime(str) {
-  if (!str) return '—';
-  const d = new Date(str);
-  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit' }) + ' ' +
-    d.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
-}
-
-function formatMoney(n) {
-  return Math.round(n).toLocaleString('ru-RU') + ' грн';
-}
-
-function goBack() {
-  const role = user?.role;
-  if (role === 'director') window.location.href = '/director-dashboard.html';
-  else if (role === 'trainer') window.location.href = '/children-list.html';
-  else window.location.href = '/';
-}
-
-function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  window.location.href = '/';
-}
-
-// ============================
-// START
-// ============================
 init();
 </script>
 </body>
