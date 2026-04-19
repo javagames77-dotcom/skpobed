@@ -93,7 +93,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .news-card-meta{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.5rem}
 .ntag{display:inline-flex;align-items:center;gap:.25rem;padding:2px 7px;border-radius:6px;font-size:11px;font-weight:500}
 .ntag-date{background:var(--tag-blue-bg);color:var(--tag-blue)}
-.ntag-loc{background:var(--tag-green-bg);color:var(--tag-green)}
+.ntag-loc{background:var(--tag-green-bg);color:var(--tag-green);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ntag-src{background:#f3e5f5;color:#7b1fa2}
 [data-theme="dark"] .ntag-src{background:#2a1040;color:#c084fc}
 .ntag-fee{background:var(--tag-orange-bg);color:var(--tag-orange)}
@@ -564,7 +564,8 @@ const i18n={
       'чемпіонат':'Чемпіонат','championship':'Чемпіонат','Чемпионат':'Чемпіонат',
       'кубок':'Кубок','cup':'Кубок','Кубок':'Кубок',
       'відкритий':'Відкритий','open':'Відкритий','Открытый':'Відкритий',
-      'семінар':'Семінар','seminar':'Семінар','Семинар':'Семінар'
+      'семінар':'Семінар','seminar':'Семінар','Семинар':'Семінар',
+      'етап':'Етап','stage':'Етап','этап':'Етап','Stage':'Етап'
     },
     mobBack:'Назад',mobNews:'Новини',mobSources:'Джерела',mobAdd:'Додати',
     pageInfo:'{from}–{to} з {total}'
@@ -619,7 +620,8 @@ const i18n={
       'чемпіонат':'Чемпионат','championship':'Чемпионат','Чемпионат':'Чемпионат',
       'кубок':'Кубок','cup':'Кубок','Кубок':'Кубок',
       'відкритий':'Открытый','open':'Открытый','Открытый':'Открытый',
-      'семінар':'Семинар','seminar':'Семинар','Семинар':'Семинар'
+      'семінар':'Семинар','seminar':'Семинар','Семинар':'Семинар',
+      'етап':'Этап','stage':'Этап','этап':'Этап','Stage':'Этап'
     },
     mobBack:'Назад',mobNews:'Новости',mobSources:'Источники',mobAdd:'Добавить',
     pageInfo:'{from}–{to} из {total}'
@@ -674,7 +676,8 @@ const i18n={
       'чемпіонат':'Championship','championship':'Championship','Чемпионат':'Championship',
       'кубок':'Cup','cup':'Cup','Кубок':'Cup',
       'відкритий':'Open','open':'Open','Открытый':'Open',
-      'семінар':'Seminar','seminar':'Seminar','Семинар':'Seminar'
+      'семінар':'Seminar','seminar':'Seminar','Семинар':'Seminar',
+      'етап':'Stage','stage':'Stage','этап':'Stage','Stage':'Stage'
     },
     mobBack:'Back',mobNews:'News',mobSources:'Sources',mobAdd:'Add',
     pageInfo:'{from}–{to} of {total}'
