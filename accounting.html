@@ -107,6 +107,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 /* ── ACCEPT BUTTONS ── */
 .btn-accept{background:var(--tag-green);color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .12s}
+.act-btn{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.act-btn:hover{border-color:var(--border2);color:var(--text)}
+.act-btn.del:hover{border-color:var(--tag-red);color:var(--tag-red);background:var(--tag-red-bg)}
+.act-btn svg{transition:transform .2s ease}
 .btn-accept:hover{opacity:.85}
 .btn-accept:disabled{background:var(--muted2);cursor:not-allowed}
 .btn-accepted{background:var(--tag-green-bg);color:var(--tag-green);border:1px solid var(--tag-green);border-radius:7px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit}
@@ -963,7 +967,7 @@ function renderTable(){
     </div>`;
 
     return `<tr id="row_${athlete.id}">
-      <td><button class="act-btn" onclick="toggleHistory(${athlete.id})" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 8A6 6 0 1 0 8 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M2 3v5h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 5v3.5l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button></td>
+      <td><button class="act-btn" onclick="toggleHistory(${athlete.id})" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td>
       <td><div class="athlete-info">${photo}<div><div class="athlete-name">${athlete.last_name} ${athlete.first_name}</div></div></div></td>
       <td>${statusHtml}</td>
       <td>${periodHtml}</td>
@@ -1017,7 +1021,10 @@ function onPaidFromChange(childId){
 
 function toggleHistory(childId){
   const row=document.getElementById(`history_${childId}`);
-  row.style.display=row.style.display==='none'?'table-row':'none';
+  const btn=document.querySelector(`#row_${childId} .act-btn`);
+  const isOpen=row.style.display!=='none';
+  row.style.display=isOpen?'none':'table-row';
+  if(btn)btn.style.transform=isOpen?'':'rotate(180deg)';
 }
 
 function renderHistory(childId){
