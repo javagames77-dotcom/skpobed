@@ -284,6 +284,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   .table-container{overflow-x:auto}
   .nav-badge,.nav-divider{display:none}
   .page-header{flex-direction:column;align-items:flex-start}
+  #tab-news .page-header{flex-direction:row;align-items:center}
+  #tab-news .page-header>div:first-child{flex:1;min-width:0}
+  #newsSearchInput{width:100px!important}
+  .run-btn{padding:6px 10px;font-size:11px}
+  .news-card-actions{flex-wrap:wrap}
 }
 @media(max-width:480px){
   .main{padding:12px;padding-bottom:72px}
@@ -515,23 +520,22 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
   <div>
-    <h1 class="page-title">🤖 AI-Поиск мероприятий</h1>
-    <p style="color:#666;margin-top:.3rem;font-size:.88rem">Автоматический мониторинг источников · Анализ через OpenAI · Одним кликом в план</p>
+    <h1 class="page-title" id="news-page-title">AI-Поиск мероприятий</h1>
+    <p style="color:var(--muted);margin-top:.3rem;font-size:.82rem" id="news-page-sub">Автоматический мониторинг источников · Анализ через OpenAI · Одним кликом в план</p>
   </div>
-  <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap">
-    <button class="run-btn" id="runParseBtn" onclick="runParsing()">
-      <div class="spinner"></div>
-      <span id="runBtnText">▶ Запустить парсинг</span>
-    </button>
-  </div>
+  <button class="run-btn" id="runParseBtn" onclick="runParsing()">
+    <div class="spinner"></div>
+    <svg id="runBtnIcon" width="12" height="12" viewBox="0 0 12 12" fill="none" style="flex-shrink:0"><path d="M3 2l7 4-7 4V2z" fill="currentColor"/></svg>
+    <span id="runBtnText">Запустить парсинг</span>
+  </button>
 </div>
 
 <!-- Stats bar -->
 <div class="news-stats-bar" id="newsStatsBar" style="display:none">
-  <div class="news-stat"><div class="news-stat-n" id="nsTotal">0</div><div class="news-stat-l">Всего</div></div>
-  <div class="news-stat"><div class="news-stat-n" id="nsNew" style="color:#e65100">0</div><div class="news-stat-l">Новых</div></div>
-  <div class="news-stat"><div class="news-stat-n" id="nsAdded" style="color:#28a745">0</div><div class="news-stat-l">Добавлено</div></div>
-  <div class="news-stat"><div class="news-stat-n" id="nsSources" style="color:#7b1fa2">0</div><div class="news-stat-l">Источников</div></div>
+  <div class="news-stat"><div class="news-stat-n" id="nsTotal">0</div><div class="news-stat-l" id="lbl-ns-total">Всего</div></div>
+  <div class="news-stat"><div class="news-stat-n" id="nsNew" style="color:#e65100">0</div><div class="news-stat-l" id="lbl-ns-new">Новых</div></div>
+  <div class="news-stat"><div class="news-stat-n" id="nsAdded" style="color:var(--tag-green)">0</div><div class="news-stat-l" id="lbl-ns-added">Добавлено</div></div>
+  <div class="news-stat"><div class="news-stat-n" id="nsSources" style="color:#7b1fa2">0</div><div class="news-stat-l" id="lbl-ns-sources">Источников</div></div>
 </div>
 
 <div class="news-grid">
@@ -539,27 +543,29 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <!-- LEFT: news feed -->
   <div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem">
-      <span style="font-size:.9rem;font-weight:700;color:#555">Найденные мероприятия</span>
+      <span style="font-size:.88rem;font-weight:600;color:var(--black)" id="news-found-title">Найденные мероприятия</span>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap">
         <select class="filter-select" id="newsStatusFilter" onchange="filterNews()" style="padding:.4rem .75rem;font-size:.82rem;width:auto">
-          <option value="">Все статусы</option>
-          <option value="new">🆕 Новые</option>
-          <option value="processed">✅ Обработанные</option>
-          <option value="added">📅 Добавлены</option>
-          <option value="dismissed">🚫 Отклонённые</option>
+          <option value="" id="opt-news-all">Все статусы</option>
+          <option value="new" id="opt-news-new">Новые</option>
+          <option value="processed" id="opt-news-processed">Обработанные</option>
+          <option value="added" id="opt-news-added">Добавлены</option>
+          <option value="dismissed" id="opt-news-dismissed">Отклонённые</option>
         </select>
         <select class="filter-select" id="newsSourceFilter" onchange="filterNews()" style="padding:.4rem .75rem;font-size:.82rem;width:auto">
-          <option value="">Все источники</option>
+          <option value="" id="opt-news-all-src">Все источники</option>
         </select>
-        <input type="text" class="filter-input" id="newsSearchInput" oninput="filterNews()" placeholder="Поиск..." style="padding:.4rem .75rem;font-size:.82rem;width:140px">
+        <input type="text" class="filter-input" id="newsSearchInput" oninput="filterNews()" placeholder="Поиск..." style="padding:.4rem .75rem;font-size:.82rem;width:130px">
       </div>
     </div>
-    <div id="loadingNews" class="loading" style="display:none">Загрузка...</div>
+    <div id="loadingNews" class="loading" style="display:none">...</div>
     <div id="newsCards"></div>
-    <div id="emptyNews" class="news-empty" style="display:none;padding:3rem;text-align:center;color:#aaa;background:var(--bg);border-radius:12px">
-      <div style="font-size:3rem;margin-bottom:.5rem">🤖</div>
-      <div style="font-weight:600;margin-bottom:.35rem;color:#666">Мероприятий пока не найдено</div>
-      <div style="font-size:.85rem">Добавьте источники и запустите парсинг</div>
+    <div id="emptyNews" style="display:none;padding:3rem;text-align:center;color:var(--muted2);background:var(--card-bg);border-radius:12px;border:1px solid var(--border)">
+      <div style="color:var(--muted2);margin-bottom:.75rem">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" stroke="currentColor" stroke-width="1.2"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </div>
+      <div style="font-weight:600;margin-bottom:.35rem;font-size:13px" id="news-empty-title">Мероприятий пока не найдено</div>
+      <div style="font-size:.82rem" id="news-empty-sub">Добавьте источники и запустите парсинг</div>
     </div>
   </div>
 
@@ -567,42 +573,54 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div style="display:flex;flex-direction:column;gap:1rem">
 
     <!-- Sources card -->
-    <div style="background:var(--bg);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:1.25rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem">
-        <span style="font-weight:700;color:var(--d)">📡 Источники</span>
-        <button class="btn-add" style="padding:.4rem .9rem;font-size:.8rem" onclick="openSourceModal()">+ Добавить</button>
+    <div style="background:var(--card-bg);border-radius:12px;box-shadow:var(--card-shadow);border:1px solid var(--border);padding:1.1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+        <span style="font-weight:600;color:var(--black);font-size:13px;display:flex;align-items:center;gap:6px">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <span id="lbl-sources-title">Источники</span>
+        </span>
+        <button class="btn-add" style="padding:.35rem .75rem;font-size:.78rem;display:flex;align-items:center;gap:4px" onclick="openSourceModal()">
+          <svg width="10" height="10" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span id="lbl-sources-add">Добавить</span>
+        </button>
       </div>
-      <div id="sourcesList"><div style="text-align:center;color:#bbb;padding:1.5rem;font-size:.85rem">Нет источников</div></div>
+      <div id="sourcesList"><div style="text-align:center;color:var(--muted2);padding:1.5rem;font-size:.82rem" id="sources-empty-txt">Нет источников</div></div>
     </div>
 
     <!-- Search params card -->
     <div class="params-section">
-      <div style="font-weight:700;color:var(--d);margin-bottom:.9rem">⚙️ Параметры поиска</div>
+      <div style="font-weight:600;color:var(--black);font-size:13px;margin-bottom:.75rem;display:flex;align-items:center;gap:6px">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.1 3.1l1.1 1.1M11.8 11.8l1.1 1.1M3.1 12.9l1.1-1.1M11.8 4.2l1.1-1.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span id="lbl-params-title">Параметры поиска</span>
+      </div>
       <div class="form-group">
-        <label class="form-label">Регион / Город</label>
+        <label class="form-label" id="lbl-params-region">Регион / Город</label>
         <input type="text" class="form-input" id="searchRegion" placeholder="Полтава, Харків, Київ...">
       </div>
       <div class="form-group">
-        <label class="form-label">Ключевые слова</label>
+        <label class="form-label" id="lbl-params-keywords">Ключевые слова</label>
         <input type="text" class="form-input" id="searchKeywords" placeholder="борьба, дзюдо, турнир...">
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
         <div class="form-group">
-          <label class="form-label">Дата от</label>
+          <label class="form-label" id="lbl-params-from">Дата от</label>
           <input type="date" class="form-input" id="searchDateFrom">
         </div>
         <div class="form-group">
-          <label class="form-label">Дата до</label>
+          <label class="form-label" id="lbl-params-to">Дата до</label>
           <input type="date" class="form-input" id="searchDateTo">
         </div>
       </div>
-      <button class="btn btn-save" style="width:100%;margin-top:.25rem" onclick="saveSearchParams()">💾 Сохранить параметры</button>
+      <button class="btn btn-save" style="width:100%;margin-top:.25rem;display:flex;align-items:center;justify-content:center;gap:6px" onclick="saveSearchParams()" id="paramsSaveBtn">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="lbl-params-save">Сохранить параметры</span>
+      </button>
       <div class="parse-log" id="parseLog"></div>
     </div>
 
   </div>
 </div>
-</div>
+</div></div>
 
 <!-- CHAT TAB -->
 <div class="view" id="tab-chat">
@@ -908,9 +926,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="form-group">
   <label class="form-label" data-i18n="lblSourceType">Тип источника</label>
   <select class="form-input" id="sourceType">
-    <option value="website">🌐 Веб-сайт</option>
-    <option value="rss">📡 RSS-лента</option>
-    <option value="telegram">✈️ Telegram-канал</option>
+    <option value="website" id="opt-src-website">Веб-сайт</option>
+    <option value="rss" id="opt-src-rss">RSS-лента</option>
+    <option value="telegram" id="opt-src-telegram">Telegram-канал</option>
   </select>
 </div>
 <div class="form-group">
@@ -922,9 +940,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div class="form-group">
     <label class="form-label" data-i18n="lblFrequency">Частота парсинга</label>
     <select class="form-input" id="sourceFrequency">
-      <option value="daily">Ежедневно</option>
-      <option value="weekly">Еженедельно</option>
-      <option value="manual">Только вручную</option>
+      <option value="daily" id="opt-freq-daily">Ежедневно</option>
+      <option value="weekly" id="opt-freq-weekly">Еженедельно</option>
+      <option value="manual" id="opt-freq-manual">Только вручную</option>
     </select>
   </div>
   <div class="form-group">
@@ -1239,7 +1257,38 @@ const i18n={
     lblEventBudget:'Бюджет',lblEventFee:'Сума внеску',lblEventCurrency:'Валюта',lblEventClubFilter:'Клуб (для фільтру груп)',
     groupsLabel:'Групи (бачать захід)',selectAllGroups:'Вибрати всі',
     addEvent:'Додати захід',editEvent:'Редагувати захід',
-    chatInputPh:'Написати повідомлення...'},
+    chatInputPh:'Написати повідомлення...',
+    // AI-Новини
+    newsPageTitle:'AI-Пошук заходів',
+    newsPageSub:'Автоматичний моніторинг джерел · Аналіз через OpenAI · Одним кліком у план',
+    newsRunBtn:'Запустити парсинг',newsRunning:'Парсинг...',
+    nsTotal:'Всього',nsNew:'Нових',nsAdded:'Додано',nsSources:'Джерел',
+    newsFoundTitle:'Знайдені заходи',
+    newsFilterAll:'Всі статуси',newsFilterNew:'Нові',newsFilterProcessed:'Оброблені',
+    newsFilterAdded:'Додані',newsFilterDismissed:'Відхилені',
+    newsFilterAllSrc:'Всі джерела',newsSearchPh:'Пошук...',
+    newsEmptyTitle:'Заходів поки не знайдено',newsEmptySub:'Додайте джерела та запустіть парсинг',
+    newsStatusNew:'Нове',newsStatusProcessed:'Оброблено',newsStatusAdded:'Додано',newsStatusDismissed:'Відхилено',
+    newsBtnCreate:'Створити захід',newsBtnAdded:'Вже в плані',newsBtnSource:'Джерело ↗',
+    newsNoTitle:'Без назви',
+    sourcesTitle:'Джерела',sourcesAdd:'+ Додати',sourcesEmpty:'Немає джерел. Додайте перший.',
+    sourcePromptEmpty:'Промпт не задано',
+    sourceTypeWebsite:'Веб-сайт',sourceTypeRss:'RSS-стрічка',sourceTypeTelegram:'Telegram-канал',
+    sourceFreqDaily:'Щодня',sourceFreqWeekly:'Щотижня',sourceFreqManual:'Лише вручну',
+    sourceActive:'Активний',sourceInactive:'Неактивний',
+    paramsTitle:'Параметри пошуку',
+    paramsRegionLabel:'Регіон / Місто',paramsRegionPh:'Полтава, Харків, Київ...',
+    paramsKeywordsLabel:'Ключові слова',paramsKeywordsPh:'боротьба, дзюдо, турнір...',
+    paramsDateFrom:'Дата від',paramsDateTo:'Дата до',
+    paramsSaveBtn:'Зберегти параметри',paramsSaved:'Збережено',
+    addSource:'+ Додати',
+    logStarting:'Запуск парсингу...',logActiveSrc:'Активних джерел: ',
+    logFound:'Знайдено: ',logNewEvents:' нових заходів',
+    logSrcProcessed:'Джерел оброблено: ',logError:'Помилка: ',
+    createFromNews:'Створити захід з новини',
+    confirmDismiss:'Відхилити цю новину?',confirmDelSource:'Видалити джерело?',
+    sourceModalAdd:'Додати джерело',sourceModalEdit:'Редагувати джерело',
+    sourceFormRequired:'Заповніть URL та промпт'},
   ru:{
     navBadge:'ДИРЕКТОР',logout:'Выход',
     sClubLabel:'Клуб',sClubs:'Мои клубы',sGroups:'Группы',sPeopleLabel:'Люди',
@@ -1354,7 +1403,38 @@ const i18n={
     lblEventLocation:'Место проведения',lblEventDesc:'Описание',
     lblEventBudget:'Бюджет',lblEventFee:'Сумма взноса',lblEventCurrency:'Валюта',lblEventClubFilter:'Клуб (для фильтра групп)',
     groupsLabel:'Группы (видят мероприятие)',selectAllGroups:'Выбрать все',
-    chatInputPh:'Написать сообщение...'},
+    chatInputPh:'Написать сообщение...',
+    // AI-Новости
+    newsPageTitle:'AI-Поиск мероприятий',
+    newsPageSub:'Автоматический мониторинг источников · Анализ через OpenAI · Одним кликом в план',
+    newsRunBtn:'Запустить парсинг',newsRunning:'Парсинг...',
+    nsTotal:'Всего',nsNew:'Новых',nsAdded:'Добавлено',nsSources:'Источников',
+    newsFoundTitle:'Найденные мероприятия',
+    newsFilterAll:'Все статусы',newsFilterNew:'Новые',newsFilterProcessed:'Обработанные',
+    newsFilterAdded:'Добавлены',newsFilterDismissed:'Отклонённые',
+    newsFilterAllSrc:'Все источники',newsSearchPh:'Поиск...',
+    newsEmptyTitle:'Мероприятий пока не найдено',newsEmptySub:'Добавьте источники и запустите парсинг',
+    newsStatusNew:'Новое',newsStatusProcessed:'Обработано',newsStatusAdded:'Добавлено',newsStatusDismissed:'Отклонено',
+    newsBtnCreate:'Создать мероприятие',newsBtnAdded:'Уже в плане',newsBtnSource:'Источник ↗',
+    newsNoTitle:'Без названия',
+    sourcesTitle:'Источники',sourcesAdd:'+ Добавить',sourcesEmpty:'Нет источников. Добавьте первый.',
+    sourcePromptEmpty:'Промпт не задан',
+    sourceTypeWebsite:'Веб-сайт',sourceTypeRss:'RSS-лента',sourceTypeTelegram:'Telegram-канал',
+    sourceFreqDaily:'Ежедневно',sourceFreqWeekly:'Еженедельно',sourceFreqManual:'Только вручную',
+    sourceActive:'Активен',sourceInactive:'Неактивен',
+    paramsTitle:'Параметры поиска',
+    paramsRegionLabel:'Регион / Город',paramsRegionPh:'Полтава, Харків, Київ...',
+    paramsKeywordsLabel:'Ключевые слова',paramsKeywordsPh:'борьба, дзюдо, турнир...',
+    paramsDateFrom:'Дата от',paramsDateTo:'Дата до',
+    paramsSaveBtn:'Сохранить параметры',paramsSaved:'Сохранено',
+    addSource:'+ Добавить',
+    logStarting:'Запуск парсинга...',logActiveSrc:'Активных источников: ',
+    logFound:'Найдено: ',logNewEvents:' новых мероприятий',
+    logSrcProcessed:'Источников обработано: ',logError:'Ошибка: ',
+    createFromNews:'Создать мероприятие из новости',
+    confirmDismiss:'Отклонить эту новость?',confirmDelSource:'Удалить источник?',
+    sourceModalAdd:'Добавить источник',sourceModalEdit:'Редактировать источник',
+    sourceFormRequired:'Заполните URL и промпт'},
   en:{
     navBadge:'DIRECTOR',logout:'Logout',
     sClubLabel:'Club',sClubs:'My clubs',sGroups:'Groups',sPeopleLabel:'People',
@@ -1444,7 +1524,38 @@ const i18n={
     lblEventLocation:'Venue',lblEventDesc:'Description',
     lblEventBudget:'Budget',lblEventFee:'Entry fee',lblEventCurrency:'Currency',lblEventClubFilter:'Club (to filter groups)',
     groupsLabel:'Groups (see event)',selectAllGroups:'Select all',
-    chatInputPh:'Write a message...'}
+    chatInputPh:'Write a message...',
+    // AI-News
+    newsPageTitle:'AI-Event Search',
+    newsPageSub:'Automatic source monitoring · OpenAI analysis · One click to plan',
+    newsRunBtn:'Run parsing',newsRunning:'Parsing...',
+    nsTotal:'Total',nsNew:'New',nsAdded:'Added',nsSources:'Sources',
+    newsFoundTitle:'Found events',
+    newsFilterAll:'All statuses',newsFilterNew:'New',newsFilterProcessed:'Processed',
+    newsFilterAdded:'Added',newsFilterDismissed:'Dismissed',
+    newsFilterAllSrc:'All sources',newsSearchPh:'Search...',
+    newsEmptyTitle:'No events found yet',newsEmptySub:'Add sources and run parsing',
+    newsStatusNew:'New',newsStatusProcessed:'Processed',newsStatusAdded:'Added',newsStatusDismissed:'Dismissed',
+    newsBtnCreate:'Create event',newsBtnAdded:'Already planned',newsBtnSource:'Source ↗',
+    newsNoTitle:'No title',
+    sourcesTitle:'Sources',sourcesAdd:'+ Add',sourcesEmpty:'No sources. Add the first one.',
+    sourcePromptEmpty:'No prompt set',
+    sourceTypeWebsite:'Website',sourceTypeRss:'RSS feed',sourceTypeTelegram:'Telegram channel',
+    sourceFreqDaily:'Daily',sourceFreqWeekly:'Weekly',sourceFreqManual:'Manual only',
+    sourceActive:'Active',sourceInactive:'Inactive',
+    paramsTitle:'Search parameters',
+    paramsRegionLabel:'Region / City',paramsRegionPh:'Poltava, Kharkiv, Kyiv...',
+    paramsKeywordsLabel:'Keywords',paramsKeywordsPh:'wrestling, judo, tournament...',
+    paramsDateFrom:'Date from',paramsDateTo:'Date to',
+    paramsSaveBtn:'Save parameters',paramsSaved:'Saved',
+    addSource:'+ Add',
+    logStarting:'Starting parsing...',logActiveSrc:'Active sources: ',
+    logFound:'Found: ',logNewEvents:' new events',
+    logSrcProcessed:'Sources processed: ',logError:'Error: ',
+    createFromNews:'Create event from news',
+    confirmDismiss:'Dismiss this news item?',confirmDelSource:'Delete source?',
+    sourceModalAdd:'Add source',sourceModalEdit:'Edit source',
+    sourceFormRequired:'Fill in URL and prompt'}
 };
 let currentLang=localStorage.getItem('lang')||'uk';
 function t(k){return (i18n[currentLang]||i18n.ru)[k]||k;}
@@ -2096,45 +2207,58 @@ function renderNewsCards(news){
   container.innerHTML='';
   if(!news.length){document.getElementById('emptyNews').style.display='block';return;}
   document.getElementById('emptyNews').style.display='none';
-  const statusLabel={new:'🆕 Новое',processed:'✅ Обработано',added:'📅 Добавлено',dismissed:'🚫 Отклонено'};
-  const srcIconMap={website:'🌐',rss:'📡',telegram:'✈️'};
+  const statusLabel={
+    new:t('newsStatusNew'),
+    processed:t('newsStatusProcessed'),
+    added:t('newsStatusAdded'),
+    dismissed:t('newsStatusDismissed')
+  };
+  const srcTypeLabel={
+    website:t('sourceTypeWebsite'),
+    rss:t('sourceTypeRss'),
+    telegram:t('sourceTypeTelegram')
+  };
+  const SVG_DATE='<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+  const SVG_LOC='<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6c0-2.5-2-4.5-4.5-4.5z" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1.2"/></svg>';
+  const SVG_SRC='<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+  const SVG_FEE='<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="1.8" stroke="currentColor" stroke-width="1.2"/></svg>';
   news.forEach(n=>{
     const card=document.createElement('div');
     const st=n.status||'new';
     card.className=`news-card status-${st}`;
-    const dateStr=n.event_date?new Date(n.event_date).toLocaleDateString('ru-RU',{day:'numeric',month:'short',year:'numeric'}):'';
+    const loc=currentLang==='en'?'en-GB':currentLang==='uk'?'uk-UA':'ru-RU';
+    const dateStr=n.event_date?new Date(n.event_date).toLocaleDateString(loc,{day:'numeric',month:'short',year:'numeric'}):'';
     const srcDomain=n.source_url?n.source_url.replace(/^https?:\/\//,'').split('/')[0]:'';
     const src=allSources.find(s=>s.url===n.source_url);
-    const srcIcon=src?srcIconMap[src.type]||'🔗':'🔗';
+    const srcLabel=src?srcTypeLabel[src.type]||srcDomain:srcDomain;
     card.innerHTML=`
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;margin-bottom:.5rem">
-        <div class="news-card-title">${n.title||'Без названия'}</div>
+        <div class="news-card-title">${n.title||t('newsNoTitle')}</div>
         <span class="ntag ntag-status-${st}" style="flex-shrink:0">${statusLabel[st]||st}</span>
       </div>
       <div class="news-card-meta">
-        ${dateStr?`<span class="ntag ntag-date">📅 ${dateStr}</span>`:''}
-        ${n.location?`<span class="ntag ntag-loc">📍 ${n.location}</span>`:''}
-        ${srcDomain?`<span class="ntag ntag-src">${srcIcon} ${srcDomain}</span>`:''}
-        ${n.entry_fee?`<span class="ntag ntag-fee">💰 ${n.entry_fee} ${n.currency||'грн'}</span>`:''}
+        ${dateStr?`<span class="ntag ntag-date">${SVG_DATE} ${dateStr}</span>`:''}
+        ${n.location?`<span class="ntag ntag-loc">${SVG_LOC} ${n.location}</span>`:''}
+        ${srcDomain?`<span class="ntag ntag-src">${SVG_SRC} ${srcLabel}</span>`:''}
+        ${n.entry_fee?`<span class="ntag ntag-fee">${SVG_FEE} ${n.entry_fee} ${n.currency||'грн'}</span>`:''}
         ${n.event_type?`<span class="ntag ntag-type">${n.event_type}</span>`:''}
       </div>
-      ${n.description?`<div class="news-card-desc">${n.description.substring(0,240)}${n.description.length>240?'…':''}</div>`:''}
+      ${n.description?`<div class="news-card-desc">${n.description.substring(0,240)}${n.description.length>240?'\u2026':''}</div>`:''}
       <div class="news-card-actions">
         ${st!=='added'
-          ?`<button class="btn-make-event" onclick="createEventFromNews(${n.id})">📅 Создать мероприятие</button>`
-          :`<span style="color:#28a745;font-weight:600;font-size:.83rem">✅ Уже в плане</span>`}
-        ${n.original_url?`<a href="${n.original_url}" target="_blank" class="btn-open-src">Источник ↗</a>`:
-          n.source_url?`<a href="${n.source_url}" target="_blank" class="btn-open-src">Источник ↗</a>`:''}
+          ?`<button class="btn-make-event" onclick="createEventFromNews(${n.id})">${t('newsBtnCreate')}</button>`
+          :`<span style="color:var(--tag-green);font-weight:600;font-size:.83rem">${t('newsBtnAdded')}</span>`}
+        ${n.original_url?`<a href="${n.original_url}" target="_blank" class="btn-open-src">${t('newsBtnSource')}</a>`:
+          n.source_url?`<a href="${n.source_url}" target="_blank" class="btn-open-src">${t('newsBtnSource')}</a>`:''}
         ${st!=='added'&&st!=='dismissed'
-          ?`<button class="btn-dismiss-news" onclick="dismissNews(${n.id})" title="Отклонить">✕</button>`:''}
+          ?`<button class="btn-dismiss-news" onclick="dismissNews(${n.id})" title="${t('confirmDismiss')}">\u2715</button>`:''}
       </div>
     `;
     container.appendChild(card);
   });
 }
-
 async function dismissNews(newsId){
-  if(!confirm('Отклонить эту новость?'))return;
+  if(!confirm(t('confirmDismiss')))return;
   try{
     await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token,resource:'news_items',action:'update',data:{id:newsId,status:'dismissed'}})});
@@ -2148,7 +2272,7 @@ async function dismissNews(newsId){
 async function createEventFromNews(newsId){
   const n=allNews.find(x=>x.id===newsId);
   if(!n)return;
-  document.getElementById('eventModalTitle').textContent='📅 Создать мероприятие из новости';
+  document.getElementById('eventModalTitle').textContent=t('createFromNews');
   document.getElementById('eventId').value='';
   document.getElementById('pendingNewsId').value=newsId;
   document.getElementById('eventName').value=n.title||'';
@@ -2190,31 +2314,31 @@ async function loadSources(){
 function renderSources(){
   const container=document.getElementById('sourcesList');
   if(!allSources.length){
-    container.innerHTML='<div style="text-align:center;color:#bbb;padding:1.5rem;font-size:.85rem">Нет источников. Добавьте первый.</div>';
+    container.innerHTML=`<div style="text-align:center;color:var(--muted2);padding:1.5rem;font-size:.82rem">${t('sourcesEmpty')}</div>`;
     return;
   }
-  const icons={website:'🌐',rss:'📡',telegram:'✈️'};
-  const freqLabel={daily:'Ежедневно',weekly:'Еженедельно',manual:'Вручную'};
+  const srcIcons={website:'<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5C6 4 5 6 5 8s1 4 3 6.5M8 1.5C10 4 11 6 11 8s-1 4-3 6.5M1.5 8h13" stroke="currentColor" stroke-width="1.2"/></svg>',rss:'<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 2C9 2 14 7 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M2 7c4 0 7 3 7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="2.5" cy="13.5" r="1.5" fill="currentColor"/></svg>',telegram:'<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8l10-5-4 11-2-4-4-2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 8l4-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>'};
+  const freqLabel={daily:t('sourceFreqDaily'),weekly:t('sourceFreqWeekly'),manual:t('sourceFreqManual')};
   container.innerHTML=allSources.map(s=>{
     const url=s.url||'';
-    const displayUrl=url?url.replace(/^https?:\/\//,'').substring(0,45):'(нет URL)';
+    const displayUrl=url?url.replace(/^https?:\/\//,'').substring(0,45):'';
     return `<div class="source-card">
-      <div class="source-icon">${icons[s.type]||'🌐'}</div>
+      <div class="source-icon" style="flex-shrink:0;color:var(--muted)">${srcIcons[s.type]||'<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5C6 4 5 6 5 8s1 4 3 6.5M8 1.5C10 4 11 6 11 8s-1 4-3 6.5M1.5 8h13" stroke="currentColor" stroke-width="1.2"/></svg>'}</div>
       <div class="source-card-body">
         <div class="source-card-url" title="${url}">${displayUrl}</div>
-        <div class="source-card-prompt" title="${s.prompt||''}">${s.prompt?s.prompt.substring(0,70)+'…':'Промпт не задан'}</div>
-        <div class="source-card-meta">${freqLabel[s.frequency]||''} · ${s.is_active?'<span style="color:#28a745">✅ Активен</span>':'<span style="color:#aaa">⏸ Неактивен</span>'}</div>
+        <div class="source-card-prompt" title="${s.prompt||''}">${s.prompt?s.prompt.substring(0,70)+'\u2026':t('sourcePromptEmpty')}</div>
+        <div class="source-card-meta">${freqLabel[s.frequency]||''} · ${s.is_active?`<span style="color:var(--tag-green)">${t('sourceActive')}</span>`:`<span style="color:var(--muted2)">${t('sourceInactive')}</span>`}</div>
       </div>
       <div class="source-actions">
-        <button class="btn-icon btn-edit" onclick="editSource(${s.id})" title="Редактировать">✏️</button>
-        <button class="btn-icon btn-delete" onclick="deleteSource(${s.id})" title="Удалить">🗑️</button>
+        <button class="act-btn" onclick="editSource(${s.id})" title="edit" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
+        <button class="act-btn del" onclick="deleteSource(${s.id})" title="delete" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </div>
     </div>
   `; }).join('');
 }
 
 function openSourceModal(){
-  document.getElementById('sourceModalTitle').textContent='Добавить источник';
+  document.getElementById('sourceModalTitle').textContent=t('sourceModalAdd');
   document.getElementById('sourceId').value='';
   document.getElementById('sourceUrl').value='';
   document.getElementById('sourceType').value='website';
@@ -2230,7 +2354,7 @@ function closeSourceModal(){
 }
 function editSource(id){
   const s=allSources.find(x=>x.id===id);if(!s)return;
-  document.getElementById('sourceModalTitle').textContent='Редактировать источник';
+  document.getElementById('sourceModalTitle').textContent=t('sourceModalEdit');
   document.getElementById('sourceId').value=s.id;
   document.getElementById('sourceUrl').value=s.url||'';
   document.getElementById('sourceType').value=s.type||'website';
@@ -2248,7 +2372,7 @@ async function saveSource(e){
   const prompt=document.getElementById('sourcePrompt').value.trim();
   const frequency=document.getElementById('sourceFrequency').value;
   const is_active=document.getElementById('sourceActive').checked;
-  if(!url||!prompt){alert('Заполните URL и промпт');return;}
+  if(!url||!prompt){alert(t('sourceFormRequired'));return;}
   const data={url,type,prompt,frequency,is_active,director_id:user.id};
   if(id)data.id=parseInt(id);
   try{
@@ -2257,11 +2381,11 @@ async function saveSource(e){
     const res=await r.json();
     const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
     if(result&&result.id){closeSourceModal();await loadSources();}
-    else alert('Ошибка: '+JSON.stringify(res));
+    else alert(t('logError')+JSON.stringify(res));
   }catch(err){alert('Ошибка: '+err.message);}
 }
 async function deleteSource(id){
-  if(!confirm('Удалить источник?'))return;
+  if(!confirm(t('confirmDelSource')))return;
   try{
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token,resource:'news_sources',action:'delete',data:{id}})});
@@ -2293,7 +2417,7 @@ function saveSearchParams(){
     body:JSON.stringify({token,resource:'news_search_params',action:'upsert',data:{...p,director_id:user.id}})})
     .catch(()=>{});
   const btn=document.querySelector('#tab-news .btn-save');
-  if(btn){const o=btn.textContent;btn.textContent='✅ Сохранено';setTimeout(()=>btn.textContent=o,1500);}
+  if(btn){const o=btn.textContent;btn.textContent=t('paramsSaved');setTimeout(()=>btn.textContent=o,1500);}
 }
 
 // ── Run parsing ───────────────────────────────────────────────────────────────
@@ -2302,15 +2426,15 @@ async function runParsing(){
   const txt=document.getElementById('runBtnText');
   const log=document.getElementById('parseLog');
   btn.disabled=true; btn.classList.add('running');
-  txt.textContent='Парсинг...';
+  txt.textContent=t('newsRunning');
   log.style.display='block'; log.innerHTML='';
   const addLog=(msg,color='#00e676')=>{
     log.innerHTML+=`<div style="color:${color}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
     log.scrollTop=log.scrollHeight;
   };
-  addLog('🚀 Запуск парсинга...');
+  addLog(t('logStarting'));
   const active=allSources.filter(s=>s.is_active);
-  addLog(`📡 Активных источников: ${active.length}`,'#aaa');
+  addLog(t('logActiveSrc')+active.length,'#aaa');
   try{
     const params=JSON.parse(localStorage.getItem('newsSearchParams')||'{}');
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -2318,18 +2442,18 @@ async function runParsing(){
         data:{director_id:user.id,sources:active,...params}})});
     const d=await r.json();
     if(d.success||d.found_count!==undefined){
-      addLog(`✅ Найдено: ${d.found_count||0} новых мероприятий`,'#00e676');
-      addLog(`📊 Источников обработано: ${d.sources_processed||0}`,'#aaa');
-      if(d.errors&&d.errors.length) d.errors.forEach(e=>addLog('⚠️ '+e,'#ffb300'));
+      addLog(t('logFound')+(d.found_count||0)+t('logNewEvents'),'#00e676');
+      addLog(t('logSrcProcessed')+(d.sources_processed||0),'#aaa');
+      if(d.errors&&d.errors.length) d.errors.forEach(e=>addLog(e,'#ffb300'));
       await loadNews();
     }else{
-      addLog('❌ Ошибка: '+(d.error||JSON.stringify(d)),'#ff5252');
+      addLog(t('logError')+(d.error||JSON.stringify(d)),'#ff5252');
     }
   }catch(e){
-    addLog('❌ '+e.message,'#ff5252');
+    addLog(t('logError')+e.message,'#ff5252');
   }finally{
     btn.disabled=false; btn.classList.remove('running');
-    txt.textContent='▶ Запустить парсинг';
+    txt.textContent=t('newsRunBtn');
   }
 }
 
@@ -3117,7 +3241,39 @@ function applyLang(){
   if(agfl) agfl.textContent=t('filterGroup');
   // Кнопка назад в чате
   const cbb=document.getElementById('t-chat-back');
-  if(cbb) cbb.textContent=t('chatBack');}
+  if(cbb) cbb.textContent=t('chatBack');
+  // AI-Новости
+  const s=(id,key)=>{const e=document.getElementById(id);if(e)e.textContent=t(key);};
+  s('news-page-title','newsPageTitle');s('news-page-sub','newsPageSub');
+  s('runBtnText','newsRunBtn');
+  s('lbl-ns-total','nsTotal');s('lbl-ns-new','nsNew');s('lbl-ns-added','nsAdded');s('lbl-ns-sources','nsSources');
+  s('news-found-title','newsFoundTitle');
+  s('news-empty-title','newsEmptyTitle');s('news-empty-sub','newsEmptySub');
+  s('lbl-sources-title','sourcesTitle');s('lbl-sources-add','sourcesAdd');
+  s('sources-empty-txt','sourcesEmpty');
+  s('lbl-params-title','paramsTitle');
+  s('lbl-params-region','paramsRegionLabel');s('lbl-params-keywords','paramsKeywordsLabel');
+  s('lbl-params-from','paramsDateFrom');s('lbl-params-to','paramsDateTo');
+  s('lbl-params-save','paramsSaveBtn');
+  // filter options
+  const ons=(id,key)=>{const e=document.getElementById(id);if(e)e.textContent=t(key);};
+  ons('opt-news-all','newsFilterAll');ons('opt-news-new','newsFilterNew');
+  ons('opt-news-processed','newsFilterProcessed');ons('opt-news-added','newsFilterAdded');
+  ons('opt-news-dismissed','newsFilterDismissed');ons('opt-news-all-src','newsFilterAllSrc');
+  // source type options
+  ons('opt-src-website','sourceTypeWebsite');ons('opt-src-rss','sourceTypeRss');ons('opt-src-telegram','sourceTypeTelegram');
+  // frequency options
+  ons('opt-freq-daily','sourceFreqDaily');ons('opt-freq-weekly','sourceFreqWeekly');ons('opt-freq-manual','sourceFreqManual');
+  // search placeholders
+  const ri=document.getElementById('searchRegion');if(ri)ri.placeholder=t('paramsRegionPh');
+  const ki=document.getElementById('searchKeywords');if(ki)ki.placeholder=t('paramsKeywordsPh');
+  const ni=document.getElementById('newsSearchInput');if(ni)ni.placeholder=t('newsSearchPh');
+  // source modal title (если закрыта)
+  const smt=document.getElementById('sourceModalTitle');
+  if(smt&&!document.getElementById('sourceId')?.value) smt.textContent=t('sourceModalAdd');
+  // перерисовываем источники если загружены
+  if(typeof allSources!=='undefined'&&allSources.length) renderSources();
+  if(typeof allNews!=='undefined'&&allNews.length) filterNews();}
 function setLang(lang){
   currentLang=lang;
   localStorage.setItem('lang',lang);
