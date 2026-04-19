@@ -469,7 +469,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="table-container">
 <div id="loadingAthletes" class="loading">Загрузка...</div>
 <table class="table" id="athletesTable" style="display:none">
-<thead><tr><th id="th-athletes-photo">Фото</th><th id="th-athletes-fio">ФИО</th><th id="th-athletes-group">Группа</th><th id="th-athletes-club">Клуб</th><th id="th-athletes-belt">🥋 Пояс / Экзамен</th><th></th></tr></thead>
+<thead><tr><th id="th-athletes-photo">Фото</th><th id="th-athletes-fio">ФИО</th><th id="th-athletes-group">Группа</th><th id="th-athletes-club">Клуб</th><th id="th-athletes-belt">Пояс / Экзамен</th><th></th></tr></thead>
 <tbody id="athletesTableBody"></tbody>
 </table>
 </div>
@@ -790,31 +790,31 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     </div>
   </div>
   <div class="mob-more-grid">
-    <button class="mob-more-item" onclick="show('clubs');toggleMobMore()">
+    <button class="mob-more-item" onclick="show('clubs');closeMobMore()">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.2"/><path d="M4 12L10 6M7 6h3v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span id="t-mob-clubs">Клубы</span>
     </button>
-    <button class="mob-more-item" onclick="show('groups');toggleMobMore()">
+    <button class="mob-more-item" onclick="show('groups');closeMobMore()">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="7" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="4" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="7" width="6" height="8" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="10" width="6" height="5" rx="1.2" stroke="currentColor" stroke-width="1.2"/></svg>
       <span id="t-mob-groups">Группы</span>
     </button>
-    <button class="mob-more-item" onclick="show('belts');toggleMobMore()">
+    <button class="mob-more-item" onclick="show('belts');closeMobMore()">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M1 8h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="5.5" y="5.5" width="5" height="5" rx="1.2" fill="var(--bg)" stroke="currentColor" stroke-width="1.2"/></svg>
       <span id="t-mob-belts">Пояса</span>
     </button>
-    <button class="mob-more-item" onclick="show('events');toggleMobMore()">
+    <button class="mob-more-item" onclick="show('events');closeMobMore()">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span id="t-mob-events">Меропр.</span>
     </button>
-    <button class="mob-more-item" onclick="show('subscription');toggleMobMore()">
+    <button class="mob-more-item" onclick="show('subscription');closeMobMore()">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6.5h14" stroke="currentColor" stroke-width="1.2"/></svg>
       <span id="t-mob-subscription">Подписка</span>
     </button>
-    <a href="/accounting.html" class="mob-more-item" onclick="toggleMobMore()">
+    <a href="/accounting.html" class="mob-more-item" onclick="closeMobMore()">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span id="t-mob-accounting">Бухгалт.</span>
     </a>
-    <button class="mob-more-item" onclick="openInbox();toggleMobMore()" style="position:relative">
+    <button class="mob-more-item" onclick="openInbox();closeMobMore()" style="position:relative">
       <div class="mob-nav-dot" id="mobMsgDot" style="top:4px;right:4px"></div>
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M1.5 3h13l-6.5 7L1.5 3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M1.5 3v10h13V3" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
       <span id="t-mob-messages">Сообщ.</span>
@@ -2770,14 +2770,14 @@ async function openInbox(){
     list.innerHTML=msgs.map(function(m){
       var date=new Date(m.created_at).toLocaleDateString('ru-RU');
       var isFromAdmin=m.from_user_id!==user.id;
-      var bg=isFromAdmin?(m.is_read?'#f8f9fa':'#e8f4fd'):'#f0fff0';
+      var bg=isFromAdmin?(m.is_read?'var(--bg3)':'var(--tag-blue-bg)'):'var(--tag-green-bg)';
       var typeLabel=m.type==='renewal_request'?t('msgTypeRenewal'):m.type==='reply'?t('msgTypeReply'):t('msgTypeMessage');
-      return '<div style="padding:1rem;border-radius:8px;margin-bottom:.75rem;background:'+bg+';border:1px solid #e0e0e0">'+
+      return '<div style="padding:1rem;border-radius:8px;margin-bottom:.75rem;background:'+bg+';border:1px solid var(--border)">'+
         '<div style="display:flex;justify-content:space-between;margin-bottom:.5rem">'+
-        '<span style="font-size:.8rem;color:#888">'+typeLabel+' • '+date+'</span>'+
+        '<span style="font-size:.8rem;color:var(--muted)">'+typeLabel+' • '+date+'</span>'+
         (isFromAdmin&&!m.is_read?'<span style="font-size:.75rem;background:#dc3545;color:#fff;border-radius:10px;padding:0 6px">Новое</span>':'')+'</div>'+
-        '<div style="margin-bottom:.75rem">'+m.message+'</div>'+
-        (isFromAdmin?'<button onclick="openReply('+m.id+')" style="padding:.3rem .8rem;background:#0066CC;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.85rem">'+t('msgReply')+'</button>':'')+
+        '<div style="margin-bottom:.75rem;color:var(--text)">'+m.message+'</div>'+
+        (isFromAdmin?'<button onclick="openReply('+m.id+')" style="padding:.3rem .8rem;background:var(--p);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:.85rem">'+t('msgReply')+'</button>':'')+
         '</div>';
     }).join('');
     // Mark all as read
@@ -3315,6 +3315,10 @@ function toggleMobMore(e){
   if(e)e.stopPropagation();
   const m=document.getElementById('mob-more-menu');
   m.classList.toggle('open');
+}
+function closeMobMore(){
+  const m=document.getElementById('mob-more-menu');
+  if(m)m.classList.remove('open');
 }
 document.addEventListener('click',function(e){
   const menu=document.getElementById('mob-more-menu');
