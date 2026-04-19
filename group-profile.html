@@ -1,100 +1,470 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Профиль группы - InSkill</title>
+<title>Група — InSkill.online</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem}
-.btn-back{padding:0.5rem 1rem;background:var(--p);color:#fff;border:none;border-radius:6px;cursor:pointer;text-decoration:none;display:inline-block}
-.container{max-width:1200px;margin:2rem auto;padding:0 2rem}
-.profile-card{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.profile-header h1{font-size:2rem;color:var(--p);margin-bottom:0.5rem}
-.profile-header p{color:#666;margin-bottom:0.25rem}
-.section{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.section-title{font-size:1.5rem;color:var(--p);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:2px solid var(--b)}
-.schedule-grid{display:grid;gap:1rem;margin-top:1rem}
-.schedule-day{padding:1rem;background:var(--l);border-radius:8px;border-left:4px solid var(--p)}
-.schedule-day h3{color:var(--p);font-size:1.1rem;margin-bottom:0.5rem}
-.schedule-day p{color:#666;font-size:0.95rem}
-.list-grid{display:grid;gap:1rem;margin-top:1rem}
-.list-item{padding:1rem;background:var(--l);border-radius:8px;display:flex;align-items:center;gap:1rem}
-.list-item img{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--b)}
-.list-item-info h4{color:var(--p);font-size:1rem;margin-bottom:0.25rem}
-.list-item-info p{color:#666;font-size:0.9rem}
-.empty{text-align:center;padding:2rem;color:#999}
-.loading{text-align:center;padding:3rem;color:var(--p)}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+[data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--sidebar-bg:#ffffff;--input-bg:#fafafa;--card-bg:#ffffff;--card-shadow:0 1px 3px rgba(0,0,0,.06);--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green:#16a34a;--tag-red-bg:#fff0f0;--tag-red:#c0392b;--tag-blue-bg:#eff6ff;--tag-blue:#1d4ed8;--p:#0066CC;--s:#FF9933}
+[data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--sidebar-bg:#0a0a0a;--input-bg:#181818;--card-bg:#181818;--card-shadow:0 1px 3px rgba(0,0,0,.3);--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green:#4ade80;--tag-red-bg:#2a1010;--tag-red:#ff7070;--tag-blue-bg:#0c1a3a;--tag-blue:#93c5fd;--p:#4d9de0;--s:#FF9933}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+/* ── NAV ── */
+.nav{height:48px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:background .2s,border-color .2s}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:600;color:var(--black);letter-spacing:-.03em;transition:color .2s}
+.logo-text span{font-weight:300;color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-badge{font-size:10px;font-weight:500;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;letter-spacing:.02em}
+.nav-divider{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.theme-toggle{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;transition:all .15s}
+.theme-toggle:hover{border-color:var(--border2)}
+.lang-switcher{display:flex;align-items:center;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:3px;transition:all .2s}
+.lang-btn{padding:3px 8px;border:none;border-radius:5px;background:transparent;color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.lang-btn.active{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* ── LAYOUT ── */
+.layout{display:flex;height:calc(100vh - 48px)}
+
+/* ── SIDEBAR ── */
+.sidebar{width:220px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:background .2s,border-color .2s;overflow-y:auto}
+.sidebar-user{padding:14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;transition:border-color .2s}
+.sidebar-avatar{width:32px;height:32px;border-radius:50%;background:var(--black);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;transition:all .2s}
+.sidebar-user-name{font-size:12px;font-weight:500;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s}
+.sidebar-user-id{font-size:10px;color:var(--muted2)}
+.sidebar-section{padding:14px 12px 6px;font-size:10px;font-weight:500;color:var(--muted2);letter-spacing:.08em;text-transform:uppercase}
+.sitem{display:flex;align-items:center;gap:9px;padding:7px 12px;margin:1px 6px;border:none;border-radius:7px;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;text-align:left;width:calc(100% - 12px);text-decoration:none}
+.sitem:hover{background:var(--bg3);color:var(--text)}
+.sitem.active{background:var(--bg3);color:var(--black)}
+.sitem svg{flex-shrink:0}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;padding:24px}
+
+/* ── HERO ── */
+.hero{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);padding:20px 24px;margin-bottom:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.hero-info{}
+.hero-title{font-size:20px;font-weight:700;color:var(--black);letter-spacing:-.03em;margin-bottom:8px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:6px}
+.meta-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;background:var(--bg3);color:var(--muted)}
+.meta-chip.blue{background:var(--tag-blue-bg);color:var(--tag-blue)}
+.meta-chip.green{background:var(--tag-green-bg);color:var(--tag-green)}
+.hero-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+
+/* ── CARD ── */
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);overflow:hidden;transition:all .2s;margin-bottom:16px}
+.card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600;color:var(--black)}
+.card-body{padding:16px}
+
+/* ── BUTTONS ── */
+.btn{padding:7px 14px;border:none;border-radius:7px;font-weight:500;cursor:pointer;font-size:12px;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--black);color:var(--bg)}
+.btn-primary:hover{opacity:.85}
+.btn-edit{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-edit:hover{border-color:var(--border2);background:var(--bg2)}
+.btn-cancel{background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
+.btn-cancel:hover{border-color:var(--border2);color:var(--text)}
+.btn-save{background:var(--black);color:var(--bg)}
+.btn-save:hover{opacity:.85}
+.btn-add-schedule{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;font-size:12px;font-weight:500;color:var(--text);cursor:pointer;font-family:inherit;transition:all .15s;margin-bottom:12px}
+.btn-add-schedule:hover{border-color:var(--border2);background:var(--bg2)}
+
+/* ── SCHEDULE ── */
+.schedule-grid{display:grid;gap:8px}
+.schedule-day{background:var(--bg3);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px;border-left:3px solid var(--p)}
+.schedule-day-name{font-size:12px;font-weight:600;color:var(--black);min-width:90px}
+.schedule-day-time{font-size:12px;color:var(--muted)}
+
+/* ── SCHEDULE EDITOR ── */
+.schedule-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.schedule-item select,.schedule-item input[type="time"]{padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s}
+.schedule-item select:focus,.schedule-item input[type="time"]:focus{border-color:var(--border2)}
+.schedule-item select{flex:2;min-width:100px}
+.schedule-item input[type="time"]{flex:1;min-width:80px}
+.btn-del-schedule{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
+.btn-del-schedule:hover{border-color:var(--tag-red);color:var(--tag-red);background:var(--tag-red-bg)}
+
+/* ── PEOPLE LIST ── */
+.people-list{display:flex;flex-direction:column;gap:4px}
+.person-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.person-row:last-child{border-bottom:none}
+.person-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex-shrink:0}
+.person-avatar-placeholder{width:34px;height:34px;border-radius:50%;background:var(--p);color:#fff;font-size:11px;font-weight:600;flex-shrink:0;display:flex;align-items:center;justify-content:center;text-transform:uppercase}
+.person-name{font-size:12px;font-weight:500;color:var(--black);text-decoration:none}
+.person-name:hover{color:var(--p)}
+.person-sub{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* ── EMPTY / LOADING ── */
+.empty-state{padding:24px;text-align:center;color:var(--muted2);font-size:12px}
+.loading-state{padding:24px;text-align:center;color:var(--muted);font-size:12px}
+.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--border) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── MODAL ── */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
 .modal.active{display:flex}
-.modal-content{background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:2rem}
-.modal-title{font-size:1.5rem;color:var(--p);margin-bottom:1.5rem}
-.schedule-item{background:var(--l);padding:1rem;border-radius:8px;margin-bottom:1rem;display:flex;gap:1rem;align-items:start}
-.schedule-item select,.schedule-item input{padding:0.5rem;border:2px solid var(--b);border-radius:6px;font-size:0.9rem}
-.schedule-item button{padding:0.5rem;background:#ffebee;color:#dc3545;border:none;border-radius:6px;cursor:pointer}
-.btn-add{padding:0.75rem 1.5rem;background:var(--p);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-bottom:1rem}
-.btn-save{padding:0.75rem 1.5rem;background:var(--s);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer}
-.btn-cancel{padding:0.75rem 1.5rem;background:var(--l);color:var(--d);border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-right:1rem}
+.modal-content{background:var(--bg);border:1px solid var(--border);border-radius:14px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:14px;font-weight:600;color:var(--black)}
+.modal-close{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;transition:all .12s}
+.modal-close:hover{border-color:var(--border2);color:var(--text)}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.form-group{margin-bottom:14px}
+.form-label{display:block;margin-bottom:5px;font-size:12px;font-weight:500;color:var(--muted)}
+.form-input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;background:var(--input-bg);color:var(--text);transition:all .15s;outline:none}
+.form-input:focus{border-color:var(--border2);box-shadow:0 0 0 3px rgba(0,0,0,.06)}
+[data-theme="dark"] .form-input:focus{box-shadow:0 0 0 3px rgba(255,255,255,.06)}
+.modal-section-title{font-size:12px;font-weight:600;color:var(--black);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;padding:8px 14px;background:var(--black);color:var(--bg);border-radius:8px;font-size:12px;font-weight:500;z-index:9999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.error{background:var(--tag-red)}
+.toast.success{background:var(--tag-green)}
+
+/* ── MOBILE NAV ── */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--nav-bg);border-top:1px solid var(--border);z-index:200;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.mob-nav-items{display:flex;height:100%}
+.mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);font-size:9px;font-weight:500;font-family:inherit;cursor:pointer;transition:color .15s;text-decoration:none}
+.mob-nav-btn.active{color:var(--black)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .mob-nav{display:block}
+  .main{padding:16px 12px 72px}
+  .hero{padding:14px 16px}
+  .hero-title{font-size:17px}
+}
 </style>
 </head>
 <body>
-<div class="header">
-<a href="/director-dashboard.html#groups" class="btn-back">← Назад к группам</a>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <svg width="23" height="23" viewBox="0 0 20 20" fill="none">
+      <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+      <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="logo-text">InSkill<span>.online</span></span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-badge" id="nav-badge">ДИРЕКТОР</span>
+    <div class="nav-divider"></div>
+    <div class="lang-switcher">
+      <button class="lang-btn" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="icon-sun" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.6 3.6l1.3 1.3M11.1 11.1l1.3 1.3M3.6 12.4l1.3-1.3M11.1 4.9l1.3-1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg id="icon-moon" width="15" height="15" viewBox="0 0 16 16" fill="none" style="display:none"><path d="M13.5 10A6 6 0 015 2.5a6 6 0 108 8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sideInitials">ДР</div>
+    <div>
+      <div class="sidebar-user-name" id="sideUserName">—</div>
+      <div class="sidebar-user-id" id="sideUserId"></div>
+    </div>
+  </div>
+
+  <div class="sidebar-section" id="lbl-side-group">Група</div>
+  <a href="#" class="sitem active" id="side-group-link">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="7" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="4" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="7" width="6" height="8" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="10" width="6" height="5" rx="1.2" stroke="currentColor" stroke-width="1.2"/></svg>
+    <span id="side-group-title">—</span>
+  </a>
+
+  <div class="sidebar-section" id="lbl-side-nav">Навігація</div>
+  <a href="/director-dashboard.html#groups" class="sitem">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="lbl-back">← Всі групи</span>
+  </a>
+  <a href="/director-dashboard.html" class="sitem">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.2"/><path d="M4 12L10 6M7 6h3v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="lbl-dashboard">Панель директора</span>
+  </a>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- LOADING SKELETON -->
+  <div id="loadingState">
+    <div class="hero" style="margin-bottom:16px">
+      <div>
+        <div class="skeleton" style="width:200px;height:22px;margin-bottom:10px"></div>
+        <div style="display:flex;gap:6px">
+          <div class="skeleton" style="width:90px;height:22px;border-radius:20px"></div>
+          <div class="skeleton" style="width:70px;height:22px;border-radius:20px"></div>
+          <div class="skeleton" style="width:80px;height:22px;border-radius:20px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card"><div class="card-body"><div class="skeleton" style="height:14px;margin-bottom:8px"></div><div class="skeleton" style="height:14px;width:70%"></div></div></div>
+    <div class="card"><div class="card-body"><div class="skeleton" style="height:14px;margin-bottom:8px"></div><div class="skeleton" style="height:14px;width:50%"></div></div></div>
+  </div>
+
+  <!-- ERROR -->
+  <div id="errorState" style="display:none">
+    <div class="card">
+      <div class="card-body" style="text-align:center;padding:48px">
+        <div style="font-size:2.5rem;margin-bottom:12px">😕</div>
+        <div style="font-size:15px;font-weight:600;color:var(--black);margin-bottom:6px" id="errTitle">Группу не знайдено</div>
+        <a href="/director-dashboard.html#groups" style="font-size:12px;color:var(--p)" id="errBack">← Повернутись</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div id="pageContent" style="display:none">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-info">
+        <div id="heroTitle" class="hero-title">—</div>
+        <div class="hero-meta">
+          <span class="meta-chip" id="chip-club">—</span>
+          <span class="meta-chip green" id="chip-children">—</span>
+          <span class="meta-chip blue" id="chip-trainers">—</span>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn btn-edit" onclick="openEditModal()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          <span id="lbl-btn-edit">Редагувати</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title" id="lbl-schedule">📅 Розклад</span>
+      </div>
+      <div class="card-body" id="scheduleContainer">
+        <div class="loading-state">...</div>
+      </div>
+    </div>
+
+    <!-- TRAINERS -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title" id="lbl-trainers">👨‍🏫 Тренери</span>
+        <span id="trainers-badge" style="background:var(--tag-blue-bg);color:var(--tag-blue);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">0</span>
+      </div>
+      <div class="card-body" id="trainersContainer">
+        <div class="loading-state">...</div>
+      </div>
+    </div>
+
+    <!-- ATHLETES -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title" id="lbl-athletes">👥 Спортсмени</span>
+        <span id="athletes-badge" style="background:var(--tag-green-bg);color:var(--tag-green);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600">0</span>
+      </div>
+      <div class="card-body" id="childrenContainer">
+        <div class="loading-state">...</div>
+      </div>
+    </div>
+
+  </div><!-- /pageContent -->
+
+</main>
+</div><!-- /layout -->
+
+<!-- MOBILE NAV -->
+<nav class="mob-nav">
+  <div class="mob-nav-items">
+    <a href="/director-dashboard.html#groups" class="mob-nav-btn">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="mob-lbl-back">Назад</span>
+    </a>
+    <button class="mob-nav-btn active" onclick="mobScroll('heroTitle')">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="7" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="1" width="6" height="4" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="7" width="6" height="8" rx="1.2" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="10" width="6" height="5" rx="1.2" stroke="currentColor" stroke-width="1.2"/></svg>
+      <span id="mob-lbl-group">Група</span>
+    </button>
+    <button class="mob-nav-btn" onclick="mobScroll('trainersCard')">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.6 4.9H15l-4.4 3.2 1.7 5.1L8 11.3l-4.3 2.9 1.7-5.1L1 5.9h5.4L8 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+      <span id="mob-lbl-trainers">Тренери</span>
+    </button>
+    <button class="mob-nav-btn" onclick="mobScroll('athletesCard')">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span id="mob-lbl-athletes">Спортсмени</span>
+    </button>
+  </div>
+</nav>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Редагувати групу</span>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" id="lbl-group-name">Назва *</label>
+        <input type="text" class="form-input" id="groupNameInput" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="lbl-club">Клуб *</label>
+        <select class="form-input" id="groupClubInput"></select>
+      </div>
+      <div style="margin-bottom:10px">
+        <div class="modal-section-title" id="lbl-schedule-section">Розклад</div>
+        <button class="btn-add-schedule" onclick="addScheduleItem()">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span id="lbl-add-lesson">Додати заняття</span>
+        </button>
+        <div id="scheduleItems"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeEditModal()" id="lbl-btn-cancel">Скасувати</button>
+      <button class="btn btn-save" onclick="saveGroup()" id="lbl-btn-save">Зберегти</button>
+    </div>
+  </div>
 </div>
 
-<div class="container">
-<div class="profile-card">
-<div class="profile-header">
-<h1 id="groupName">—</h1>
-<p>🏢 Клуб: <span id="clubName">—</span></p>
-<p>👥 Детей: <span id="childrenCount">—</span></p>
-<p>👨‍🏫 Тренеров: <span id="trainersCount">—</span></p>
-</div>
-</div>
-
-<div class="section">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-<h2 class="section-title" style="margin:0;border:none">📅 Расписание</h2>
-<button class="btn-edit" onclick="openScheduleModal()" style="padding:0.5rem 1rem;background:var(--s);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">Редактировать</button>
-</div>
-<div id="scheduleContainer" class="loading">Загрузка...</div>
-</div>
-
-<div class="section">
-<h2 class="section-title">👨‍🏫 Тренеры</h2>
-<div id="trainersContainer" class="loading">Загрузка...</div>
-</div>
-
-<div class="section">
-<h2 class="section-title">👥 Спортсмены</h2>
-<div id="childrenContainer" class="loading">Загрузка...</div>
-</div>
-</div>
-
-<div class="modal" id="scheduleModal">
-<div class="modal-content">
-<h2 class="modal-title">Редактировать группу</h2>
-<div style="margin-bottom:1.5rem">
-<label style="display:block;margin-bottom:0.5rem;font-weight:600;color:#555">Название группы</label>
-<input type="text" id="groupNameInput" style="width:100%;padding:0.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem">
-</div>
-<div style="margin-bottom:1.5rem">
-<label style="display:block;margin-bottom:0.5rem;font-weight:600;color:#555">Клуб</label>
-<select id="groupClubInput" style="width:100%;padding:0.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem"></select>
-</div>
-<h3 style="font-size:1.2rem;color:var(--p);margin-bottom:1rem">Расписание</h3>
-<button class="btn-add" onclick="addScheduleItem()">➕ Добавить занятие</button>
-<div id="scheduleItems"></div>
-<div style="margin-top:1.5rem">
-<button class="btn-cancel" onclick="closeScheduleModal()">Отмена</button>
-<button class="btn-save" onclick="saveSchedule()">Сохранить</button>
-</div>
-</div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
+/* ── i18n ── */
+const i18n={
+  uk:{
+    navBadge:'ДИРЕКТОР',
+    sideGroup:'Група',sideNav:'Навігація',
+    backGroups:'← Всі групи',dashboard:'Панель директора',
+    errTitle:'Групу не знайдено',errBack:'← Повернутись',
+    btnEdit:'Редагувати',
+    lblSchedule:'📅 Розклад',lblTrainers:'👨‍🏫 Тренери',lblAthletes:'👥 Спортсмени',
+    chipClub:'🏢 Клуб: ',chipChildren:'👥 Дітей: ',chipTrainers:'👨‍🏫 Тренерів: ',
+    noSchedule:'Розклад не задано',noTrainers:'Немає тренерів',noAthletes:'Немає спортсменів',
+    modalTitle:'Редагувати групу',
+    lblGroupName:'Назва *',lblClub:'Клуб *',
+    lblScheduleSection:'Розклад',lblAddLesson:'Додати заняття',
+    btnCancel:'Скасувати',btnSave:'Зберегти',
+    days:['Понеділок','Вівторок','Середа','Четвер','П\'ятниця','Субота','Неділя'],
+    saved:'Групу збережено!',saveErr:'Помилка збереження',
+    nameRequired:'Введіть назву групи',
+    mobBack:'Назад',mobGroup:'Група',mobTrainers:'Тренери',mobAthletes:'Спортсмени',
+    timeFrom:'Початок',timeTo:'Кінець'
+  },
+  ru:{
+    navBadge:'ДИРЕКТОР',
+    sideGroup:'Группа',sideNav:'Навигация',
+    backGroups:'← Все группы',dashboard:'Панель директора',
+    errTitle:'Группа не найдена',errBack:'← Вернуться',
+    btnEdit:'Редактировать',
+    lblSchedule:'📅 Расписание',lblTrainers:'👨‍🏫 Тренеры',lblAthletes:'👥 Спортсмены',
+    chipClub:'🏢 Клуб: ',chipChildren:'👥 Детей: ',chipTrainers:'👨‍🏫 Тренеров: ',
+    noSchedule:'Расписание не задано',noTrainers:'Нет тренеров',noAthletes:'Нет спортсменов',
+    modalTitle:'Редактировать группу',
+    lblGroupName:'Название *',lblClub:'Клуб *',
+    lblScheduleSection:'Расписание',lblAddLesson:'Добавить занятие',
+    btnCancel:'Отмена',btnSave:'Сохранить',
+    days:['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'],
+    saved:'Группа сохранена!',saveErr:'Ошибка сохранения',
+    nameRequired:'Введите название группы',
+    mobBack:'Назад',mobGroup:'Группа',mobTrainers:'Тренеры',mobAthletes:'Спортсмены',
+    timeFrom:'Начало',timeTo:'Конец'
+  },
+  en:{
+    navBadge:'DIRECTOR',
+    sideGroup:'Group',sideNav:'Navigation',
+    backGroups:'← All groups',dashboard:'Director panel',
+    errTitle:'Group not found',errBack:'← Return',
+    btnEdit:'Edit',
+    lblSchedule:'📅 Schedule',lblTrainers:'👨‍🏫 Trainers',lblAthletes:'👥 Athletes',
+    chipClub:'🏢 Club: ',chipChildren:'👥 Children: ',chipTrainers:'👨‍🏫 Trainers: ',
+    noSchedule:'No schedule set',noTrainers:'No trainers',noAthletes:'No athletes',
+    modalTitle:'Edit group',
+    lblGroupName:'Name *',lblClub:'Club *',
+    lblScheduleSection:'Schedule',lblAddLesson:'Add session',
+    btnCancel:'Cancel',btnSave:'Save',
+    days:['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+    saved:'Group saved!',saveErr:'Save error',
+    nameRequired:'Enter group name',
+    mobBack:'Back',mobGroup:'Group',mobTrainers:'Trainers',mobAthletes:'Athletes',
+    timeFrom:'Start',timeTo:'End'
+  }
+};
+let currentLang=localStorage.getItem('lang')||'uk';
+function t(k){return(i18n[currentLang]||i18n.ru)[k]||k;}
+
+function applyLang(){
+  document.documentElement.lang=currentLang;
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    const map={'UA':'uk','RU':'ru','EN':'en'};
+    btn.classList.toggle('active',map[btn.textContent]===currentLang);
+  });
+  const s=(id,key)=>{const e=document.getElementById(id);if(e)e.textContent=t(key);};
+  s('nav-badge','navBadge');
+  s('lbl-side-group','sideGroup');s('lbl-side-nav','sideNav');
+  s('lbl-back','backGroups');s('lbl-dashboard','dashboard');
+  s('errTitle','errTitle');s('errBack','errBack');
+  s('lbl-btn-edit','btnEdit');
+  s('lbl-schedule','lblSchedule');s('lbl-trainers','lblTrainers');s('lbl-athletes','lblAthletes');
+  s('modal-title','modalTitle');
+  s('lbl-group-name','lblGroupName');s('lbl-club','lblClub');
+  s('lbl-schedule-section','lblScheduleSection');s('lbl-add-lesson','lblAddLesson');
+  s('lbl-btn-cancel','btnCancel');s('lbl-btn-save','btnSave');
+  s('mob-lbl-back','mobBack');s('mob-lbl-group','mobGroup');
+  s('mob-lbl-trainers','mobTrainers');s('mob-lbl-athletes','mobAthletes');
+  // Перерисовываем если данные есть
+  if(currentGroup){
+    renderChips();
+    renderSchedule(currentGroup.schedule);
+  }
+}
+
+function setLang(lang){
+  currentLang=lang;localStorage.setItem('lang',lang);
+  applyLang();
+}
+
+/* ── THEME ── */
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  const n=isDark?'light':'dark';
+  html.setAttribute('data-theme',n);localStorage.setItem('theme',n);
+  document.getElementById('icon-sun').style.display=isDark?'block':'none';
+  document.getElementById('icon-moon').style.display=isDark?'none':'block';
+}
+(function(){
+  const s=localStorage.getItem('theme');
+  if(s==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('icon-sun').style.display='none';
+    document.getElementById('icon-moon').style.display='block';
+  }
+})();
+
+/* ── MOBILE SCROLL ── */
+function mobScroll(id){
+  const el=document.getElementById(id);
+  if(el&&el.style.display!=='none')el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ── API & STATE ── */
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const token=localStorage.getItem('token');
 const groupId=new URLSearchParams(location.search).get('id');
@@ -104,166 +474,254 @@ let clubs=[];
 
 if(!token||!groupId){location.href='/';throw new Error('No auth');}
 
-async function openScheduleModal(){
-scheduleData=currentGroup.schedule&&currentGroup.schedule!=='[]'?(typeof currentGroup.schedule==='string'?JSON.parse(currentGroup.schedule):currentGroup.schedule):[];
-
-if(clubs.length===0){
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'clubs',action:'list'})});
-const d=await r.json();
-clubs=d.merged||d||[];
+/* ── TOAST ── */
+function showToast(msg,type='success'){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast show '+(type||'');
+  setTimeout(()=>el.className='toast',2500);
 }
 
-document.getElementById('groupNameInput').value=currentGroup.name;
-const clubSelect=document.getElementById('groupClubInput');
-clubSelect.innerHTML=clubs.map(c=>`<option value="${c.id}" ${c.id==currentGroup.club_id?'selected':''}>${c.name}</option>`).join('');
-
-renderScheduleItems();
-document.getElementById('scheduleModal').classList.add('active');
+/* ── INIT ── */
+async function init(){
+  applyLang();
+  // Sidebar user info
+  try{
+    const u=JSON.parse(localStorage.getItem('user')||'{}');
+    if(u.first_name||u.last_name){
+      const fn=u.first_name||'',ln=u.last_name||'';
+      document.getElementById('sideInitials').textContent=(fn[0]||'')+(ln[0]||'')||'ДР';
+      document.getElementById('sideUserName').textContent=(fn+' '+ln).trim();
+      document.getElementById('sideUserId').textContent='ID: '+u.id;
+    }
+  }catch(e){}
+  await loadGroup();
 }
 
-function closeScheduleModal(){
-document.getElementById('scheduleModal').classList.remove('active');
+/* ── LOAD GROUP ── */
+async function loadGroup(){
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'groups',action:'get',data:{id:parseInt(groupId)}})});
+    const d=await r.json();
+    const group=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
+    if(!group||!group.id){showError();return;}
+    currentGroup=group;
+
+    // Load children
+    const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'children',action:'list'})});
+    const d2=await r2.json();
+    const allChildren=(d2.merged&&Array.isArray(d2.merged)?d2.merged:(Array.isArray(d2)?d2:[])).filter(c=>c&&c.id);
+
+    // Filter to this group — support both name formats
+    const groupChildren=allChildren.filter(c=>{
+      const names=c.group_names||'';
+      if(!names||names==='Без группы'||names==='Без групи')return false;
+      return names.split(', ').includes(group.name);
+    });
+
+    // Show page
+    document.getElementById('loadingState').style.display='none';
+    document.getElementById('pageContent').style.display='block';
+    document.title=(group.name||'Группа')+' — InSkill.online';
+
+    // Sidebar title
+    document.getElementById('side-group-title').textContent=group.name||'—';
+
+    renderChips(group,groupChildren);
+    renderSchedule(group.schedule);
+    renderTrainers(group.trainers);
+    renderChildren(groupChildren);
+
+  }catch(e){console.error(e);showError();}
 }
 
+function showError(){
+  document.getElementById('loadingState').style.display='none';
+  document.getElementById('errorState').style.display='block';
+}
+
+/* ── CHIPS ── */
+function renderChips(group,children){
+  const g=group||currentGroup;
+  if(!g)return;
+  document.getElementById('heroTitle').textContent=g.name||'—';
+  document.getElementById('chip-club').textContent=t('chipClub')+(g.club_name||'—');
+  const cnt=children?children.length:(g.real_children_count||0);
+  document.getElementById('chip-children').textContent=t('chipChildren')+cnt;
+  const trCnt=g.trainers?g.trainers.filter(x=>x&&x.trainer_name).length:0;
+  document.getElementById('chip-trainers').textContent=t('chipTrainers')+trCnt;
+}
+
+/* ── SCHEDULE ── */
+function renderSchedule(schedule){
+  const container=document.getElementById('scheduleContainer');
+  let parsed=[];
+  try{
+    parsed=typeof schedule==='string'?JSON.parse(schedule):schedule||[];
+    if(!Array.isArray(parsed))parsed=[];
+  }catch(e){parsed=[];}
+
+  if(parsed.length===0){
+    container.innerHTML=`<div class="empty-state">${t('noSchedule')}</div>`;
+    return;
+  }
+  const days=t('days');
+  container.innerHTML=`<div class="schedule-grid">${
+    parsed.map(s=>`
+      <div class="schedule-day">
+        <span class="schedule-day-name">${days[s.day]||('Day '+(s.day+1))}</span>
+        <span class="schedule-day-time">🕐 ${s.time||''}${s.end_time?' – '+s.end_time:''}</span>
+      </div>`).join('')
+  }</div>`;
+}
+
+/* ── TRAINERS ── */
+function renderTrainers(trainers){
+  const container=document.getElementById('trainersContainer');
+  const valid=(trainers||[]).filter(t=>t&&(t.trainer_name||t.first_name));
+  document.getElementById('trainers-badge').textContent=valid.length;
+  if(valid.length===0){
+    container.innerHTML=`<div class="empty-state">${t('noTrainers')}</div>`;
+    return;
+  }
+  container.innerHTML=`<div class="people-list">${valid.map(tr=>{
+    const name=tr.trainer_name||(tr.first_name+' '+tr.last_name)||'—';
+    const email=tr.trainer_email||tr.email||'';
+    const phone=tr.trainer_phone||tr.phone||'';
+    const photo=tr.photo_url||'';
+    const initials=(name.split(' ').map(w=>w[0]||'').join('').substring(0,2)).toUpperCase();
+    return `<div class="person-row">
+      ${photo
+        ?`<img src="${photo}" class="person-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        :`<div class="person-avatar-placeholder" style="display:flex">${initials}</div>`}
+      ${photo?`<div class="person-avatar-placeholder" style="display:none">${initials}</div>`:''}
+      <div>
+        <div class="person-name">${name}</div>
+        ${email?`<div class="person-sub">📧 ${email}</div>`:''}
+        ${phone?`<div class="person-sub">📱 ${phone}</div>`:''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+/* ── CHILDREN ── */
+function renderChildren(children){
+  const container=document.getElementById('childrenContainer');
+  const valid=(children||[]).filter(c=>c&&c.id);
+  document.getElementById('athletes-badge').textContent=valid.length;
+  if(valid.length===0){
+    container.innerHTML=`<div class="empty-state">${t('noAthletes')}</div>`;
+    return;
+  }
+  container.innerHTML=`<div class="people-list">${valid.map(c=>{
+    // Support both API formats: {first_name, last_name, id} and {child_name, child_id}
+    const name=(c.first_name&&c.last_name)?(c.first_name+' '+c.last_name):(c.child_name||c.name||'—');
+    const id=c.id||c.child_id;
+    const photo=c.photo_url||'';
+    const birth=c.birth_date?new Date(c.birth_date).toLocaleDateString('ru-RU'):'';
+    const initials=(name.split(' ').map(w=>w[0]||'').join('').substring(0,2)).toUpperCase();
+    return `<div class="person-row">
+      ${photo
+        ?`<img src="${photo}" class="person-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        :`<div class="person-avatar-placeholder" style="display:flex">${initials}</div>`}
+      ${photo?`<div class="person-avatar-placeholder" style="display:none">${initials}</div>`:''}
+      <div>
+        <a href="/athlete-profile.html?id=${id}" class="person-name">${name}</a>
+        ${birth?`<div class="person-sub">🎂 ${birth}</div>`:''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+/* ── EDIT MODAL ── */
+async function openEditModal(){
+  scheduleData=[];
+  try{
+    const raw=currentGroup.schedule;
+    const parsed=typeof raw==='string'?JSON.parse(raw):raw;
+    scheduleData=Array.isArray(parsed)?parsed:[];
+  }catch(e){scheduleData=[];}
+
+  // Load clubs if needed
+  if(clubs.length===0){
+    try{
+      const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,resource:'clubs',action:'list'})});
+      const d=await r.json();
+      clubs=(d.merged||d||[]).filter(c=>c&&c.id);
+    }catch(e){clubs=[];}
+  }
+
+  document.getElementById('groupNameInput').value=currentGroup.name||'';
+  const clubSelect=document.getElementById('groupClubInput');
+  clubSelect.innerHTML=clubs.map(c=>`<option value="${c.id}" ${c.id==currentGroup.club_id?'selected':''}>${c.name}</option>`).join('');
+
+  renderScheduleItems();
+  document.getElementById('editModal').classList.add('active');
+}
+
+function closeEditModal(){
+  document.getElementById('editModal').classList.remove('active');
+}
+
+/* ── SCHEDULE EDITOR ── */
 function renderScheduleItems(){
-const container=document.getElementById('scheduleItems');
-if(scheduleData.length===0){
-container.innerHTML='<p style="color:#999;text-align:center">Нет занятий</p>';
-return;
-}
-const days=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
-const html=scheduleData.map((s,i)=>`
-<div class="schedule-item">
-<select onchange="updateScheduleDay(${i},this.value)" style="flex:1">
-${days.map((d,idx)=>`<option value="${idx}" ${s.day==idx?'selected':''}>${d}</option>`).join('')}
-</select>
-<input type="time" value="${s.time||''}" onchange="updateScheduleTime(${i},this.value)" placeholder="Начало" style="flex:1">
-<input type="time" value="${s.end_time||''}" onchange="updateScheduleEndTime(${i},this.value)" placeholder="Конец" style="flex:1">
-<button onclick="removeScheduleItem(${i})">🗑️</button>
-</div>
-`).join('');
-container.innerHTML=html;
+  const container=document.getElementById('scheduleItems');
+  if(scheduleData.length===0){
+    container.innerHTML=`<div class="empty-state" style="padding:12px">${t('noSchedule')}</div>`;
+    return;
+  }
+  const days=t('days');
+  container.innerHTML=scheduleData.map((s,i)=>`
+    <div class="schedule-item">
+      <select onchange="updateScheduleDay(${i},this.value)">
+        ${days.map((d,idx)=>`<option value="${idx}" ${s.day==idx?'selected':''}>${d}</option>`).join('')}
+      </select>
+      <input type="time" value="${s.time||''}" onchange="updateScheduleTime(${i},this.value)" title="${t('timeFrom')}">
+      <input type="time" value="${s.end_time||''}" onchange="updateScheduleEndTime(${i},this.value)" title="${t('timeTo')}">
+      <button class="btn-del-schedule" onclick="removeScheduleItem(${i})" title="Delete">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>`).join('');
 }
 
 function addScheduleItem(){
-scheduleData.push({day:0,time:'18:00',end_time:'19:00'});
-renderScheduleItems();
+  scheduleData.push({day:0,time:'18:00',end_time:'19:00'});
+  renderScheduleItems();
+}
+function removeScheduleItem(idx){scheduleData.splice(idx,1);renderScheduleItems();}
+function updateScheduleDay(idx,val){scheduleData[idx].day=parseInt(val);}
+function updateScheduleTime(idx,val){scheduleData[idx].time=val;}
+function updateScheduleEndTime(idx,val){scheduleData[idx].end_time=val;}
+
+/* ── SAVE GROUP ── */
+async function saveGroup(){
+  const name=document.getElementById('groupNameInput').value.trim();
+  const club_id=parseInt(document.getElementById('groupClubInput').value);
+  if(!name){showToast(t('nameRequired'),'error');return;}
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'groups',action:'update',
+        data:{id:parseInt(groupId),name,club_id,schedule:JSON.stringify(scheduleData)}})});
+    const res=await r.json();
+    const ok=(res.merged&&res.merged[0]?.id)||res.id||res.success;
+    if(ok){
+      showToast(t('saved'));
+      closeEditModal();
+      await loadGroup();
+    }else{
+      showToast(t('saveErr'),'error');
+    }
+  }catch(e){showToast(t('saveErr')+': '+e.message,'error');}
 }
 
-function removeScheduleItem(idx){
-scheduleData.splice(idx,1);
-renderScheduleItems();
-}
+/* ── CLOSE MODAL ON BACKDROP ── */
+document.getElementById('editModal').addEventListener('click',function(e){
+  if(e.target===this)closeEditModal();
+});
 
-function updateScheduleDay(idx,val){scheduleData[idx].day=parseInt(val)}
-function updateScheduleTime(idx,val){scheduleData[idx].time=val}
-function updateScheduleEndTime(idx,val){scheduleData[idx].end_time=val}
-
-async function saveSchedule(){
-try{
-const name=document.getElementById('groupNameInput').value.trim();
-const club_id=parseInt(document.getElementById('groupClubInput').value);
-if(!name){alert('Введите название группы');return;}
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'update',data:{id:parseInt(groupId),name,club_id,schedule:JSON.stringify(scheduleData)}})});
-const res=await r.json();
-if(res.id||res.success){
-alert('Группа сохранена!');
-closeScheduleModal();
-loadGroup();
-}else{
-alert('Ошибка: '+JSON.stringify(res));
-}
-}catch(e){console.error(e);alert('Ошибка: '+e.message)}
-}
-
-async function loadGroup(){
-try{
-const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'get',data:{id:parseInt(groupId)}})});
-const d=await r.json();
-const group=Array.isArray(d)?d[0]:d;
-
-if(!group||!group.id){alert('Группа не найдена');history.back();return;}
-
-currentGroup=group;
-
-// Load ALL children separately (like director-dashboard)
-const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-const d2=await r2.json();
-const allChildren=Array.isArray(d2.merged)?d2.merged:(Array.isArray(d2)?d2:[]);
-
-// Filter to only this group
-const groupChildren = allChildren.filter(c => 
-  c.group_names && 
-  c.group_names !== 'Без группы' && 
-  c.group_names.split(', ').includes(group.name)
-);
-
-document.getElementById('groupName').textContent=group.name;
-document.getElementById('clubName').textContent=group.club_name||'—';
-document.getElementById('childrenCount').textContent=groupChildren.length;
-document.getElementById('trainersCount').textContent=group.trainers?group.trainers.length:0;
-
-renderSchedule(group.schedule);
-renderTrainers(group.trainers);
-renderChildren(groupChildren);
-}catch(e){console.error(e);alert('Ошибка загрузки')}
-}
-
-function renderSchedule(schedule){
-const container=document.getElementById('scheduleContainer');
-if(!schedule||schedule.length===0||schedule==='[]'){
-container.innerHTML='<p class="empty">Расписание не задано</p>';
-return;
-}
-const days=['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
-const parsedSchedule=typeof schedule==='string'?JSON.parse(schedule):schedule;
-const html=parsedSchedule.map((s,i)=>`
-<div class="schedule-day">
-<h3>${days[s.day]||'День '+s.day}</h3>
-<p>🕐 ${s.time}${s.end_time?' - '+s.end_time:''}</p>
-</div>
-`).join('');
-container.innerHTML=`<div class="schedule-grid">${html}</div>`;
-}
-
-function renderTrainers(trainers){
-const container=document.getElementById('trainersContainer');
-if(!trainers||trainers.length===0||trainers[0]===null){
-container.innerHTML='<p class="empty">Нет тренеров</p>';
-return;
-}
-const html=trainers.map(t=>`
-<div class="list-item">
-<img src="${t.photo_url||'https://ui-avatars.com/api/?name='+encodeURIComponent(t.trainer_name)}" alt="${t.trainer_name}">
-<div class="list-item-info">
-<h4>${t.trainer_name}</h4>
-<p>📧 ${t.trainer_email}</p>
-${t.trainer_phone?`<p>📱 ${t.trainer_phone}</p>`:''}
-</div>
-</div>
-`).join('');
-container.innerHTML=`<div class="list-grid">${html}</div>`;
-}
-
-function renderChildren(children){
-const container=document.getElementById('childrenContainer');
-if(!children||children.length===0||children[0]===null){
-container.innerHTML='<p class="empty">Нет спортсменов</p>';
-return;
-}
-const html=children.map(c=>`
-<div class="list-item">
-<img src="${c.photo_url||'https://ui-avatars.com/api/?name='+encodeURIComponent(c.child_name)}" alt="${c.child_name}">
-<div class="list-item-info">
-<h4><a href="/athlete-profile.html?id=${c.child_id}" style="color:var(--p);text-decoration:none">${c.child_name}</a></h4>
-${c.birth_date?`<p>🎂 ${new Date(c.birth_date).toLocaleDateString('ru-RU')}</p>`:''}
-</div>
-</div>
-`).join('');
-container.innerHTML=`<div class="list-grid">${html}</div>`;
-}
-
-loadGroup();
+init();
 </script>
 </body>
 </html>
