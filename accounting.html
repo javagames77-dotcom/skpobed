@@ -971,6 +971,7 @@ function renderTable(){
       <div id="datebtn_wrap_${athlete.id}" style="display:${isDays?'flex':'none'};align-items:center;gap:2px">
         <button class="act-btn" onclick="toggleDatePicker(${athlete.id})" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
         <input type="date" id="paid_from_${athlete.id}" value="${defaultFrom}"
+          lang="${currentLang==='en'?'en-GB':currentLang==='uk'?'uk-UA':'ru-RU'}"
           onchange="onPaidFromChange(${athlete.id})"
           style="display:none;padding:3px 5px;border:1px solid var(--p);border-radius:5px;font-size:11px;width:110px;background:var(--input-bg);color:var(--text)">
       </div>
@@ -1037,6 +1038,53 @@ function toggleHistory(childId){
   if(btn)btn.style.transform=isOpen?'':'rotate(180deg)';
 }
 
+/* ── TRANSLATE PERIOD LABEL (из БД на текущий язык) ── */
+function translatePeriodLabel(label){
+  if(!label||label==='—')return label;
+
+  // Льгота / Пільга / Free → periodFree
+  const freeWords=['льгота','пільга','free','бесплатно','безкоштовно'];
+  if(freeWords.includes(label.toLowerCase()))return t('periodFree');
+
+  // 1 тренировка / 1 тренування / 1 session → periodSingle
+  const singleWords=['1 тренировка','1 тренування','1 session'];
+  if(singleWords.includes(label.toLowerCase()))return t('periodSingle');
+
+  // "N дней" / "N днів" / "N days" → periodDays
+  const daysMatch=label.match(/^(\d+)\s*(дн|days|день)/i);
+  if(daysMatch)return t('periodDays').replace('{n}',daysMatch[1]);
+
+  // "N тренировок" / "N тренувань" / "N sessions" → periodSessions
+  const sessMatch=label.match(/^(\d+)\s*(трен|sessions|session)/i);
+  if(sessMatch)return t('periodSessions').replace('{n}',sessMatch[1]);
+
+  // "Месяц Год" или "Month Year" — любой из известных месяцев
+  const allMonths=[
+    ['январь','февраль','март','апрель','май','июнь','июль','август','сентябрь','октябрь','ноябрь','декабрь'],
+    ['січень','лютий','березень','квітень','травень','червень','липень','серпень','вересень','жовтень','листопад','грудень'],
+    ['january','february','march','april','may','june','july','august','september','october','november','december'],
+    // родительный падеж ru
+    ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря']
+  ];
+  const parts=label.trim().split(/\s+/);
+  if(parts.length===2){
+    const word=parts[0].toLowerCase();
+    const year=parseInt(parts[1]);
+    if(!isNaN(year)&&year>2000&&year<2100){
+      for(let i=0;i<allMonths.length;i++){
+        const idx=allMonths[i].indexOf(word);
+        if(idx!==-1){
+          const monthName=t('months')[idx]||parts[0];
+          return t('periodMonth').replace('{m}',monthName).replace('{y}',year);
+        }
+      }
+    }
+  }
+
+  // Не распознано — возвращаем как есть
+  return label;
+}
+
 function renderHistory(childId){
   const pd=groupPayments[childId];
   if(!pd?.history?.length)return `<div class="no-history">${t('noHistory')}</div>`;
@@ -1046,7 +1094,7 @@ function renderHistory(childId){
       <span class="history-date">${formatDateTime(p.paid_at)}</span>
       <span class="history-amount">${p.amount} ${t('currency')}</span>
       <span class="history-type">${typeMap[p.payment_type]||p.payment_type||'—'}</span>
-      <span class="history-period">${p.period_label||'—'}</span>
+      <span class="history-period">${translatePeriodLabel(p.period_label)||'—'}</span>
       <span class="history-comment">${p.comment||''}</span>
       <button class="history-del" onclick="deletePayment(${p.id},${childId})" title="${t('confirmDelete')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>`).join('');
