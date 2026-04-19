@@ -824,13 +824,22 @@ async function loadNews(){
     const srcSel=document.getElementById('newsSourceFilter');
     const srcMap=new Map();
     allNews.forEach(n=>{
-      if(!n.source_url)return;
-      const src=allSources.find(s=>s.id===n.source_id)||allSources.find(s=>s.url===n.source_url);
-      const label=src?.name||n.source_url.replace(/^https?:\/\//,'').split('/')[0].substring(0,35);
-      if(!srcMap.has(n.source_url))srcMap.set(n.source_url,label);
+      if(n.source_id){
+        if(!srcMap.has('id:'+n.source_id)){
+          const src=allSources.find(s=>s.id===n.source_id);
+          const label=src?.name||n.source_url||String(n.source_id);
+          srcMap.set('id:'+n.source_id,{value:n.source_url,label});
+        }
+      } else if(n.source_url){
+        const key='url:'+n.source_url;
+        if(!srcMap.has(key)){
+          const label=n.source_url.replace(/^https?:\/\//,'').split('/')[0].substring(0,35);
+          srcMap.set(key,{value:n.source_url,label});
+        }
+      }
     });
     srcSel.innerHTML=`<option value="">${t('filterAllSrc')}</option>`+
-      [...srcMap.entries()].map(([u,label])=>`<option value="${u}">${label}</option>`).join('');
+      [...srcMap.values()].map(({value,label})=>`<option value="${value}">${label}</option>`).join('');
     document.getElementById('loadingNews').style.display='none';
     updateNewsStats();
     filterNews();
@@ -847,7 +856,7 @@ function filterNews(){
   const q=(document.getElementById('newsSearchInput').value||'').toLowerCase();
   filteredNews=allNews;
   if(status)filteredNews=filteredNews.filter(n=>(n.status||'new')===status);
-  if(src)filteredNews=filteredNews.filter(n=>n.source_url===src);
+  if(src){const srcId=allSources.find(s=>s.url===src)?.id;filteredNews=filteredNews.filter(n=>srcId?n.source_id===srcId:n.source_url===src);}
   if(q)filteredNews=filteredNews.filter(n=>(n.title||'').toLowerCase().includes(q)||(n.description||'').toLowerCase().includes(q));
   currentPage=1;
   renderPage();
