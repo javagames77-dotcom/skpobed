@@ -90,10 +90,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .news-card.status-added{border-left-color:var(--tag-green);opacity:.75}
 .news-card.status-dismissed{border-left-color:var(--border);opacity:.5}
 .news-card-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.35;margin-bottom:.5rem}
-.news-card-meta{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.5rem}
-.ntag{display:inline-flex;align-items:center;gap:.25rem;padding:2px 7px;border-radius:6px;font-size:11px;font-weight:500}
+.news-card-meta{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.5rem}
+.news-card-meta-row{display:flex;gap:.3rem;flex-wrap:nowrap;align-items:center}
+.ntag{display:inline-flex;align-items:center;gap:.25rem;padding:2px 7px;border-radius:6px;font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .ntag-date{background:var(--tag-blue-bg);color:var(--tag-blue)}
-.ntag-loc{background:var(--tag-green-bg);color:var(--tag-green);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ntag-loc{background:var(--tag-green-bg);color:var(--tag-green);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ntag-src{background:#f3e5f5;color:#7b1fa2}
 [data-theme="dark"] .ntag-src{background:#2a1040;color:#c084fc}
 .ntag-fee{background:var(--tag-orange-bg);color:var(--tag-orange)}
@@ -127,7 +128,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .params-section{background:var(--card-bg);border-radius:10px;box-shadow:var(--card-shadow);border:1px solid var(--border);padding:1.1rem}
 
 /* ── FILTERS ── */
-.filters-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.9rem;align-items:center}
+.filters-bar{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.9rem}
 .filter-select{padding:.4rem .75rem;border:1px solid var(--border);border-radius:7px;font-size:.82rem;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s;cursor:pointer}
 .filter-select:focus{border-color:var(--border2)}
 .filter-input{padding:.4rem .75rem;border:1px solid var(--border);border-radius:7px;font-size:.82rem;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s}
@@ -180,9 +181,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   .mob-nav{display:block}
   .main{padding:14px 12px 72px}
   .news-card-actions{gap:.35rem}
-  .filters-bar{gap:.35rem}
-  .filter-select{font-size:.75rem;padding:.35rem .5rem}
-  .filter-input{font-size:.75rem;padding:.35rem .5rem;width:100px!important}
+  .filter-select{font-size:.75rem;padding:.35rem .5rem;min-width:0}
+  .filter-input{font-size:.75rem;padding:.35rem .5rem;width:100%}
   .run-btn{padding:6px 10px;font-size:11px}
 }
 @media(max-width:480px){
@@ -276,18 +276,20 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <!-- LEFT: news feed -->
     <div>
       <div class="filters-bar">
-        <span style="font-size:.88rem;font-weight:600;color:var(--black);margin-right:4px" id="news-found-title">Знайдені заходи</span>
-        <select class="filter-select" id="newsStatusFilter" onchange="filterNews()">
-          <option value="" id="opt-all">Всі статуси</option>
-          <option value="new" id="opt-new">Нові</option>
-          <option value="processed" id="opt-processed">Оброблені</option>
-          <option value="added" id="opt-added">Додані</option>
-          <option value="dismissed" id="opt-dismissed">Відхилені</option>
-        </select>
-        <select class="filter-select" id="newsSourceFilter" onchange="filterNews()">
-          <option value="" id="opt-all-src">Всі джерела</option>
-        </select>
-        <input type="text" class="filter-input" id="newsSearchInput" oninput="filterNews()" placeholder="Пошук..." style="width:110px">
+        <div style="display:flex;align-items:center;gap:.4rem;width:100%;flex-wrap:nowrap">
+          <span style="font-size:.88rem;font-weight:600;color:var(--black);white-space:nowrap;margin-right:2px" id="news-found-title">Знайдені заходи</span>
+          <select class="filter-select" id="newsStatusFilter" onchange="filterNews()" style="flex:1;min-width:0">
+            <option value="" id="opt-all">Всі статуси</option>
+            <option value="new" id="opt-new">Нові</option>
+            <option value="processed" id="opt-processed">Оброблені</option>
+            <option value="added" id="opt-added">Додані</option>
+            <option value="dismissed" id="opt-dismissed">Відхилені</option>
+          </select>
+          <select class="filter-select" id="newsSourceFilter" onchange="filterNews()" style="flex:1;min-width:0">
+            <option value="" id="opt-all-src">Всі джерела</option>
+          </select>
+        </div>
+        <input type="text" class="filter-input" id="newsSearchInput" oninput="filterNews()" placeholder="Пошук..." style="width:100%">
       </div>
 
       <div id="loadingNews" class="loading-state" style="display:none">...</div>
@@ -932,11 +934,15 @@ function renderNewsCards(news){
         <span class="ntag ntag-status-${st}" style="flex-shrink:0;white-space:nowrap">${statusLabel[st]||st}</span>
       </div>
       <div class="news-card-meta">
-        ${dateStr?`<span class="ntag ntag-date">${SVG_DATE} ${dateStr}</span>`:''}
-        ${n.location?`<span class="ntag ntag-loc">${SVG_LOC} ${n.location}</span>`:''}
-        ${srcDomain?`<span class="ntag ntag-src">${SVG_SRC} ${srcLabel}</span>`:''}
-        ${n.entry_fee?`<span class="ntag ntag-fee">${SVG_FEE} ${n.entry_fee} ${n.currency||'грн'}</span>`:''}
-        ${translatedType?`<span class="ntag ntag-type">${translatedType}</span>`:''}
+        <div class="news-card-meta-row" style="flex-wrap:wrap">
+          ${dateStr?`<span class="ntag ntag-date" style="flex-shrink:0">${SVG_DATE} ${dateStr}</span>`:''}
+          ${n.location?`<span class="ntag ntag-loc" style="min-width:0;flex-shrink:1">${SVG_LOC} ${n.location}</span>`:''}
+        </div>
+        ${(srcDomain||n.entry_fee||translatedType)?`<div class="news-card-meta-row">
+          ${srcDomain?`<span class="ntag ntag-src" style="flex-shrink:0">${SVG_SRC} ${srcLabel}</span>`:''}
+          ${n.entry_fee?`<span class="ntag ntag-fee" style="flex-shrink:0">${SVG_FEE} ${n.entry_fee} ${n.currency||'грн'}</span>`:''}
+          ${translatedType?`<span class="ntag ntag-type" style="flex-shrink:0">${translatedType}</span>`:''}
+        </div>`:''}
       </div>
       ${n.description?`<div class="news-card-desc">${n.description.substring(0,220)}${n.description.length>220?'…':''}</div>`:''}
       <div class="news-card-actions">
