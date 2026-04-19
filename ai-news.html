@@ -822,13 +822,15 @@ async function loadNews(){
     allNews=(d.merged||d||[]);
     // populate source filter
     const srcSel=document.getElementById('newsSourceFilter');
-    const domains=new Set(allNews.map(n=>n.source_url).filter(Boolean));
+    const srcMap=new Map();
+    allNews.forEach(n=>{
+      if(!n.source_url)return;
+      const src=allSources.find(s=>s.id===n.source_id)||allSources.find(s=>s.url===n.source_url);
+      const label=src?.name||n.source_url.replace(/^https?:\/\//,'').split('/')[0].substring(0,35);
+      if(!srcMap.has(n.source_url))srcMap.set(n.source_url,label);
+    });
     srcSel.innerHTML=`<option value="">${t('filterAllSrc')}</option>`+
-      [...domains].map(u=>{
-        const src=allSources.find(s=>s.url===u);
-        const label=src?.name||u.replace(/^https?:\/\//,'').split('/')[0].substring(0,35);
-        return `<option value="${u}">${label}</option>`;
-      }).join('');
+      [...srcMap.entries()].map(([u,label])=>`<option value="${u}">${label}</option>`).join('');
     document.getElementById('loadingNews').style.display='none';
     updateNewsStats();
     filterNews();
@@ -927,7 +929,7 @@ function renderNewsCards(news){
     card.className=`news-card status-${st}`;
     const dateStr=n.event_date?new Date(n.event_date).toLocaleDateString(loc,{day:'numeric',month:'short',year:'numeric'}):'';
     const srcDomain=n.source_url?n.source_url.replace(/^https?:\/\//,'').split('/')[0]:'';
-    const src=allSources.find(s=>s.url===n.source_url);
+    const src=allSources.find(s=>s.id===n.source_id)||allSources.find(s=>s.url===n.source_url);
     const srcLabel=src?(src.name||srcTypeLabel[src.type]||srcDomain):srcDomain;
     const srcShow=src?.name||srcDomain;
     // п.6: перевод event_type
