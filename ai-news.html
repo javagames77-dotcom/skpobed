@@ -343,8 +343,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
           <label class="form-label" id="lbl-params-keywords">Ключові слова</label>
           <input type="text" class="form-input" id="searchKeywords" placeholder="боротьба, дзюдо, турнір...">
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
-          <div class="form-group">
+        <div class="form-group">
             <label class="form-label" id="lbl-params-from">Дата від</label>
             <input type="date" class="form-input" id="searchDateFrom">
           </div>
@@ -352,7 +351,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
             <label class="form-label" id="lbl-params-to">Дата до</label>
             <input type="date" class="form-input" id="searchDateTo">
           </div>
-        </div>
         <button class="btn btn-save" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px" onclick="saveSearchParams()" id="paramsSaveBtn">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span id="lbl-params-save">Зберегти параметри</span>
