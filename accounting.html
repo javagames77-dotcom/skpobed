@@ -268,7 +268,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <!-- GROUPS PANEL -->
 <div class="groups-panel">
   <div class="groups-panel-header">
-    <span class="groups-panel-title" id="lbl-groups-title">📋 Групи</span>
+    <span class="groups-panel-title" id="lbl-groups-title">Групи</span>
     <span class="groups-panel-count" id="groupCount"></span>
   </div>
   <div class="groups-list" id="groupList">
@@ -283,26 +283,26 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div class="stats-strip" id="statsBar" style="display:none">
     <div class="stat-box">
       <div class="stat-value green" id="statCollected">—</div>
-      <div class="stat-label" id="lbl-stat-collected">💰 Зібрано за місяць</div>
+      <div class="stat-label" id="lbl-stat-collected">Зібрано за місяць</div>
     </div>
     <div class="stat-box">
       <div class="stat-value red" id="statDebt">—</div>
-      <div class="stat-label" id="lbl-stat-debt">🔴 Загальний борг</div>
+      <div class="stat-label" id="lbl-stat-debt">Загальний борг</div>
     </div>
     <div class="stat-box">
       <div class="stat-value red" id="statDebtors">—</div>
-      <div class="stat-label" id="lbl-stat-debtors">👥 Боржників</div>
+      <div class="stat-label" id="lbl-stat-debtors">Боржників</div>
     </div>
     <div class="stat-box">
       <div class="stat-value" id="statActive">—</div>
-      <div class="stat-label" id="lbl-stat-active">✅ Активних</div>
+      <div class="stat-label" id="lbl-stat-active">Активних</div>
     </div>
   </div>
 
   <!-- EMPTY STATE -->
   <div id="mainEmpty" class="card" style="margin-bottom:0">
     <div class="empty-state">
-      <div class="empty-icon">💰</div>
+      <div style="color:var(--muted2);margin-bottom:8px"><svg width="28" height="28" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/></svg></div>
       <div id="lbl-select-group">Оберіть групу зліва</div>
     </div>
   </div>
@@ -320,9 +320,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <!-- Month nav -->
           <div class="month-nav">
-            <button class="month-btn" onclick="changeMonth(-1)">‹</button>
+            <button class="month-btn" onclick="changeMonth(-1)"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 2L4.5 6l3 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <span class="month-label" id="monthLabel"></span>
-            <button class="month-btn" onclick="changeMonth(1)">›</button>
+            <button class="month-btn" onclick="changeMonth(1)"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 2L7.5 6l-3 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
           <!-- Tariff selector -->
           <div style="display:flex;align-items:center;gap:6px">
@@ -332,9 +332,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
             </select>
           </div>
           <!-- Action buttons -->
-          <button class="btn btn-ghost btn-sm" onclick="fillByTariff()" id="btnFill">📋 <span id="lbl-by-tariff">По тарифу</span></button>
-          <button class="btn btn-green btn-sm" onclick="acceptAll()" id="btnAcceptAll">✅ <span id="lbl-accept-all">Прийняти всіх</span></button>
-          <button class="btn btn-ghost btn-sm" onclick="openTariffsModal()" id="btnTariffs" style="display:none">⚙️ <span id="lbl-tariffs-btn">Тарифи</span></button>
+          <button class="btn btn-ghost btn-sm" onclick="fillByTariff()" id="btnFill"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> <span id="lbl-by-tariff">По тарифу</span></button>
+          <button class="btn btn-green btn-sm" onclick="acceptAll()" id="btnAcceptAll"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> <span id="lbl-accept-all">Прийняти всіх</span></button>
+          <button class="btn btn-ghost btn-sm" onclick="openTariffsModal()" id="btnTariffs" style="display:none"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.1 3.1l1.1 1.1M11.8 11.8l1.1 1.1M3.1 12.9l1.1-1.1M11.8 4.2l1.1-1.1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> <span id="lbl-tariffs-btn">Тарифи</span></button>
         </div>
       </div>
     </div>
@@ -343,7 +343,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <div class="card">
       <div id="tableLoading" class="loading-state" style="display:none">...</div>
       <div id="tableEmpty" class="empty-state" style="display:none">
-        <div class="empty-icon">👥</div>
+        <div style="color:var(--muted2);margin-bottom:8px"><svg width="28" height="28" viewBox="0 0 16 16" fill="none"><circle cx="6" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M11 7c1.4 0 2.5 1.1 2.5 2.5S12.4 12 11 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
         <div id="lbl-no-athletes">У групі немає спортсменів</div>
       </div>
       <div style="overflow-x:auto">
@@ -405,7 +405,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="modal" id="tariffsModal">
   <div class="modal-content">
     <div class="modal-header">
-      <span class="modal-title" id="lbl-tariffs-modal-title">⚙️ Тарифні плани</span>
+      <span class="modal-title" id="lbl-tariffs-modal-title">Тарифні плани</span>
       <button class="modal-close" onclick="closeTariffsModal()">✕</button>
     </div>
     <div class="modal-body">
@@ -426,11 +426,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
           <div class="form-group">
             <label class="form-label" id="lbl-tariff-type">Тип *</label>
             <select class="form-select" id="tariffType" onchange="onTariffTypeChange()">
-              <option value="monthly" id="opt-monthly">📅 Місячний</option>
-              <option value="days" id="opt-days">📆 По днях</option>
-              <option value="sessions" id="opt-sessions">🎯 По тренуванням</option>
+              <option value="monthly" id="opt-monthly">Місячний</option>
+              <option value="days" id="opt-days">По днях</option>
+              <option value="sessions" id="opt-sessions">По тренуванням</option>
               <option value="single" id="opt-single">1️⃣ Разовий</option>
-              <option value="free" id="opt-free">🎁 Безкоштовно</option>
+              <option value="free" id="opt-free">Безкоштовно</option>
             </select>
           </div>
           <div class="form-group">
@@ -463,35 +463,35 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 /* ── i18n ── */
 const i18n={
   uk:{
-    navBadge:'ДИРЕКТОР',roleDir:'👔 ДИРЕКТОР',roleAcc:'💰 БУХГАЛТЕР',roleTr:'🥋 ТРЕНЕР',
+    navBadge:'ДИРЕКТОР',roleDir:'ДИРЕКТОР',roleAcc:'БУХГАЛТЕР',roleTr:'ТРЕНЕР',
     sideSection:'Бухгалтерія',sideAcc:'Бухгалтерія',sideNav:'Навігація',
     back:'Панель директора',
-    groupsTitle:'📋 Групи',
-    statCollected:'💰 Зібрано за місяць',statDebt:'🔴 Загальний борг',
-    statDebtors:'👥 Боржників',statActive:'✅ Активних',
+    groupsTitle:'Групи',
+    statCollected:'Зібрано за місяць',statDebt:'Загальний борг',
+    statDebtors:'Боржників',statActive:'Активних',
     selectGroup:'Оберіть групу зліва',
     lblTariff:'Тариф:',optSelectTariff:'— оберіть —',
     byTariff:'По тарифу',acceptAll:'Прийняти всіх',tariffsBtn:'Тарифи',
     thAthlete:'Спортсмен',thStatus:'Статус',thPeriod:'Період',
     thTariffCol:'Тариф',thAmount:'Сума',thType:'Тип',
     noAthletes:'У групі немає спортсменів',
-    statusActive:'🟢 Активний',statusOverdue:'🔴 Прострочений',
-    statusSessions:'🎯 По тренуванням',statusExpiredSess:'🔴 Закінчились',
-    statusNone:'⚫ Немає оплат',
+    statusActive:'Активний',statusOverdue:'Прострочений',
+    statusSessions:'По тренуванням',statusExpiredSess:'Закінчились',
+    statusNone:'Немає оплат',
     sessLeft:'Залишилось: ',sessOf:' з ',
-    cash:'💵 Готівка',card:'💳 Картка',bank:'🏦 Банк',
-    typeMonthly:'📅 Місячний',typeDays:'📆 По днях',
-    typeSessions:'🎯 По тренуванням',typeSingle:'1️⃣ Разовий',typeFree:'🎁 Пільга',
-    btnAccept:'✅ Прийняти',btnAccepted:'✅ Оплачено',btnWarn:'⚠️ Прийняти',
+    cash:'Готівка',card:'Картка',bank:'Банк',
+    typeMonthly:'Місячний',typeDays:'По днях',
+    typeSessions:'По тренуванням',typeSingle:'Разовий',typeFree:'Пільга',
+    btnAccept:'Прийняти',btnAccepted:'Оплачено',btnWarn:'Прийняти',
     historyTitle:'Історія платежів',noHistory:'Немає платежів',
-    tariffsModalTitle:'⚙️ Тарифні плани',
+    tariffsModalTitle:'Тарифні плани',
     addTariff:'Додати тариф',
     newTariff:'Новий тариф',editTariff:'Редагувати тариф',
     lblTariffName:'Назва *',lblTariffType:'Тип *',lblTariffPrice:'Ціна *',
     lblTariffDuration:'Днів дії',lblTariffDurationDays:'Кількість днів *',
     lblTariffSessions:'Кількість тренувань',
-    optMonthly:'📅 Місячний (до кінця місяця)',optDays:'📆 По днях (напр. 30 днів)',
-    optSessions:'🎯 По тренуванням',optSingle:'1️⃣ Разовий',optFree:'🎁 Безкоштовно (пільга)',
+    optMonthly:'Місячний (до кінця місяця)',optDays:'По днях (напр. 30 днів)',
+    optSessions:'По тренуванням',optSingle:'Разовий',optFree:'Безкоштовно (пільга)',
     tariffCancel:'Скасувати',tariffSave:'Зберегти',
     noTariffs:'Немає тарифів для цього клубу',
     noGroups:'Немає груп',
@@ -508,35 +508,35 @@ const i18n={
     mobBack:'Назад',mobGroups:'Групи',mobAcc:'Оплати',mobStats:'Статистика'
   },
   ru:{
-    navBadge:'ДИРЕКТОР',roleDir:'👔 ДИРЕКТОР',roleAcc:'💰 БУХГАЛТЕР',roleTr:'🥋 ТРЕНЕР',
+    navBadge:'ДИРЕКТОР',roleDir:'ДИРЕКТОР',roleAcc:'БУХГАЛТЕР',roleTr:'ТРЕНЕР',
     sideSection:'Бухгалтерия',sideAcc:'Бухгалтерия',sideNav:'Навигация',
     back:'Панель директора',
-    groupsTitle:'📋 Группы',
-    statCollected:'💰 Собрано за месяц',statDebt:'🔴 Общий долг',
-    statDebtors:'👥 Должников',statActive:'✅ Активных',
+    groupsTitle:'Группы',
+    statCollected:'Собрано за месяц',statDebt:'Общий долг',
+    statDebtors:'Должников',statActive:'Активных',
     selectGroup:'Выберите группу слева',
     lblTariff:'Тариф:',optSelectTariff:'— выберите —',
     byTariff:'По тарифу',acceptAll:'Принять всех',tariffsBtn:'Тарифы',
     thAthlete:'Спортсмен',thStatus:'Статус',thPeriod:'Период',
     thTariffCol:'Тариф',thAmount:'Сумма',thType:'Тип',
     noAthletes:'В группе нет спортсменов',
-    statusActive:'🟢 Активен',statusOverdue:'🔴 Просрочен',
-    statusSessions:'🎯 По тренировкам',statusExpiredSess:'🔴 Закончились',
-    statusNone:'⚫ Нет оплат',
+    statusActive:'Активен',statusOverdue:'Просрочен',
+    statusSessions:'По тренировкам',statusExpiredSess:'Закончились',
+    statusNone:'Нет оплат',
     sessLeft:'Осталось: ',sessOf:' из ',
-    cash:'💵 Нал',card:'💳 Карта',bank:'🏦 Банк',
-    typeMonthly:'📅 Месячный',typeDays:'📆 По дням',
-    typeSessions:'🎯 По тренировкам',typeSingle:'1️⃣ Разовый',typeFree:'🎁 Льгота',
-    btnAccept:'✅ Принять',btnAccepted:'✅ Оплачен',btnWarn:'⚠️ Принять',
+    cash:'Нал',card:'Карта',bank:'Банк',
+    typeMonthly:'Месячный',typeDays:'По дням',
+    typeSessions:'По тренировкам',typeSingle:'Разовый',typeFree:'Льгота',
+    btnAccept:'Принять',btnAccepted:'Оплачен',btnWarn:'Принять',
     historyTitle:'История платежей',noHistory:'Нет платежей',
-    tariffsModalTitle:'⚙️ Тарифные планы',
+    tariffsModalTitle:'Тарифные планы',
     addTariff:'Добавить тариф',
     newTariff:'Новый тариф',editTariff:'Редактировать тариф',
     lblTariffName:'Название *',lblTariffType:'Тип *',lblTariffPrice:'Цена *',
     lblTariffDuration:'Дней действия',lblTariffDurationDays:'Количество дней *',
     lblTariffSessions:'Количество тренировок',
-    optMonthly:'📅 Месячный (до конца месяца)',optDays:'📆 По дням (напр. 30 дней)',
-    optSessions:'🎯 По тренировкам',optSingle:'1️⃣ Разовый',optFree:'🎁 Бесплатно (льгота)',
+    optMonthly:'Месячный (до конца месяца)',optDays:'По дням (напр. 30 дней)',
+    optSessions:'По тренировкам',optSingle:'Разовый',optFree:'Бесплатно (льгота)',
     tariffCancel:'Отмена',tariffSave:'Сохранить',
     noTariffs:'Нет тарифов для этого клуба',
     noGroups:'Нет групп',
@@ -553,35 +553,35 @@ const i18n={
     mobBack:'Назад',mobGroups:'Группы',mobAcc:'Оплаты',mobStats:'Статистика'
   },
   en:{
-    navBadge:'DIRECTOR',roleDir:'👔 DIRECTOR',roleAcc:'💰 ACCOUNTANT',roleTr:'🥋 TRAINER',
+    navBadge:'DIRECTOR',roleDir:'DIRECTOR',roleAcc:'ACCOUNTANT',roleTr:'TRAINER',
     sideSection:'Accounting',sideAcc:'Accounting',sideNav:'Navigation',
     back:'Director panel',
-    groupsTitle:'📋 Groups',
-    statCollected:'💰 Collected this month',statDebt:'🔴 Total debt',
-    statDebtors:'👥 Debtors',statActive:'✅ Active',
+    groupsTitle:'Groups',
+    statCollected:'Collected this month',statDebt:'Total debt',
+    statDebtors:'Debtors',statActive:'Active',
     selectGroup:'Select a group on the left',
     lblTariff:'Plan:',optSelectTariff:'— select —',
     byTariff:'By plan',acceptAll:'Accept all',tariffsBtn:'Plans',
     thAthlete:'Athlete',thStatus:'Status',thPeriod:'Period',
     thTariffCol:'Plan',thAmount:'Amount',thType:'Type',
     noAthletes:'No athletes in this group',
-    statusActive:'🟢 Active',statusOverdue:'🔴 Overdue',
-    statusSessions:'🎯 By sessions',statusExpiredSess:'🔴 Expired',
-    statusNone:'⚫ No payments',
+    statusActive:'Active',statusOverdue:'Overdue',
+    statusSessions:'By sessions',statusExpiredSess:'Expired',
+    statusNone:'No payments',
     sessLeft:'Left: ',sessOf:' of ',
-    cash:'💵 Cash',card:'💳 Card',bank:'🏦 Bank',
-    typeMonthly:'📅 Monthly',typeDays:'📆 By days',
-    typeSessions:'🎯 By sessions',typeSingle:'1️⃣ Single',typeFree:'🎁 Free',
-    btnAccept:'✅ Accept',btnAccepted:'✅ Paid',btnWarn:'⚠️ Accept',
+    cash:'Cash',card:'Card',bank:'Bank',
+    typeMonthly:'Monthly',typeDays:'By days',
+    typeSessions:'By sessions',typeSingle:'Single',typeFree:'Free',
+    btnAccept:'Accept',btnAccepted:'Paid',btnWarn:'Accept',
     historyTitle:'Payment history',noHistory:'No payments',
-    tariffsModalTitle:'⚙️ Billing plans',
+    tariffsModalTitle:'Billing plans',
     addTariff:'Add plan',
     newTariff:'New plan',editTariff:'Edit plan',
     lblTariffName:'Name *',lblTariffType:'Type *',lblTariffPrice:'Price *',
     lblTariffDuration:'Days valid',lblTariffDurationDays:'Number of days *',
     lblTariffSessions:'Number of sessions',
-    optMonthly:'📅 Monthly (until end of month)',optDays:'📆 By days (e.g. 30 days)',
-    optSessions:'🎯 By sessions',optSingle:'1️⃣ Single session',optFree:'🎁 Free (benefit)',
+    optMonthly:'Monthly (until end of month)',optDays:'By days (e.g. 30 days)',
+    optSessions:'By sessions',optSingle:'Single session',optFree:'Free (benefit)',
     tariffCancel:'Cancel',tariffSave:'Save',
     noTariffs:'No plans for this club',
     noGroups:'No groups',
@@ -927,7 +927,7 @@ function renderTable(){
         periodHtml=`<span class="paid-until overdue">до ${formatDate(lastPay.paid_until)}</span>`;
       }
     }else if(lastPay&&!lastPay.paid_until&&!lastPay.sessions_paid){
-      statusHtml=`<span class="status-badge status-trial">🎁 ${t('typeFree')}</span>`;
+      statusHtml=`<span class="status-badge status-trial"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="6" width="14" height="9" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M1 9h14M8 6v9" stroke="currentColor" stroke-width="1.2"/></svg> ${t('typeFree')}</span>`;
       periodHtml=`<span class="paid-until">${formatDate(lastPay.paid_from)}</span>`;
     }
 
@@ -951,7 +951,7 @@ function renderTable(){
       :`<div class="athlete-photo-placeholder">${(athlete.first_name||'')[0]}${(athlete.last_name||'')[0]}</div>`;
 
     // TYPE OPTIONS
-    const typeMap={cash:t('cash'),card:t('card'),bank:t('bank')};
+    const typeMap={cash:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="8" rx="1.2" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="1.8" stroke="currentColor" stroke-width="1.2"/></svg> '+t('cash'),card:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6.5h14" stroke="currentColor" stroke-width="1.2"/><path d="M4 9.5h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> '+t('card'),bank:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M1 6h14M3 6V13M7 6V13M9 6V13M13 6V13M2 13h12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M1 6L8 1l7 5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg> '+t('bank')};
     const typeOptions=Object.entries(typeMap).map(([v,lbl])=>
       `<option value="${v}" ${v===lastType?'selected':''}>${lbl}</option>`).join('');
 
@@ -960,14 +960,14 @@ function renderTable(){
     const rowTariffObj=lastTariffId?groupTariffs.find(t=>t.id==lastTariffId):null;
     const isDays=rowTariffObj?.plan_type==='days';
     const defaultFrom=new Date().toISOString().split('T')[0];
-    const tariffIcons={monthly:'📅',days:'📆',sessions:'🎯',free:'🎁',single:'1️⃣'};
+    const tariffIcons={monthly:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>',days:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M5 9.5l2 2 4-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',sessions:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r=".8" fill="currentColor"/></svg>',free:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="6" width="14" height="9" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M1 9h14M8 6v9" stroke="currentColor" stroke-width="1.2"/><path d="M8 6C8 4 6 2 5 2c-1 0-1.5 1-1 2s4 2 4 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 6c0-2 2-4 3-4 1 0 1.5 1 1 2s-4 2-4 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>',single:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.5 7.5L8 5l2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
     const rowTariffSel=`<div style="display:flex;align-items:center;gap:3px">
       <select class="pay-type-select" id="tariff_${athlete.id}" onchange="onRowTariffChange(${athlete.id})" style="max-width:130px;font-size:11px">
         ${allowedTariffs.map(t=>`<option value="${t.id}" ${t.id==lastTariffId?'selected':''}>${tariffIcons[t.plan_type]||''} ${t.name}</option>`).join('')}
         <option value="" ${!lastTariffId?'selected':''}>—</option>
       </select>
       <div id="datebtn_wrap_${athlete.id}" style="display:${isDays?'flex':'none'};align-items:center;gap:2px">
-        <button class="btn-icon" onclick="toggleDatePicker(${athlete.id})" style="font-size:.85rem;padding:2px 4px">📅</button>
+        <button class="act-btn" onclick="toggleDatePicker(${athlete.id})" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
         <input type="date" id="paid_from_${athlete.id}" value="${defaultFrom}"
           onchange="onPaidFromChange(${athlete.id})"
           style="display:none;padding:3px 5px;border:1px solid var(--p);border-radius:5px;font-size:11px;width:110px;background:var(--input-bg);color:var(--text)">
@@ -975,7 +975,7 @@ function renderTable(){
     </div>`;
 
     return `<tr id="row_${athlete.id}">
-      <td><button class="btn-icon" onclick="toggleHistory(${athlete.id})" style="font-size:11px;padding:2px 4px;color:var(--muted)">📋</button></td>
+      <td><button class="act-btn" onclick="toggleHistory(${athlete.id})" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 8A6 6 0 1 0 8 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M2 3v5h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 5v3.5l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button></td>
       <td><div class="athlete-info">${photo}<div><div class="athlete-name">${athlete.last_name} ${athlete.first_name}</div></div></div></td>
       <td>${statusHtml}</td>
       <td>${periodHtml}</td>
@@ -1043,7 +1043,7 @@ function renderHistory(childId){
       <span class="history-type">${typeMap[p.payment_type]||p.payment_type||'—'}</span>
       <span class="history-period">${p.period_label||'—'}</span>
       <span class="history-comment">${p.comment||''}</span>
-      <button class="history-del" onclick="deletePayment(${p.id},${childId})" title="${t('confirmDelete')}">🗑</button>
+      <button class="history-del" onclick="deletePayment(${p.id},${childId})" title="${t('confirmDelete')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>`).join('');
 }
 
@@ -1057,7 +1057,7 @@ async function loadGroupTariffs(){
     const all=Array.isArray(d)?d:(d.merged||[]);
     groupTariffs=all.filter(t=>t.is_active!==false);
     const sel=document.getElementById('activeTariff');
-    const icons={monthly:'📅',days:'📆',sessions:'🎯',free:'🎁',single:'1️⃣'};
+    const icons={monthly:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>',days:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M5 9.5l2 2 4-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',sessions:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r=".8" fill="currentColor"/></svg>',free:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="6" width="14" height="9" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M1 9h14M8 6v9" stroke="currentColor" stroke-width="1.2"/></svg>',single:'<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>'};
     sel.innerHTML=`<option value="">${t('optSelectTariff')}</option>`+
       groupTariffs.map(t=>`<option value="${t.id}">${icons[t.plan_type]||''} ${t.name} — ${t.price} грн</option>`).join('');
     if(groupTariffs.length===1)sel.value=groupTariffs[0].id;
@@ -1135,7 +1135,7 @@ async function acceptPayment(childId){
   }
   const periodLabel=buildPeriodLabel(tariff,sessionsPaid);
   const clubId=currentGroupData?.club_id;
-  if(btn){btn.disabled=true;btn.textContent='⏳';}
+  if(btn){btn.disabled=true;btn.textContent='...';}
   try{
     await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token,resource:'payments',action:'create',data:{
@@ -1146,7 +1146,7 @@ async function acceptPayment(childId){
     if(inp){inp.value='';inp.classList.remove('filled');}
     const commInp=document.getElementById(`comment_${childId}`);
     if(commInp)commInp.value='';
-    if(btn){btn.textContent='✅ '+t('accepted');btn.style.background='var(--tag-green)';}
+    if(btn){btn.textContent=t('accepted');btn.style.background='var(--tag-green)';}
     setTimeout(async()=>{
       await loadGroupAthletes();
       if(user.role==='director'||user.role==='accountant')await loadStats();
@@ -1326,11 +1326,11 @@ function renderTariffsList(){
     return;
   }
   const planBadges={
-    monthly:`<span class="plan-badge plan-monthly">${t('typeMonthly')}</span>`,
-    sessions:`<span class="plan-badge plan-sessions">${t('typeSessions')}</span>`,
-    single:`<span class="plan-badge plan-single">${t('typeSingle')}</span>`,
-    days:`<span class="plan-badge plan-days">${t('typeDays')}</span>`,
-    free:`<span class="plan-badge plan-free">${t('typeFree')}</span>`
+    monthly:`<span class="plan-badge plan-monthly"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg> ${t('typeMonthly')}</span>`,
+    sessions:`<span class="plan-badge plan-sessions"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.2"/><circle cx="8" cy="8" r=".8" fill="currentColor"/></svg> ${t('typeSessions')}</span>`,
+    single:`<span class="plan-badge plan-single"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 5v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5.5 7.5L8 5l2.5 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg> ${t('typeSingle')}</span>`,
+    days:`<span class="plan-badge plan-days"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="2.5" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v3M11 1v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M5 9.5l2 2 4-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg> ${t('typeDays')}</span>`,
+    free:`<span class="plan-badge plan-free"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="6" width="14" height="9" rx="1.2" stroke="currentColor" stroke-width="1.2"/><path d="M1 9h14M8 6v9" stroke="currentColor" stroke-width="1.2"/><path d="M8 6C8 4 6 2 5 2c-1 0-1.5 1-1 2s4 2 4 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 6c0-2 2-4 3-4 1 0 1.5 1 1 2s-4 2-4 2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg> ${t('typeFree')}</span>`
   };
   el.innerHTML=groupTariffs.map(t=>`
     <div class="tariff-item">
@@ -1343,8 +1343,8 @@ function renderTariffsList(){
       </div>
       <div class="tariff-item-price">${t.price} грн</div>
       <div class="tariff-actions">
-        <button class="btn btn-ghost btn-sm" onclick="editTariff(${t.id})">✏️</button>
-        <button class="history-del" onclick="deleteTariff(${t.id})">🗑</button>
+        <button class="act-btn" onclick="editTariff(${t.id})" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
+        <button class="act-btn del" onclick="deleteTariff(${t.id})" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </div>
     </div>`).join('');
 }
