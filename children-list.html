@@ -1497,23 +1497,32 @@ async function openAttendanceForGroup(groupId,trainingDate){
     currentTrainingDate=trainingDate||(_now.getFullYear()+'-'+String(_now.getMonth()+1).padStart(2,'0')+'-'+String(_now.getDate()).padStart(2,'0'));
     closeAttendanceModal();
     closeCalendarModal();
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:'get',data:{id:groupId}})});
-    const groupData=await r.json();
-    const group=Array.isArray(groupData)?groupData[0]:groupData;
-    const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-    const childrenData=await r2.json();
-    const allChildren=childrenData.merged||childrenData||[];
-    currentGroupChildren=allChildren.filter(c=>c.group_names&&c.group_names.split(', ').includes(group.name));
-    let attendance=[];
-    try{
-      const r3=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'list'})});
-      const attData=await r3.json();
-      const allAtt=attData.merged||attData||[];
-      attendance=allAtt.filter(a=>a.group_id==groupId&&a.training_date&&a.training_date.startsWith(currentTrainingDate));
-    }catch(e){console.error('Attendance load error:',e);}
-    document.getElementById('markGroupName').textContent=group.name;
+
+    // Группа уже есть в памяти — сеть не нужна
+    const groupLocal=groups.find(g=>g.group_id==groupId)||{group_name:'—',name:null};
+    const groupName=groupLocal.group_name||groupLocal.name||'—';
+
+    // Показываем модалку сразу со спиннером
+    document.getElementById('markGroupName').textContent=groupName;
     document.getElementById('markDate').textContent=new Date().toLocaleDateString(currentLang==='uk'?'uk-UA':currentLang==='en'?'en-US':'ru-RU');
     document.getElementById('uploadsCount').textContent=0;
+    document.getElementById('totalCount').textContent='…';
+    document.getElementById('childrenCheckboxes').innerHTML=`<div class="loading-state">${t('loading')}</div>`;
+    document.getElementById('markAttendanceModal').classList.add('active');
+    document.body.style.overflow='hidden';
+
+    // Два запроса параллельно
+    const [childrenData,attData]=await Promise.all([
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})}).then(r=>r.json()).catch(()=>({})),
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'list'})}).then(r=>r.json()).catch(()=>({}))
+    ]);
+
+    const allChildren=childrenData.merged||childrenData||[];
+    currentGroupChildren=allChildren.filter(c=>c.group_names&&c.group_names.split(', ').includes(groupName));
+
+    const allAtt=attData.merged||attData||[];
+    const attendance=allAtt.filter(a=>a.group_id==groupId&&a.training_date&&a.training_date.startsWith(currentTrainingDate));
+
     document.getElementById('totalCount').textContent=currentGroupChildren.length;
     const html=currentGroupChildren.map(child=>{
       const marked=attendance.find(a=>a.child_id===child.id);
@@ -1527,8 +1536,6 @@ async function openAttendanceForGroup(groupId,trainingDate){
     }).join('');
     document.getElementById('childrenCheckboxes').innerHTML=html;
     updatePresentCount();
-    document.getElementById('markAttendanceModal').classList.add('active');
-    document.body.style.overflow='hidden';
   }catch(e){console.error('Error opening group attendance:',e);showToast(t('alertError')+e.message,'error');}
 }
 
