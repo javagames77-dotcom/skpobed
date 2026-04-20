@@ -506,7 +506,7 @@ const i18n={
     accepted:'Прийнято!',saveErr:'Помилка збереження',tariffSaved:'Тариф збережено',
     fillPriceRequired:'Введіть назву та ціну',noClub:'Немає клубу',
     tariffDays:'днів',tariffSess:'тренувань',
-    mobBack:'Назад',mobGroups:'Групи',mobAcc:'Оплати',mobStats:'Статистика'
+    mobBack:'Назад',mobGroups:'Групи',mobAcc:'Оплати',mobStats:'Статистика',logout:'Вийти'
   },
   ru:{
     navBadge:'ДИРЕКТОР',roleDir:'ДИРЕКТОР',roleAcc:'БУХГАЛТЕР',roleTr:'ТРЕНЕР',
@@ -552,7 +552,7 @@ const i18n={
     accepted:'Принято!',saveErr:'Ошибка сохранения',tariffSaved:'Тариф сохранён',
     fillPriceRequired:'Заполните название и цену',noClub:'Нет клуба',
     tariffDays:'дней',tariffSess:'тренировок',
-    mobBack:'Назад',mobGroups:'Группы',mobAcc:'Оплаты',mobStats:'Статистика'
+    mobBack:'Назад',mobGroups:'Группы',mobAcc:'Оплаты',mobStats:'Статистика',logout:'Выход'
   },
   en:{
     navBadge:'DIRECTOR',roleDir:'DIRECTOR',roleAcc:'ACCOUNTANT',roleTr:'TRAINER',
@@ -598,7 +598,7 @@ const i18n={
     accepted:'Accepted!',saveErr:'Save error',tariffSaved:'Plan saved',
     fillPriceRequired:'Enter name and price',noClub:'No club',
     tariffDays:'days',tariffSess:'sessions',
-    mobBack:'Back',mobGroups:'Groups',mobAcc:'Payments',mobStats:'Stats'
+    mobBack:'Back',mobGroups:'Groups',mobAcc:'Payments',mobStats:'Stats',logout:'Logout'
   }
 };
 let currentLang=localStorage.getItem('lang')||'uk';
@@ -633,6 +633,7 @@ function applyLang(){
   s('opt-single','optSingle');s('opt-free','optFree');
   s('mob-lbl-back','mobBack');s('mob-lbl-groups','mobGroups');
   s('mob-lbl-acc','mobAcc');s('mob-lbl-stats','mobStats');
+  s('lbl-logout','logout');s('lbl-side-logout','logout');s('mob-lbl-logout','logout');
   s('mob-groups-title','groupsTitle');
   updateMonthLabel();
   if(currentGroupId) renderTable();
