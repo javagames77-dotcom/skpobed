@@ -1,263 +1,629 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<title>Статистика - InSkill</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Статистика — InSkill.online</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,sans-serif;background:var(--l);color:var(--d)}
-.header{background:#fff;border-bottom:3px solid var(--p);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:1.5rem;font-weight:700;color:var(--p)}
-.btn-back{padding:0.5rem 1rem;background:var(--p);color:#fff;border:none;border-radius:6px;cursor:pointer;text-decoration:none}
-.container{max-width:1400px;margin:2rem auto;padding:0 2rem}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin-bottom:2rem}
-.stat-card{background:#fff;padding:1.5rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.stat-value{font-size:2.5rem;font-weight:700;color:var(--p);margin-bottom:0.5rem}
-.stat-label{color:#667;font-size:0.9rem}
-.section{background:#fff;padding:2rem;border-radius:12px;margin-bottom:2rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-.section-title{font-size:1.5rem;color:var(--p);margin-bottom:1.5rem;padding-bottom:0.5rem;border-bottom:2px solid var(--b)}
-.filters{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
-.filter-group{display:flex;flex-direction:column;gap:0.5rem}
-.filter-label{font-size:0.9rem;font-weight:600;color:#555}
-select,input[type="date"]{padding:0.75rem;border:2px solid var(--b);border-radius:8px;font-size:1rem}
-table{width:100%;border-collapse:collapse}
-th,td{padding:1rem;text-align:left;border-bottom:1px solid var(--b)}
-th{background:var(--l);font-weight:600;color:var(--d)}
-tr:hover{background:var(--l)}
-.attendance-bar{height:20px;background:var(--l);border-radius:10px;overflow:hidden;position:relative}
-.attendance-fill{height:100%;background:linear-gradient(90deg,#28a745,#20c997);transition:width 0.3s}
-.attendance-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:0.75rem;font-weight:600;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.3)}
-.badge{display:inline-block;padding:0.25rem 0.75rem;border-radius:12px;font-size:0.85rem;font-weight:600}
-.badge-present{background:#d4edda;color:#155724}
-.badge-absent{background:#f8d7da;color:#721c24}
-.btn{padding:0.75rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
-.btn-export{background:var(--s);color:#fff;margin-bottom:1rem}
+[data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--sidebar-bg:#ffffff;--input-bg:#fafafa;--card-bg:#ffffff;--card-shadow:0 1px 3px rgba(0,0,0,.06);--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green:#16a34a;--tag-red-bg:#fff0f0;--tag-red:#c0392b;--tag-gray-bg:#f5f5f5;--tag-gray:#6b6b6b;--tag-blue-bg:#eff6ff;--tag-blue:#1d4ed8;--p:#0066CC;--s:#FF9933}
+[data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--sidebar-bg:#0a0a0a;--input-bg:#181818;--card-bg:#181818;--card-shadow:0 1px 3px rgba(0,0,0,.3);--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green:#4ade80;--tag-red-bg:#2a1010;--tag-red:#ff7070;--tag-gray-bg:#222222;--tag-gray:#999999;--tag-blue-bg:#0c1a3a;--tag-blue:#93c5fd;--p:#4d9de0;--s:#FF9933}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+/* ── NAV ── */
+.nav{height:48px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:background .2s,border-color .2s}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:600;color:var(--black);letter-spacing:-.03em;transition:color .2s}
+.logo-text span{font-weight:300;color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-badge{font-size:10px;font-weight:500;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;letter-spacing:.02em}
+.nav-divider{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.theme-toggle{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;transition:all .15s}
+.theme-toggle:hover{border-color:var(--border2)}
+.lang-switcher{display:flex;align-items:center;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:3px}
+.lang-btn{padding:3px 8px;border:none;border-radius:5px;background:transparent;color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.lang-btn.active{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* ── LAYOUT ── */
+.layout-outer{display:flex;height:calc(100vh - 48px)}
+
+/* ── SIDEBAR ── */
+.sidebar-nav{width:220px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:background .2s,border-color .2s;overflow-y:auto}
+.sidebar-user{padding:14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-avatar{width:32px;height:32px;border-radius:50%;background:var(--black);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.sidebar-user-name{font-size:12px;font-weight:500;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-id{font-size:10px;color:var(--muted2)}
+.sidebar-section{padding:14px 12px 6px;font-size:10px;font-weight:500;color:var(--muted2);letter-spacing:.08em;text-transform:uppercase}
+.sitem{display:flex;align-items:center;gap:9px;padding:7px 12px;margin:1px 6px;border:none;border-radius:7px;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;text-align:left;width:calc(100% - 12px);text-decoration:none}
+.sitem:hover{background:var(--bg3);color:var(--text)}
+.sitem.active{background:var(--bg3);color:var(--black)}
+.sitem svg{flex-shrink:0}
+
+/* ── MAIN ── */
+.main-area{flex:1;overflow-y:auto;padding:20px}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.page-title{font-size:16px;font-weight:600;color:var(--black);letter-spacing:-.02em}
+
+/* ── STATS STRIP ── */
+.stats-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat-box{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:var(--card-shadow)}
+.stat-value{font-size:22px;font-weight:700;color:var(--black);line-height:1}
+.stat-label{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.05em;margin-top:5px;font-weight:500}
+
+/* ── CARD ── */
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);overflow:hidden;margin-bottom:16px}
+.card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.card-title{font-size:13px;font-weight:600;color:var(--black)}
+.card-body{padding:16px}
+
+/* ── FILTERS ── */
+.filters-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.filter-group{display:flex;flex-direction:column;gap:4px}
+.filter-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.filter-select,.filter-date{padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s}
+.filter-select:focus,.filter-date:focus{border-color:var(--border2)}
+
+/* ── TABLE ── */
+.stats-table{width:100%;border-collapse:collapse}
+.stats-table thead tr{border-bottom:1px solid var(--border)}
+.stats-table th{padding:9px 12px;text-align:left;font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.stats-table td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}
+.stats-table tbody tr:last-child td{border-bottom:none}
+.stats-table tbody tr:hover td{background:var(--tbl-hover)}
+
+/* ── ATTENDANCE BAR ── */
+.att-bar{height:16px;background:var(--bg3);border-radius:8px;overflow:hidden;position:relative;min-width:80px}
+.att-fill{height:100%;background:linear-gradient(90deg,var(--tag-green),#34d399);border-radius:8px;transition:width .3s}
+.att-fill.low{background:linear-gradient(90deg,var(--tag-red),#f87171)}
+.att-fill.mid{background:linear-gradient(90deg,var(--s),#fbbf24)}
+.att-pct{font-size:11px;font-weight:600;color:var(--muted);margin-left:8px;white-space:nowrap}
+
+/* ── HISTORY DOTS ── */
+.history-dots{display:flex;gap:3px;flex-wrap:wrap}
+.dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.dot-present{background:var(--tag-green)}
+.dot-absent{background:var(--tag-red-bg);border:1px solid var(--tag-red)}
+
+/* ── BUTTONS ── */
+.btn{padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--black);color:var(--bg)}
+.btn-primary:hover{opacity:.85}
+.btn-ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2)}
+
+/* ── LOADING / EMPTY ── */
+.loading-state{padding:32px;text-align:center;color:var(--muted);font-size:12px}
+.empty-state{padding:32px;text-align:center;color:var(--muted2);font-size:12px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;padding:8px 14px;background:var(--black);color:var(--bg);border-radius:8px;font-size:12px;font-weight:500;z-index:9999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.error{background:var(--tag-red)}
+
+/* ── MOBILE NAV ── */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--nav-bg);border-top:1px solid var(--border);z-index:200;backdrop-filter:blur(10px)}
+.mob-nav-items{display:flex;height:100%}
+.mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);font-size:9px;font-weight:500;font-family:inherit;cursor:pointer;transition:color .15s;text-decoration:none}
+.mob-nav-btn.active{color:var(--black)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){.stats-strip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+  .sidebar-nav{display:none}
+  .mob-nav{display:block}
+  .main-area{padding:12px 12px 72px}
+  .stats-strip{grid-template-columns:1fr 1fr}
+  .filters-row{flex-direction:column}
+  .filter-group{width:100%}
+  .filter-select,.filter-date{width:100%}
+  .nav-badge,.nav-divider{display:none}
+  .page-header{flex-direction:column;align-items:flex-start}
+  .card{overflow-x:auto}
+}
+@media(max-width:480px){
+  .main-area{padding:10px 10px 72px}
+  .stats-strip{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
-<div class="header">
-<div class="logo">📊 Статистика</div>
-<a id="btnBack" href="/trainer-profile.html" class="btn-back">← Назад</a>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-logo">
+    <svg width="23" height="23" viewBox="0 0 20 20" fill="none">
+      <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+      <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="logo-text">InSkill<span>.online</span></span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-badge" id="nav-badge">ТРЕНЕР</span>
+    <div class="nav-divider"></div>
+    <div class="lang-switcher">
+      <button class="lang-btn" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="icon-sun" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.6 3.6l1.3 1.3M11.1 11.1l1.3 1.3M3.6 12.4l1.3-1.3M11.1 4.9l1.3-1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg id="icon-moon" width="15" height="15" viewBox="0 0 16 16" fill="none" style="display:none"><path d="M13.5 10A6 6 0 015 2.5a6 6 0 108 8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout-outer">
+
+<!-- SIDEBAR -->
+<aside class="sidebar-nav">
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sideInitials">ТР</div>
+    <div>
+      <div class="sidebar-user-name" id="sideUserName">—</div>
+      <div class="sidebar-user-id" id="sideUserId"></div>
+    </div>
+  </div>
+  <div class="sidebar-section" id="lbl-side-section">Статистика</div>
+  <a href="#" class="sitem active">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="10" width="3" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="6.5" y="6" width="3" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="12" y="2" width="3" height="13" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
+    <span id="lbl-side-stats">Статистика</span>
+  </a>
+  <div class="sidebar-section" id="lbl-side-nav">Навігація</div>
+  <a href="/children-list.html" class="sitem" id="lbl-back-link">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="lbl-back">Панель тренера</span>
+  </a>
+</aside>
+
+<!-- MAIN -->
+<main class="main-area">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1 class="page-title" id="lbl-page-title">Статистика відвідуваності</h1>
+    <button class="btn btn-ghost" onclick="exportCSV()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11v1.5A1.5 1.5 0 003.5 14h9a1.5 1.5 0 001.5-1.5V11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span id="lbl-export">Експорт CSV</span>
+    </button>
+  </div>
+
+  <!-- STATS STRIP -->
+  <div class="stats-strip">
+    <div class="stat-box">
+      <div class="stat-value" id="totalGroups">—</div>
+      <div class="stat-label" id="lbl-total-groups">Груп</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="totalChildren">—</div>
+      <div class="stat-label" id="lbl-total-children">Спортсменів</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="avgAttendance">—</div>
+      <div class="stat-label" id="lbl-avg-att">Середня відвідуваність</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="totalTrainings">—</div>
+      <div class="stat-label" id="lbl-total-trainings">Тренувань проведено</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title" id="lbl-filters-title">Фільтри</span>
+    </div>
+    <div class="card-body">
+      <div class="filters-row">
+        <div class="filter-group">
+          <label class="filter-label" id="lbl-filter-group">Група</label>
+          <select class="filter-select" id="groupFilter" onchange="renderStats()">
+            <option value="" id="lbl-all-groups">Всі групи</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" id="lbl-filter-from">Період з</label>
+          <input type="date" class="filter-date" id="dateFrom" onchange="renderStats()">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" id="lbl-filter-to">По</label>
+          <input type="date" class="filter-date" id="dateTo" onchange="renderStats()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GROUP STATS TABLE -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title" id="lbl-group-stats-title">Відвідуваність по групах</span>
+    </div>
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th id="th-group">Група</th>
+          <th id="th-children">Спортсменів</th>
+          <th id="th-trainings">Тренувань</th>
+          <th id="th-attendance">Відвідуваність</th>
+        </tr>
+      </thead>
+      <tbody id="groupStatsBody">
+        <tr><td colspan="4" class="loading-state" id="lbl-loading">Завантаження...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CHILDREN STATS TABLE -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title" id="lbl-children-stats-title">Відвідуваність по спортсменах</span>
+    </div>
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th id="th-athlete">Спортсмен</th>
+          <th id="th-group-col">Група</th>
+          <th id="th-last10">Останні 10</th>
+          <th id="th-att-pct">Відвідуваність</th>
+        </tr>
+      </thead>
+      <tbody id="childrenStatsBody">
+        <tr><td colspan="4" class="loading-state">...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
 </div>
 
-<div class="container">
-<div class="stats-grid">
-<div class="stat-card">
-<div class="stat-value" id="totalGroups">-</div>
-<div class="stat-label">Всего групп</div>
-</div>
-<div class="stat-card">
-<div class="stat-value" id="totalChildren">-</div>
-<div class="stat-label">Всего детей</div>
-</div>
-<div class="stat-card">
-<div class="stat-value" id="avgAttendance">-%</div>
-<div class="stat-label">Средняя посещаемость</div>
-</div>
-<div class="stat-card">
-<div class="stat-value" id="totalTrainings">-</div>
-<div class="stat-label">Тренировок проведено</div>
-</div>
-</div>
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mob-nav">
+  <div class="mob-nav-items">
+    <a href="/children-list.html" class="mob-nav-btn" id="mob-back-link">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="mob-lbl-back">Назад</span>
+    </a>
+    <button class="mob-nav-btn active">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="10" width="3" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="6.5" y="6" width="3" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="12" y="2" width="3" height="13" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
+      <span id="mob-lbl-stats">Статистика</span>
+    </button>
+    <button class="mob-nav-btn" onclick="exportCSV()">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 11v1.5A1.5 1.5 0 003.5 14h9a1.5 1.5 0 001.5-1.5V11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span id="mob-lbl-export">CSV</span>
+    </button>
+  </div>
+</nav>
 
-<div class="section">
-<h2 class="section-title">Посещаемость по группам</h2>
-<div class="filters">
-<div class="filter-group">
-<label class="filter-label">Группа</label>
-<select id="groupFilter">
-<option value="">Все группы</option>
-</select>
-</div>
-<div class="filter-group">
-<label class="filter-label">Период с</label>
-<input type="date" id="dateFrom">
-</div>
-<div class="filter-group">
-<label class="filter-label">по</label>
-<input type="date" id="dateTo">
-</div>
-</div>
-<button class="btn btn-export" onclick="exportCSV()">📥 Экспорт в CSV</button>
-<table id="groupStatsTable">
-<thead>
-<tr>
-<th>Группа</th>
-<th>Всего детей</th>
-<th>Тренировок</th>
-<th>Посещаемость</th>
-</tr>
-</thead>
-<tbody id="groupStatsBody">
-<tr><td colspan="4" style="text-align:center;color:#999">Загрузка...</td></tr>
-</tbody>
-</table>
-</div>
-
-<div class="section">
-<h2 class="section-title">Посещаемость по детям</h2>
-<table id="childrenStatsTable">
-<thead>
-<tr>
-<th>Ребёнок</th>
-<th>Группа</th>
-<th>Последние 10 тренировок</th>
-<th>Посещаемость</th>
-</tr>
-</thead>
-<tbody id="childrenStatsBody">
-<tr><td colspan="4" style="text-align:center;color:#999">Загрузка...</td></tr>
-</tbody>
-</table>
-</div>
-</div>
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
+/* ═══════════════════════════════
+   i18n
+═══════════════════════════════ */
+const i18n={
+  uk:{
+    pageTitle:'Статистика — InSkill',navBadge:'ТРЕНЕР',
+    sideSection:'Статистика',sideStats:'Статистика',sideNav:'Навігація',back:'Панель тренера',
+    pageMainTitle:'Статистика відвідуваності',
+    export:'Експорт CSV',
+    lblGroups:'Груп',lblChildren:'Спортсменів',lblAvgAtt:'Середня відвідуваність',lblTrainings:'Тренувань проведено',
+    filtersTitle:'Фільтри',filterGroup:'Група',filterFrom:'Період з',filterTo:'По',
+    allGroups:'Всі групи',
+    groupStatsTitle:'Відвідуваність по групах',
+    childrenStatsTitle:'Відвідуваність по спортсменах',
+    thGroup:'Група',thChildren:'Спортсменів',thTrainings:'Тренувань',thAttendance:'Відвідуваність',
+    thAthlete:'Спортсмен',thGroupCol:'Група',thLast10:'Останні 10',thAttPct:'Відвідуваність',
+    loading:'Завантаження...',noData:'Немає даних за вибраний період',
+    errorLoad:'Помилка завантаження статистики',
+    mobBack:'Назад',mobStats:'Статистика',mobExport:'CSV',
+    unknownGroup:'Невідома група',unknownChild:'Без імені',
+  },
+  ru:{
+    pageTitle:'Статистика — InSkill',navBadge:'ТРЕНЕР',
+    sideSection:'Статистика',sideStats:'Статистика',sideNav:'Навигация',back:'Панель тренера',
+    pageMainTitle:'Статистика посещаемости',
+    export:'Экспорт CSV',
+    lblGroups:'Групп',lblChildren:'Спортсменов',lblAvgAtt:'Средняя посещаемость',lblTrainings:'Тренировок проведено',
+    filtersTitle:'Фильтры',filterGroup:'Группа',filterFrom:'Период с',filterTo:'По',
+    allGroups:'Все группы',
+    groupStatsTitle:'Посещаемость по группам',
+    childrenStatsTitle:'Посещаемость по спортсменам',
+    thGroup:'Группа',thChildren:'Спортсменов',thTrainings:'Тренировок',thAttendance:'Посещаемость',
+    thAthlete:'Спортсмен',thGroupCol:'Группа',thLast10:'Последние 10',thAttPct:'Посещаемость',
+    loading:'Загрузка...',noData:'Нет данных за выбранный период',
+    errorLoad:'Ошибка загрузки статистики',
+    mobBack:'Назад',mobStats:'Статистика',mobExport:'CSV',
+    unknownGroup:'Неизвестная группа',unknownChild:'Без имени',
+  },
+  en:{
+    pageTitle:'Statistics — InSkill',navBadge:'TRAINER',
+    sideSection:'Statistics',sideStats:'Statistics',sideNav:'Navigation',back:'Trainer panel',
+    pageMainTitle:'Attendance statistics',
+    export:'Export CSV',
+    lblGroups:'Groups',lblChildren:'Athletes',lblAvgAtt:'Avg attendance',lblTrainings:'Trainings held',
+    filtersTitle:'Filters',filterGroup:'Group',filterFrom:'From',filterTo:'To',
+    allGroups:'All groups',
+    groupStatsTitle:'Attendance by group',
+    childrenStatsTitle:'Attendance by athlete',
+    thGroup:'Group',thChildren:'Athletes',thTrainings:'Trainings',thAttendance:'Attendance',
+    thAthlete:'Athlete',thGroupCol:'Group',thLast10:'Last 10',thAttPct:'Attendance',
+    loading:'Loading...',noData:'No data for selected period',
+    errorLoad:'Failed to load statistics',
+    mobBack:'Back',mobStats:'Statistics',mobExport:'CSV',
+    unknownGroup:'Unknown group',unknownChild:'No name',
+  }
+};
+let currentLang=localStorage.getItem('lang')||'uk';
+function t(k){return(i18n[currentLang]||i18n.uk)[k]||k;}
+
+function applyLang(){
+  document.documentElement.lang=currentLang;
+  document.title=t('pageTitle');
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    const map={'UA':'uk','RU':'ru','EN':'en'};
+    btn.classList.toggle('active',map[btn.textContent]===currentLang);
+  });
+  const s=(id,key)=>{const e=document.getElementById(id);if(e)e.textContent=t(key);};
+  s('nav-badge','navBadge');
+  s('lbl-side-section','sideSection');s('lbl-side-stats','sideStats');
+  s('lbl-side-nav','sideNav');s('lbl-back','back');
+  s('lbl-page-title','pageMainTitle');
+  s('lbl-export','export');
+  s('lbl-total-groups','lblGroups');s('lbl-total-children','lblChildren');
+  s('lbl-avg-att','lblAvgAtt');s('lbl-total-trainings','lblTrainings');
+  s('lbl-filters-title','filtersTitle');
+  s('lbl-filter-group','filterGroup');s('lbl-filter-from','filterFrom');s('lbl-filter-to','filterTo');
+  s('lbl-all-groups','allGroups');
+  s('lbl-group-stats-title','groupStatsTitle');
+  s('lbl-children-stats-title','childrenStatsTitle');
+  s('th-group','thGroup');s('th-children','thChildren');
+  s('th-trainings','thTrainings');s('th-attendance','thAttendance');
+  s('th-athlete','thAthlete');s('th-group-col','thGroupCol');
+  s('th-last10','thLast10');s('th-att-pct','thAttPct');
+  s('mob-lbl-back','mobBack');s('mob-lbl-stats','mobStats');s('mob-lbl-export','mobExport');
+  if(allStats.length||loadDone)renderStats();
+}
+function setLang(lang){currentLang=lang;localStorage.setItem('lang',lang);applyLang();}
+
+/* ═══════════════════════════════
+   THEME
+═══════════════════════════════ */
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  const n=isDark?'light':'dark';
+  html.setAttribute('data-theme',n);localStorage.setItem('theme',n);
+  document.getElementById('icon-sun').style.display=isDark?'block':'none';
+  document.getElementById('icon-moon').style.display=isDark?'none':'block';
+}
+(function(){
+  const s=localStorage.getItem('theme');
+  if(s==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('icon-sun').style.display='none';
+    document.getElementById('icon-moon').style.display='block';
+  }
+})();
+
+/* ═══════════════════════════════
+   TOAST
+═══════════════════════════════ */
+function showToast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>el.className='toast',2500);
+}
+
+/* ═══════════════════════════════
+   STATE & API
+═══════════════════════════════ */
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const token=localStorage.getItem('token');
-const id=new URLSearchParams(location.search).get('id');
+const urlId=new URLSearchParams(location.search).get('id');
 if(!token){location.href='/';throw new Error('No auth');}
 
-// Кнопка назад с id тренера
-document.getElementById('btnBack').href='/trainer-profile.html?id='+id;
-
 let allStats=[];
+let loadDone=false;
 
-// Установить даты по умолчанию (последние 30 дней)
-const today=new Date();
-const monthAgo=new Date(today);
-monthAgo.setDate(monthAgo.getDate()-30);
-document.getElementById('dateTo').valueAsDate=today;
-document.getElementById('dateFrom').valueAsDate=monthAgo;
-
-async function loadStatistics(){
-try{
-// Получить группы тренера
-const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(id)}})});
-const groups=await r1.json();
-const trainerGroups=(groups.merged||groups||[]);
-
-// Получить статистику посещаемости (action:'list' — единственный поддерживаемый)
-const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'list'})});
-const stats=await r2.json();
-allStats = Array.isArray(stats) ? stats : (stats.merged || []);
-  allStats = allStats.map(s => ({...s, training_date: s.training_date ? s.training_date.split('T')[0] : s.training_date}));
-
-// Обновить карточки
-document.getElementById('totalGroups').textContent=trainerGroups.length;
-const totalChildren=new Set(allStats.map(s=>s.child_id)).size;
-document.getElementById('totalChildren').textContent=totalChildren;
-
-const avgAtt=allStats.length>0?(allStats.reduce((acc,s)=>acc+(s.was_present?1:0),0)/allStats.length*100).toFixed(1):0;
-document.getElementById('avgAttendance').textContent=avgAtt+'%';
-
-const totalTrainings=new Set(allStats.map(s=>s.training_date)).size;
-document.getElementById('totalTrainings').textContent=totalTrainings;
-
-// Заполнить фильтр групп
-const groupFilter=document.getElementById('groupFilter');
-trainerGroups.forEach(g=>{
-const opt=document.createElement('option');
-opt.value=g.group_id;
-opt.textContent=g.group_name;
-groupFilter.appendChild(opt);
-});
-
-renderStats();
-}catch(e){
-console.error(e);
-alert('Ошибка загрузки статистики');
+/* ═══════════════════════════════
+   USER INFO
+═══════════════════════════════ */
+function loadUserInfo(){
+  const user=JSON.parse(localStorage.getItem('user')||'{}');
+  const name=user.first_name?`${user.first_name} ${user.last_name||''}`.trim():user.email||'—';
+  const ini=((user.first_name||'')[0]||'')+((user.last_name||'')[0]||'');
+  const el=document.getElementById('sideInitials');if(el)el.textContent=ini||'ТР';
+  const nm=document.getElementById('sideUserName');if(nm)nm.textContent=name;
+  const uid=document.getElementById('sideUserId');if(uid)uid.textContent='ID: '+(user.id||'—');
 }
+
+/* ═══════════════════════════════
+   DEFAULT DATES
+═══════════════════════════════ */
+(function(){
+  const today=new Date();
+  const monthAgo=new Date(today);
+  monthAgo.setDate(monthAgo.getDate()-30);
+  document.getElementById('dateTo').valueAsDate=today;
+  document.getElementById('dateFrom').valueAsDate=monthAgo;
+})();
+
+/* ═══════════════════════════════
+   LOAD
+═══════════════════════════════ */
+async function loadStatistics(){
+  try{
+    const trainerId=urlId||JSON.parse(localStorage.getItem('user')||'{}').id;
+
+    // Группы тренера
+    const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:parseInt(trainerId)}})});
+    const gData=await r1.json();
+    const trainerGroups=gData.merged||gData||[];
+
+    // Статистика посещаемости
+    const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'attendance',action:'list'})});
+    const sData=await r2.json();
+    allStats=Array.isArray(sData)?sData:(sData.merged||[]);
+    allStats=allStats.map(s=>({...s,training_date:s.training_date?s.training_date.split('T')[0]:s.training_date}));
+
+    loadDone=true;
+
+    // Заполнить stat cards
+    document.getElementById('totalGroups').textContent=trainerGroups.length;
+    const totalChildren=new Set(allStats.map(s=>s.child_id)).size;
+    document.getElementById('totalChildren').textContent=totalChildren;
+    const avgAtt=allStats.length>0?(allStats.reduce((acc,s)=>acc+(s.was_present?1:0),0)/allStats.length*100).toFixed(1):0;
+    document.getElementById('avgAttendance').textContent=avgAtt+'%';
+    const totalTrainings=new Set(allStats.map(s=>s.training_date)).size;
+    document.getElementById('totalTrainings').textContent=totalTrainings;
+
+    // Заполнить фильтр групп
+    const sel=document.getElementById('groupFilter');
+    trainerGroups.forEach(g=>{
+      const opt=document.createElement('option');
+      opt.value=g.group_id;opt.textContent=g.group_name;
+      sel.appendChild(opt);
+    });
+
+    renderStats();
+  }catch(e){
+    console.error(e);
+    showToast(t('errorLoad'),'error');
+    document.getElementById('groupStatsBody').innerHTML=`<tr><td colspan="4" class="empty-state">${t('errorLoad')}</td></tr>`;
+    document.getElementById('childrenStatsBody').innerHTML=`<tr><td colspan="4" class="empty-state">${t('errorLoad')}</td></tr>`;
+  }
+}
+
+/* ═══════════════════════════════
+   RENDER
+═══════════════════════════════ */
+function attFillClass(pct){
+  if(pct>=70)return'att-fill';
+  if(pct>=40)return'att-fill mid';
+  return'att-fill low';
 }
 
 function renderStats(){
-const groupId=document.getElementById('groupFilter').value;
-const dateFrom=document.getElementById('dateFrom').value;
-const dateTo=document.getElementById('dateTo').value;
+  const groupId=document.getElementById('groupFilter').value;
+  const dateFrom=document.getElementById('dateFrom').value;
+  const dateTo=document.getElementById('dateTo').value;
 
-let filtered=allStats;
-if(groupId)filtered=filtered.filter(s=>s.group_id==groupId);
-if(dateFrom)filtered=filtered.filter(s=>s.training_date>=dateFrom);
-if(dateTo)filtered=filtered.filter(s=>s.training_date<=dateTo);
+  let filtered=allStats;
+  if(groupId)filtered=filtered.filter(s=>s.group_id==groupId);
+  if(dateFrom)filtered=filtered.filter(s=>s.training_date>=dateFrom);
+  if(dateTo)filtered=filtered.filter(s=>s.training_date<=dateTo);
 
-// Статистика по группам
-const groupStats={};
-filtered.forEach(s=>{
-if(!groupStats[s.group_id]){
-groupStats[s.group_id]={group_name:s.group_name||'Неизвестная группа',children:new Set(),trainings:new Set(),present:0,total:0};
+  // ── По группам ──
+  const groupStats={};
+  filtered.forEach(s=>{
+    if(!groupStats[s.group_id]){
+      groupStats[s.group_id]={group_name:s.group_name||t('unknownGroup'),children:new Set(),trainings:new Set(),present:0,total:0};
+    }
+    groupStats[s.group_id].children.add(s.child_id);
+    groupStats[s.group_id].trainings.add(s.training_date);
+    groupStats[s.group_id].total++;
+    if(s.was_present)groupStats[s.group_id].present++;
+  });
+
+  const groupBody=document.getElementById('groupStatsBody');
+  if(Object.keys(groupStats).length===0){
+    groupBody.innerHTML=`<tr><td colspan="4" class="empty-state">${t('noData')}</td></tr>`;
+  }else{
+    groupBody.innerHTML=Object.entries(groupStats).map(([,stat])=>{
+      const pct=stat.total>0?(stat.present/stat.total*100):0;
+      const pctStr=pct.toFixed(1);
+      return`<tr>
+        <td style="font-weight:500;color:var(--black)">${stat.group_name}</td>
+        <td>${stat.children.size}</td>
+        <td>${stat.trainings.size}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="att-bar" style="flex:1"><div class="${attFillClass(pct)}" style="width:${pctStr}%"></div></div>
+            <span class="att-pct">${pctStr}%</span>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── По спортсменам ──
+  const childStats={};
+  filtered.forEach(s=>{
+    const key=`${s.child_id}_${s.group_id}`;
+    if(!childStats[key]){
+      childStats[key]={name:s.child_name||t('unknownChild'),group_name:s.group_name||t('unknownGroup'),history:[],present:0,total:0};
+    }
+    childStats[key].history.push(s.was_present);
+    childStats[key].total++;
+    if(s.was_present)childStats[key].present++;
+  });
+
+  const childBody=document.getElementById('childrenStatsBody');
+  if(Object.keys(childStats).length===0){
+    childBody.innerHTML=`<tr><td colspan="4" class="empty-state">${t('noData')}</td></tr>`;
+  }else{
+    childBody.innerHTML=Object.values(childStats).map(stat=>{
+      const pct=stat.total>0?(stat.present/stat.total*100):0;
+      const pctStr=pct.toFixed(1);
+      const last10=stat.history.slice(-10).map(p=>
+        `<div class="dot ${p?'dot-present':'dot-absent'}" title="${p?'+':'-'}"></div>`
+      ).join('');
+      return`<tr>
+        <td style="font-weight:500;color:var(--black)">${stat.name}</td>
+        <td style="color:var(--muted)">${stat.group_name}</td>
+        <td><div class="history-dots">${last10}</div></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="att-bar" style="flex:1"><div class="${attFillClass(pct)}" style="width:${pctStr}%"></div></div>
+            <span class="att-pct">${pctStr}%</span>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
 }
-groupStats[s.group_id].children.add(s.child_id);
-groupStats[s.group_id].trainings.add(s.training_date);
-groupStats[s.group_id].total++;
-if(s.was_present)groupStats[s.group_id].present++;
-});
 
-const groupStatsBody=document.getElementById('groupStatsBody');
-groupStatsBody.innerHTML='';
-Object.entries(groupStats).forEach(([gid,stat])=>{
-const pct=(stat.present/stat.total*100).toFixed(1);
-const row=`<tr>
-<td>${stat.group_name}</td>
-<td>${stat.children.size}</td>
-<td>${stat.trainings.size}</td>
-<td><div class="attendance-bar"><div class="attendance-fill" style="width:${pct}%"></div><div class="attendance-text">${pct}%</div></div></td>
-</tr>`;
-groupStatsBody.innerHTML+=row;
-});
-
-// Статистика по детям
-const childStats={};
-filtered.forEach(s=>{
-const key=`${s.child_id}_${s.group_id}`;
-if(!childStats[key]){
-childStats[key]={name:s.child_name||'Без имени',group_name:s.group_name||'Неизвестная группа',history:[],present:0,total:0};
-}
-childStats[key].history.push(s.was_present);
-childStats[key].total++;
-if(s.was_present)childStats[key].present++;
-});
-
-const childStatsBody=document.getElementById('childrenStatsBody');
-childStatsBody.innerHTML='';
-Object.values(childStats).forEach(stat=>{
-const pct=(stat.present/stat.total*100).toFixed(1);
-const last10=stat.history.slice(-10).map(p=>p?'✅':'❌').join(' ');
-const row=`<tr>
-<td>${stat.name}</td>
-<td>${stat.group_name}</td>
-<td>${last10}</td>
-<td><div class="attendance-bar"><div class="attendance-fill" style="width:${pct}%"></div><div class="attendance-text">${pct}%</div></div></td>
-</tr>`;
-childStatsBody.innerHTML+=row;
-});
-
-if(Object.keys(groupStats).length===0){
-groupStatsBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:#999">Нет данных за выбранный период</td></tr>';
-}
-if(Object.keys(childStats).length===0){
-childStatsBody.innerHTML='<tr><td colspan="4" style="text-align:center;color:#999">Нет данных за выбранный период</td></tr>';
-}
-}
-
+/* ═══════════════════════════════
+   EXPORT CSV
+═══════════════════════════════ */
 function exportCSV(){
-const rows=[['Дата','Группа','Ребёнок','Присутствовал']];
-allStats.forEach(s=>{
-rows.push([s.training_date,s.group_name||'-',s.child_name||'-',s.was_present?'Да':'Нет']);
-});
-const csv=rows.map(r=>r.join(',')).join('\n');
-const blob=new Blob([csv],{type:'text/csv'});
-const url=URL.createObjectURL(blob);
-const a=document.createElement('a');
-a.href=url;
-a.download='attendance_'+new Date().toISOString().slice(0,10)+'.csv';
-a.click();
+  const sep=',';
+  const headers=currentLang==='en'
+    ?['Date','Group','Athlete','Present']
+    :currentLang==='uk'
+    ?['Дата','Група','Спортсмен','Присутній']
+    :['Дата','Группа','Спортсмен','Присутствовал'];
+  const rows=[headers];
+  allStats.forEach(s=>{
+    rows.push([
+      s.training_date||'',
+      (s.group_name||'').replace(/,/g,';'),
+      (s.child_name||'').replace(/,/g,';'),
+      currentLang==='en'?(s.was_present?'Yes':'No'):currentLang==='uk'?(s.was_present?'Так':'Ні'):(s.was_present?'Да':'Нет')
+    ]);
+  });
+  const csv=rows.map(r=>r.join(sep)).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='attendance_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();URL.revokeObjectURL(url);
 }
 
-document.getElementById('groupFilter').addEventListener('change',renderStats);
-document.getElementById('dateFrom').addEventListener('change',renderStats);
-document.getElementById('dateTo').addEventListener('change',renderStats);
-
+/* ═══════════════════════════════
+   INIT
+═══════════════════════════════ */
+loadUserInfo();
+applyLang();
 loadStatistics();
 </script>
 </body>
