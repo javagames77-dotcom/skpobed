@@ -289,6 +289,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   .modal-body{padding:14px}
   .modal-footer{padding:12px 14px}
 }
+/* ── RECOGNIZING OVERLAY ── */
+.recognizing-overlay{display:none;position:absolute;inset:0;background:rgba(var(--bg-rgb,255,255,255),.92);backdrop-filter:blur(3px);border-radius:8px;z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+[data-theme="dark"] .recognizing-overlay{background:rgba(10,10,10,.92)}
+.recognizing-overlay.active{display:flex}
+.recognizing-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.recognizing-text{font-size:13px;font-weight:500;color:var(--black);text-align:center;padding:0 16px}
 </style>
 </head>
 <body>
@@ -627,7 +634,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     </div>
     <div class="modal-body">
       <p style="font-size:12px;color:var(--muted);margin-bottom:12px" id="markDate"></p>
-      <div id="childrenCheckboxes" style="max-height:360px;overflow-y:auto">
+      <div id="childrenCheckboxes" style="max-height:360px;overflow-y:auto;position:relative">
+        <div class="recognizing-overlay" id="recognizingOverlay">
+          <div class="recognizing-spinner"></div>
+          <div class="recognizing-text" id="recognizingText"></div>
+        </div>
         <div class="loading-state" style="padding:24px">Завантаження...</div>
       </div>
       <div class="stats-box">
@@ -738,6 +749,7 @@ const i18n={
     alertSelectPhoto:'Оберіть фото',alertProcessing:'Обробка... Будь ласка, зачекайте',
     alertAdded:'Додано!',alertUpdated:'Оновлено!',alertDeleted:'Видалено',alertSaved:'Збережено!',
     alertAttSaved:'Відвідуваність збережена!',
+    recognizing:'Розпізнаються обличчя, зачекайте...',
     alertApproveConfirm:'Прийняти заявку від {name}? Відкриється форма додавання — оберіть групи та збережіть.',
     alertRejectPrompt:'Причина відхилення (необов\'язково):',
     alertRecognized:'Розпізнано: {present} дітей\nНевідомих: {unknown}',
@@ -791,6 +803,7 @@ const i18n={
     alertSelectPhoto:'Выберите фото',alertProcessing:'Обработка... Пожалуйста, подождите',
     alertAdded:'Добавлено!',alertUpdated:'Обновлено!',alertDeleted:'Удалено',alertSaved:'Сохранено!',
     alertAttSaved:'Посещаемость сохранена!',
+    recognizing:'Распознаются лица, подождите...',
     alertApproveConfirm:'Принять заявку от {name}? Откроется форма добавления — выберите группы и сохраните.',
     alertRejectPrompt:'Причина отклонения (необязательно):',
     alertRecognized:'Распознано: {present} детей\nНеизвестных: {unknown}',
@@ -844,6 +857,7 @@ const i18n={
     alertSelectPhoto:'Select a photo',alertProcessing:'Processing... Please wait',
     alertAdded:'Added!',alertUpdated:'Updated!',alertDeleted:'Deleted',alertSaved:'Saved!',
     alertAttSaved:'Attendance saved!',
+    recognizing:'Recognizing faces, please wait...',
     alertApproveConfirm:'Approve request from {name}? The add form will open — select groups and save.',
     alertRejectPrompt:'Rejection reason (optional):',
     alertRecognized:'Recognized: {present} children\nUnknown: {unknown}',
@@ -1281,27 +1295,33 @@ async function saveChild(e){
       let res=await r.json();
       const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
       if(result&&result.id){
-        const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-        const d2=await r2.json();
-        const allChildren=d2.merged||d2||[];
-        const child=allChildren.find(c=>c.id==parseInt(id));
-        const currentGroupNames=child&&child.group_names&&child.group_names!=='Без группы'&&child.group_names!=='Без групи'?child.group_names.split(', '):[];
-        const currentGroupIds=groups.filter(g=>currentGroupNames.includes(g.group_name)).map(g=>g.group_id);
-        const r3=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'face_tokens',action:'list',data:{child_id:parseInt(id)}})});
-        const d3=await r3.json();
-        const faceTokensData=(d3.merged||d3||[]).filter(ft=>ft.child_id==parseInt(id));
-        const childFaceToken=faceTokensData.length>0?faceTokensData[0].face_token:null;
-        const removedGroups=[],addedGroups=[];
-        for(let gid of currentGroupIds){if(!selectedGroups.includes(gid))removedGroups.push(gid);}
-        for(let gid of selectedGroups){if(!currentGroupIds.includes(gid))addedGroups.push(gid);}
-        if(childFaceToken&&(removedGroups.length>0||addedGroups.length>0)){
-          await fetch('https://primary-production-4b93e.up.railway.app/webhook/sync-child-facesets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,child_id:parseInt(id),action:'update',removed_groups:removedGroups,added_groups:addedGroups})});
-        }
-        for(let gid of removedGroups){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(id),group_id:gid}})});}
-        for(let gid of addedGroups){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});}
+        // Закрываем модалку и показываем toast сразу — не ждём фоновых запросов
         closeChildModal();
         showToast(t('alertUpdated'));
-        await loadChildren();
+        // Фоновое обновление групп и Face++
+        (async()=>{
+          try{
+            const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
+            const d2=await r2.json();
+            const allChildren=d2.merged||d2||[];
+            const child=allChildren.find(c=>c.id==parseInt(id));
+            const currentGroupNames=child&&child.group_names&&child.group_names!=='Без группы'&&child.group_names!=='Без групи'?child.group_names.split(', '):[];
+            const currentGroupIds=groups.filter(g=>currentGroupNames.includes(g.group_name)).map(g=>g.group_id);
+            const r3=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'face_tokens',action:'list',data:{child_id:parseInt(id)}})});
+            const d3=await r3.json();
+            const faceTokensData=(d3.merged||d3||[]).filter(ft=>ft.child_id==parseInt(id));
+            const childFaceToken=faceTokensData.length>0?faceTokensData[0].face_token:null;
+            const removedGroups=[],addedGroups=[];
+            for(let gid of currentGroupIds){if(!selectedGroups.includes(gid))removedGroups.push(gid);}
+            for(let gid of selectedGroups){if(!currentGroupIds.includes(gid))addedGroups.push(gid);}
+            if(childFaceToken&&(removedGroups.length>0||addedGroups.length>0)){
+              await fetch('https://primary-production-4b93e.up.railway.app/webhook/sync-child-facesets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,child_id:parseInt(id),action:'update',removed_groups:removedGroups,added_groups:addedGroups})});
+            }
+            for(let gid of removedGroups){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(id),group_id:gid}})});}
+            for(let gid of addedGroups){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});}
+            await loadChildren();
+          }catch(err){console.error('Background update error:',err);}
+        })();
       }else{showToast(t('alertError')+(result?.error||JSON.stringify(res)),'error');}
     }else{
       let photoFile=document.getElementById('childPhoto').files[0];
@@ -1552,9 +1572,13 @@ async function uploadGroupPhoto(event){
   const file=event.target.files[0];
   if(!file)return;
   const btn=document.getElementById('photoUploadBtn');
+  const overlay=document.getElementById('recognizingOverlay');
+  const overlayText=document.getElementById('recognizingText');
   btn.disabled=true;
   const origContent=btn.innerHTML;
-  btn.innerHTML=`<span style="color:var(--muted)">${currentLang==='en'?'Processing...':currentLang==='uk'?'Обробка...':'Обработка...'}</span>`;
+  // Показываем оверлей
+  if(overlayText)overlayText.textContent=t('recognizing');
+  if(overlay)overlay.classList.add('active');
   try{
     const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});
     const response=await fetch('https://primary-production-4b93e.up.railway.app/webhook/mark-attendance-photo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,group_id:currentGroupId,training_date:currentTrainingDate,photo_base64:base64})});
@@ -1578,7 +1602,12 @@ async function uploadGroupPhoto(event){
     updatePresentCount();
     showToast(t('alertRecognized').replace('{present}',result.present.length).replace('{unknown}',result.unknown.length));
   }catch(err){console.error('Upload error:',err);showToast(t('alertPhotoError')+err.message,'error');}
-  finally{btn.disabled=false;btn.innerHTML=origContent;event.target.value='';}
+  finally{
+    btn.disabled=false;
+    btn.innerHTML=origContent;
+    if(overlay)overlay.classList.remove('active');
+    event.target.value='';
+  }
 }
 
 async function saveAttendance(){
