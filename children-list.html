@@ -289,13 +289,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   .modal-body{padding:14px}
   .modal-footer{padding:12px 14px}
 }
-/* ── RECOGNIZING OVERLAY ── */
-.recognizing-overlay{display:none;position:absolute;inset:0;background:rgba(var(--bg-rgb,255,255,255),.92);backdrop-filter:blur(3px);border-radius:8px;z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-[data-theme="dark"] .recognizing-overlay{background:rgba(10,10,10,.92)}
-.recognizing-overlay.active{display:flex}
-.recognizing-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--black);border-radius:50%;animation:spin .7s linear infinite}
+/* ── RECOGNIZING MODAL ── */
+.recognizing-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1100;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.recognizing-modal.active{display:flex}
+.recognizing-box{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:32px 28px;max-width:320px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.recognizing-ring{width:56px;height:56px;margin:0 auto 20px;position:relative}
+.recognizing-ring svg{position:absolute;inset:0;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.recognizing-text{font-size:13px;font-weight:500;color:var(--black);text-align:center;padding:0 16px}
+.recognizing-title{font-size:14px;font-weight:600;color:var(--black);margin-bottom:8px;line-height:1.4}
+.recognizing-sub{font-size:12px;color:var(--muted);margin-bottom:24px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -635,10 +637,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <div class="modal-body">
       <p style="font-size:12px;color:var(--muted);margin-bottom:12px" id="markDate"></p>
       <div id="childrenCheckboxes" style="max-height:360px;overflow-y:auto;position:relative">
-        <div class="recognizing-overlay" id="recognizingOverlay">
-          <div class="recognizing-spinner"></div>
-          <div class="recognizing-text" id="recognizingText"></div>
-        </div>
         <div class="loading-state" style="padding:24px">Завантаження...</div>
       </div>
       <div class="stats-box">
@@ -750,6 +748,9 @@ const i18n={
     alertAdded:'Додано!',alertUpdated:'Оновлено!',alertDeleted:'Видалено',alertSaved:'Збережено!',
     alertAttSaved:'Відвідуваність збережена!',
     recognizing:'Розпізнаються обличчя, зачекайте...',
+    recognizingTitle:'Розпізнавання облич',
+    recognizingSub:'Аналізуємо фото групи...',
+    recognizingCancel:'Скасувати',
     alertApproveConfirm:'Прийняти заявку від {name}? Відкриється форма додавання — оберіть групи та збережіть.',
     alertRejectPrompt:'Причина відхилення (необов\'язково):',
     alertRecognized:'Розпізнано: {present} дітей\nНевідомих: {unknown}',
@@ -804,6 +805,9 @@ const i18n={
     alertAdded:'Добавлено!',alertUpdated:'Обновлено!',alertDeleted:'Удалено',alertSaved:'Сохранено!',
     alertAttSaved:'Посещаемость сохранена!',
     recognizing:'Распознаются лица, подождите...',
+    recognizingTitle:'Распознавание лиц',
+    recognizingSub:'Анализируем фото группы...',
+    recognizingCancel:'Отмена',
     alertApproveConfirm:'Принять заявку от {name}? Откроется форма добавления — выберите группы и сохраните.',
     alertRejectPrompt:'Причина отклонения (необязательно):',
     alertRecognized:'Распознано: {present} детей\nНеизвестных: {unknown}',
@@ -858,6 +862,9 @@ const i18n={
     alertAdded:'Added!',alertUpdated:'Updated!',alertDeleted:'Deleted',alertSaved:'Saved!',
     alertAttSaved:'Attendance saved!',
     recognizing:'Recognizing faces, please wait...',
+    recognizingTitle:'Face recognition',
+    recognizingSub:'Analyzing group photo...',
+    recognizingCancel:'Cancel',
     alertApproveConfirm:'Approve request from {name}? The add form will open — select groups and save.',
     alertRejectPrompt:'Rejection reason (optional):',
     alertRecognized:'Recognized: {present} children\nUnknown: {unknown}',
@@ -1568,20 +1575,47 @@ function updatePresentCount(){
   document.getElementById('presentCount').textContent=checked;
 }
 
+let _recognizingAbort=null;
+
+function openRecognizingModal(){
+  const m=document.getElementById('recognizingModal');
+  const title=document.getElementById('recognizingTitle');
+  const sub=document.getElementById('recognizingSub');
+  const cancelBtn=document.getElementById('recognizingCancelBtn');
+  if(title)title.textContent=t('recognizingTitle');
+  if(sub)sub.textContent=t('recognizingSub');
+  if(cancelBtn)cancelBtn.textContent=t('recognizingCancel');
+  if(m)m.classList.add('active');
+}
+
+function closeRecognizingModal(){
+  const m=document.getElementById('recognizingModal');
+  if(m)m.classList.remove('active');
+}
+
+function cancelRecognizing(){
+  if(_recognizingAbort)_recognizingAbort.abort();
+  closeRecognizingModal();
+  const btn=document.getElementById('photoUploadBtn');
+  const inp=document.getElementById('groupPhoto');
+  if(btn)btn.disabled=false;
+  if(inp)inp.value='';
+}
+
 async function uploadGroupPhoto(event){
   const file=event.target.files[0];
   if(!file)return;
   const btn=document.getElementById('photoUploadBtn');
-  const overlay=document.getElementById('recognizingOverlay');
-  const overlayText=document.getElementById('recognizingText');
   btn.disabled=true;
-  const origContent=btn.innerHTML;
-  // Показываем оверлей
-  if(overlayText)overlayText.textContent=t('recognizing');
-  if(overlay)overlay.classList.add('active');
+  _recognizingAbort=new AbortController();
+  openRecognizingModal();
   try{
     const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file);});
-    const response=await fetch('https://primary-production-4b93e.up.railway.app/webhook/mark-attendance-photo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,group_id:currentGroupId,training_date:currentTrainingDate,photo_base64:base64})});
+    const response=await fetch('https://primary-production-4b93e.up.railway.app/webhook/mark-attendance-photo',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,group_id:currentGroupId,training_date:currentTrainingDate,photo_base64:base64}),
+      signal:_recognizingAbort.signal
+    });
     if(!response.ok)throw new Error('Server error: '+response.status);
     const result=await response.json();
     if(result.error)throw new Error(result.message||'Error');
@@ -1600,13 +1634,17 @@ async function uploadGroupPhoto(event){
     });
     document.getElementById('uploadsCount').textContent=result.total_uploads_this_month;
     updatePresentCount();
+    closeRecognizingModal();
     showToast(t('alertRecognized').replace('{present}',result.present.length).replace('{unknown}',result.unknown.length));
-  }catch(err){console.error('Upload error:',err);showToast(t('alertPhotoError')+err.message,'error');}
-  finally{
+  }catch(err){
+    if(err.name==='AbortError')return; // отмена — молча выходим
+    console.error('Upload error:',err);
+    closeRecognizingModal();
+    showToast(t('alertPhotoError')+err.message,'error');
+  }finally{
     btn.disabled=false;
-    btn.innerHTML=origContent;
-    if(overlay)overlay.classList.remove('active');
     event.target.value='';
+    _recognizingAbort=null;
   }
 }
 
@@ -2149,5 +2187,20 @@ window.updateTrainerChatBadge=function(n){
   if(b)b.textContent=n>0?(n+(currentLang==='uk'?' непрочит.':currentLang==='en'?' unread':' непрочит.')):'';
 };
 </script>
+<!-- RECOGNIZING MODAL -->
+<div class="recognizing-modal" id="recognizingModal">
+  <div class="recognizing-box">
+    <div class="recognizing-ring">
+      <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="28" cy="28" r="24" stroke="var(--border)" stroke-width="4"/>
+        <path d="M28 4a24 24 0 0 1 24 24" stroke="var(--black)" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="recognizing-title" id="recognizingTitle"></div>
+    <div class="recognizing-sub" id="recognizingSub"></div>
+    <button class="btn-ghost" onclick="cancelRecognizing()" id="recognizingCancelBtn" style="width:100%;justify-content:center"></button>
+  </div>
+</div>
+
 </body>
 </html>
