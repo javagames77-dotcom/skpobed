@@ -232,6 +232,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       <svg id="icon-sun" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.6 3.6l1.3 1.3M11.1 11.1l1.3 1.3M3.6 12.4l1.3-1.3M11.1 4.9l1.3-1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       <svg id="icon-moon" width="15" height="15" viewBox="0 0 16 16" fill="none" style="display:none"><path d="M13.5 10A6 6 0 015 2.5a6 6 0 108 8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
     </button>
+    <button class="nav-btn" onclick="logout()" id="btn-logout" style="display:none">
+      <span id="lbl-logout">Вийти</span>
+    </button>
   </div>
 </nav>
 
@@ -257,6 +260,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span id="lbl-back">Панель директора</span>
   </a>
+  <button class="sitem" id="sidebar-logout-btn" onclick="logout()" style="display:none">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 2H2.5A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14H6M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="lbl-side-logout">Вийти</span>
+  </button>
 
   <div class="sidebar-section" style="display:flex;align-items:center;justify-content:space-between">
     <span id="lbl-groups-title">Групи</span>
@@ -377,6 +384,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <button class="mob-nav-btn" onclick="scrollToStats()">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M2 12l3-4 3 2 3-5 3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span id="mob-lbl-stats">Статистика</span>
+    </button>
+    <button class="mob-nav-btn" id="mob-logout-btn" onclick="logout()" style="display:none">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M6 2H2.5A1.5 1.5 0 001 3.5v9A1.5 1.5 0 002.5 14H6M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="mob-lbl-logout">Вийти</span>
     </button>
   </div>
 </nav>
@@ -636,6 +647,11 @@ function setLang(lang){
 }
 
 /* ── THEME ── */
+function logout(){
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href='/';
+}
 function toggleTheme(){
   const html=document.documentElement;
   const isDark=html.getAttribute('data-theme')==='dark';
@@ -752,6 +768,13 @@ async function init(){
     if(nav)nav.style.display='none';
     const mobBl=document.getElementById('mob-back-link');
     if(mobBl)mobBl.style.display='none';
+    // Show logout buttons for accountant
+    const btnLogout=document.getElementById('btn-logout');
+    if(btnLogout)btnLogout.style.display='';
+    const sideLogout=document.getElementById('sidebar-logout-btn');
+    if(sideLogout)sideLogout.style.display='flex';
+    const mobLogout=document.getElementById('mob-logout-btn');
+    if(mobLogout)mobLogout.style.display='flex';
   }
 
   applyLang();
