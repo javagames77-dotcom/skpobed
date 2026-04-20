@@ -253,7 +253,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <span id="lbl-side-acc">Бухгалтерія</span>
   </a>
   <div class="sidebar-section" id="lbl-side-nav">Навігація</div>
-  <a href="/director-dashboard.html" class="sitem" id="lbl-back-link">
+  <a href="/director-dashboard.html" class="sitem" id="lbl-back-link" style="display:flex">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span id="lbl-back">Панель директора</span>
   </a>
@@ -739,9 +739,19 @@ async function init(){
   // Back link for trainer
   if(user.role==='trainer'){
     const bl=document.getElementById('lbl-back-link');
-    if(bl)bl.href='/trainer-dashboard.html';
+    if(bl)bl.href='/children-list.html';
     const mobBl=document.getElementById('mob-back-link');
-    if(mobBl)mobBl.href='/trainer-dashboard.html';
+    if(mobBl)mobBl.href='/children-list.html';
+  }
+
+  // Hide back button for accountant (no dashboard to return to)
+  if(user.role==='accountant'){
+    const bl=document.getElementById('lbl-back-link');
+    if(bl)bl.style.display='none';
+    const nav=document.getElementById('lbl-side-nav');
+    if(nav)nav.style.display='none';
+    const mobBl=document.getElementById('mob-back-link');
+    if(mobBl)mobBl.style.display='none';
   }
 
   applyLang();
