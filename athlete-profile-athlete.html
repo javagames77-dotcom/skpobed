@@ -1488,14 +1488,13 @@ async function saveGroups() {
 // BELT HISTORY
 // ============================
 async function loadBelts() {
-  const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
+  const r = await fetch(API, {method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({token, resource:'belt_grades', action:'list'})});
   const d = await r.json();
   allBelts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
-  console.log('[BELT_GRADES] count:', allBelts.length, 'first:', JSON.stringify(allBelts[0]));
   // Populate select — value = belt grade id (try common field names)
   document.getElementById('ab_belt').innerHTML = allBelts.map(b => {
-    const val = b.id ?? b.belt_id ?? b.grade_id ?? b.belt_grade_id ?? '';
+    const val = b.id ?? '';
     return `<option value="${val}" data-color="${b.color||''}" data-mindays="${b.min_days||0}">${b.name||b.belt_name||'?'}${b.min_days ? ' (' + t('belt_min') + ' ' + b.min_days + ' ' + t('belt_days') + ')' : ''}</option>`;
   }).join('');
   document.getElementById('ab_belt').onchange = function() {
@@ -1518,8 +1517,6 @@ async function loadBeltHistory() {
       body: JSON.stringify({token, resource:'athlete_belts', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     const belts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
-    if (belts.length > 0) console.log('[BELTS] first record fields:', JSON.stringify(Object.keys(belts[0])), 'sample:', JSON.stringify(belts[0]));
-
     // SQL returns ORDER BY awarded_at DESC — belts[0] is the most recent
     if (belts.length > 0) {
       const latest = belts[0];
@@ -1589,7 +1586,7 @@ async function loadBeltHistory() {
           ${nextInfo}
         </div>
         ${canEdit ? `<div class="row-actions">
-          <button class="act-btn edit" onclick="editBelt(${b.id}, ${b.belt_id||b.grade_id||b.belt_grade_id||''}, '${b.awarded_at ? b.awarded_at.split('T')[0] : ''}', '${(b.notes||'').replace(/'/g,"\\'")}')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
+          <button class="act-btn edit" onclick="editBelt(${b.id}, ${b.belt_id||''}, '${b.awarded_at ? b.awarded_at.split('T')[0] : ''}', '${(b.notes||'').replace(/'/g,"\\'")}')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
           <button class="act-btn del" onclick="deleteBelt(${b.id})"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 3v6.5h3V3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>` : ''}
       </div>`;
@@ -1607,7 +1604,6 @@ function resetBeltModal() {
 }
 
 function editBelt(id, beltId, date, notes) {
-  console.log('[editBelt] id=', id, 'beltId=', beltId, 'date=', date, 'notes=', notes);
   document.getElementById('addBeltTitle').textContent = t('modal_belt_edit');
   document.getElementById('ab_save_btn').textContent = t('btn_save_changes');
   document.getElementById('addBeltModal').dataset.editId = id;
@@ -1615,15 +1611,13 @@ function editBelt(id, beltId, date, notes) {
   document.getElementById('ab_note').value = notes || '';
   const sel = document.getElementById('ab_belt');
   const trySet = () => {
-    if (!beltId) { console.warn('[editBelt] beltId is empty/undefined'); return; }
+    if (!beltId) return;
     const bid = String(beltId);
     // Пробуем найти option по value
     let found = Array.from(sel.options).find(o => o.value === bid);
     if (found) {
       sel.value = bid;
-      console.log('[editBelt] set select value to', bid);
     } else {
-      console.warn('[editBelt] option not found for beltId=', bid, 'available:', Array.from(sel.options).map(o=>o.value));
     }
     sel.dispatchEvent(new Event('change'));
   };
