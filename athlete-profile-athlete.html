@@ -786,7 +786,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <!-- TAB: INJURIES -->
   <div class="tab-pane" id="tab-injuries">
     <div class="card">
-      <div class="card-hdr"><div class="card-title">Історія травм</div><button class="btn-danger btn-sm" id="addInjuryBtn" style="display:none" onclick="openModal('addInjuryModal')">Додати</button></div>
+      <div class="card-hdr"><div class="card-title" data-i18n="inj_title">Історія травм</div><button class="btn-danger btn-sm" id="addInjuryBtn" style="display:none" onclick="openModal('addInjuryModal')" data-i18n="btn_add">Додати</button></div>
       <div id="injuryList"></div>
     </div>
   </div>
@@ -794,7 +794,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <!-- TAB: GOALS -->
   <div class="tab-pane" id="tab-goals">
     <div class="card">
-      <div class="card-hdr"><div class="card-title">Цілі тренера</div><button class="btn-add btn-sm" id="addGoalBtn" style="display:none" onclick="openModal('addGoalModal')">Додати цель</button></div>
+      <div class="card-hdr"><div class="card-title" data-i18n="goal_title">Цілі тренера</div><button class="btn-add btn-sm" id="addGoalBtn" style="display:none" onclick="openModal('addGoalModal')" data-i18n="btn_add">Додати</button></div>
       <div id="goalsList"></div>
     </div>
   </div>
@@ -1012,17 +1012,17 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <!-- Add Injury -->
 <div class="modal" id="addInjuryModal">
   <div class="modal-box md">
-    <div class="modal-hdr"><span class="modal-title">🩹 Добавить травму</span><button class="modal-close" onclick="closeModal('addInjuryModal')">✕</button></div>
+    <div class="modal-hdr"><span class="modal-title" data-i18n="inj_modal_add">Додати травму</span><button class="modal-close" onclick="closeModal('addInjuryModal')">✕</button></div>
     <div class="modal-body">
-    <div class="form-group"><label class="form-label">Название</label><input id="ai_title" class="form-input" placeholder="Растяжение связок колена"></div>
+    <div class="form-group"><label class="form-label" data-i18n="inj_lbl_title">Назва</label><input id="ai_title" class="form-input" id="t-inj-title-ph"></div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Дата травмы</label><input type="date" id="ai_date" class="form-input"></div>
-      <div class="form-group"><label class="form-label">Дата восстановления</label><input type="date" id="ai_recovery" class="form-input"></div>
+      <div class="form-group"><label class="form-label" data-i18n="inj_lbl_date">Дата травми</label><input type="date" id="ai_date" class="form-input"></div>
+      <div class="form-group"><label class="form-label" data-i18n="inj_lbl_recovery">Дата відновлення</label><input type="date" id="ai_recovery" class="form-input"></div>
     </div>
-    <div class="form-group"><label class="form-label">Описание</label><textarea id="ai_desc" class="form-input" rows="3"></textarea></div>
+    <div class="form-group"><label class="form-label" data-i18n="inj_lbl_desc">Опис</label><textarea id="ai_desc" class="form-input" rows="3"></textarea></div>
     </div><div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('addInjuryModal')">Скасувати</button>
-      <button class="btn-danger" onclick="saveInjury()">Сохранить</button>
+      <button class="btn-danger" onclick="saveInjury()" data-i18n="btn_save">Зберегти</button>
     </div>
   </div>
 </div>
@@ -1032,11 +1032,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div class="modal-box md">
     <div class="modal-hdr"><span class="modal-title">Нова ціль</span><button class="modal-close" onclick="closeModal('addGoalModal')">✕</button></div>
     <div class="modal-body">
-    <div class="form-group"><label class="form-label">Цель</label><textarea id="ag_text" class="form-input" rows="3" placeholder="Сдать аттестацию на синий пояс к маю..."></textarea></div>
-    <div class="form-group"><label class="form-label">Срок</label><input type="date" id="ag_date" class="form-input"></div>
+    <div class="form-group"><label class="form-label" data-i18n="goal_lbl_text">Ціль</label><textarea id="ag_text" class="form-input" rows="3" id="t-goal-ph"></textarea></div>
+    <div class="form-group"><label class="form-label" data-i18n="goal_lbl_date">Термін</label><input type="date" id="ag_date" class="form-input"></div>
     </div><div class="modal-footer">
       <button class="btn-ghost" onclick="closeModal('addGoalModal')">Скасувати</button>
-      <button class="btn-add" onclick="saveGoal()">Сохранить</button>
+      <button class="btn-add" onclick="saveGoal()" data-i18n="btn_save">Зберегти</button>
     </div>
   </div>
 </div>
@@ -1126,6 +1126,9 @@ function applyLangUI(){
   if(typeof renderFreezeStatus==='function'&&athlete)renderFreezeStatus();
   if(typeof renderAddress==='function'&&athlete&&athlete.home_address)renderAddress();
   if(typeof renderEvents==='function'&&typeof allEvents!=='undefined'&&allEvents.length>0)renderEvents();
+  if(typeof loadInjuries==='function'&&athlete)loadInjuries();
+  if(typeof loadGoals==='function'&&athlete)loadGoals();
+  if(typeof loadMedical==='function'&&athlete)loadMedical();
   // Update filter button texts
   ['evFilterAll','evFilterAttending','evFilterUpcoming','evFilterPast'].forEach((id,i)=>{
     const el=document.getElementById(id);const keys=['ev_all','ev_attending','ev_upcoming','ev_past'];
@@ -1173,6 +1176,9 @@ function applyLangUI(){
   if(typeof refreshAthleteTexts==='function'&&athlete)refreshAthleteTexts();
   if(typeof renderAddress==='function'&&athlete&&athlete.home_address)renderAddress();
   if(typeof renderEvents==='function'&&typeof allEvents!=='undefined'&&allEvents.length>0)renderEvents();
+  if(typeof loadInjuries==='function'&&athlete)loadInjuries();
+  if(typeof loadGoals==='function'&&athlete)loadGoals();
+  if(typeof loadMedical==='function'&&athlete)loadMedical();
   // Update filter button texts
   ['evFilterAll','evFilterAttending','evFilterUpcoming','evFilterPast'].forEach((id,i)=>{
     const el=document.getElementById(id);const keys=['ev_all','ev_attending','ev_upcoming','ev_past'];
@@ -3054,16 +3060,16 @@ async function loadInjuries() {
     document.getElementById('injuryList').innerHTML = injuries.length ? injuries.map(i => `
       <div class="injury-item" style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="flex:1">
-          <div class="injury-title">🩹 ${i.title}</div>
-          <div class="injury-dates">${i.injury_date ? '📅 ' + new Date(i.injury_date).toLocaleDateString('ru-RU') : ''} ${i.recovery_date ? '→ ' + new Date(i.recovery_date).toLocaleDateString('ru-RU') : ''}</div>
+          <div class="injury-title">${i.title}</div>
+          <div class="injury-dates">${i.injury_date ? new Date(i.injury_date).toLocaleDateString('uk-UA') : ''} ${i.recovery_date ? '→ ' + new Date(i.recovery_date).toLocaleDateString('uk-UA') : ''}</div>
           ${i.description ? `<div class="injury-desc">${i.description}</div>` : ''}
         </div>
         <div style="display:flex;gap:.4rem;flex-shrink:0;margin-left:.75rem">
-          <button onclick="editInjury(${i.id})" style="background:none;border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem">✏️</button>
-          <button onclick="deleteInjury(${i.id})" style="background:none;border:1px solid #ffcdd2;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;color:#c62828">🗑️</button>
+          <button class="act-btn edit" onclick="editInjury(${i.id})"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
+          <button class="act-btn del" onclick="deleteInjury(${i.id})"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 3v6.5h3V3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
       </div>
-    `).join('') : `<p style="color:var(--muted);font-size:12px">Травм не зафіксовано</p>`;
+    `).join('') : `<p style="color:var(--muted);font-size:12px">${t('inj_none')}</p>`;
   } catch(e) {}
 }
 
@@ -3133,14 +3139,14 @@ async function loadGoals() {
       <div class="goal-item">
         <div class="goal-check ${g.is_done?'done':''}" onclick="toggleGoal(${g.id},${!g.is_done})">${g.is_done?'✓':''}</div>
         <div class="goal-text" style="flex:1">
-          <div class="goal-name" style="${g.is_done?'text-decoration:line-through;color:var(--muted)':''}">🎯 ${g.text}</div>
-          ${g.target_date ? `<div class="goal-date">Срок: ${new Date(g.target_date).toLocaleDateString('ru-RU')}</div>` : ''}
+          <div class="goal-name" style="${g.is_done?'text-decoration:line-through;color:var(--muted)':''}">${g.text}</div>
+          ${g.target_date ? `<div class="goal-date">${t('goal_deadline')}: ${new Date(g.target_date).toLocaleDateString('uk-UA')}</div>` : ''}
         </div>
         <div style="display:flex;gap:.4rem;flex-shrink:0;margin-left:.75rem">
-          <button onclick="deleteGoal(${g.id})" style="background:none;border:1px solid #ffcdd2;border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;color:#c62828">🗑️</button>
+          <button class="act-btn del" onclick="deleteGoal(${g.id})"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 3v6.5h3V3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
       </div>
-    `).join('') : `<p style="color:var(--muted);font-size:12px">Цілей немає. Тренер може додати цілі.</p>`;
+    `).join('') : `<p style="color:var(--muted);font-size:12px">${t('goal_none')}</p>`;
   } catch(e) {}
 }
 
