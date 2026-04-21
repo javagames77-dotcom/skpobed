@@ -1361,6 +1361,7 @@ async function init() {
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
 
+    applyLangUI(); // Применяем язык после показа страницы
     // ФОНОВАЯ ЗАГРУЗКА: параллельно, не блокирует UI
     Promise.all([
       loadBeltHistory(),
@@ -3159,7 +3160,7 @@ async function saveGoal() {
 }
 
 async function toggleGoal(goalId, isDone) {
-  await apiFetch('athlete_goals','update',{id:goalId, is_done:isDone});
+  await apiFetch('athlete_goals','update',{id:goalId, child_id:athleteId, is_done:isDone});
   await loadGoals();
 }
 
