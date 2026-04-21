@@ -2602,6 +2602,15 @@ async function loadMessages() {
       if (unreadCount > 0) { badge.textContent = unreadCount > 99 ? '99+' : unreadCount; badge.style.display = 'inline-block'; }
       else badge.style.display = 'none';
     }
+    // Sidebar badge
+    const sideBadge = document.getElementById('chatBadgeSide');
+    if (sideBadge) {
+      if (unreadCount > 0) { sideBadge.textContent = unreadCount > 99 ? '99+' : unreadCount; sideBadge.classList.add('show'); }
+      else sideBadge.classList.remove('show');
+    }
+    // Mobile nav dot
+    const mobDot = document.getElementById('chatMobDot');
+    if (mobDot) mobDot.classList.toggle('show', unreadCount > 0);
     // Кружочки у кнопок собеседников
     const unreadBySender = unreadMsgs.reduce((acc, m) => {
       if (m.from_user_id) acc[m.from_user_id] = (acc[m.from_user_id]||0) + 1;
