@@ -1489,7 +1489,7 @@ async function saveGroups() {
 // ============================
 async function loadBelts() {
   const r = await fetch(API2, {method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({token, resource:'belt_grades', action:'list'})});
+    body: JSON.stringify({token, resource:'belt_grades', action:'list', data:{child_id: athleteId}})});
   const d = await r.json();
   allBelts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
   // Populate select — value = belt grade id (try common field names)
