@@ -805,10 +805,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
     <!-- Фильтры -->
     <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
-      <button id="evFilterAll" class="btn-add btn-sm" onclick="evSetFilter(&apos;all&apos;)">Всі</button>
-      <button id="evFilterAttending" class="btn-ghost btn-sm" onclick="evSetFilter(&apos;attending&apos;)">Записався</button>
-      <button id="evFilterUpcoming" class="btn-ghost btn-sm" onclick="evSetFilter(&apos;upcoming&apos;)">Майбутні</button>
-      <button id="evFilterPast" class="btn-ghost btn-sm" onclick="evSetFilter(&apos;past&apos;)">Минулі</button>
+      <button id="evFilterAll" class="btn-add btn-sm" onclick="evSetFilter(&apos;all&apos;)" data-i18n="ev_all">Всі</button>
+      <button id="evFilterAttending" class="btn-ghost btn-sm" onclick="evSetFilter(&apos;attending&apos;)" data-i18n="ev_attending">Записався</button>
+      <button id="evFilterUpcoming" class="btn-ghost btn-sm" onclick="evSetFilter(&apos;upcoming&apos;)" data-i18n="ev_upcoming">Майбутні</button>
+      <button id="evFilterPast" class="btn-ghost btn-sm" onclick="evSetFilter(&apos;past&apos;)" data-i18n="ev_past">Минулі</button>
     </div>
 
     <div id="eventsList"></div>
@@ -1114,6 +1114,12 @@ function applyLangUI(){
   if(typeof renderAttGroupSelect==='function'&&athleteGroupIds.length>0)renderAttGroupSelect();
   if(typeof renderFreezeStatus==='function'&&athlete)renderFreezeStatus();
   if(typeof renderAddress==='function'&&athlete&&athlete.home_address)renderAddress();
+  if(typeof renderEvents==='function'&&typeof allEvents!=='undefined'&&allEvents.length>0)renderEvents();
+  // Update filter button texts
+  ['evFilterAll','evFilterAttending','evFilterUpcoming','evFilterPast'].forEach((id,i)=>{
+    const el=document.getElementById(id);const keys=['ev_all','ev_attending','ev_upcoming','ev_past'];
+    if(el)el.textContent=t(keys[i]);
+  });
   if(typeof loadAthlete==='function'&&athlete){
     // Re-render hero chips without re-fetching
     const birthDate=athlete.birth_date?new Date(athlete.birth_date):null;
@@ -1155,6 +1161,12 @@ function applyLangUI(){
   if(typeof renderAttTable==='function'&&calAttendanceRecords.length>0)renderAttTable();
   if(typeof refreshAthleteTexts==='function'&&athlete)refreshAthleteTexts();
   if(typeof renderAddress==='function'&&athlete&&athlete.home_address)renderAddress();
+  if(typeof renderEvents==='function'&&typeof allEvents!=='undefined'&&allEvents.length>0)renderEvents();
+  // Update filter button texts
+  ['evFilterAll','evFilterAttending','evFilterUpcoming','evFilterPast'].forEach((id,i)=>{
+    const el=document.getElementById(id);const keys=['ev_all','ev_attending','ev_upcoming','ev_past'];
+    if(el)el.textContent=t(keys[i]);
+  });
 }
 // Обновляет текстовые данные в UI при смене языка (без повторного fetch)
 function refreshAthleteTexts() {
@@ -3505,9 +3517,13 @@ let evCurrentFilter = 'all';
 function evSetFilter(filter) {
   evCurrentFilter = filter;
   document.getElementById('evFilterAll').className = filter === 'all' ? 'btn-add btn-sm' : 'btn-ghost btn-sm';
+  document.getElementById('evFilterAll').textContent = t('ev_all');
   document.getElementById('evFilterAttending').className = filter === 'attending' ? 'btn-add btn-sm' : 'btn-ghost btn-sm';
+  document.getElementById('evFilterAttending').textContent = t('ev_attending');
   document.getElementById('evFilterUpcoming').className = filter === 'upcoming' ? 'btn-add btn-sm' : 'btn-ghost btn-sm';
+  document.getElementById('evFilterUpcoming').textContent = t('ev_upcoming');
   document.getElementById('evFilterPast').className = filter === 'past' ? 'btn-add btn-sm' : 'btn-ghost btn-sm';
+  document.getElementById('evFilterPast').textContent = t('ev_past');
   renderEvents();
 }
 
@@ -3543,8 +3559,8 @@ function renderEvents() {
   el.innerHTML = filtered.map(function(e) {
     const eDate = new Date(e.event_date);
     const isPast = eDate < today;
-    const dateFmt = eDate.toLocaleDateString('ru-RU', {day:'2-digit', month:'long', year:'numeric'});
-    const deadline = e.registration_deadline ? new Date(e.registration_deadline).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric'}) : null;
+    const dateFmt = eDate.toLocaleDateString('uk-UA', {day:'2-digit', month:'long', year:'numeric'});
+    const deadline = e.registration_deadline ? new Date(e.registration_deadline).toLocaleDateString('uk-UA', {day:'2-digit', month:'2-digit', year:'numeric'}) : null;
 
     var statusHtml = '';
     if (e.reg_status === 'attending') {
@@ -3562,10 +3578,9 @@ function renderEvents() {
     var btnsHtml = '';
     if (!isPast && !regClosed) {
       if (e.reg_status === 'attending') {
-        btnsHtml = '<button class="btn-ghost btn-sm" onclick="evDecline(' + e.id + ',' + (e.reg_id||0) + ')">&#x274C; Отказаться</button>';
+        btnsHtml = `<button class="btn-ghost btn-sm" onclick="evDecline(${e.id},${e.reg_id||0})">${t('ev_decline_btn')}</button>`;
       } else {
-        btnsHtml = '<button class="btn-add btn-sm" onclick="evAttend(' + e.id + ',' + (e.reg_id||0) + ')">&#x2705; Участвую</button>'
-          + ' <button class="btn-ghost btn-sm" onclick="evDecline(' + e.id + ',' + (e.reg_id||0) + ')">&#x274C; Не смогу</button>';
+        btnsHtml = `<button class="btn-add btn-sm" onclick="evAttend(${e.id},${e.reg_id||0})">${t('ev_attend')}</button> <button class="btn-ghost btn-sm" onclick="evDecline(${e.id},${e.reg_id||0})">${t('ev_decline_btn')}</button>`;
       }
     }
 
