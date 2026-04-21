@@ -1586,7 +1586,7 @@ async function loadBeltHistory() {
           ${nextInfo}
         </div>
         ${canEdit ? `<div class="row-actions">
-          <button class="act-btn edit" onclick="editBelt(${b.id}, ${b.belt_id||''}, '${b.awarded_at ? b.awarded_at.split('T')[0] : ''}', '${(b.notes||'').replace(/'/g,"\\'")}')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
+          <button class="act-btn edit" onclick="editBelt(${b.id}, ${b.belt_id||''}, '${(b.belt_name||b.name||'').replace(/'/g,"\\'")}', '${b.awarded_at ? b.awarded_at.split('T')[0] : ''}', '${(b.notes||'').replace(/'/g,"\\'")}')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
           <button class="act-btn del" onclick="deleteBelt(${b.id})"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 3v6.5h3V3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>` : ''}
       </div>`;
@@ -1603,33 +1603,27 @@ function resetBeltModal() {
   document.getElementById('ab_note').value = '';
 }
 
-function editBelt(id, beltId, date, notes) {
+function editBelt(id, beltId, beltName, date, notes) {
   document.getElementById('addBeltTitle').textContent = t('modal_belt_edit');
   document.getElementById('ab_save_btn').textContent = t('btn_save_changes');
   document.getElementById('addBeltModal').dataset.editId = id;
   document.getElementById('ab_date').value = date || '';
   document.getElementById('ab_note').value = notes || '';
+  // Ставим текущий пояс в select — если options есть берём из них, иначе создаём временный option
   const sel = document.getElementById('ab_belt');
   const trySet = () => {
-    if (!beltId) return;
-    const bid = String(beltId);
-    // Пробуем найти option по value
-    let found = Array.from(sel.options).find(o => o.value === bid);
-    if (found) {
-      sel.value = bid;
-    } else {
+    let found = Array.from(sel.options).find(o => String(o.value) === String(beltId));
+    if (!found) {
+      // Создаём option из уже известных данных
+      const opt = document.createElement('option');
+      opt.value = String(beltId);
+      opt.textContent = beltName || String(beltId);
+      sel.appendChild(opt);
     }
+    sel.value = String(beltId);
     sel.dispatchEvent(new Event('change'));
   };
-  if (sel.options.length > 0) {
-    trySet();
-  } else {
-    let attempts = 0;
-    const poll = setInterval(() => {
-      attempts++;
-      if (sel.options.length > 0 || attempts > 20) { clearInterval(poll); trySet(); }
-    }, 100);
-  }
+  trySet();
   openModal('addBeltModal');
 }
 
