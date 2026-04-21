@@ -1157,25 +1157,33 @@ async function init() {
   document.getElementById('loadingState').style.display = 'block';
   const _nb=document.getElementById('nav-badge');if(_nb)_nb.textContent={athlete:t('role_athlete'),director:t('role_director'),trainer:t('role_trainer')}[userRole]||userRole.toUpperCase();
   try {
+    // CRITICAL PATH: минимум для отображения вкладки "Данные"
     await loadAthlete();
-    await loadGroups();
-    await loadBelts();
-    await loadAttendance();
-    await loadCompetitions();
-    await loadBeltHistory();
-    await loadDocuments();
-    await loadInjuries();
-    await loadGoals();
-    await loadEvents();
-    await loadMedical();
-    await loadRating();
-    await loadNotifications();
+    await Promise.all([loadGroups(), loadBelts()]);
+
+    // Показываем страницу сразу — не ждём остальных данных
     renderQR();
-    startChatPolling();
+    document.getElementById('loadingState').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
+
+    // ФОНОВАЯ ЗАГРУЗКА: параллельно, не блокирует UI
+    Promise.all([
+      loadBeltHistory(),
+      loadAttendance(),
+      loadCompetitions(),
+      loadDocuments(),
+      loadInjuries(),
+      loadGoals(),
+      loadEvents(),
+      loadMedical(),
+      loadRating(),
+      loadNotifications(),
+    ]).catch(e => console.warn('Background load error:', e));
+
+    startChatPolling();
+
   } catch(e) {
     console.error(e);
-  } finally {
     document.getElementById('loadingState').style.display = 'none';
   }
 }
