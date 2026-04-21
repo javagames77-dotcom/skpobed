@@ -202,10 +202,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .comp-date{font-size:11px;color:var(--muted)}
 .comp-meta{display:flex;flex-wrap:wrap;gap:4px}
 .comp-tag{font-size:11px;padding:2px 6px;border-radius:5px;font-weight:500}
-.comp-tag.win{background:var(--tag-green-bg);color:var(--tag-green)}
-.comp-tag.loss{background:var(--tag-red-bg);color:var(--tag-red)}
-.comp-tag.cat{background:#f5f3ff;color:#7c3aed}
-.comp-tag.place{background:#fef3c7;color:#d97706}
+.comp-tag.win{background:var(--bg3);color:var(--tag-green);border:1px solid var(--tag-green-bg)}
+.comp-tag.loss{background:var(--bg3);color:var(--tag-red);border:1px solid var(--tag-red-bg)}
+.comp-tag.cat{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
+.comp-tag.place{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
 /* ── CHAT ── */
 .chat-wrap{display:flex;flex-direction:column;height:440px}
 .chat-contacts-row{padding:9px 12px;border-bottom:1px solid var(--border);display:flex;gap:5px;flex-wrap:wrap;align-items:center;flex-shrink:0;background:var(--bg)}
@@ -288,8 +288,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .platform-input:focus{border-color:var(--border2)}
 .platform-input::placeholder{color:var(--muted2)}
 .platform-tag{font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;color:#fff;white-space:nowrap}
-.platform-tag.sc{background:#7c3aed}
-.platform-tag.ajp{background:#0369a1}
+.platform-tag.sc{background:var(--black);color:var(--bg)}
+.platform-tag.ajp{background:var(--black);color:var(--bg)}
 /* ── SUB-TABS ── */
 .sub-tabs{display:flex;gap:3px;background:var(--bg3);border-radius:8px;padding:3px;margin-bottom:12px}
 .sub-tab-btn{padding:5px 11px;border:none;border-radius:6px;background:transparent;color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit}
@@ -698,8 +698,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
     <!-- Sub-tabs -->
     <div class="tabs-bar" style="margin-bottom:1rem">
-      <button class="tab-btn active" onclick="switchCompTab('past')" id="compTab-past" data-i18n="comp_past">Минулі</button>
-      <button class="tab-btn" onclick="switchCompTab('upcoming')" id="compTab-upcoming" data-i18n="comp_upcoming">Майбутні</button>
+      <button class="btn-add btn-sm" onclick="switchCompTab('past')" id="compTab-past" data-i18n="comp_past">Минулі</button>
+      <button class="btn-ghost btn-sm" onclick="switchCompTab('upcoming')" id="compTab-upcoming" data-i18n="comp_upcoming">Майбутні</button>
     </div>
 
     <!-- Search -->
@@ -1135,6 +1135,7 @@ function applyLangUI(){
   if(typeof renderFreezeStatus==='function'&&athlete)renderFreezeStatus();
   if(typeof renderAddress==='function'&&athlete&&athlete.home_address)renderAddress();
   if(typeof renderEvents==='function'&&typeof allEvents!=='undefined'&&allEvents.length>0)renderEvents();
+  if(typeof renderComps==='function')renderComps(document.getElementById('compTab-past')?.classList.contains('btn-add')?'past':'upcoming');
   if(typeof loadInjuries==='function'&&athlete)loadInjuries();
   if(typeof loadGoals==='function'&&athlete)loadGoals();
   if(typeof loadMedical==='function'&&athlete)loadMedical();
@@ -1185,6 +1186,7 @@ function applyLangUI(){
   if(typeof refreshAthleteTexts==='function'&&athlete)refreshAthleteTexts();
   if(typeof renderAddress==='function'&&athlete&&athlete.home_address)renderAddress();
   if(typeof renderEvents==='function'&&typeof allEvents!=='undefined'&&allEvents.length>0)renderEvents();
+  if(typeof renderComps==='function')renderComps(document.getElementById('compTab-past')?.classList.contains('btn-add')?'past':'upcoming');
   if(typeof loadInjuries==='function'&&athlete)loadInjuries();
   if(typeof loadGoals==='function'&&athlete)loadGoals();
   if(typeof loadMedical==='function'&&athlete)loadMedical();
@@ -2251,7 +2253,9 @@ async function loadUpcomingEvents() {
 }
 
 function switchCompTab(tab) {
+  document.getElementById('compTab-past').className = tab==='past' ? 'btn-add btn-sm' : 'btn-ghost btn-sm';
   document.getElementById('compTab-past').textContent = t('comp_past');
+  document.getElementById('compTab-upcoming').className = tab==='upcoming' ? 'btn-add btn-sm' : 'btn-ghost btn-sm';
   document.getElementById('compTab-upcoming').textContent = t('comp_upcoming');
   document.getElementById('compTab-past').classList.toggle('active', tab==='past');
   document.getElementById('compTab-upcoming').classList.toggle('active', tab==='upcoming');
@@ -2289,9 +2293,9 @@ function getMethodStats(comps) {
   return {wins, losses};
 }
 
-function renderMethodPills(obj, color) {
+function renderMethodPills(obj, isWin) {
   return Object.entries(obj).sort((a,b)=>b[1]-a[1])
-    .map(([m,n]) => `<span style="display:inline-flex;align-items:center;gap:.25rem;margin:.15rem .15rem;font-size:.75rem;background:${color}18;color:${color};padding:.15rem .5rem;border-radius:20px;font-weight:600">${n} ${m}</span>`).join('');
+    .map(([m,n]) => `<span style="display:inline-flex;align-items:center;gap:.25rem;margin:.1rem;font-size:11px;background:var(--bg3);color:var(--muted);padding:2px 7px;border-radius:20px;border:1px solid var(--border)">${n} ${m}</span>`).join('');
 }
 
 function getBracketLink(c) {
@@ -2348,8 +2352,8 @@ function renderComps(tab) {
   const {wins: wStats, losses: lStats} = getMethodStats(past);
   const statsEl = document.getElementById('compMethodStats');
   if (statsEl) {
-    const wHtml = renderMethodPills(wStats, '#16a34a');
-    const lHtml = renderMethodPills(lStats, '#dc2626');
+    const wHtml = renderMethodPills(wStats, true);
+    const lHtml = renderMethodPills(lStats, false);
     statsEl.innerHTML = (wHtml||lHtml) ? `
       <div style="padding:.5rem 0;border-top:1px solid var(--border);margin-top:.5rem">
         ${wHtml ? `<div style="margin-bottom:.25rem"><span style="font-size:11px;font-weight:600;color:var(--tag-green);margin-right:.3rem">${t('stat_wins')}:</span>${wHtml}</div>` : ''}
@@ -2371,7 +2375,7 @@ function renderComps(tab) {
         : `<span class="comp-tag cat">${c.category}</span>`
       : '';
     const srcBadge = c.source && c.source!=='manual'
-      ? `<span style="font-size:.65rem;background:#ede9fe;color:#7c3aed;padding:.1rem .35rem;border-radius:4px;font-weight:600;margin-left:.3rem">${c.source.toUpperCase()}</span>`
+      ? `<span style="font-size:10px;background:var(--bg3);color:var(--muted);padding:1px 5px;border-radius:4px;font-weight:600;margin-left:.3rem;border:1px solid var(--border)">${c.source.toUpperCase()}</span>`
       : '';
     const eventLink = getEventLink(c);
     const titleHtml = eventLink
@@ -2393,9 +2397,9 @@ function renderComps(tab) {
         ${c.is_win === false ? `<span class="comp-tag loss">${t('comp_loss')}</span>` : ''}
         ${c.result ? `<span class="comp-tag" style="background:var(--bg3);color:var(--muted)">${c.result}</span>` : ''}
         ${c.opponent ? `<span class="comp-tag" style="background:var(--bg3);color:var(--text)">${c.opponent}</span>` : ''}
-        ${c.location ? `<span class="comp-tag" style="background:var(--tag-green-bg);color:var(--tag-green)">${c.location}</span>` : ''}
+        ${c.location ? `<span class="comp-tag" style="background:var(--bg3);color:var(--muted)">${c.location}</span>` : ''}
         ${catLink
-          ? `<a href="${catLink}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:.2rem;font-size:11px;background:var(--bg3);color:var(--text);padding:.2rem .5rem;border-radius:6px;text-decoration:none;border:1px solid var(--border);font-weight:500;margin:.15rem">${t('comp_grid')} ↗</a>`
+          ? `<a href="${catLink}" target="_blank" rel="noopener" class="btn-ghost btn-sm" style="text-decoration:none;font-size:11px">${t('comp_grid')} ↗</a>`
           : ''
         }
       </div>
