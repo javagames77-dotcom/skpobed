@@ -1082,10 +1082,100 @@ function applyLangUI(){
   for(const[id,key] of Object.entries(smap)){const el=document.getElementById(id);if(el&&sLabels[key])el.textContent=sLabels[key][currentLang]||sLabels[key].uk;}
   // Apply data-i18n attributes
   document.querySelectorAll('[data-i18n]').forEach(el=>{ const v=t(el.getAttribute('data-i18n')); if(v&&v!==el.getAttribute('data-i18n')) el.textContent=v; });
+  // Apply data-i18n attributes
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ const v=t(el.getAttribute('data-i18n')); if(v&&v!==el.getAttribute('data-i18n')) el.textContent=v; });
+  // Re-render dynamic blocks that contain translated text
   if(typeof renderFreezeStatus==='function'&&athlete)renderFreezeStatus();
+  if(typeof renderAddress==='function'&&athlete&&athlete.home_address)renderAddress();
+  if(typeof loadAthlete==='function'&&athlete){
+    // Re-render hero chips without re-fetching
+    const birthDate=athlete.birth_date?new Date(athlete.birth_date):null;
+    const age=birthDate?Math.floor((Date.now()-birthDate)/31557600000):null;
+    const ageStr=age!==null?`(${age} ${t('age_years')})`:'';
+    const el_b=document.getElementById('heroBirth');
+    if(el_b)el_b.textContent=birthDate?`${birthDate.toLocaleDateString('uk-UA')} ${ageStr}`:'—';
+    const el_iB=document.getElementById('infoBirth');
+    if(el_iB)el_iB.textContent=birthDate?`${birthDate.toLocaleDateString('uk-UA')} — ${age} ${t('age_years')}`:'—';
+    const el_w=document.getElementById('heroWeight');
+    if(el_w)el_w.textContent=athlete.weight_kg?`${athlete.weight_kg} ${t('unit_kg')}`:'—';
+    const el_h=document.getElementById('heroHeight');
+    if(el_h)el_h.textContent=athlete.height_cm?`${athlete.height_cm} ${t('unit_cm')}`:'—';
+    const el_iW=document.getElementById('infoWeight');
+    if(el_iW)el_iW.textContent=athlete.weight_kg?`${athlete.weight_kg} ${t('unit_kg')}`:'—';
+    const el_iH=document.getElementById('infoHeight');
+    if(el_iH)el_iH.textContent=athlete.height_cm?`${athlete.height_cm} ${t('unit_cm')}`:'—';
+    if(athlete.training_start){
+      const ts=new Date(athlete.training_start),now=new Date();
+      const totalMonths=Math.floor((now-ts)/(1000*60*60*24*30.44));
+      const yrs=Math.floor(totalMonths/12),mos=totalMonths%12;
+      function _pl(n,k1,k2,k5){const a=Math.abs(n)%100,m=a%10;if(a>=11&&a<=14)return n+' '+k5;if(m===1)return n+' '+k1;if(m>=2&&m<=4)return n+' '+k2;return n+' '+k5;}
+      let dur='';
+      if(yrs>0)dur=_pl(yrs,t('years1'),t('years2'),t('years5'));
+      if(mos>0)dur+=(dur?' ':'')+_pl(mos,t('months1'),t('months2'),t('months5'));
+      if(!dur)dur=t('age_less');
+      const el_tr=document.getElementById('heroTraining');if(el_tr)el_tr.textContent=t('trains_for')+dur;
+      const el_its=document.getElementById('infoTrainingStart');
+      if(el_its)el_its.textContent=new Date(athlete.training_start).toLocaleDateString('uk-UA')+' ('+dur+')';
+    }
+    const el_blt=document.getElementById('heroBeltName');
+    if(el_blt&&(el_blt.textContent===t('no_belt')||!el_blt.textContent))el_blt.textContent=t('no_belt');
+    document.getElementById('t-stat-wins').textContent=t('stat_wins');
+    document.getElementById('t-stat-losses').textContent=t('stat_losses');
+    document.getElementById('t-stat-att').textContent=t('stat_att');
+    document.getElementById('t-stat-rating').textContent=t('stat_rating');
+  }
   if(typeof renderCalendar==='function'&&calAttendanceRecords.length>0)renderCalendar();
   if(typeof renderAttTable==='function'&&calAttendanceRecords.length>0)renderAttTable();
+  if(typeof refreshAthleteTexts==='function'&&athlete)refreshAthleteTexts();
+  if(typeof renderAddress==='function'&&athlete&&athlete.home_address)renderAddress();
 }
+// Обновляет текстовые данные в UI при смене языка (без повторного fetch)
+function refreshAthleteTexts() {
+  if (!athlete) return;
+  const birthDate = athlete.birth_date ? new Date(athlete.birth_date) : null;
+  const age = birthDate ? Math.floor((Date.now() - birthDate) / 31557600000) : null;
+
+  // Hero chips
+  if (birthDate) {
+    const ageStr = age !== null ? `(${age} ${t('age_years')})` : '';
+    const heroBirth = document.getElementById('heroBirth');
+    if (heroBirth) heroBirth.textContent = `${birthDate.toLocaleDateString('uk-UA')} ${ageStr}`;
+  }
+  const heroWeight = document.getElementById('heroWeight');
+  if (heroWeight && athlete.weight_kg) heroWeight.textContent = `${athlete.weight_kg} ${t('unit_kg')}`;
+  const heroHeight = document.getElementById('heroHeight');
+  if (heroHeight && athlete.height_cm) heroHeight.textContent = `${athlete.height_cm} ${t('unit_cm')}`;
+
+  // heroTraining
+  if (athlete.training_start) {
+    const ts = new Date(athlete.training_start);
+    const totalMonths = Math.floor((new Date() - ts) / (1000 * 60 * 60 * 24 * 30.44));
+    const years = Math.floor(totalMonths / 12);
+    const months = totalMonths % 12;
+    function _pl(n, k1, k2, k5) { const a=Math.abs(n)%100, m=a%10; if(a>=11&&a<=14)return n+' '+k5; if(m===1)return n+' '+k1; if(m>=2&&m<=4)return n+' '+k2; return n+' '+k5; }
+    let dur = '';
+    if (years > 0) dur = _pl(years, t('years1'), t('years2'), t('years5'));
+    if (months > 0) dur += (dur?' ':'')+_pl(months, t('months1'), t('months2'), t('months5'));
+    if (!dur) dur = t('age_less');
+    const heroTraining = document.getElementById('heroTraining');
+    if (heroTraining) heroTraining.textContent = t('trains_for') + dur;
+    const infoTS = document.getElementById('infoTrainingStart');
+    if (infoTS) infoTS.textContent = ts.toLocaleDateString('uk-UA') + ' (' + dur + ')';
+  }
+
+  // Info tab
+  const infoBirth = document.getElementById('infoBirth');
+  if (infoBirth && birthDate) infoBirth.textContent = `${birthDate.toLocaleDateString('uk-UA')} — ${age} ${t('age_years')}`;
+  const infoWeight = document.getElementById('infoWeight');
+  if (infoWeight && athlete.weight_kg) infoWeight.textContent = `${athlete.weight_kg} ${t('unit_kg')}`;
+  const infoHeight = document.getElementById('infoHeight');
+  if (infoHeight && athlete.height_cm) infoHeight.textContent = `${athlete.height_cm} ${t('unit_cm')}`;
+
+  // Belt name
+  const heroBeltName = document.getElementById('heroBeltName');
+  if (heroBeltName && (!athlete.belt_name)) heroBeltName.textContent = t('no_belt');
+}
+
 (function(){
   const lang=localStorage.getItem('lang')||'uk';
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase()===(lang==='uk'?'ua':lang)));
@@ -3285,7 +3375,7 @@ function renderQR() {
       }
     }
   }
-  svg.innerHTML = `<rect width="140" height="140" fill="white" rx="8"/>${cells}`;
+  svg.innerHTML = `<rect width="140" height="140" fill="var(--bg)" rx="8"/>${cells}`;
 }
 
 function downloadQR() {
