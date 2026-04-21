@@ -1279,7 +1279,8 @@ const API2 = 'https://primary-production-4b93e.up.railway.app/webhook/athlete-ap
 const ATHLETE_RESOURCES = new Set(['absence_notifications','athlete_belts','athlete_documents','athlete_injuries','athlete_goals','athlete_competitions','messages','notifications','notification_reads','club_rating','children_profile','children_extended','belt_grades','groups','clubs','attendance','children']);
 const token = localStorage.getItem('token');
 const athleteId = parseInt(new URLSearchParams(location.search).get('id'));
-const userRole = localStorage.getItem('role') || 'director';
+const _userObj = JSON.parse(localStorage.getItem('user') || '{}');
+const userRole = localStorage.getItem('role') || _userObj.role || 'director';
 const userId = parseInt(localStorage.getItem('user_id')) || 0;
 
 if (!token || !athleteId) { location.href = '/'; }
