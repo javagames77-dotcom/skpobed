@@ -1642,7 +1642,7 @@ function renderAttGroupSelect() {
   var el = document.getElementById('calGroupSelectTable');
   if (!el) return;
   if (groups.length <= 1) { el.innerHTML = ''; return; }
-  el.innerHTML = '<button class="cal-group-btn ' + (calSelectedGroup==='all'?'active':'') + '" onclick="calSelectGroupTable(&apos;all&apos;)">Всі группы</button>'
+  el.innerHTML = '<button class="cal-group-btn ' + (calSelectedGroup==='all'?'active':'') + '" onclick="calSelectGroupTable(\'all\')">' + t('all_groups') + '</button>'
     + groups.map(function(g) {
         return '<button class="cal-group-btn ' + (calSelectedGroup==g.id?'active':'') + '" onclick="calSelectGroupTable(' + g.id + ')">' + g.name + '</button>';
       }).join('');
@@ -1827,7 +1827,7 @@ async function loadAttendance() {
 function renderCalGroupSelect() {
   const groups = athleteGroupIds.map(gid => allGroups.find(g=>g.id===gid)).filter(Boolean);
   if (groups.length <= 1) { document.getElementById('calGroupSelect').innerHTML = ''; return; }
-  const btns = `<button class="cal-group-btn ${calSelectedGroup==='all'?'active':''}" onclick="calSelectGroup('all')">Всі группы</button>`
+  const btns = `<button class="cal-group-btn ${calSelectedGroup==='all'?'active':''}" onclick="calSelectGroup('all')">${t('all_groups')}</button>`
     + groups.map(g=>`<button class="cal-group-btn ${calSelectedGroup==g.id?'active':''}" onclick="calSelectGroup(${g.id})">${g.name}</button>`).join('');
   document.getElementById('calGroupSelect').innerHTML = btns;
 }
