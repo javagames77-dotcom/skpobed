@@ -1492,8 +1492,12 @@ async function loadBelts() {
     body: JSON.stringify({token, resource:'belt_grades', action:'list'})});
   const d = await r.json();
   allBelts = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
-  // Populate select
-  document.getElementById('ab_belt').innerHTML = allBelts.map(b => `<option value="${b.id}" data-color="${b.color}" data-mindays="${b.min_days||0}">${b.name}${b.min_days ? ' (' + t('belt_min') + ' ' + b.min_days + ' ' + t('belt_days') + ')' : ''}</option>`).join('');
+  console.log('[BELT_GRADES] count:', allBelts.length, 'first:', JSON.stringify(allBelts[0]));
+  // Populate select — value = belt grade id (try common field names)
+  document.getElementById('ab_belt').innerHTML = allBelts.map(b => {
+    const val = b.id ?? b.belt_id ?? b.grade_id ?? b.belt_grade_id ?? '';
+    return `<option value="${val}" data-color="${b.color||''}" data-mindays="${b.min_days||0}">${b.name||b.belt_name||'?'}${b.min_days ? ' (' + t('belt_min') + ' ' + b.min_days + ' ' + t('belt_days') + ')' : ''}</option>`;
+  }).join('');
   document.getElementById('ab_belt').onchange = function() {
     const opt = this.selectedIndex >= 0 ? this.options[this.selectedIndex] : null;
     const minDays = opt ? (parseInt(opt.dataset.mindays) || 0) : 0;
