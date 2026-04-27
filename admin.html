@@ -1012,7 +1012,7 @@ function updateMap() {
         <div style="font-weight:600;font-size:14px;margin-bottom:6px;color:#e8f0fe">${zone.name}</div>
         <div style="font-size:12px;color:#7a8fa6;margin-bottom:3px">📍 ${zone.latitude.toFixed(5)}, ${zone.longitude.toFixed(5)}</div>
         <div style="font-size:12px;color:#7a8fa6;margin-bottom:3px">⭕ ${t('popupRadius')}: ${zone.radius}m</div>
-        <div style="font-size:11px;color:#4a5f75;word-break:break-all">🔊 ${zone.audio_url}</div>
+        <div style="font-size:11px;color:#4a5f75;word-break:break-all">🔊 ${zone.audioUrl}</div>
       </div>
     `);
 
@@ -1035,6 +1035,20 @@ function flyToZone(zone) {
   map.flyTo([zone.latitude, zone.longitude], 15, { duration: 1.2 });
 }
 
+// Нормализация данных из API (PostgreSQL возвращает snake_case)
+function normalizeZone(z) {
+  return {
+    id:        z.id,
+    name:      z.name,
+    latitude:  z.latitude,
+    longitude: z.longitude,
+    radius:    z.radius,
+    audioUrl:  z.audioUrl || z.audio_url || '',
+    createdAt: z.createdAt || z.created_at,
+    updatedAt: z.updatedAt || z.updated_at,
+  };
+}
+
 // ============================================================
 // API
 // ============================================================
@@ -1043,7 +1057,7 @@ async function fetchZones() {
     const res = await fetch(API.getAll);
     if (!res.ok) throw new Error();
     const data = await res.json();
-    zones = Array.isArray(data) ? data : [data];
+    zones = (Array.isArray(data) ? data : [data]).map(normalizeZone);
     setStatus(true);
     renderZones();
     updateMap();
@@ -1053,11 +1067,11 @@ async function fetchZones() {
 }
 
 async function submitZone() {
-  const name     = document.getElementById('fieldName').value.trim();
-  const latitude = parseFloat(document.getElementById('fieldLat').value);
-  const longitude= parseFloat(document.getElementById('fieldLng').value);
-  const radius   = parseFloat(document.getElementById('fieldRadius').value) || 100;
-  const audioUrl = document.getElementById('fieldAudio').value.trim();
+  const name      = document.getElementById('fieldName').value.trim();
+  const latitude  = parseFloat(document.getElementById('fieldLat').value);
+  const longitude = parseFloat(document.getElementById('fieldLng').value);
+  const radius    = parseFloat(document.getElementById('fieldRadius').value) || 100;
+  const audioUrl  = document.getElementById('fieldAudio').value.trim();
 
   if (!name || isNaN(latitude) || isNaN(longitude) || !audioUrl) {
     showToast(t('toastFill'), 'error');
@@ -1075,7 +1089,7 @@ async function submitZone() {
         body: JSON.stringify({ id: editingId, name, latitude, longitude, radius, audioUrl }),
       });
       if (!res.ok) throw new Error();
-      const updated = await res.json();
+      const updated = normalizeZone(await res.json());
       zones = zones.map(z => z.id === editingId ? updated : z);
       showToast(t('toastUpdated'), 'success');
       cancelEdit();
@@ -1086,7 +1100,7 @@ async function submitZone() {
         body: JSON.stringify({ name, latitude, longitude, radius, audioUrl }),
       });
       if (!res.ok) throw new Error();
-      const created = await res.json();
+      const created = normalizeZone(await res.json());
       zones = [created, ...zones];
       showToast(t('toastCreated'), 'success');
       clearForm();
@@ -1106,29 +1120,30 @@ function askDelete(id) {
 }
 
 function closeConfirm() {
-  deleteId = null;
   document.getElementById('confirmDialog').classList.remove('show');
+  // НЕ обнуляем deleteId здесь — это делает confirmDelete()
 }
 
 async function confirmDelete() {
   if (!deleteId) return;
+  const idToDelete = deleteId;
+  deleteId = null;
   closeConfirm();
   try {
     const res = await fetch(API.delete, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: deleteId }),
+      body: JSON.stringify({ id: idToDelete }),
     });
     if (!res.ok) throw new Error();
-    zones = zones.filter(z => z.id !== deleteId);
-    if (editingId === deleteId) cancelEdit();
+    zones = zones.filter(z => z.id !== idToDelete);
+    if (editingId === idToDelete) cancelEdit();
     showToast(t('toastDeleted'), 'success');
     renderZones();
     updateMap();
   } catch {
     showToast(t('toastError'), 'error');
   }
-  deleteId = null;
 }
 
 // ============================================================
@@ -1158,7 +1173,7 @@ function renderZones() {
         <span>📍 ${z.latitude.toFixed(4)}, ${z.longitude.toFixed(4)}</span>
         <span>⭕ ${z.radius}m</span>
       </div>
-      <div class="zone-audio">🔊 ${escHtml(z.audio_url)}</div>
+      <div class="zone-audio">🔊 ${escHtml(z.audioUrl)}</div>
       <div class="zone-actions">
         <button class="btn-sm btn-edit" onclick="event.stopPropagation();editZone(${z.id})">${t('btnEdit')}</button>
         <button class="btn-sm btn-delete" onclick="event.stopPropagation();askDelete(${z.id})">${t('btnDelete')}</button>
@@ -1184,7 +1199,7 @@ function editZone(id) {
   document.getElementById('fieldLat').value    = zone.latitude;
   document.getElementById('fieldLng').value    = zone.longitude;
   document.getElementById('fieldRadius').value = zone.radius;
-  document.getElementById('fieldAudio').value  = zone.audio_url;
+  document.getElementById('fieldAudio').value  = zone.audioUrl;
   document.getElementById('formTitle').textContent = t('editZone');
   document.querySelector('#btnSubmit [data-i18n]').textContent = t('btnUpdate');
   document.getElementById('btnCancel').style.display = '';
