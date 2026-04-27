@@ -1053,7 +1053,8 @@ async function fetchZones() {
     const res = await fetch(API.getAll);
     if (!res.ok) throw new Error();
     const data = await res.json();
-    zones = (Array.isArray(data) ? data : [data]).map(normalizeZone);
+    const arr = Array.isArray(data) ? data : [data];
+    zones = arr.filter(z => z && z.id).map(normalizeZone);
     setStatus(true);
     renderZones();
     updateMap();
@@ -1196,6 +1197,9 @@ function editZone(id) {
   document.getElementById('fieldLng').value    = zone.longitude;
   document.getElementById('fieldRadius').value = zone.radius;
   document.getElementById('fieldAudio').value  = zone.audioUrl;
+  document.getElementById('fieldAddress').value = '...';
+  setClickMarker(zone.latitude, zone.longitude);
+  reverseGeocode(zone.latitude, zone.longitude);
   document.getElementById('formTitle').textContent = t('editZone');
   document.querySelector('#btnSubmit [data-i18n]').textContent = t('btnUpdate');
   document.getElementById('btnCancel').style.display = '';
