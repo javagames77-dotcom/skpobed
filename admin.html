@@ -732,6 +732,8 @@ const API = {
   post:    'https://primary-production-4b93e.up.railway.app/webhook/zones',
   update:  'https://primary-production-4b93e.up.railway.app/webhook/zones-update',
   delete:  'https://primary-production-4b93e.up.railway.app/webhook/zones-delete',
+  geocode: 'https://primary-production-4b93e.up.railway.app/webhook/geocode',
+  reverse: 'https://primary-production-4b93e.up.railway.app/webhook/reverse',
 };
 
 // ============================================================
@@ -902,14 +904,11 @@ function onAddressInput(val) {
 async function geocodeSearch(query) {
   const list = document.getElementById('autocompleteList');
   try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`,
-      { headers: { 'Accept-Language': lang === 'en' ? 'en' : lang === 'ru' ? 'ru' : 'uk' } }
-    );
+    const res = await fetch(`${API.geocode}?q=${encodeURIComponent(query)}&lang=${lang}`);
     const data = await res.json();
     if (!data.length) { list.style.display = 'none'; return; }
 
-    list.innerHTML = data.map((item, i) => {
+    list.innerHTML = data.map((item) => {
       const parts = item.display_name.split(', ');
       const main = parts.slice(0, 2).join(', ');
       const rest = parts.slice(2, 4).join(', ');
@@ -932,10 +931,7 @@ function selectAddress(lat, lon, displayName) {
 
 async function reverseGeocode(lat, lon) {
   try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=17`,
-      { headers: { 'Accept-Language': lang === 'en' ? 'en' : lang === 'ru' ? 'ru' : 'uk' } }
-    );
+    const res = await fetch(`${API.reverse}?lat=${lat}&lon=${lon}&lang=${lang}`);
     const data = await res.json();
     if (data.display_name) {
       document.getElementById('fieldAddress').value = data.display_name;
