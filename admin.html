@@ -545,6 +545,65 @@
     .form-group.full { grid-column: 1; }
   }
 
+  /* AUTOCOMPLETE */
+  .autocomplete-wrap { position: relative; }
+
+  .autocomplete-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    z-index: 999;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+
+  .autocomplete-list::-webkit-scrollbar { width: 4px; }
+  .autocomplete-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .autocomplete-item {
+    padding: 9px 12px;
+    font-size: 12px;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.4;
+    transition: background 0.15s;
+  }
+
+  .autocomplete-item:last-child { border-bottom: none; }
+  .autocomplete-item:hover { background: rgba(0,212,255,0.08); color: var(--text); }
+
+  .autocomplete-item strong { color: var(--text); font-weight: 500; }
+
+  .field-hint {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 3px;
+    font-style: italic;
+  }
+
+  /* click marker on map */
+  .map-hint {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    background: rgba(10,15,26,0.85);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 11px;
+    color: var(--text3);
+    pointer-events: none;
+    white-space: nowrap;
+    backdrop-filter: blur(8px);
+  }
+
   /* Leaflet dark overrides */
   .leaflet-tile { filter: brightness(0.85) saturate(0.8); }
   .leaflet-popup-content-wrapper {
@@ -604,6 +663,12 @@
           <label data-i18n="labelName">Назва</label>
           <input type="text" id="fieldName" data-i18n-placeholder="placeholderName" placeholder="Центральний парк">
         </div>
+        <div class="form-group full autocomplete-wrap">
+          <label data-i18n="labelAddress">Адреса</label>
+          <input type="text" id="fieldAddress" data-i18n-placeholder="placeholderAddress" placeholder="Введіть адресу..." autocomplete="off" oninput="onAddressInput(this.value)">
+          <div class="field-hint" data-i18n="hintAddress">або клікніть на карту</div>
+          <div class="autocomplete-list" id="autocompleteList" style="display:none"></div>
+        </div>
         <div class="form-group">
           <label data-i18n="labelLat">Широта</label>
           <input type="number" id="fieldLat" step="any" placeholder="50.4501">
@@ -639,6 +704,7 @@
   <!-- MAP -->
   <div class="map-container">
     <div id="map"></div>
+    <div class="map-hint" id="mapHint" data-i18n="mapHint">Клікніть на карту щоб встановити точку</div>
   </div>
 </div>
 
@@ -677,11 +743,15 @@ const LANGS = {
     newZone:         'Нова зона',
     editZone:        'Редагувати зону',
     labelName:       'Назва',
+    labelAddress:    'Адреса',
     labelLat:        'Широта',
     labelLng:        'Довгота',
     labelRadius:     'Радіус (метри)',
     labelAudio:      'Audio URL',
     placeholderName: 'Центральний парк',
+    placeholderAddress: 'Введіть адресу...',
+    hintAddress:     'або клікніть на карту',
+    mapHint:         'Клікніть на карту щоб встановити точку',
     btnCreate:       'Створити зону',
     btnUpdate:       'Зберегти',
     btnCancel:       'Скасувати',
@@ -707,11 +777,15 @@ const LANGS = {
     newZone:         'Новая зона',
     editZone:        'Редактировать зону',
     labelName:       'Название',
+    labelAddress:    'Адрес',
     labelLat:        'Широта',
     labelLng:        'Долгота',
     labelRadius:     'Радиус (метры)',
     labelAudio:      'Audio URL',
     placeholderName: 'Центральный парк',
+    placeholderAddress: 'Введите адрес...',
+    hintAddress:     'или кликните на карту',
+    mapHint:         'Кликните на карту чтобы установить точку',
     btnCreate:       'Создать зону',
     btnUpdate:       'Сохранить',
     btnCancel:       'Отмена',
@@ -737,11 +811,15 @@ const LANGS = {
     newZone:         'New Zone',
     editZone:        'Edit Zone',
     labelName:       'Name',
+    labelAddress:    'Address',
     labelLat:        'Latitude',
     labelLng:        'Longitude',
     labelRadius:     'Radius (meters)',
     labelAudio:      'Audio URL',
     placeholderName: 'Central Park',
+    placeholderAddress: 'Enter address...',
+    hintAddress:     'or click on the map',
+    mapHint:         'Click on the map to set a point',
     btnCreate:       'Create Zone',
     btnUpdate:       'Save',
     btnCancel:       'Cancel',
@@ -809,6 +887,82 @@ let lastOnline = false;
 let map, markersLayer;
 
 // ============================================================
+// GEOCODING (Nominatim OpenStreetMap — бесплатно)
+// ============================================================
+let geocodeTimer = null;
+let clickMarker = null;
+
+function onAddressInput(val) {
+  clearTimeout(geocodeTimer);
+  const list = document.getElementById('autocompleteList');
+  if (val.length < 3) { list.style.display = 'none'; return; }
+  geocodeTimer = setTimeout(() => geocodeSearch(val), 400);
+}
+
+async function geocodeSearch(query) {
+  const list = document.getElementById('autocompleteList');
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`,
+      { headers: { 'Accept-Language': lang === 'en' ? 'en' : lang === 'ru' ? 'ru' : 'uk' } }
+    );
+    const data = await res.json();
+    if (!data.length) { list.style.display = 'none'; return; }
+
+    list.innerHTML = data.map((item, i) => {
+      const parts = item.display_name.split(', ');
+      const main = parts.slice(0, 2).join(', ');
+      const rest = parts.slice(2, 4).join(', ');
+      return `<div class="autocomplete-item" onclick="selectAddress(${item.lat}, ${item.lon}, '${escHtml(item.display_name).replace(/'/g,"\\'")}')">
+        <strong>${escHtml(main)}</strong>${rest ? '<br>' + escHtml(rest) : ''}
+      </div>`;
+    }).join('');
+    list.style.display = 'block';
+  } catch { list.style.display = 'none'; }
+}
+
+function selectAddress(lat, lon, displayName) {
+  document.getElementById('fieldLat').value = parseFloat(lat).toFixed(6);
+  document.getElementById('fieldLng').value = parseFloat(lon).toFixed(6);
+  document.getElementById('fieldAddress').value = displayName;
+  document.getElementById('autocompleteList').style.display = 'none';
+  setClickMarker(parseFloat(lat), parseFloat(lon));
+  map.flyTo([lat, lon], 16, { duration: 1 });
+}
+
+async function reverseGeocode(lat, lon) {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=17`,
+      { headers: { 'Accept-Language': lang === 'en' ? 'en' : lang === 'ru' ? 'ru' : 'uk' } }
+    );
+    const data = await res.json();
+    if (data.display_name) {
+      document.getElementById('fieldAddress').value = data.display_name;
+    }
+  } catch {}
+}
+
+function setClickMarker(lat, lon) {
+  if (clickMarker) map.removeLayer(clickMarker);
+  clickMarker = L.marker([lat, lon], {
+    icon: L.divIcon({
+      className: '',
+      html: `<div style="width:14px;height:14px;background:var(--accent2);border:2px solid #fff;border-radius:50%;box-shadow:0 0 8px var(--accent2);"></div>`,
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+    })
+  }).addTo(map);
+}
+
+// close autocomplete on outside click
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.autocomplete-wrap')) {
+    document.getElementById('autocompleteList').style.display = 'none';
+  }
+});
+
+// ============================================================
 // MAP INIT
 // ============================================================
 function initMap() {
@@ -818,6 +972,16 @@ function initMap() {
     maxZoom: 19,
   }).addTo(map);
   markersLayer = L.layerGroup().addTo(map);
+
+  // Click on map → set coordinates + reverse geocode
+  map.on('click', (e) => {
+    const { lat, lng } = e.latlng;
+    document.getElementById('fieldLat').value = lat.toFixed(6);
+    document.getElementById('fieldLng').value = lng.toFixed(6);
+    document.getElementById('fieldAddress').value = '...';
+    setClickMarker(lat, lng);
+    reverseGeocode(lat, lng);
+  });
 }
 
 function updateMap() {
@@ -1040,8 +1204,10 @@ function cancelEdit() {
 }
 
 function clearForm() {
-  ['fieldName','fieldLat','fieldLng','fieldAudio'].forEach(id => document.getElementById(id).value = '');
+  ['fieldName','fieldLat','fieldLng','fieldAudio','fieldAddress'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('fieldRadius').value = '100';
+  document.getElementById('autocompleteList').style.display = 'none';
+  if (clickMarker) { map.removeLayer(clickMarker); clickMarker = null; }
 }
 
 function setStatus(online) {
