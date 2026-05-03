@@ -1955,27 +1955,27 @@ async function saveParseSelected(){
 
 /* ── LEAD MODAL ── */
 async function openLeadModal(id){
-  const lead=crmLeads.find(l=>l.id===id);
-  if(!lead)return;
-  crmEditLeadId=id;
-  document.getElementById('leadModalTitle').textContent=lead.name;
-  document.getElementById('leadModalId').value=id;
-  document.getElementById('leadName').value=lead.name||'';
-  document.getElementById('leadCity').value=lead.city||'';
-  document.getElementById('leadPhone').value=lead.phone||'';
-  document.getElementById('leadEmail').value=lead.email||'';
-  document.getElementById('leadWebsite').value=lead.website||'';
-  document.getElementById('leadInstagram').value=lead.instagram||'';
-  document.getElementById('leadTelegram').value=lead.telegram||'';
-  document.getElementById('leadFacebook').value=lead.facebook||'';
-  document.getElementById('leadAddress').value=lead.address||'';
-  document.getElementById('leadDesc').value=lead.description||'';
-  document.getElementById('leadPriority').value=lead.priority||'medium';
-  document.getElementById('leadNextContact').value=lead.next_contact_at?lead.next_contact_at.split('T')[0]:'';
+  const lead=id?crmLeads.find(l=>l.id===id):null;
+  crmEditLeadId=id||null;
+  document.getElementById('leadModalTitle').textContent=lead?lead.name:t('crmAddLead')||'Новий лід';
+  document.getElementById('leadModalId').value=id||'';
+  document.getElementById('leadName').value=lead?lead.name||'':'';
+  document.getElementById('leadCity').value=lead?lead.city||'':'';
+  document.getElementById('leadPhone').value=lead?lead.phone||'':'';
+  document.getElementById('leadEmail').value=lead?lead.email||'':'';
+  document.getElementById('leadWebsite').value=lead?lead.website||'':'';
+  document.getElementById('leadInstagram').value=lead?lead.instagram||'':'';
+  document.getElementById('leadTelegram').value=lead?lead.telegram||'':'';
+  document.getElementById('leadFacebook').value=lead?lead.facebook||'':'';
+  document.getElementById('leadAddress').value=lead?lead.address||'':'';
+  document.getElementById('leadDesc').value=lead?lead.description||'':'';
+  document.getElementById('leadPriority').value=lead?lead.priority||'medium':'medium';
+  document.getElementById('leadNextContact').value=lead&&lead.next_contact_at?lead.next_contact_at.split('T')[0]:'';
   renderCRMFolderSelects();
-  document.getElementById('leadFolder').value=lead.folder_id||'';
-  renderLeadStatusFlow(lead.status||'new');
-  await loadLeadTouches(id);
+  document.getElementById('leadFolder').value=lead?lead.folder_id||'':'';
+  renderLeadStatusFlow(lead?lead.status||'new':'new');
+  if(id)await loadLeadTouches(id);
+  else document.getElementById('leadTouchesList').innerHTML=`<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px">${t('leadNoTouches')}</div>`;
   document.getElementById('leadModal').classList.add('active');
   document.body.style.overflow='hidden';
 }
