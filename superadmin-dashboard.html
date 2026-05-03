@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>InSkill.online — Superadmin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -160,12 +163,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 /* CRM */
 .crm-layout{display:flex;gap:0;min-height:100%}
 .crm-folders-panel{width:196px;flex-shrink:0;border-right:1px solid var(--border);padding:10px 8px;display:flex;flex-direction:column;gap:2px}
-.crm-folder-btn{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;text-align:left;width:100%}
+.crm-folder-btn{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;text-align:left;width:100%;position:relative}
 .crm-folder-btn:hover{background:var(--bg3);color:var(--text)}
 .crm-folder-btn.active{background:var(--bg3);color:var(--black)}
 .crm-folder-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.crm-folder-count{margin-left:auto;font-size:10px;color:var(--muted2);flex-shrink:0}
-.crm-folder-acts{display:flex;gap:2px;margin-left:auto;opacity:0;transition:opacity .12s}
+.crm-folder-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crm-folder-count{font-size:10px;color:var(--muted2);flex-shrink:0;min-width:14px;text-align:right}
+.crm-folder-acts{display:flex;gap:2px;flex-shrink:0;opacity:0;transition:opacity .12s}
 .crm-folder-btn:hover .crm-folder-acts{opacity:1}
 .crm-folder-act{width:18px;height:18px;border:none;background:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;border-radius:4px;padding:0;font-family:inherit}
 .crm-folder-act:hover{color:var(--text);background:var(--bg3)}
@@ -395,7 +399,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
         <div class="crm-folders-panel" id="crmFoldersPanel">
           <button class="crm-folder-btn active" id="crm-folder-all" onclick="crmSetFolder(null,this);crmCloseMobFolders()">
             <div class="crm-folder-dot" style="background:var(--muted2)"></div>
-            <span id="t-crm-all">Всі ліди</span>
+            <span class="crm-folder-name" id="t-crm-all">Всі ліди</span>
             <span class="crm-folder-count" id="crm-count-all">0</span>
           </button>
           <div id="crmFoldersList"></div>
@@ -698,10 +702,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div class="form-group" style="margin:0"><label class="form-label" id="t-lead-desc-lbl">Опис</label><input class="form-input" id="leadDesc" style="font-size:12px"></div>
 </div>
 
-<div class="lead-section-title" id="t-lead-sec-contacts">Контакти
-  <button class="enrich-btn" id="leadEnrichBtn" onclick="enrichLead()" style="margin-left:10px;vertical-align:middle;cursor:pointer;opacity:1">
+<div class="lead-section-title" id="t-lead-sec-contacts">Контакти</div>
+<div style="margin-bottom:10px">
+  <button class="enrich-btn" id="leadEnrichBtn" onclick="enrichLead()">
     <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v2M6 9v2M1 6h2M9 6h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="6" cy="6" r="2" stroke="currentColor" stroke-width="1.2"/></svg>
-    <span id="t-lead-enrich">Збагатити</span>
+    <span id="t-lead-enrich">Збагатити через Google</span>
   </button>
 </div>
 <div class="lead-modal-grid">
@@ -1630,9 +1635,9 @@ function renderCRMFolders(){
     const editDef=f.is_default?`<button class="crm-folder-act" onclick="event.stopPropagation();openFolderModal(${f.id})" title="Редагувати"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>`:'';
     return `<button class="crm-folder-btn${crmActiveFolderId===f.id?' active':''}" onclick="crmSetFolder(${f.id},this);crmCloseMobFolders()" id="crm-folder-${f.id}">
       <div class="crm-folder-dot" style="background:${f.color}"></div>
-      <span>${displayName}</span>
-      <div class="crm-folder-acts">${editDef}${editBtn}${delBtn}</div>
+      <span class="crm-folder-name">${displayName}</span>
       <span class="crm-folder-count">${cnt||''}</span>
+      <div class="crm-folder-acts">${editDef}${editBtn}${delBtn}</div>
     </button>`;
   }).join('');
   document.getElementById('crm-count-all').textContent=crmAllLeads.length||'';
