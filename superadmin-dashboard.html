@@ -513,6 +513,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
               <span id="t-crm-parse-btn">Парсинг</span>
             </button>
+            <button class="crm-parse-btn" onclick="openLeadModal(null)">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              <span id="t-crm-add-lead-btn">Додати</span>
+            </button>
           </div>
 
           <!-- Stats -->
@@ -710,10 +714,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 
 <div class="lead-section-title" id="t-lead-sec-contacts">Контакти</div>
-<div style="margin-bottom:10px">
+<div style="margin-bottom:10px;display:flex;gap:8px">
   <button class="enrich-btn" id="leadEnrichBtn" onclick="enrichLead()">
     <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v2M6 9v2M1 6h2M9 6h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="6" cy="6" r="2" stroke="currentColor" stroke-width="1.2"/></svg>
-    <span id="t-lead-enrich">Збагатити через Google</span>
+    <span id="t-lead-enrich">Google</span>
+  </button>
+  <button class="enrich-btn" id="leadEnrichDeepBtn" onclick="enrichLeadDeep()">
+    <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6a4 4 0 018 0M6 2v1M6 9v1M9.5 3.5l-.7.7M3.2 8.8l-.7.7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <span id="t-lead-enrich-deep">Сайт</span>
   </button>
 </div>
 <div class="lead-modal-grid">
@@ -820,7 +828,7 @@ const i18n={
     crmThName:'Назва',crmThFolder:'Папка',crmThCity:'Місто',crmThStatus:'Статус',crmThPriority:'Пріоритет',crmThNext:'Наст. контакт',crmThTouches:'Касань',
     crmFAllStatus:'Всі статуси',crmFHigh:'Високий',crmFMedium:'Середній',crmFLow:'Низький',crmFAllPriority:'Всі пріоритети',
     leadSecInfo:'Основна інформація',leadCity:'Місто',leadFolder:'Папка',leadPriorityLbl:'Пріоритет',leadNextLbl:'Наст. контакт',leadDescLbl:'Опис',
-    leadSecContacts:'Контакти',leadEnrich:'Збагатити (Фаза 2)',leadSecStatus:'Воронка продажів',leadSecTouches:'Історія касань',
+    leadSecContacts:'Контакти',leadEnrich:'Google',leadEnrichDeep:'Сайт',leadSecStatus:'Воронка продажів',leadSecTouches:'Історія касань',crmAddLead:'Додати',
     leadNoTouches:'Касань ще немає',touchMsg:'Повідомлення',touchCall:'Дзвінок',touchEmail:'Email',touchPres:'Презентація',touchTrial:'Тест запущено',touchNote:'Заметка',
     touchResNone:'Результат',touchResAns:'Відповів',touchResNo:'Без відповіді',touchResInt:'Зацікавлений',touchResDec:'Відмовився',
     touchAddBtn:'+ Додати касання',leadDelete:'Видалити',leadCancel:'Скасувати',leadSave:'Зберегти',
@@ -879,7 +887,7 @@ const i18n={
     crmThName:'Название',crmThFolder:'Папка',crmThCity:'Город',crmThStatus:'Статус',crmThPriority:'Приоритет',crmThNext:'След. контакт',crmThTouches:'Касаний',
     crmFAllStatus:'Все статусы',crmFHigh:'Высокий',crmFMedium:'Средний',crmFLow:'Низкий',crmFAllPriority:'Все приоритеты',
     leadSecInfo:'Основная информация',leadCity:'Город',leadFolder:'Папка',leadPriorityLbl:'Приоритет',leadNextLbl:'След. контакт',leadDescLbl:'Описание',
-    leadSecContacts:'Контакты',leadEnrich:'Обогатить (Фаза 2)',leadSecStatus:'Воронка продаж',leadSecTouches:'История касаний',
+    leadSecContacts:'Контакты',leadEnrich:'Google',leadEnrichDeep:'Сайт',leadSecStatus:'Воронка продаж',leadSecTouches:'История касаний',crmAddLead:'Добавить',
     leadNoTouches:'Касаний ещё нет',touchMsg:'Сообщение',touchCall:'Звонок',touchEmail:'Email',touchPres:'Презентация',touchTrial:'Тест запущен',touchNote:'Заметка',
     touchResNone:'Результат',touchResAns:'Ответил',touchResNo:'Без ответа',touchResInt:'Заинтересован',touchResDec:'Отказался',
     touchAddBtn:'+ Добавить касание',leadDelete:'Удалить',leadCancel:'Отмена',leadSave:'Сохранить',
@@ -938,7 +946,7 @@ const i18n={
     crmThName:'Name',crmThFolder:'Folder',crmThCity:'City',crmThStatus:'Status',crmThPriority:'Priority',crmThNext:'Next contact',crmThTouches:'Touches',
     crmFAllStatus:'All statuses',crmFHigh:'High',crmFMedium:'Medium',crmFLow:'Low',crmFAllPriority:'All priorities',
     leadSecInfo:'Basic info',leadCity:'City',leadFolder:'Folder',leadPriorityLbl:'Priority',leadNextLbl:'Next contact',leadDescLbl:'Description',
-    leadSecContacts:'Contacts',leadEnrich:'Enrich (Phase 2)',leadSecStatus:'Sales funnel',leadSecTouches:'Touch history',
+    leadSecContacts:'Contacts',leadEnrich:'Google',leadEnrichDeep:'Website',leadSecStatus:'Sales funnel',leadSecTouches:'Touch history',crmAddLead:'Add',
     leadNoTouches:'No touches yet',touchMsg:'Message',touchCall:'Call',touchEmail:'Email',touchPres:'Presentation',touchTrial:'Trial started',touchNote:'Note',
     touchResNone:'Result',touchResAns:'Answered',touchResNo:'No response',touchResInt:'Interested',touchResDec:'Declined',
     touchAddBtn:'+ Add touch',leadDelete:'Delete',leadCancel:'Cancel',leadSave:'Save',
@@ -1017,7 +1025,8 @@ function applyLang(){
     't-crm-f-all-status':'crmFAllStatus','t-crm-f-high':'crmFHigh','t-crm-f-medium':'crmFMedium','t-crm-f-low':'crmFLow','t-crm-f-all-priority':'crmFAllPriority',
     't-lead-sec-info':'leadSecInfo','t-lead-city':'leadCity','t-lead-folder':'leadFolder',
     't-lead-priority-lbl':'leadPriorityLbl','t-lead-next-lbl':'leadNextLbl','t-lead-desc-lbl':'leadDescLbl',
-    't-lead-sec-contacts':'leadSecContacts','t-lead-enrich':'leadEnrich','t-lead-sec-status':'leadSecStatus','t-lead-sec-touches':'leadSecTouches',
+    't-lead-sec-contacts':'leadSecContacts','t-lead-enrich':'leadEnrich','t-lead-enrich-deep':'leadEnrichDeep','t-lead-sec-status':'leadSecStatus','t-lead-sec-touches':'leadSecTouches',
+    't-crm-add-lead-btn':'crmAddLead',
     't-lead-no-touches':'leadNoTouches','t-touch-msg':'touchMsg','t-touch-call':'touchCall','t-touch-email':'touchEmail',
     't-touch-pres':'touchPres','t-touch-trial':'touchTrial','t-touch-note':'touchNote',
     't-touch-res-none':'touchResNone','t-touch-res-ans':'touchResAns','t-touch-res-no':'touchResNo','t-touch-res-int':'touchResInt','t-touch-res-dec':'touchResDec',
@@ -2101,9 +2110,35 @@ async function enrichLead(){
   finally{btn.disabled=false;btn.querySelector('span').textContent='Збагатити через Google';}
 }
 
-function closeLeadModal(){document.getElementById('leadModal').classList.remove('active');document.body.style.overflow='';crmEditLeadId=null;}
+async function enrichLeadDeep(){
+  if(!crmEditLeadId)return;
+  const btn=document.getElementById('leadEnrichDeepBtn');
+  btn.disabled=true;
+  btn.querySelector('span').textContent='...';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'crm',action:'leads.enrich.deep',data:{id:crmEditLeadId}})});
+    const d=JSON.parse(await r.text());
+    if(d.success&&d.lead){
+      const l=d.lead;
+      const updated=[];
+      if(l.description){document.getElementById('leadDesc').value=l.description;updated.push('Опис');}
+      if(l.phone&&!document.getElementById('leadPhone').value){document.getElementById('leadPhone').value=l.phone;updated.push('Телефон');}
+      if(l.address&&!document.getElementById('leadAddress').value){document.getElementById('leadAddress').value=l.address;updated.push('Адреса');}
+      if(l.instagram&&!document.getElementById('leadInstagram').value){document.getElementById('leadInstagram').value=l.instagram;updated.push('Instagram');}
+      if(l.facebook&&!document.getElementById('leadFacebook').value){document.getElementById('leadFacebook').value=l.facebook;updated.push('Facebook');}
+      let note=document.getElementById('enrichNoteDeep');
+      if(!note){note=document.createElement('div');note.id='enrichNoteDeep';note.style.cssText='font-size:11px;color:var(--tag-green-text);background:var(--tag-green-bg);border:1px solid var(--tag-green-text);border-radius:6px;padding:6px 10px;margin-top:6px';document.getElementById('leadEnrichDeepBtn').parentNode.insertBefore(note,document.getElementById('leadEnrichDeepBtn').nextSibling);}
+      note.textContent=updated.length?'Оновлено: '+updated.join(', '):'Нових даних не знайдено';
+      await loadCRMLeads();
+    }
+  }catch(e){alert('Помилка: '+e.message);}
+  finally{btn.disabled=false;btn.querySelector('span').textContent=t('leadEnrichDeep');}
+}
 
 /* ── FOLDER MODAL ── */
+function closeLeadModal(){document.getElementById('leadModal').classList.remove('active');document.body.style.overflow='';crmEditLeadId=null;}
+
 function openFolderModal(id){
   const folder=id?crmFolders.find(f=>f.id===id):null;
   document.getElementById('folderModalTitle').textContent=folder?folder.name:t('crmAddFolder');
