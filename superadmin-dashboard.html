@@ -2038,7 +2038,6 @@ async function deleteLeadById(id){
 async function enrichLead(){
   if(!crmEditLeadId)return;
   const btn=document.getElementById('leadEnrichBtn');
-  const origText=btn.querySelector('span').textContent;
   btn.disabled=true;
   btn.querySelector('span').textContent='...';
   try{
@@ -2047,16 +2046,28 @@ async function enrichLead(){
     const d=JSON.parse(await r.text());
     if(d.success&&d.lead){
       const l=d.lead;
-      if(l.phone)document.getElementById('leadPhone').value=l.phone;
-      if(l.website)document.getElementById('leadWebsite').value=l.website;
-      if(l.description)document.getElementById('leadDesc').value=l.description;
-      alert('Збагачено!');
+      const updated=[];
+      if(l.phone){document.getElementById('leadPhone').value=l.phone;updated.push('Телефон');}
+      if(l.website){document.getElementById('leadWebsite').value=l.website;updated.push('Сайт');}
+      if(l.description){document.getElementById('leadDesc').value=l.description;updated.push('Адреса');}
+      if(l.google_rating){updated.push('Рейтинг Google: '+l.google_rating);}
+      // Show inline notification
+      let note=document.getElementById('enrichNote');
+      if(!note){
+        note=document.createElement('div');
+        note.id='enrichNote';
+        note.style.cssText='font-size:11px;color:var(--tag-green-text);background:var(--tag-green-bg);border:1px solid var(--tag-green-text);border-radius:6px;padding:6px 10px;margin-top:6px';
+        btn.parentNode.insertBefore(note,btn.nextSibling);
+      }
+      note.textContent=updated.length?'Оновлено: '+updated.join(', '):'Нових даних не знайдено';
       await loadCRMLeads();
     }else{
-      alert(d.error||'Не вдалось збагатити');
+      let note=document.getElementById('enrichNote');
+      if(!note){note=document.createElement('div');note.id='enrichNote';note.style.cssText='font-size:11px;color:var(--tag-red-text);background:var(--tag-red-bg);border:1px solid var(--tag-red-text);border-radius:6px;padding:6px 10px;margin-top:6px';btn.parentNode.insertBefore(note,btn.nextSibling);}
+      note.textContent='Помилка: '+(d.error||'не вдалось збагатити');
     }
   }catch(e){alert('Помилка: '+e.message);}
-  finally{btn.disabled=false;btn.querySelector('span').textContent=origText;}
+  finally{btn.disabled=false;btn.querySelector('span').textContent='Збагатити через Google';}
 }
 
 function closeLeadModal(){document.getElementById('leadModal').classList.remove('active');document.body.style.overflow='';crmEditLeadId=null;}
