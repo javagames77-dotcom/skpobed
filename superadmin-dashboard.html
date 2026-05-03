@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>InSkill.online — Superadmin</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 [data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--sidebar-bg:#ffffff;--input-bg:#fafafa;--theme-btn-bg:#f0f0f0;--theme-btn-color:#6b6b6b;--tbl-bg:#ffffff;--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green-text:#16a34a;--tag-red-bg:#fff0f0;--tag-red-text:#c0392b;--tag-gray-bg:#f5f5f5;--tag-gray-text:#6b6b6b;--card-shadow:0 1px 3px rgba(0,0,0,.06)}
 [data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--sidebar-bg:#0a0a0a;--input-bg:#181818;--theme-btn-bg:#222222;--theme-btn-color:#bbbbbb;--tbl-bg:#181818;--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green-text:#4ade80;--tag-red-bg:#2a1010;--tag-red-text:#ff7070;--tag-gray-bg:#222222;--tag-gray-text:#999999;--card-shadow:0 1px 3px rgba(0,0,0,.3)}
@@ -216,6 +218,16 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .color-opt{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .12s;flex-shrink:0}
 .color-opt.sel{border-color:var(--black);transform:scale(1.2)}
 @media(max-width:768px){.crm-folders-panel{display:none}.crm-parse-grid{grid-template-columns:1fr 1fr}.lead-modal-grid{grid-template-columns:1fr}}
+/* MAP */
+#crmParseMap{height:280px;border-radius:8px;overflow:hidden;background:var(--bg3);margin-bottom:10px}
+.leaflet-container{font-family:var(--sans)!important}
+[data-theme="dark"] .leaflet-tile{filter:brightness(.7) saturate(.6) hue-rotate(200deg)}
+.crm-map-coords{font-family:monospace;font-size:11px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;margin-bottom:10px}
+.crm-radius-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.crm-radius-slider{flex:1;accent-color:var(--black);cursor:pointer}
+.crm-radius-val{font-size:12px;font-weight:500;color:var(--black);min-width:48px;text-align:right}
+.crm-city-search{display:flex;gap:6px;margin-bottom:10px}
+.crm-city-search input{flex:1}
 </style>
 </head>
 <body>
@@ -397,16 +409,31 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
           <!-- Parse panel -->
           <div class="crm-parse-panel" id="crmParsePanel">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
               <div style="font-size:13px;font-weight:600;color:var(--black)" id="t-crm-parse-title">Парсинг об'єктів</div>
-              <button class="act-btn" onclick="closeParsPanel()" style="font-size:14px">✕</button>
+              <button class="act-btn" onclick="closeParsPanel()">✕</button>
             </div>
-            <div class="crm-parse-grid">
-              <div class="form-group" style="margin:0"><label class="form-label" id="t-crm-city">Місто</label><input class="form-input" id="crmParseCity" placeholder="Полтава" style="font-size:12px"></div>
-              <div class="form-group" style="margin:0"><label class="form-label" id="t-crm-coords">Координати (lat, lng)</label><input class="form-input" id="crmParseCoords" placeholder="49.5888, 34.5514" style="font-size:12px"></div>
-              <div class="form-group" style="margin:0"><label class="form-label" id="t-crm-radius">Радіус (км)</label><input class="form-input" id="crmParseRadius" type="number" value="5" min="1" max="50" style="font-size:12px"></div>
+
+            <!-- Пошук міста -->
+            <div class="form-label" style="margin-bottom:5px" id="t-crm-city">Місто</div>
+            <div class="crm-city-search">
+              <input class="form-input" id="crmParseCity" placeholder="Полтава, Харків..." style="font-size:12px" onkeydown="if(event.key==='Enter')crmSearchCity()">
+              <button class="btn-ghost" onclick="crmSearchCity()" style="padding:6px 12px;font-size:12px" id="t-crm-city-find">Знайти</button>
             </div>
-            <div class="form-label" id="t-crm-types" style="margin-bottom:6px">Типи об'єктів</div>
+
+            <!-- Карта -->
+            <div id="crmParseMap"></div>
+            <div class="crm-map-coords" id="crmMapCoords">Клікніть на карту щоб вибрати точку</div>
+
+            <!-- Радіус -->
+            <div class="form-label" style="margin-bottom:5px" id="t-crm-radius">Радіус пошуку</div>
+            <div class="crm-radius-row">
+              <input type="range" class="crm-radius-slider" id="crmParseRadius" min="500" max="10000" step="500" value="3000" oninput="crmOnRadiusChange()">
+              <span class="crm-radius-val"><span id="crmRadiusVal">3</span> км</span>
+            </div>
+
+            <!-- Типи -->
+            <div class="form-label" style="margin-bottom:6px" id="t-crm-types">Типи об'єктів</div>
             <div class="crm-type-checks" id="crmTypeChecks">
               <button class="crm-type-check sel" data-type="sport_club" onclick="crmToggleType(this)">Спортклуб</button>
               <button class="crm-type-check sel" data-type="dance" onclick="crmToggleType(this)">Танці</button>
@@ -415,15 +442,18 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
               <button class="crm-type-check sel" data-type="swimming" onclick="crmToggleType(this)">Плавання</button>
               <button class="crm-type-check sel" data-type="gymnastics" onclick="crmToggleType(this)">Гімнастика</button>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-              <div class="form-group" style="margin:0;flex:1"><label class="form-label" id="t-crm-save-to">Зберегти в папку</label>
-                <select class="form-input" id="crmParseFolderSel" style="font-size:12px"></select>
-              </div>
+
+            <!-- Папка -->
+            <div style="margin-bottom:12px">
+              <div class="form-label" style="margin-bottom:5px" id="t-crm-save-to">Зберегти в папку</div>
+              <select class="form-input" id="crmParseFolderSel" style="font-size:12px"></select>
             </div>
-            <button class="btn-primary" onclick="runParse()" id="crmRunParseBtn">
+
+            <button class="btn-primary" onclick="runParse()" id="crmRunParseBtn" disabled>
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
               <span id="t-crm-run-parse">Запустити парсинг</span>
             </button>
+
             <!-- Results -->
             <div id="crmParseResults" style="display:none;margin-top:16px">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -752,7 +782,7 @@ const i18n={
     infoClose:'Закрити',infoEdit:'✏️ Редагувати',
     mobDirectors:'Директори',mobRequests:'Заявки',mobPlans:'Тарифи',mobProviders:'Платіж',mobMessages:'Повідом.',mobCrm:'Ліди',
     sCrmLabel:'CRM',sCrm:'Ліди',
-    crmAll:'Всі ліди',crmAddFolder:'Нова папка',crmParseTitle:"Парсинг об'єктів",crmCity:'Місто',crmCoords:'Координати (lat, lng)',crmRadius:'Радіус (км)',crmTypes:'Типи об\'єктів',crmSaveTo:'Зберегти в папку',crmRunParse:'Запустити парсинг',crmSelectAll:'Вибрати всі',crmSaveSelected:'Додати вибрані',crmParseBtn:'Парсинг',crmEmpty:'Лідів ще немає. Запустіть парсинг!',
+    crmAll:'Всі ліди',crmAddFolder:'Нова папка',crmParseTitle:"Парсинг об'єктів",crmCity:'Місто',crmCityFind:'Знайти',crmRadius:'Радіус пошуку',crmTypes:'Типи об\'єктів',crmSaveTo:'Зберегти в папку',crmRunParse:'Запустити парсинг',crmSelectAll:'Вибрати всі',crmSaveSelected:'Додати вибрані',crmParseBtn:'Парсинг',crmEmpty:'Лідів ще немає. Запустіть парсинг!',
     crmThName:'Назва',crmThFolder:'Папка',crmThCity:'Місто',crmThStatus:'Статус',crmThPriority:'Пріоритет',crmThNext:'Наст. контакт',crmThTouches:'Касань',
     crmFAllStatus:'Всі статуси',crmFHigh:'Високий',crmFMedium:'Середній',crmFLow:'Низький',crmFAllPriority:'Всі пріоритети',
     leadSecInfo:'Основна інформація',leadCity:'Місто',leadFolder:'Папка',leadPriorityLbl:'Пріоритет',leadNextLbl:'Наст. контакт',leadDescLbl:'Опис',
@@ -808,7 +838,7 @@ const i18n={
     infoClose:'Закрыть',infoEdit:'✏️ Редактировать',
     mobDirectors:'Директора',mobRequests:'Заявки',mobPlans:'Тарифы',mobProviders:'Платёж',mobMessages:'Сообщ.',mobCrm:'Лиды',
     sCrmLabel:'CRM',sCrm:'Лиды',
-    crmAll:'Все лиды',crmAddFolder:'Новая папка',crmParseTitle:'Парсинг объектов',crmCity:'Город',crmCoords:'Координаты (lat, lng)',crmRadius:'Радиус (км)',crmTypes:'Типы объектов',crmSaveTo:'Сохранить в папку',crmRunParse:'Запустить парсинг',crmSelectAll:'Выбрать все',crmSaveSelected:'Добавить выбранные',crmParseBtn:'Парсинг',crmEmpty:'Лидов ещё нет. Запустите парсинг!',
+    crmAll:'Все лиды',crmAddFolder:'Новая папка',crmParseTitle:'Парсинг объектов',crmCity:'Город',crmCityFind:'Найти',crmRadius:'Радиус поиска',crmTypes:'Типы объектов',crmSaveTo:'Сохранить в папку',crmRunParse:'Запустить парсинг',crmSelectAll:'Выбрать все',crmSaveSelected:'Добавить выбранные',crmParseBtn:'Парсинг',crmEmpty:'Лидов ещё нет. Запустите парсинг!',
     crmThName:'Название',crmThFolder:'Папка',crmThCity:'Город',crmThStatus:'Статус',crmThPriority:'Приоритет',crmThNext:'След. контакт',crmThTouches:'Касаний',
     crmFAllStatus:'Все статусы',crmFHigh:'Высокий',crmFMedium:'Средний',crmFLow:'Низкий',crmFAllPriority:'Все приоритеты',
     leadSecInfo:'Основная информация',leadCity:'Город',leadFolder:'Папка',leadPriorityLbl:'Приоритет',leadNextLbl:'След. контакт',leadDescLbl:'Описание',
@@ -864,7 +894,7 @@ const i18n={
     infoClose:'Close',infoEdit:'✏️ Edit',
     mobDirectors:'Directors',mobRequests:'Requests',mobPlans:'Plans',mobProviders:'Payment',mobMessages:'Messages',mobCrm:'Leads',
     sCrmLabel:'CRM',sCrm:'Leads',
-    crmAll:'All leads',crmAddFolder:'New folder',crmParseTitle:'Parse objects',crmCity:'City',crmCoords:'Coordinates (lat, lng)',crmRadius:'Radius (km)',crmTypes:'Object types',crmSaveTo:'Save to folder',crmRunParse:'Run parsing',crmSelectAll:'Select all',crmSaveSelected:'Add selected',crmParseBtn:'Parse',crmEmpty:'No leads yet. Run parsing!',
+    crmAll:'All leads',crmAddFolder:'New folder',crmParseTitle:'Parse objects',crmCity:'City',crmCityFind:'Find',crmRadius:'Search radius',crmTypes:'Object types',crmSaveTo:'Save to folder',crmRunParse:'Run parsing',crmSelectAll:'Select all',crmSaveSelected:'Add selected',crmParseBtn:'Parse',crmEmpty:'No leads yet. Run parsing!',
     crmThName:'Name',crmThFolder:'Folder',crmThCity:'City',crmThStatus:'Status',crmThPriority:'Priority',crmThNext:'Next contact',crmThTouches:'Touches',
     crmFAllStatus:'All statuses',crmFHigh:'High',crmFMedium:'Medium',crmFLow:'Low',crmFAllPriority:'All priorities',
     leadSecInfo:'Basic info',leadCity:'City',leadFolder:'Folder',leadPriorityLbl:'Priority',leadNextLbl:'Next contact',leadDescLbl:'Description',
@@ -932,7 +962,7 @@ function applyLang(){
     't-mob-providers':'mobProviders','t-mob-messages':'mobMessages','t-mob-crm':'mobCrm',
     't-s-crm-label':'sCrmLabel','t-s-crm':'sCrm',
     't-crm-all':'crmAll','t-crm-add-folder':'crmAddFolder','t-crm-parse-title':'crmParseTitle',
-    't-crm-city':'crmCity','t-crm-coords':'crmCoords','t-crm-radius':'crmRadius',
+    't-crm-city':'crmCity','t-crm-city-find':'crmCityFind','t-crm-radius':'crmRadius',
     't-crm-types':'crmTypes','t-crm-save-to':'crmSaveTo','t-crm-run-parse':'crmRunParse',
     't-crm-select-all':'crmSelectAll','t-crm-save-selected':'crmSaveSelected','t-crm-parse-btn':'crmParseBtn',
     't-crm-empty':'crmEmpty',
@@ -991,7 +1021,7 @@ function show(name,clickedEl){
   if(name==='plans')loadPlans();
   if(name==='providers')loadProviders();
   if(name==='messages')loadSAMessages();
-  if(name==='crm')loadCRM();
+  if(name==='crm'){loadCRM();setTimeout(()=>{if(crmMap)crmMap.invalidateSize();},200);}
 }
 
 /* ── USER ── */
@@ -1633,29 +1663,74 @@ function crmRenderTable(){
   }).join('');
 }
 
-/* ── PARSE ── */
+/* ── PARSE MAP ── */
+let crmMap=null,crmMapMarker=null,crmMapCircle=null,crmMapCoords=null;
+
 function toggleParsePanel(){
   const p=document.getElementById('crmParsePanel');
+  const wasOpen=p.classList.contains('open');
   p.classList.toggle('open');
+  if(!wasOpen){
+    setTimeout(()=>{
+      if(!crmMap){
+        crmMap=L.map('crmParseMap',{center:[49.5888,34.5514],zoom:12});
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(crmMap);
+        crmMap.on('click',crmOnMapClick);
+      }
+      crmMap.invalidateSize();
+    },150);
+  }
 }
-function closeParsPanel(){document.getElementById('crmParsePanel').classList.remove('open');}
+
+function closeParsPanel(){
+  document.getElementById('crmParsePanel').classList.remove('open');
+}
+
+function crmOnMapClick(e){
+  crmMapCoords=e.latlng;
+  const radius=parseInt(document.getElementById('crmParseRadius').value)||3000;
+  if(crmMapMarker)crmMapMarker.remove();
+  if(crmMapCircle)crmMapCircle.remove();
+  crmMapMarker=L.marker(e.latlng,{
+    icon:L.divIcon({className:'',html:`<div style="width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 4px rgba(229,57,53,.25)"></div>`,iconAnchor:[6,6]})
+  }).addTo(crmMap);
+  crmMapCircle=L.circle(e.latlng,{radius,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(crmMap);
+  document.getElementById('crmMapCoords').textContent=`${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
+  document.getElementById('crmRunParseBtn').disabled=false;
+}
+
+function crmOnRadiusChange(){
+  const radius=parseInt(document.getElementById('crmParseRadius').value)||3000;
+  document.getElementById('crmRadiusVal').textContent=Math.round(radius/1000*10)/10;
+  if(crmMapCircle&&crmMapCoords)crmMapCircle.setRadius(radius);
+}
+
+async function crmSearchCity(){
+  const q=document.getElementById('crmParseCity').value.trim();
+  if(!q)return;
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Ukraine')}&format=json&limit=1`);
+    const d=await r.json();
+    if(!d.length){alert('Місто не знайдено');return;}
+    const lat=parseFloat(d[0].lat),lng=parseFloat(d[0].lon);
+    crmMap.setView([lat,lng],13);
+    setTimeout(()=>crmMap.invalidateSize(),100);
+  }catch(e){alert('Помилка пошуку: '+e.message);}
+}
 
 function crmToggleType(btn){btn.classList.toggle('sel');}
 
 async function runParse(){
-  const city=document.getElementById('crmParseCity').value.trim();
-  if(!city){alert(t('alertEnterCity'));return;}
-  const coords=document.getElementById('crmParseCoords').value.trim();
-  let lat=49.5888,lng=34.5514;
-  if(coords){const p=coords.split(',').map(s=>parseFloat(s.trim()));if(p.length===2&&!isNaN(p[0])){lat=p[0];lng=p[1];}}
-  const radius=parseInt(document.getElementById('crmParseRadius').value)||5;
+  if(!crmMapCoords){alert('Клікніть на карту щоб вибрати точку');return;}
+  const city=document.getElementById('crmParseCity').value.trim()||'Unknown';
+  const radius=parseInt(document.getElementById('crmParseRadius').value)||3000;
   const types=[...document.querySelectorAll('.crm-type-check.sel')].map(b=>b.dataset.type);
   if(!types.length){alert(t('alertSelectTypes'));return;}
   const btn=document.getElementById('crmRunParseBtn');
   btn.disabled=true;btn.textContent=t('alertParsing');
   try{
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'parse',data:{city,lat,lng,radius:radius*1000,types}})});
+      body:JSON.stringify({token,resource:'crm',action:'parse',data:{city,lat:crmMapCoords.lat,lng:crmMapCoords.lng,radius,types}})});
     const d=JSON.parse(await r.text());
     crmParseData=d.places||d.objects||d||[];
     renderParseResults();
