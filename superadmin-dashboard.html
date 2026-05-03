@@ -539,6 +539,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
             <span id="crmBulkCount" style="font-size:12px;color:var(--muted)"></span>
             <button class="btn-danger" onclick="crmDeleteSelected()" id="t-crm-bulk-delete" style="font-size:12px;padding:5px 12px">Видалити вибрані</button>
           </div>
+          <div id="crmPagination" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;font-size:12px;color:var(--muted)">
+            <span id="crmPagInfo"></span>
+            <div style="display:flex;gap:4px">
+              <button class="btn-ghost" id="crmPagPrev" onclick="crmChangePage(-1)" style="padding:4px 10px;font-size:12px">‹</button>
+              <button class="btn-ghost" id="crmPagNext" onclick="crmChangePage(1)" style="padding:4px 10px;font-size:12px">›</button>
+            </div>
+          </div>
           <div id="crmEmpty" class="empty-state" style="display:none">
             <div class="empty-icon">
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="var(--muted2)" stroke-width="1.5"/><path d="M10 16h12M16 10v12" stroke="var(--muted2)" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -713,10 +720,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div class="form-group" style="margin:0"><label class="form-label">Телефон</label><input class="form-input" id="leadPhone" placeholder="+380..." style="font-size:12px"></div>
   <div class="form-group" style="margin:0"><label class="form-label">Email</label><input class="form-input" id="leadEmail" type="email" style="font-size:12px"></div>
   <div class="form-group" style="margin:0"><label class="form-label">Сайт</label><input class="form-input" id="leadWebsite" placeholder="https://..." style="font-size:12px"></div>
-  <div class="form-group" style="margin:0"><label class="form-label">Instagram</label><input class="form-input" id="leadInstagram" placeholder="@handle" style="font-size:12px"></div>
+  <div class="form-group" style="margin:0"><label class="form-label">Instagram</label><input class="form-input" id="leadInstagram" placeholder="@handle або URL" style="font-size:12px"></div>
   <div class="form-group" style="margin:0"><label class="form-label">Telegram</label><input class="form-input" id="leadTelegram" placeholder="@handle" style="font-size:12px"></div>
   <div class="form-group" style="margin:0"><label class="form-label">Facebook</label><input class="form-input" id="leadFacebook" style="font-size:12px"></div>
 </div>
+<div class="form-group" style="margin:8px 0 0"><label class="form-label" id="t-lead-address-lbl">Адреса</label><input class="form-input" id="leadAddress" style="font-size:12px"></div>
 
 <div class="lead-section-title" id="t-lead-sec-status">Воронка продажів</div>
 <div class="lead-status-flow" id="leadStatusFlow"></div>
@@ -1583,7 +1591,8 @@ async function loadSAMessages(){
   }catch(e){console.error(e);loading.style.display='none';}
 }
 
-let crmLeads=[],crmAllLeads=[],crmFolders=[],crmActiveFolderId=null,crmEditLeadId=null,crmParseData=[];
+let crmLeads=[],crmAllLeads=[],crmFolders=[],crmActiveFolderId=null,crmEditLeadId=null,crmParseData=[],crmPage=0;
+const CRM_PAGE_SIZE=50;
 
 async function loadCRM(){
   await Promise.all([loadCRMFolders(),loadCRMLeads()]);
@@ -1688,11 +1697,26 @@ function crmRenderTable(){
   const empty=document.getElementById('crmEmpty');
   const bulkBar=document.getElementById('crmBulkBar');
   bulkBar.style.display='none';
-  if(!filtered.length){tb.innerHTML='';empty.style.display='block';return;}
+  if(!filtered.length){tb.innerHTML='';empty.style.display='block';document.getElementById('crmPagination').style.display='none';return;}
   empty.style.display='none';
+
+  // Pagination
+  const totalPages=Math.ceil(filtered.length/CRM_PAGE_SIZE);
+  if(crmPage>=totalPages)crmPage=Math.max(0,totalPages-1);
+  const pageItems=filtered.slice(crmPage*CRM_PAGE_SIZE,(crmPage+1)*CRM_PAGE_SIZE);
+  const pagEl=document.getElementById('crmPagination');
+  const pagInfo=document.getElementById('crmPagInfo');
+  if(filtered.length>CRM_PAGE_SIZE){
+    pagEl.style.display='flex';
+    pagInfo.textContent=`${crmPage*CRM_PAGE_SIZE+1}–${Math.min((crmPage+1)*CRM_PAGE_SIZE,filtered.length)} з ${filtered.length}`;
+    document.getElementById('crmPagPrev').disabled=crmPage===0;
+    document.getElementById('crmPagNext').disabled=crmPage>=totalPages-1;
+  } else {
+    pagEl.style.display='none';
+  }
   const STATUS_COLOR={new:'tag-gray',contacted:'tag-blue',presentation:'tag-blue',trial:'tag-yellow',converted:'tag-green',lost:'tag-red'};
   const PRI_COLOR={high:'tag-red',medium:'tag-gray',low:'tag-gray'};
-  tb.innerHTML=filtered.map(l=>{
+  tb.innerHTML=pageItems.map(l=>{
     const folder=crmFolders.find(f=>f.id===l.folder_id);
     const folderHtml=folder?`<span class="crm-folder-tag" style="background:${folder.color}22;color:${folder.color}"><div style="width:6px;height:6px;border-radius:50%;background:${folder.color};flex-shrink:0"></div>${getFolderName(folder)}</span>`:'<span style="color:var(--muted2);font-size:11px">—</span>';
     const nc=l.next_contact_at?l.next_contact_at.split('T')[0]:'';
@@ -1716,6 +1740,8 @@ function crmRenderTable(){
     </tr>`;
   }).join('');
 }
+
+function crmChangePage(dir){crmPage=Math.max(0,crmPage+dir);crmRenderTable();}
 
 function crmToggleAllChecks(checked){
   document.querySelectorAll('.crm-row-check').forEach(c=>c.checked=checked);
@@ -1932,6 +1958,7 @@ async function openLeadModal(id){
   document.getElementById('leadInstagram').value=lead.instagram||'';
   document.getElementById('leadTelegram').value=lead.telegram||'';
   document.getElementById('leadFacebook').value=lead.facebook||'';
+  document.getElementById('leadAddress').value=lead.address||'';
   document.getElementById('leadDesc').value=lead.description||'';
   document.getElementById('leadPriority').value=lead.priority||'medium';
   document.getElementById('leadNextContact').value=lead.next_contact_at?lead.next_contact_at.split('T')[0]:'';
@@ -2004,6 +2031,7 @@ async function saveLead(){
     instagram:document.getElementById('leadInstagram').value.trim()||null,
     telegram:document.getElementById('leadTelegram').value.trim()||null,
     facebook:document.getElementById('leadFacebook').value.trim()||null,
+    address:document.getElementById('leadAddress').value.trim()||null,
     description:document.getElementById('leadDesc').value.trim()||null,
     priority:document.getElementById('leadPriority').value,
     status:statusBtn?statusBtn.textContent:'new',
@@ -2049,7 +2077,9 @@ async function enrichLead(){
       const updated=[];
       if(l.phone){document.getElementById('leadPhone').value=l.phone;updated.push('Телефон');}
       if(l.website){document.getElementById('leadWebsite').value=l.website;updated.push('Сайт');}
-      if(l.description){document.getElementById('leadDesc').value=l.description;updated.push('Адреса');}
+      if(l.instagram){document.getElementById('leadInstagram').value=l.instagram;updated.push('Instagram');}
+      if(l.address){document.getElementById('leadAddress').value=l.address;updated.push('Адреса');}
+      if(l.description){document.getElementById('leadDesc').value=l.description;updated.push('Опис');}
       if(l.google_rating){updated.push('Рейтинг Google: '+l.google_rating);}
       // Show inline notification
       let note=document.getElementById('enrichNote');
