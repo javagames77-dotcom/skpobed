@@ -1790,6 +1790,8 @@ async function crmSearchCity(){
   }catch(e){alert('Помилка пошуку: '+e.message);}
 }
 
+function crmToggleType(btn){btn.classList.toggle('sel');}
+
 function crmToggleMobFolders(){
   const panel=document.getElementById('crmFoldersPanel');
   panel.classList.toggle('mob-open');
