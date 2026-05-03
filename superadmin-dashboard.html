@@ -1823,11 +1823,11 @@ async function crmSearchCity(){
   const q=document.getElementById('crmParseCity').value.trim();
   if(!q)return;
   try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'crm.geocode',data:{city:q}})});
-    const d=JSON.parse(await r.text());
-    if(!d.success){alert('Місто не знайдено');return;}
-    crmMap.setView([d.lat,d.lng],13);
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Ukraine')}&format=json&limit=1`,{headers:{'Accept-Language':'uk,ru,en'}});
+    const d=await r.json();
+    if(!d.length){alert('Місто не знайдено');return;}
+    const lat=parseFloat(d[0].lat),lng=parseFloat(d[0].lon);
+    crmMap.setView([lat,lng],13);
     setTimeout(()=>crmMap.invalidateSize(),100);
   }catch(e){alert('Помилка пошуку: '+e.message);}
 }
