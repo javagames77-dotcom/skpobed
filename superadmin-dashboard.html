@@ -213,7 +213,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .touch-date{font-size:11px;color:var(--muted2);margin-left:auto}
 .touch-text{font-size:12px;color:var(--text);line-height:1.5}
 .touch-result{font-size:11px;color:var(--muted);margin-top:3px}
-.enrich-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--muted2);background:var(--bg3);font-family:inherit;cursor:not-allowed;opacity:.5}
+.enrich-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--muted);background:var(--bg3);font-family:inherit;cursor:pointer;transition:all .12s}
+.enrich-btn:hover{border-color:var(--border2);color:var(--text)}
+.enrich-btn:disabled{opacity:.5;cursor:not-allowed}
 .color-picker-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .color-opt{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .12s;flex-shrink:0}
 .color-opt.sel{border-color:var(--black);transform:scale(1.2)}
@@ -391,7 +393,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
         <!-- Folders panel -->
         <div class="crm-folders-panel" id="crmFoldersPanel">
-          <button class="crm-folder-btn active" id="crm-folder-all" onclick="crmSetFolder(null,this)">
+          <button class="crm-folder-btn active" id="crm-folder-all" onclick="crmSetFolder(null,this);crmCloseMobFolders()">
             <div class="crm-folder-dot" style="background:var(--muted2)"></div>
             <span id="t-crm-all">Всі ліди</span>
             <span class="crm-folder-count" id="crm-count-all">0</span>
@@ -403,6 +405,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
             <span id="t-crm-add-folder">Нова папка</span>
           </button>
         </div>
+
+        <!-- Mobile overlay -->
+        <div class="crm-mob-overlay" id="crmMobOverlay" onclick="crmCloseMobFolders()"></div>
 
         <!-- Main area -->
         <div class="crm-main">
@@ -694,7 +699,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 
 <div class="lead-section-title" id="t-lead-sec-contacts">Контакти
-  <button class="enrich-btn" style="margin-left:10px;vertical-align:middle" title="Фаза 2">
+  <button class="enrich-btn" id="leadEnrichBtn" onclick="enrichLead()" style="margin-left:10px;vertical-align:middle;cursor:pointer;opacity:1">
     <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v2M6 9v2M1 6h2M9 6h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="6" cy="6" r="2" stroke="currentColor" stroke-width="1.2"/></svg>
     <span id="t-lead-enrich">Збагатити</span>
   </button>
@@ -1573,9 +1578,7 @@ async function loadSAMessages(){
   }catch(e){console.error(e);loading.style.display='none';}
 }
 
-/* ── CRM ── */
-const CRM_COLORS=['#5b8dee','#9b6dff','#3ecf8e','#E53935','#22d3ee','#f5a623','#e879a0','#64748b','#888888'];
-let crmLeads=[],crmFolders=[],crmActiveFolderId=null,crmEditLeadId=null,crmParseData=[];
+let crmLeads=[],crmAllLeads=[],crmFolders=[],crmActiveFolderId=null,crmEditLeadId=null,crmParseData=[];
 
 async function loadCRM(){
   await Promise.all([loadCRMFolders(),loadCRMLeads()]);
@@ -1594,12 +1597,20 @@ async function loadCRMFolders(){
 
 async function loadCRMLeads(){
   try{
+    // Always load ALL leads for counters
+    const rAll=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'crm',action:'leads.list',data:{}})});
+    const dAll=JSON.parse(await rAll.text());
+    crmAllLeads=(dAll.leads||dAll||[]).filter(l=>l&&l.id);
+
+    // Load filtered leads for table
     const filters={};
     if(crmActiveFolderId)filters.folder_id=crmActiveFolderId;
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token,resource:'crm',action:'leads.list',data:filters})});
     const d=JSON.parse(await r.text());
     crmLeads=(d.leads||d||[]).filter(l=>l&&l.id);
+    renderCRMFolders();
     crmRenderTable();
     crmRenderStats();
   }catch(e){console.error('loadCRMLeads',e);}
@@ -1612,19 +1623,19 @@ function renderCRMFolders(){
   const mobBtn=document.getElementById('crmMobFoldersBtn');
   if(mobBtn)mobBtn.style.display='';
   el.innerHTML=crmFolders.map(f=>{
-    const cnt=crmLeads.filter(l=>l.folder_id===f.id).length;
+    const cnt=crmAllLeads.filter(l=>l.folder_id===f.id).length;
     const displayName=getFolderName(f);
     const editBtn=!f.is_default?`<button class="crm-folder-act" onclick="event.stopPropagation();openFolderModal(${f.id})" title="Редагувати"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>`:'';
     const delBtn=!f.is_default?`<button class="crm-folder-act" onclick="event.stopPropagation();deleteFolder(${f.id})" title="Видалити"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`:'';
     const editDef=f.is_default?`<button class="crm-folder-act" onclick="event.stopPropagation();openFolderModal(${f.id})" title="Редагувати"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>`:'';
-    return `<button class="crm-folder-btn${crmActiveFolderId===f.id?' active':''}" onclick="crmSetFolder(${f.id},this);document.getElementById('crmFoldersPanel').classList.remove('mob-open')" id="crm-folder-${f.id}">
+    return `<button class="crm-folder-btn${crmActiveFolderId===f.id?' active':''}" onclick="crmSetFolder(${f.id},this);crmCloseMobFolders()" id="crm-folder-${f.id}">
       <div class="crm-folder-dot" style="background:${f.color}"></div>
       <span>${displayName}</span>
       <div class="crm-folder-acts">${editDef}${editBtn}${delBtn}</div>
       <span class="crm-folder-count">${cnt||''}</span>
     </button>`;
   }).join('');
-  document.getElementById('crm-count-all').textContent=crmLeads.length||'';
+  document.getElementById('crm-count-all').textContent=crmAllLeads.length||'';
 }
 
 function renderCRMFolderSelects(){
@@ -1794,7 +1805,15 @@ function crmToggleType(btn){btn.classList.toggle('sel');}
 
 function crmToggleMobFolders(){
   const panel=document.getElementById('crmFoldersPanel');
+  const overlay=document.getElementById('crmMobOverlay');
   panel.classList.toggle('mob-open');
+  if(overlay)overlay.classList.toggle('active');
+}
+
+function crmCloseMobFolders(){
+  document.getElementById('crmFoldersPanel').classList.remove('mob-open');
+  const overlay=document.getElementById('crmMobOverlay');
+  if(overlay)overlay.classList.remove('active');
 }
 
 // Folder name translations for default folders
@@ -1859,22 +1878,23 @@ function updateParseSelCount(){
 }
 
 async function saveParseSelected(){
-  const city=document.getElementById('crmParseCity').value.trim();
+  const cityInput=document.getElementById('crmParseCity').value.trim();
   const selected=[...document.querySelectorAll('#crmParseList input[type=checkbox]:checked')]
     .map(c=>crmParseData[parseInt(c.dataset.idx)])
     .filter(Boolean)
     .map(p=>{
-      // Auto-assign folder by category slug
+      const city=p.city||cityInput||'';
       const folder=crmFolders.find(f=>f.slug===p.category);
       return {
         name:p.name,
         type:p.category||'sport_club',
-        city:city,
+        city,
         lat:p.latitude||p.lat||null,
         lng:p.longitude||p.lng||null,
         phone:p.phone||null,
         website:p.website||null,
         description:p.address||null,
+        google_place_id:p.google_place_id||null,
         google_rating:p.google_rating||null,
         google_reviews:p.google_reviews||null,
         folder_id:folder?folder.id:null
@@ -2008,6 +2028,30 @@ async function deleteLeadById(id){
     await loadCRMLeads();
     await loadCRMFolders();
   }catch(e){alert('Помилка: '+e.message);}
+}
+
+async function enrichLead(){
+  if(!crmEditLeadId)return;
+  const btn=document.getElementById('leadEnrichBtn');
+  const origText=btn.querySelector('span').textContent;
+  btn.disabled=true;
+  btn.querySelector('span').textContent='...';
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({token,resource:'crm',action:'leads.enrich',data:{id:crmEditLeadId}})});
+    const d=JSON.parse(await r.text());
+    if(d.success&&d.lead){
+      const l=d.lead;
+      if(l.phone)document.getElementById('leadPhone').value=l.phone;
+      if(l.website)document.getElementById('leadWebsite').value=l.website;
+      if(l.description)document.getElementById('leadDesc').value=l.description;
+      alert('Збагачено!');
+      await loadCRMLeads();
+    }else{
+      alert(d.error||'Не вдалось збагатити');
+    }
+  }catch(e){alert('Помилка: '+e.message);}
+  finally{btn.disabled=false;btn.querySelector('span').textContent=origText;}
 }
 
 function closeLeadModal(){document.getElementById('leadModal').classList.remove('active');document.body.style.overflow='';crmEditLeadId=null;}
