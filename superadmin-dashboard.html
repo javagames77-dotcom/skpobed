@@ -435,12 +435,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
             <!-- Типи -->
             <div class="form-label" style="margin-bottom:6px" id="t-crm-types">Типи об'єктів</div>
             <div class="crm-type-checks" id="crmTypeChecks">
-              <button class="crm-type-check sel" data-type="sport_club" onclick="crmToggleType(this)">Спортклуб</button>
-              <button class="crm-type-check sel" data-type="dance" onclick="crmToggleType(this)">Танці</button>
-              <button class="crm-type-check sel" data-type="fitness" onclick="crmToggleType(this)">Фітнес</button>
-              <button class="crm-type-check sel" data-type="martial_arts" onclick="crmToggleType(this)">Єдиноборства</button>
-              <button class="crm-type-check sel" data-type="swimming" onclick="crmToggleType(this)">Плавання</button>
-              <button class="crm-type-check sel" data-type="gymnastics" onclick="crmToggleType(this)">Гімнастика</button>
+              <button class="crm-type-check sel" data-type="sport_club" onclick="crmToggleType(this)" id="t-type-sport_club">Спортклуб</button>
+              <button class="crm-type-check sel" data-type="dance" onclick="crmToggleType(this)" id="t-type-dance">Танці</button>
+              <button class="crm-type-check sel" data-type="fitness" onclick="crmToggleType(this)" id="t-type-fitness">Фітнес</button>
+              <button class="crm-type-check sel" data-type="martial_arts" onclick="crmToggleType(this)" id="t-type-martial_arts">Єдиноборства</button>
+              <button class="crm-type-check sel" data-type="swimming" onclick="crmToggleType(this)" id="t-type-swimming">Плавання</button>
+              <button class="crm-type-check sel" data-type="gymnastics" onclick="crmToggleType(this)" id="t-type-gymnastics">Гімнастика</button>
             </div>
 
             <!-- Папка -->
@@ -505,6 +505,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
           <div class="tbl-wrap">
             <table class="tbl">
               <thead><tr>
+                <th style="width:32px"><input type="checkbox" id="crmCheckAll" onchange="crmToggleAllChecks(this.checked)" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer"></th>
                 <th id="t-crm-th-name">Назва</th>
                 <th id="t-crm-th-folder">Папка</th>
                 <th id="t-crm-th-city">Місто</th>
@@ -516,6 +517,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
               </tr></thead>
               <tbody id="crmTbody"></tbody>
             </table>
+          </div>
+          <div id="crmBulkBar" style="display:none;padding:10px 0;display:none;align-items:center;gap:10px">
+            <span id="crmBulkCount" style="font-size:12px;color:var(--muted)"></span>
+            <button class="btn-danger" onclick="crmDeleteSelected()" id="t-crm-bulk-delete" style="font-size:12px;padding:5px 12px">Видалити вибрані</button>
           </div>
           <div id="crmEmpty" class="empty-state" style="display:none">
             <div class="empty-icon">
@@ -783,6 +788,8 @@ const i18n={
     mobDirectors:'Директори',mobRequests:'Заявки',mobPlans:'Тарифи',mobProviders:'Платіж',mobMessages:'Повідом.',mobCrm:'Ліди',
     sCrmLabel:'CRM',sCrm:'Ліди',
     crmAll:'Всі ліди',crmAddFolder:'Нова папка',crmParseTitle:"Парсинг об'єктів",crmCity:'Місто',crmCityFind:'Знайти',crmRadius:'Радіус пошуку',crmTypes:'Типи об\'єктів',crmSaveTo:'Зберегти в папку',crmRunParse:'Запустити парсинг',crmSelectAll:'Вибрати всі',crmSaveSelected:'Додати вибрані',crmParseBtn:'Парсинг',crmEmpty:'Лідів ще немає. Запустіть парсинг!',
+    crmTypeSportClub:'Спортклуб',crmTypeDance:'Танці',crmTypeFitness:'Фітнес',crmTypeMartialArts:'Єдиноборства',crmTypeSwimming:'Плавання',crmTypeGymnastics:'Гімнастика',
+    crmSelected:'вибрано',crmBulkDelete:'Видалити вибрані',alertConfirmDeleteMultiple:'лідів буде видалено. Продовжити?',
     crmThName:'Назва',crmThFolder:'Папка',crmThCity:'Місто',crmThStatus:'Статус',crmThPriority:'Пріоритет',crmThNext:'Наст. контакт',crmThTouches:'Касань',
     crmFAllStatus:'Всі статуси',crmFHigh:'Високий',crmFMedium:'Середній',crmFLow:'Низький',crmFAllPriority:'Всі пріоритети',
     leadSecInfo:'Основна інформація',leadCity:'Місто',leadFolder:'Папка',leadPriorityLbl:'Пріоритет',leadNextLbl:'Наст. контакт',leadDescLbl:'Опис',
@@ -839,6 +846,8 @@ const i18n={
     mobDirectors:'Директора',mobRequests:'Заявки',mobPlans:'Тарифы',mobProviders:'Платёж',mobMessages:'Сообщ.',mobCrm:'Лиды',
     sCrmLabel:'CRM',sCrm:'Лиды',
     crmAll:'Все лиды',crmAddFolder:'Новая папка',crmParseTitle:'Парсинг объектов',crmCity:'Город',crmCityFind:'Найти',crmRadius:'Радиус поиска',crmTypes:'Типы объектов',crmSaveTo:'Сохранить в папку',crmRunParse:'Запустить парсинг',crmSelectAll:'Выбрать все',crmSaveSelected:'Добавить выбранные',crmParseBtn:'Парсинг',crmEmpty:'Лидов ещё нет. Запустите парсинг!',
+    crmTypeSportClub:'Спортклуб',crmTypeDance:'Танці',crmTypeFitness:'Фитнес',crmTypeMartialArts:'Единоборства',crmTypeSwimming:'Плавание',crmTypeGymnastics:'Гимнастика',
+    crmSelected:'выбрано',crmBulkDelete:'Удалить выбранные',alertConfirmDeleteMultiple:'лидов будет удалено. Продолжить?',
     crmThName:'Название',crmThFolder:'Папка',crmThCity:'Город',crmThStatus:'Статус',crmThPriority:'Приоритет',crmThNext:'След. контакт',crmThTouches:'Касаний',
     crmFAllStatus:'Все статусы',crmFHigh:'Высокий',crmFMedium:'Средний',crmFLow:'Низкий',crmFAllPriority:'Все приоритеты',
     leadSecInfo:'Основная информация',leadCity:'Город',leadFolder:'Папка',leadPriorityLbl:'Приоритет',leadNextLbl:'След. контакт',leadDescLbl:'Описание',
@@ -895,6 +904,8 @@ const i18n={
     mobDirectors:'Directors',mobRequests:'Requests',mobPlans:'Plans',mobProviders:'Payment',mobMessages:'Messages',mobCrm:'Leads',
     sCrmLabel:'CRM',sCrm:'Leads',
     crmAll:'All leads',crmAddFolder:'New folder',crmParseTitle:'Parse objects',crmCity:'City',crmCityFind:'Find',crmRadius:'Search radius',crmTypes:'Object types',crmSaveTo:'Save to folder',crmRunParse:'Run parsing',crmSelectAll:'Select all',crmSaveSelected:'Add selected',crmParseBtn:'Parse',crmEmpty:'No leads yet. Run parsing!',
+    crmTypeSportClub:'Sports club',crmTypeDance:'Dance',crmTypeFitness:'Fitness',crmTypeMartialArts:'Martial arts',crmTypeSwimming:'Swimming',crmTypeGymnastics:'Gymnastics',
+    crmSelected:'selected',crmBulkDelete:'Delete selected',alertConfirmDeleteMultiple:'leads will be deleted. Continue?',
     crmThName:'Name',crmThFolder:'Folder',crmThCity:'City',crmThStatus:'Status',crmThPriority:'Priority',crmThNext:'Next contact',crmThTouches:'Touches',
     crmFAllStatus:'All statuses',crmFHigh:'High',crmFMedium:'Medium',crmFLow:'Low',crmFAllPriority:'All priorities',
     leadSecInfo:'Basic info',leadCity:'City',leadFolder:'Folder',leadPriorityLbl:'Priority',leadNextLbl:'Next contact',leadDescLbl:'Description',
@@ -963,6 +974,9 @@ function applyLang(){
     't-s-crm-label':'sCrmLabel','t-s-crm':'sCrm',
     't-crm-all':'crmAll','t-crm-add-folder':'crmAddFolder','t-crm-parse-title':'crmParseTitle',
     't-crm-city':'crmCity','t-crm-city-find':'crmCityFind','t-crm-radius':'crmRadius',
+    't-type-sport_club':'crmTypeSportClub','t-type-dance':'crmTypeDance','t-type-fitness':'crmTypeFitness',
+    't-type-martial_arts':'crmTypeMartialArts','t-type-swimming':'crmTypeSwimming','t-type-gymnastics':'crmTypeGymnastics',
+    't-crm-bulk-delete':'crmBulkDelete',
     't-crm-types':'crmTypes','t-crm-save-to':'crmSaveTo','t-crm-run-parse':'crmRunParse',
     't-crm-select-all':'crmSelectAll','t-crm-save-selected':'crmSaveSelected','t-crm-parse-btn':'crmParseBtn',
     't-crm-empty':'crmEmpty',
@@ -1635,6 +1649,8 @@ function crmRenderTable(){
   });
   const tb=document.getElementById('crmTbody');
   const empty=document.getElementById('crmEmpty');
+  const bulkBar=document.getElementById('crmBulkBar');
+  bulkBar.style.display='none';
   if(!filtered.length){tb.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
   const STATUS_COLOR={new:'tag-gray',contacted:'tag-blue',presentation:'tag-blue',trial:'tag-yellow',converted:'tag-green',lost:'tag-red'};
@@ -1648,6 +1664,7 @@ function crmRenderTable(){
     const ncHtml=nc?`<span style="color:${isOverdue?'var(--tag-red-text)':isToday?'var(--yellow)':'var(--muted)'};font-size:11px">${nc}</span>`:'<span style="color:var(--muted2)">—</span>';
     const rowClass=isOverdue?'crm-row-overdue':isToday?'crm-row-today':'';
     return `<tr class="${rowClass}">
+      <td><input type="checkbox" class="crm-row-check" data-id="${l.id}" onchange="crmUpdateBulkBar()" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer"></td>
       <td><button class="crm-lead-name" onclick="openLeadModal(${l.id})">${l.name}</button></td>
       <td>${folderHtml}</td>
       <td style="color:var(--muted);font-size:12px">${l.city||'—'}</td>
@@ -1661,6 +1678,40 @@ function crmRenderTable(){
       </div></td>
     </tr>`;
   }).join('');
+}
+
+function crmToggleAllChecks(checked){
+  document.querySelectorAll('.crm-row-check').forEach(c=>c.checked=checked);
+  crmUpdateBulkBar();
+}
+
+function crmUpdateBulkBar(){
+  const sel=document.querySelectorAll('.crm-row-check:checked');
+  const bar=document.getElementById('crmBulkBar');
+  const allCb=document.getElementById('crmCheckAll');
+  const all=document.querySelectorAll('.crm-row-check');
+  if(sel.length>0){
+    bar.style.display='flex';
+    document.getElementById('crmBulkCount').textContent=sel.length+' '+t('crmSelected');
+  } else {
+    bar.style.display='none';
+  }
+  if(allCb)allCb.indeterminate=sel.length>0&&sel.length<all.length;
+  if(allCb)allCb.checked=sel.length>0&&sel.length===all.length;
+}
+
+async function crmDeleteSelected(){
+  const ids=[...document.querySelectorAll('.crm-row-check:checked')].map(c=>parseInt(c.dataset.id));
+  if(!ids.length)return;
+  if(!confirm(ids.length+' '+t('alertConfirmDeleteMultiple')))return;
+  try{
+    await Promise.all(ids.map(id=>
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,resource:'crm',action:'leads.delete',data:{id}})})
+    ));
+    await loadCRMLeads();
+    await loadCRMFolders();
+  }catch(e){alert('Помилка: '+e.message);}
 }
 
 /* ── PARSE MAP ── */
@@ -1766,10 +1817,22 @@ function updateParseSelCount(){
 
 async function saveParseSelected(){
   const folderId=document.getElementById('crmParseFolderSel').value||null;
+  const city=document.getElementById('crmParseCity').value.trim();
   const selected=[...document.querySelectorAll('#crmParseList input[type=checkbox]:checked')]
     .map(c=>crmParseData[parseInt(c.dataset.idx)])
     .filter(Boolean)
-    .map(p=>({name:p.name,type:p.category||p.type||'sport_club',city:document.getElementById('crmParseCity').value.trim(),lat:p.latitude||p.lat||null,lng:p.longitude||p.lng||null}));
+    .map(p=>({
+      name:p.name,
+      type:p.category||p.type||'sport_club',
+      city:city,
+      lat:p.latitude||p.lat||null,
+      lng:p.longitude||p.lng||null,
+      phone:p.phone||null,
+      website:p.website||null,
+      description:p.address||null,
+      google_rating:p.google_rating||null,
+      google_reviews:p.google_reviews||null
+    }));
   if(!selected.length)return;
   try{
     await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
