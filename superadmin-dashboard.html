@@ -217,7 +217,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .color-picker-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .color-opt{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .12s;flex-shrink:0}
 .color-opt.sel{border-color:var(--black);transform:scale(1.2)}
-@media(max-width:768px){.crm-folders-panel{display:none}.crm-parse-grid{grid-template-columns:1fr 1fr}.lead-modal-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.crm-folders-panel{display:none}.crm-folders-panel.mob-open{display:flex;position:fixed;left:0;top:48px;bottom:56px;z-index:150;box-shadow:4px 0 16px rgba(0,0,0,.15);overflow-y:auto}.crm-parse-grid{grid-template-columns:1fr 1fr}.lead-modal-grid{grid-template-columns:1fr}}
 /* MAP */
 #crmParseMap{height:280px;border-radius:8px;overflow:hidden;background:var(--bg3);margin-bottom:10px}
 .leaflet-container{font-family:var(--sans)!important}
@@ -443,12 +443,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
               <button class="crm-type-check sel" data-type="gymnastics" onclick="crmToggleType(this)" id="t-type-gymnastics">Гімнастика</button>
             </div>
 
-            <!-- Папка -->
-            <div style="margin-bottom:12px">
-              <div class="form-label" style="margin-bottom:5px" id="t-crm-save-to">Зберегти в папку</div>
-              <select class="form-input" id="crmParseFolderSel" style="font-size:12px"></select>
-            </div>
-
             <button class="btn-primary" onclick="runParse()" id="crmRunParseBtn" disabled>
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
               <span id="t-crm-run-parse">Запустити парсинг</span>
@@ -476,7 +470,21 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
           <!-- Filters row -->
           <div class="crm-filters">
-            <input class="crm-filter-input" id="crmSearch" placeholder="Пошук..." style="width:180px" oninput="crmRenderTable()">
+            <button class="crm-parse-btn" onclick="crmToggleMobFolders()" id="crmMobFoldersBtn" style="display:none">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 3.5C1 2.67 1.67 2 2.5 2H5l1 1.5h3.5C10.33 3.5 11 4.17 11 5v3.5C11 9.33 10.33 10 9.5 10h-7C1.67 10 1 9.33 1 8.5v-5z" stroke="currentColor" stroke-width="1.1"/></svg>
+              <span id="t-crm-folders-btn">Папки</span>
+            </button>
+            <input class="crm-filter-input" id="crmSearch" placeholder="Пошук..." style="width:160px" oninput="crmRenderTable()">
+            <input class="crm-filter-input" id="crmFilterCity" placeholder="Місто..." style="width:130px" oninput="crmRenderTable()">
+            <select class="crm-filter-select" id="crmFilterType" onchange="crmRenderTable()">
+              <option value="">— Тип —</option>
+              <option value="sport_club" id="t-ftype-sport_club">Спортклуб</option>
+              <option value="dance" id="t-ftype-dance">Танці</option>
+              <option value="fitness" id="t-ftype-fitness">Фітнес</option>
+              <option value="martial_arts" id="t-ftype-martial_arts">Єдиноборства</option>
+              <option value="swimming" id="t-ftype-swimming">Плавання</option>
+              <option value="gymnastics" id="t-ftype-gymnastics">Гімнастика</option>
+            </select>
             <select class="crm-filter-select" id="crmFilterStatus" onchange="crmRenderTable()">
               <option value="" id="t-crm-f-all-status">Всі статуси</option>
               <option value="new">New</option>
@@ -790,6 +798,7 @@ const i18n={
     crmAll:'Всі ліди',crmAddFolder:'Нова папка',crmParseTitle:"Парсинг об'єктів",crmCity:'Місто',crmCityFind:'Знайти',crmRadius:'Радіус пошуку',crmTypes:'Типи об\'єктів',crmSaveTo:'Зберегти в папку',crmRunParse:'Запустити парсинг',crmSelectAll:'Вибрати всі',crmSaveSelected:'Додати вибрані',crmParseBtn:'Парсинг',crmEmpty:'Лідів ще немає. Запустіть парсинг!',
     crmTypeSportClub:'Спортклуб',crmTypeDance:'Танці',crmTypeFitness:'Фітнес',crmTypeMartialArts:'Єдиноборства',crmTypeSwimming:'Плавання',crmTypeGymnastics:'Гімнастика',
     crmSelected:'вибрано',crmBulkDelete:'Видалити вибрані',alertConfirmDeleteMultiple:'лідів буде видалено. Продовжити?',
+    crmFoldersMobBtn:'Папки',
     crmThName:'Назва',crmThFolder:'Папка',crmThCity:'Місто',crmThStatus:'Статус',crmThPriority:'Пріоритет',crmThNext:'Наст. контакт',crmThTouches:'Касань',
     crmFAllStatus:'Всі статуси',crmFHigh:'Високий',crmFMedium:'Середній',crmFLow:'Низький',crmFAllPriority:'Всі пріоритети',
     leadSecInfo:'Основна інформація',leadCity:'Місто',leadFolder:'Папка',leadPriorityLbl:'Пріоритет',leadNextLbl:'Наст. контакт',leadDescLbl:'Опис',
@@ -848,6 +857,7 @@ const i18n={
     crmAll:'Все лиды',crmAddFolder:'Новая папка',crmParseTitle:'Парсинг объектов',crmCity:'Город',crmCityFind:'Найти',crmRadius:'Радиус поиска',crmTypes:'Типы объектов',crmSaveTo:'Сохранить в папку',crmRunParse:'Запустить парсинг',crmSelectAll:'Выбрать все',crmSaveSelected:'Добавить выбранные',crmParseBtn:'Парсинг',crmEmpty:'Лидов ещё нет. Запустите парсинг!',
     crmTypeSportClub:'Спортклуб',crmTypeDance:'Танці',crmTypeFitness:'Фитнес',crmTypeMartialArts:'Единоборства',crmTypeSwimming:'Плавание',crmTypeGymnastics:'Гимнастика',
     crmSelected:'выбрано',crmBulkDelete:'Удалить выбранные',alertConfirmDeleteMultiple:'лидов будет удалено. Продолжить?',
+    crmFoldersMobBtn:'Папки',
     crmThName:'Название',crmThFolder:'Папка',crmThCity:'Город',crmThStatus:'Статус',crmThPriority:'Приоритет',crmThNext:'След. контакт',crmThTouches:'Касаний',
     crmFAllStatus:'Все статусы',crmFHigh:'Высокий',crmFMedium:'Средний',crmFLow:'Низкий',crmFAllPriority:'Все приоритеты',
     leadSecInfo:'Основная информация',leadCity:'Город',leadFolder:'Папка',leadPriorityLbl:'Приоритет',leadNextLbl:'След. контакт',leadDescLbl:'Описание',
@@ -906,6 +916,7 @@ const i18n={
     crmAll:'All leads',crmAddFolder:'New folder',crmParseTitle:'Parse objects',crmCity:'City',crmCityFind:'Find',crmRadius:'Search radius',crmTypes:'Object types',crmSaveTo:'Save to folder',crmRunParse:'Run parsing',crmSelectAll:'Select all',crmSaveSelected:'Add selected',crmParseBtn:'Parse',crmEmpty:'No leads yet. Run parsing!',
     crmTypeSportClub:'Sports club',crmTypeDance:'Dance',crmTypeFitness:'Fitness',crmTypeMartialArts:'Martial arts',crmTypeSwimming:'Swimming',crmTypeGymnastics:'Gymnastics',
     crmSelected:'selected',crmBulkDelete:'Delete selected',alertConfirmDeleteMultiple:'leads will be deleted. Continue?',
+    crmFoldersMobBtn:'Folders',
     crmThName:'Name',crmThFolder:'Folder',crmThCity:'City',crmThStatus:'Status',crmThPriority:'Priority',crmThNext:'Next contact',crmThTouches:'Touches',
     crmFAllStatus:'All statuses',crmFHigh:'High',crmFMedium:'Medium',crmFLow:'Low',crmFAllPriority:'All priorities',
     leadSecInfo:'Basic info',leadCity:'City',leadFolder:'Folder',leadPriorityLbl:'Priority',leadNextLbl:'Next contact',leadDescLbl:'Description',
@@ -977,6 +988,9 @@ function applyLang(){
     't-type-sport_club':'crmTypeSportClub','t-type-dance':'crmTypeDance','t-type-fitness':'crmTypeFitness',
     't-type-martial_arts':'crmTypeMartialArts','t-type-swimming':'crmTypeSwimming','t-type-gymnastics':'crmTypeGymnastics',
     't-crm-bulk-delete':'crmBulkDelete',
+    't-crm-folders-btn':'crmFoldersMobBtn',
+    't-ftype-sport_club':'crmTypeSportClub','t-ftype-dance':'crmTypeDance','t-ftype-fitness':'crmTypeFitness',
+    't-ftype-martial_arts':'crmTypeMartialArts','t-ftype-swimming':'crmTypeSwimming','t-ftype-gymnastics':'crmTypeGymnastics',
     't-crm-types':'crmTypes','t-crm-save-to':'crmSaveTo','t-crm-run-parse':'crmRunParse',
     't-crm-select-all':'crmSelectAll','t-crm-save-selected':'crmSaveSelected','t-crm-parse-btn':'crmParseBtn',
     't-crm-empty':'crmEmpty',
@@ -998,6 +1012,8 @@ function applyLang(){
     const map={'UA':'uk','RU':'ru','EN':'en'};
     btn.classList.toggle('active',map[btn.textContent]===currentLang);
   });
+  // Re-render CRM folders with new language
+  if(crmFolders.length){renderCRMFolders();renderCRMFolderSelects();}
 }
 function setLang(lang){currentLang=lang;localStorage.setItem('lang',lang);applyLang();}
 
@@ -1592,15 +1608,18 @@ async function loadCRMLeads(){
 function renderCRMFolders(){
   const el=document.getElementById('crmFoldersList');
   if(!el)return;
+  // Show mobile folders button
+  const mobBtn=document.getElementById('crmMobFoldersBtn');
+  if(mobBtn)mobBtn.style.display='';
   el.innerHTML=crmFolders.map(f=>{
     const cnt=crmLeads.filter(l=>l.folder_id===f.id).length;
-    const lockIcon=f.is_default?'<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="2.5" y="5" width="7" height="5.5" rx="1" stroke="currentColor" stroke-width="1.1"/><path d="M4 5V3.5a2 2 0 014 0V5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>':'';
+    const displayName=getFolderName(f);
     const editBtn=!f.is_default?`<button class="crm-folder-act" onclick="event.stopPropagation();openFolderModal(${f.id})" title="Редагувати"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>`:'';
     const delBtn=!f.is_default?`<button class="crm-folder-act" onclick="event.stopPropagation();deleteFolder(${f.id})" title="Видалити"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`:'';
     const editDef=f.is_default?`<button class="crm-folder-act" onclick="event.stopPropagation();openFolderModal(${f.id})" title="Редагувати"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>`:'';
-    return `<button class="crm-folder-btn${crmActiveFolderId===f.id?' active':''}" onclick="crmSetFolder(${f.id},this)" id="crm-folder-${f.id}">
+    return `<button class="crm-folder-btn${crmActiveFolderId===f.id?' active':''}" onclick="crmSetFolder(${f.id},this);document.getElementById('crmFoldersPanel').classList.remove('mob-open')" id="crm-folder-${f.id}">
       <div class="crm-folder-dot" style="background:${f.color}"></div>
-      <span>${f.name}</span>
+      <span>${displayName}</span>
       <div class="crm-folder-acts">${editDef}${editBtn}${delBtn}</div>
       <span class="crm-folder-count">${cnt||''}</span>
     </button>`;
@@ -1609,12 +1628,10 @@ function renderCRMFolders(){
 }
 
 function renderCRMFolderSelects(){
-  const opts=crmFolders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
+  const opts=crmFolders.map(f=>`<option value="${f.id}">${getFolderName(f)}</option>`).join('');
   const noOpt=`<option value="">— Без папки —</option>`;
-  ['leadFolder','crmParseFolderSel'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.innerHTML=(id==='leadFolder'?noOpt:'')+opts;
-  });
+  const el=document.getElementById('leadFolder');
+  if(el)el.innerHTML=noOpt+opts;
 }
 
 function crmSetFolder(id,el){
@@ -1638,11 +1655,15 @@ function crmRenderStats(){
 
 function crmRenderTable(){
   const search=document.getElementById('crmSearch').value.toLowerCase();
+  const cityF=document.getElementById('crmFilterCity').value.toLowerCase();
+  const typeF=document.getElementById('crmFilterType').value;
   const stF=document.getElementById('crmFilterStatus').value;
   const prF=document.getElementById('crmFilterPriority').value;
   const today=new Date().toISOString().split('T')[0];
   let filtered=crmLeads.filter(l=>{
-    if(search&&!l.name.toLowerCase().includes(search)&&!(l.city||'').toLowerCase().includes(search))return false;
+    if(search&&!l.name.toLowerCase().includes(search))return false;
+    if(cityF&&!(l.city||'').toLowerCase().includes(cityF))return false;
+    if(typeF&&l.type!==typeF)return false;
     if(stF&&l.status!==stF)return false;
     if(prF&&l.priority!==prF)return false;
     return true;
@@ -1657,7 +1678,7 @@ function crmRenderTable(){
   const PRI_COLOR={high:'tag-red',medium:'tag-gray',low:'tag-gray'};
   tb.innerHTML=filtered.map(l=>{
     const folder=crmFolders.find(f=>f.id===l.folder_id);
-    const folderHtml=folder?`<span class="crm-folder-tag" style="background:${folder.color}22;color:${folder.color}"><div style="width:6px;height:6px;border-radius:50%;background:${folder.color};flex-shrink:0"></div>${folder.name}</span>`:'<span style="color:var(--muted2);font-size:11px">—</span>';
+    const folderHtml=folder?`<span class="crm-folder-tag" style="background:${folder.color}22;color:${folder.color}"><div style="width:6px;height:6px;border-radius:50%;background:${folder.color};flex-shrink:0"></div>${getFolderName(folder)}</span>`:'<span style="color:var(--muted2);font-size:11px">—</span>';
     const nc=l.next_contact_at?l.next_contact_at.split('T')[0]:'';
     const isOverdue=nc&&nc<today;
     const isToday=nc&&nc===today;
@@ -1769,7 +1790,27 @@ async function crmSearchCity(){
   }catch(e){alert('Помилка пошуку: '+e.message);}
 }
 
-function crmToggleType(btn){btn.classList.toggle('sel');}
+function crmToggleMobFolders(){
+  const panel=document.getElementById('crmFoldersPanel');
+  panel.classList.toggle('mob-open');
+}
+
+// Folder name translations for default folders
+const FOLDER_NAMES={
+  sport_club:{uk:'Спортивні клуби',ru:'Спортивные клубы',en:'Sports clubs'},
+  dance:{uk:'Танці',ru:'Танцы',en:'Dance'},
+  fitness:{uk:'Фітнес',ru:'Фитнес',en:'Fitness'},
+  martial_arts:{uk:'Єдиноборства',ru:'Единоборства',en:'Martial arts'},
+  swimming:{uk:'Плавання',ru:'Плавание',en:'Swimming'},
+  gymnastics:{uk:'Гімнастика',ru:'Гимнастика',en:'Gymnastics'}
+};
+
+function getFolderName(f){
+  if(f.is_default&&FOLDER_NAMES[f.slug]){
+    return FOLDER_NAMES[f.slug][currentLang]||FOLDER_NAMES[f.slug].uk||f.name;
+  }
+  return f.name;
+}
 
 async function runParse(){
   if(!crmMapCoords){alert('Клікніть на карту щоб вибрати точку');return;}
@@ -1816,27 +1857,31 @@ function updateParseSelCount(){
 }
 
 async function saveParseSelected(){
-  const folderId=document.getElementById('crmParseFolderSel').value||null;
   const city=document.getElementById('crmParseCity').value.trim();
   const selected=[...document.querySelectorAll('#crmParseList input[type=checkbox]:checked')]
     .map(c=>crmParseData[parseInt(c.dataset.idx)])
     .filter(Boolean)
-    .map(p=>({
-      name:p.name,
-      type:p.category||p.type||'sport_club',
-      city:city,
-      lat:p.latitude||p.lat||null,
-      lng:p.longitude||p.lng||null,
-      phone:p.phone||null,
-      website:p.website||null,
-      description:p.address||null,
-      google_rating:p.google_rating||null,
-      google_reviews:p.google_reviews||null
-    }));
+    .map(p=>{
+      // Auto-assign folder by category slug
+      const folder=crmFolders.find(f=>f.slug===p.category);
+      return {
+        name:p.name,
+        type:p.category||'sport_club',
+        city:city,
+        lat:p.latitude||p.lat||null,
+        lng:p.longitude||p.lng||null,
+        phone:p.phone||null,
+        website:p.website||null,
+        description:p.address||null,
+        google_rating:p.google_rating||null,
+        google_reviews:p.google_reviews||null,
+        folder_id:folder?folder.id:null
+      };
+    });
   if(!selected.length)return;
   try{
     await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'leads.save',data:{leads:selected,folder_id:folderId?parseInt(folderId):null}})});
+      body:JSON.stringify({token,resource:'crm',action:'leads.save',data:{leads:selected}})});
     document.getElementById('crmParseResults').style.display='none';
     crmParseData=[];
     closeParsPanel();
