@@ -217,7 +217,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .color-picker-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .color-opt{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .12s;flex-shrink:0}
 .color-opt.sel{border-color:var(--black);transform:scale(1.2)}
-@media(max-width:768px){.crm-folders-panel{display:none}.crm-folders-panel.mob-open{display:flex;position:fixed;left:0;top:48px;bottom:56px;z-index:150;box-shadow:4px 0 16px rgba(0,0,0,.15);overflow-y:auto}.crm-parse-grid{grid-template-columns:1fr 1fr}.lead-modal-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.crm-folders-panel{display:none}.crm-folders-panel.mob-open{display:flex;position:fixed;left:0;top:48px;bottom:56px;z-index:150;box-shadow:4px 0 16px rgba(0,0,0,.15);overflow-y:auto;background:var(--bg)}.crm-mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:149}.crm-mob-overlay.active{display:block}.crm-parse-grid{grid-template-columns:1fr 1fr}.lead-modal-grid{grid-template-columns:1fr}}
 /* MAP */
 #crmParseMap{height:280px;border-radius:8px;overflow:hidden;background:var(--bg3);margin-bottom:10px}
 .leaflet-container{font-family:var(--sans)!important}
