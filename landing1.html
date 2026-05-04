@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="light" data-lang="ua">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InSkill.online</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:           #ffffff;
+  --bg2:          #f8f8f8;
+  --bg3:          #f2f2f2;
+  --border:       #e5e5e5;
+  --border2:      #cccccc;
+  --text:         #1a1a1a;
+  --muted:        #6b6b6b;
+  --muted2:       #aaaaaa;
+  --black:        #111111;
+  --accent:       #C0392B;
+  --accent-hover: #A93226;
+  --accent-light: #fdf4f4;
+  --accent-mid:   #E74C3C;
+  --tag-green:    #15803d;
+  --tag-green-bg: #f0fdf4;
+  --tag-red:      #991b1b;
+  --tag-red-bg:   #fef2f2;
+  --tag-blue:     #1d4ed8;
+  --tag-blue-bg:  #eff6ff;
+  --tag-gray:     #555555;
+  --tag-gray-bg:  #f5f5f5;
+  --shadow:       0 1px 3px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.04);
+  --shadow-md:    0 4px 16px rgba(0,0,0,.08);
+  --radius:       12px;
+  --nav-bg:       rgba(255,255,255,.96);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── NAV ─── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 52px;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 28px; gap: 12px;
+  z-index: 200;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; margin-right: auto;
+}
+.nav-logo-text {
+  font-size: 15px; font-weight: 600;
+  color: var(--black); letter-spacing: -.03em;
+}
+.nav-logo-text span { font-weight: 300; color: #C0392B; }
+
+/* desktop nav links */
+.nav-links {
+  display: flex; align-items: center; gap: 4px;
+  margin: 0 16px;
+}
+.nav-link {
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  text-decoration: none; padding: 5px 10px; border-radius: 6px;
+  transition: all .15s; white-space: nowrap;
+}
+.nav-link:hover { color: var(--black); background: var(--bg3); }
+
+.nav-right-group { display: flex; align-items: center; gap: 8px; }
+
+.nav-login {
+  font-size: 12px; font-weight: 500; color: var(--muted);
+  text-decoration: none; padding: 6px 12px;
+  border: 1px solid var(--border); border-radius: 7px;
+  transition: all .15s; white-space: nowrap;
+}
+.nav-login:hover { border-color: var(--border2); color: var(--text); background: var(--bg2); }
+
+/* burger */
+.nav-burger {
+  display: none; flex-direction: column; gap: 4px;
+  width: 32px; height: 32px; background: none; border: none;
+  cursor: pointer; padding: 6px; justify-content: center;
+}
+.nav-burger span {
+  display: block; height: 1.5px; background: var(--black);
+  border-radius: 2px; transition: all .2s;
+}
+
+/* mobile menu */
+.nav-mobile-menu {
+  display: none; flex-direction: column;
+  position: fixed; top: 52px; left: 0; right: 0;
+  background: var(--nav-bg); border-bottom: 1px solid var(--border);
+  padding: 12px 20px 20px; z-index: 199;
+  backdrop-filter: blur(12px);
+}
+.nav-mobile-menu.open { display: flex; }
+.nav-mobile-link {
+  font-size: 14px; font-weight: 500; color: var(--text);
+  text-decoration: none; padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.nav-mobile-link:last-of-type { border-bottom: none; }
+.nav-mobile-cta {
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-top: 12px; padding: 12px 24px;
+  background: var(--accent); color: #fff;
+  border-radius: 9px; font-size: 14px; font-weight: 600;
+  text-decoration: none; text-align: center;
+}
+
+@media (max-width: 860px) {
+  .nav-links { display: none; }
+}
+@media (max-width: 600px) {
+  .nav-right-group .nav-login { display: none; }
+  .nav-right-group .nav-cta { display: none; }
+  .nav-burger { display: flex; }
+}
+
+.lang-switcher {
+  display: flex; align-items: center; gap: 2px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 3px;
+}
+.lang-btn {
+  padding: 3px 9px; border: none; border-radius: 5px;
+  background: transparent; color: var(--muted);
+  font-size: 11px; font-weight: 500; font-family: inherit;
+  cursor: pointer; transition: all .15s; letter-spacing: .02em;
+}
+.lang-btn.active {
+  background: var(--bg); color: var(--black);
+  box-shadow: 0 1px 3px rgba(0,0,0,.1);
+}
+
+.nav-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 16px;
+  background: var(--accent); color: #fff;
+  border: none; border-radius: 8px;
+  font-size: 12px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: background .15s; text-decoration: none;
+  letter-spacing: -.01em;
+}
+.nav-cta:hover { background: var(--accent-hover); }
+
+/* ─── SECTIONS ─── */
+section { padding: 52px 28px; }
+.container { max-width: 900px; margin: 0 auto; }
+.container-narrow { max-width: 640px; margin: 0 auto; }
+
+/* ─── HERO ─── */
+.hero {
+  padding: 140px 28px 100px;
+  margin-top: 52px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 11px; font-weight: 500; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 28px;
+  padding: 4px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+.hero-eyebrow .dot {
+  width: 6px; height: 6px;
+  background: var(--accent); border-radius: 50%;
+}
+
+.hero h1 {
+  font-size: clamp(26px, 4vw, 48px);
+  font-weight: 700; color: var(--black);
+  line-height: 1.1; letter-spacing: -.04em;
+  max-width: 720px; margin-bottom: 24px;
+}
+.hero h1 em { font-style: normal; color: var(--accent); }
+
+.hero-lead {
+  font-size: 16px; color: var(--muted);
+  max-width: 540px; line-height: 1.75;
+  margin-bottom: 40px; font-weight: 400;
+}
+
+.hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; background: var(--accent); color: #fff;
+  border: none; border-radius: 9px;
+  font-size: 14px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: background .15s; text-decoration: none;
+}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 11px 20px; background: transparent; color: var(--muted);
+  border: 1px solid var(--border); border-radius: 9px;
+  font-size: 14px; font-weight: 500; font-family: inherit;
+  cursor: pointer; transition: all .15s; text-decoration: none;
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+
+/* ─── NARRATIVE BLOCK ─── */
+.narrative-block {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 52px 28px;
+}
+.narrative-block .container-narrow { max-width: 680px; }
+
+.narrative-tag {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 10px; font-weight: 500; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 32px; padding: 4px 12px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 20px;
+}
+
+.narrative-block h2 {
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 700; color: var(--black);
+  letter-spacing: -.04em; line-height: 1.15;
+  margin-bottom: 28px;
+}
+.narrative-block h2 em { font-style: normal; color: var(--accent); }
+
+/* Timeline steps inside one block */
+.story-steps { display: flex; flex-direction: column; gap: 0; }
+.story-step {
+  display: grid; grid-template-columns: 28px 1fr;
+  gap: 16px; padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.story-step:last-child { border-bottom: none; }
+.story-step-line {
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.story-step-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--border2); flex-shrink: 0; margin-top: 5px;
+}
+.story-step-dot.accent { background: var(--accent); }
+.story-step-connector {
+  flex: 1; width: 1px; background: var(--border); margin-top: 6px;
+}
+.story-step-content {}
+.story-step-label {
+  font-size: 10px; font-weight: 500; color: var(--muted2);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px;
+}
+.story-step-text {
+  font-size: 14px; color: var(--text); line-height: 1.7;
+}
+.story-step-text strong { color: var(--black); font-weight: 600; }
+.story-step-text em { font-style: normal; color: var(--accent); font-weight: 500; }
+
+/* pivot dark strip */
+.pivot-strip {
+  background: #1a1a2e;
+  padding: 52px 28px;
+  border-bottom: none;
+}
+.pivot-strip .container-narrow { max-width: 680px; }
+.pivot-strip h2 {
+  font-size: clamp(22px, 2.8vw, 32px);
+  font-weight: 700; color: #f0f0f0;
+  letter-spacing: -.04em; line-height: 1.2;
+  margin-bottom: 24px;
+}
+.pivot-strip h2 em { font-style: normal; color: #ff8a80; }
+.pivot-strip p {
+  font-size: 15px; color: rgba(230,230,240,.65);
+  line-height: 1.85; margin-bottom: 16px;
+}
+.pivot-strip p strong { color: rgba(230,230,240,.9); font-weight: 600; }
+.pivot-strip p:last-child { margin-bottom: 0; }
+.pivot-tag {
+  display: inline-block; font-size: 10px; font-weight: 500;
+  color: rgba(230,230,240,.45); text-transform: uppercase; letter-spacing: .08em;
+  margin-bottom: 28px; padding: 4px 12px;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+}
+
+
+/* ─── FEATURES ─── */
+.features { background: var(--bg2); }
+.section-label {
+  display: inline-block;
+  font-size: 10px; font-weight: 500; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: 14px; padding: 3px 11px;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 20px;
+}
+.section-title {
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 700; color: var(--black);
+  letter-spacing: -.03em; line-height: 1.2;
+  margin-bottom: 10px;
+}
+.section-sub {
+  font-size: 14px; color: var(--muted); line-height: 1.7;
+  max-width: 520px; margin-bottom: 36px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.feature-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: border-color .15s, box-shadow .15s;
+  box-shadow: var(--shadow);
+}
+.feature-card:hover { border-color: var(--border2); box-shadow: var(--shadow-md); }
+.feature-icon {
+  width: 36px; height: 36px;
+  background: var(--accent-light);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.feature-title {
+  font-size: 14px; font-weight: 600; color: var(--black);
+  margin-bottom: 6px; letter-spacing: -.02em;
+}
+.feature-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+.feature-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 12px; font-size: 11px; font-weight: 500;
+  color: var(--tag-green); background: var(--tag-green-bg);
+  border-radius: 6px; padding: 3px 9px;
+}
+
+/* ─── CLOSER SECTION ─── */
+.closer { background: var(--bg2); border-top: 1px solid var(--border); }
+.closer-inner {
+  max-width: 640px; margin: 0 auto; text-align: center;
+}
+.closer h2 {
+  font-size: clamp(22px, 3vw, 34px); font-weight: 700; color: var(--black);
+  letter-spacing: -.04em; line-height: 1.2; margin-bottom: 16px;
+}
+.closer h2 em { font-style: normal; color: var(--accent); }
+.closer p { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 36px; max-width: 480px; margin-left: auto; margin-right: auto; }
+.closer-note { margin-top: 16px; font-size: 12px; color: var(--muted2); }
+
+/* ─── CTA SECTION ─── */
+.cta-section { background: var(--black); padding: 64px 28px; text-align: center; position: relative; overflow: hidden; }
+.cta-section::before {
+  content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 500px; height: 300px;
+  background: radial-gradient(ellipse, rgba(139,26,26,.25) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-eyebrow {
+  display: inline-block; font-size: 10px; font-weight: 500;
+  color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .1em;
+  margin-bottom: 20px; padding: 3px 12px;
+  background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px;
+}
+.cta-section h2 {
+  font-size: clamp(22px, 3vw, 36px); font-weight: 700; color: #fff;
+  letter-spacing: -.04em; line-height: 1.15; margin-bottom: 14px;
+}
+.cta-section h2 em { font-style: normal; color: #e07070; }
+.cta-section p { font-size: 15px; color: rgba(255,255,255,.4); margin-bottom: 36px; line-height: 1.75; max-width: 420px; margin-left: auto; margin-right: auto; }
+.cta-btns { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; position: relative; }
+.btn-cta-main {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 28px; background: var(--accent); color: #fff;
+  border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: background .15s; text-decoration: none;
+}
+.btn-cta-main:hover { background: var(--accent-hover); }
+.btn-cta-ghost {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 13px 22px; background: transparent; color: rgba(255,255,255,.6);
+  border: 1px solid rgba(255,255,255,.15); border-radius: 10px;
+  font-size: 14px; font-weight: 500; font-family: inherit;
+  cursor: pointer; transition: all .15s; text-decoration: none;
+}
+.btn-cta-ghost:hover { color: #fff; border-color: rgba(255,255,255,.35); }
+.cta-footnote { margin-top: 18px; font-size: 12px; color: rgba(255,255,255,.2); position: relative; }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--bg); border-top: 1px solid var(--border);
+  padding: 24px 28px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.footer-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.footer-logo-text { font-size: 13px; font-weight: 600; color: var(--black); letter-spacing: -.03em; }
+.footer-logo-text span { font-weight: 300; color: #C0392B; }
+.footer-copy { font-size: 11px; color: var(--muted2); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 720px) {
+  .nav { padding: 0 16px; }
+  section { padding: 40px 16px; }
+  .hero { padding: 100px 16px 64px; }
+  .narrative-block { padding: 40px 16px; }
+  .pivot-strip { padding: 40px 16px; }
+  .iphone-wrap { width: 100%; max-width: 280px; }
+  footer { padding: 20px 16px; }
+  .cta-section { padding: 48px 16px; }
+}
+@media (max-width: 480px) {
+  .features-grid { grid-template-columns: 1fr; }
+  .screens-tabs { gap: 6px; }
+}
+
+
+}
+
+
+
+/* ─── PHONE COMPONENT CSS ─── */
+.phone-topbar { flex-shrink: 0; }
+.iphone-screen .phone-body {
+  flex: 1;
+  overflow: hidden;
+  max-height: none;
+  padding: 10px 12px;
+}
+.iphone-screen .phone-tabs { flex-shrink: 0; }
+
+/* ─── PHONE CONTENT CSS ─── */
+.ph-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px;
+  margin-bottom: 10px;
+}
+.ph-card-title {
+  font-size: 13px; font-weight: 600; color: var(--black);
+  margin-bottom: 3px; letter-spacing: -.02em;
+}
+.ph-card-sub { font-size: 11px; color: var(--muted); }
+.ph-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--bg3); display: flex; align-items: center;
+  justify-content: center; font-size: 14px; font-weight: 600;
+  color: var(--muted2); margin: 0 auto 10px; overflow: hidden;
+  border: 2px solid var(--border);
+}
+.ph-name { font-size: 15px; font-weight: 700; color: var(--black); text-align: center; letter-spacing: -.03em; margin-bottom: 10px; }
+.ph-chips {
+  display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-bottom: 12px;
+}
+.ph-chip {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 20px; padding: 2px 8px;
+  font-size: 10px; color: var(--muted);
+  display: flex; align-items: center; gap: 4px;
+}
+.ph-belt {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 10px; background: var(--tag-blue-bg);
+  border-radius: 8px; margin-bottom: 12px;
+  font-size: 11px; font-weight: 600; color: var(--tag-blue);
+}
+.ph-belt-dot { width: 8px; height: 8px; border-radius: 50%; background: #3b82f6; }
+.ph-stats {
+  display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 4px; text-align: center; margin-bottom: 6px;
+}
+.ph-stat-val { font-size: 15px; font-weight: 700; color: var(--black); }
+.ph-stat-lab { font-size: 8px; color: var(--muted2); text-transform: uppercase; letter-spacing: .04em; }
+
+/* ph table */
+.ph-table { width: 100%; border-collapse: collapse; }
+.ph-table th { font-size: 9px; font-weight: 500; color: var(--muted2); text-transform: uppercase; letter-spacing: .05em; padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; }
+.ph-table td { font-size: 11px; padding: 7px 6px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+.ph-table tr:last-child td { border-bottom: none; }
+.ph-nm { color: var(--tag-blue); font-weight: 500; }
+.ph-tag { display: inline-block; padding: 2px 6px; border-radius: 5px; font-size: 9px; font-weight: 500; }
+.ph-tg { background: var(--tag-green-bg); color: var(--tag-green); }
+.ph-tr { background: var(--tag-red-bg); color: var(--tag-red); }
+.ph-tb { background: var(--tag-blue-bg); color: var(--tag-blue); }
+.ph-ts { background: var(--tag-gray-bg); color: var(--tag-gray); }
+.ph-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.ph-row-avatar {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--bg3); display: inline-flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 600; color: var(--muted);
+}
+
+/* ph stat blocks */
+.ph-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.ph-stat-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.ph-stat-big { font-size: 20px; font-weight: 700; color: var(--black); letter-spacing: -.04em; }
+.ph-stat-big.green { color: var(--tag-green); }
+.ph-stat-big.red { color: var(--tag-red); }
+.ph-stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+
+/* ph belt history */
+.ph-belt-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.ph-belt-row:last-child { border-bottom: none; }
+.ph-belt-circle {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; margin-top: 2px;
+}
+.ph-belt-info { flex: 1; }
+.ph-belt-name { font-size: 12px; font-weight: 600; color: var(--black); }
+.ph-belt-date { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.ph-belt-duration { font-size: 10px; color: var(--muted2); }
+.ph-belt-next {
+  background: #fef9c3; border-radius: 4px; padding: 2px 6px;
+  font-size: 9px; color: #854d0e; margin-top: 4px; display: inline-block;
+}
+
+/* ph medical */
+.ph-med-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px; margin-bottom: 8px;
+}
+.ph-med-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.ph-med-status {
+  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+}
+.ph-med-exp { font-size: 11px; color: var(--text); font-weight: 500; }
+.ph-med-days { font-size: 10px; color: var(--tag-green); }
+.ph-med-days.expired { color: var(--tag-red); }
+.ph-med-field { font-size: 10px; color: var(--muted); margin-top: 4px; }
+.ph-med-field strong { color: var(--text); font-weight: 500; }
+
+/* ph attendance checkboxes */
+.ph-check-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.ph-check-row:last-of-type { border-bottom: none; }
+.ph-checkbox {
+  width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0;
+  background: var(--black); display: flex; align-items: center; justify-content: center;
+}
+.ph-checkbox.empty { background: var(--bg); border: 1px solid var(--border2); }
+.ph-check-name { font-size: 12px; font-weight: 500; color: var(--black); flex: 1; }
+.ph-check-pct { font-size: 11px; font-weight: 600; color: var(--tag-green); }
+.ph-summary-box {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px;
+  margin: 10px 0; font-size: 11px;
+}
+.ph-summary-row { display: flex; justify-content: space-between; align-items: center; color: var(--muted); }
+.ph-summary-row strong { color: var(--black); }
+
+/* ph recognition */
+.ph-recognition-overlay {
+  background: rgba(0,0,0,.5);
+  border-radius: 8px; padding: 24px;
+  text-align: center; margin-bottom: 10px;
+}
+.ph-rec-spinner {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.2);
+  border-top-color: #fff;
+  margin: 0 auto 14px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.ph-rec-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.ph-rec-sub { font-size: 11px; color: rgba(255,255,255,.6); }
+
+/* ph payments */
+.ph-pay-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.ph-pay-row:last-child { border-bottom: none; }
+.ph-pay-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--muted); flex-shrink: 0; }
+.ph-pay-info { flex: 1; }
+.ph-pay-name { font-size: 12px; font-weight: 500; color: var(--black); }
+.ph-pay-period { font-size: 10px; color: var(--muted); }
+
+/* ph bottom tabs */
+.phone-tabs {
+  border-top: 1px solid var(--border);
+  display: flex; background: var(--bg);
+}
+.ph-tab {
+  flex: 1; padding: 8px 4px; text-align: center;
+  font-size: 9px; color: var(--muted2);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.ph-tab.active { color: var(--black); }
+.ph-tab svg { display: block; }
+
+/* ph page title */
+.ph-page-title {
+  font-size: 15px; font-weight: 700; color: var(--black);
+  letter-spacing: -.03em; margin-bottom: 12px;
+}
+
+/* ph chat */
+.ph-chat-list .ph-chat-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.ph-chat-item:last-child { border-bottom: none; }
+.ph-chat-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--bg3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--muted); }
+.ph-chat-name { font-size: 12px; font-weight: 500; color: var(--black); }
+.ph-chat-preview { font-size: 10px; color: var(--muted); }
+
+/* ph tournament */
+.ph-tourney {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px; margin-bottom: 8px;
+}
+.ph-tourney-title { font-size: 12px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+.ph-tourney-date { font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+.ph-tourney-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+.ph-tourney-result { font-size: 11px; color: var(--text); margin-top: 4px; }
+
+/* ph calendar */
+.ph-cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.ph-cal-title { font-size: 12px; font-weight: 600; color: var(--black); }
+.ph-cal-nav { width: 20px; height: 20px; border: 1px solid var(--border); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--muted); cursor: pointer; }
+.ph-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.ph-cal-dow { font-size: 8px; color: var(--muted2); padding: 2px 0; }
+.ph-cal-day { font-size: 10px; color: var(--text); padding: 4px 2px; border-radius: 5px; }
+.ph-cal-day.present { background: var(--tag-green-bg); color: var(--tag-green); font-weight: 600; }
+.ph-cal-day.absent { background: var(--tag-red-bg); color: var(--tag-red); }
+.ph-cal-day.today { border: 1.5px solid var(--black); }
+.ph-cal-day.future { color: var(--muted2); }
+
+.phone-lang {
+  display: flex; gap: 2px; margin-left: auto;
+}
+.phone-lang span {
+  font-size: 9px; font-weight: 500; color: var(--muted);
+  padding: 2px 5px; border-radius: 4px;
+}
+.phone-lang span.active-lang {
+  background: var(--black); color: #fff;
+}
+
+.phone-logo { display: flex; align-items: center; gap: 5px; }
+.phone-logo-text { font-size: 12px; font-weight: 600; color: var(--black); letter-spacing: -.03em; }
+.phone-logo-text span { font-weight: 300; color: #C0392B; }
+.phone-lang {
+  display: flex; gap: 2px; margin-left: auto;
+}
+.phone-logo-text { font-size: 12px; font-weight: 600; color: var(--black); letter-spacing: -.03em; }
+.phone-logo-text span { font-weight: 300; color: #C0392B; }
+.phone-lang {
+  display: flex; gap: 2px; margin-left: auto;
+}
+.phone-logo-text span { font-weight: 300; color: #C0392B; }
+.phone-lang {
+  display: flex; gap: 2px; margin-left: auto;
+}
+/* ─── SCREEN MOCKUP ─── */
+.sc-mockup {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  width: 280px;
+}
+.sc-mockup .phone {
+  width: 100%;
+  display: flex; flex-direction: column;
+}
+.sc-mockup .phone-topbar { flex-shrink: 0; }
+.sc-mockup .phone-body {
+  padding: 12px 14px;
+  max-height: 420px;
+  overflow: hidden;
+}
+.sc-mockup .phone-tabs { flex-shrink: 0; }
+
+/* ─── HERO SLOGAN ─── */
+.hero-sub-only {
+  padding: 20px 28px 0;
+  margin-top: 52px;
+  background: var(--bg);
+}
+.hero-slogan {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.hero-logo {
+  display: inline-flex; align-items: center; gap: 7px;
+  text-decoration: none; flex-shrink: 0;
+}
+.hero-logo-text {
+  font-size: 15px; font-weight: 600;
+  color: var(--black); letter-spacing: -.03em;
+}
+.hero-logo-text span { font-weight: 300; color: #C0392B; }
+.hero-slogan-sep {
+  font-size: 15px; color: var(--muted2); flex-shrink: 0;
+}
+.hero-slogan-text {
+  font-size: 15px; font-weight: 400;
+  color: var(--muted); line-height: 1.5;
+}
+
+/* ─── SCREENSHOTS TEXT-ONLY ─── */
+.screenshots { background: var(--bg2); }
+.screens-intro { margin-bottom: 32px; }
+.sc-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+.sc-tab {
+  padding: 7px 16px; border: 1px solid var(--border);
+  border-radius: 20px; background: var(--bg);
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all .15s; font-family: inherit; white-space: nowrap;
+}
+.sc-tab:hover { border-color: var(--border2); color: var(--text); }
+.sc-tab.active { background: var(--black); color: #fff; border-color: var(--black); }
+.sc-panel { display: none; max-width: 620px; }
+.sc-panel.active { display: block; }
+.sc-panel-h {
+  font-size: 22px; font-weight: 700; color: var(--black);
+  letter-spacing: -.03em; margin-bottom: 12px; line-height: 1.25;
+}
+.sc-panel-p { font-size: 15px; color: var(--muted); line-height: 1.8; margin-bottom: 20px; }
+.sc-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.stag { display: inline-block; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 6px; }
+.stag-g { background: var(--tag-green-bg); color: var(--tag-green); }
+.stag-b { background: var(--tag-blue-bg); color: var(--tag-blue); }
+.stag-r { background: var(--tag-red-bg); color: var(--tag-red); }
+.stag-a { background: var(--accent-light); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
+      <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+      <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="nav-logo-text">InSkill<span>.online</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="#narrative-anchor" class="nav-link" data-i="navl_why">Почему учёт</a>
+    <a href="#features" class="nav-link" data-i="navl_how">Как работает</a>
+    <a href="#screenshots-anchor" class="nav-link" data-i="navl_product">Продукт</a>
+    <a href="#cta" class="nav-link" data-i="navl_price">Попробовать</a>
+  </div>
+  <div class="nav-right-group">
+    <div class="lang-switcher">
+      <button class="lang-btn" onclick="setLang('ua')">UA</button>
+      <button class="lang-btn active" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="https://skpobeditel.onrender.com" class="nav-login" data-i="nav_login">Вход</a>
+    <a href="#cta" class="nav-cta" data-i="nav_cta">Попробовать</a>
+  </div>
+  <button class="nav-burger" onclick="toggleMobileMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="nav-mobile-menu" id="mobileMenu">
+  <a href="#narrative-anchor" class="nav-mobile-link" data-i="navl_why" onclick="toggleMobileMenu()">Почему учёт</a>
+  <a href="#features" class="nav-mobile-link" data-i="navl_how" onclick="toggleMobileMenu()">Как работает</a>
+  <a href="#screenshots-anchor" class="nav-mobile-link" data-i="navl_product" onclick="toggleMobileMenu()">Продукт</a>
+  <a href="https://skpobeditel.onrender.com" class="nav-mobile-link" data-i="nav_login" onclick="toggleMobileMenu()">Вход</a>
+  <a href="#cta" class="nav-mobile-cta" data-i="nav_cta" onclick="toggleMobileMenu()">Попробовать</a>
+</div>
+
+
+<!-- ═══ HERO ═══ -->
+<section class="hero-sub-only">
+  <div class="container-narrow">
+    <div class="hero-slogan">
+      <a href="#" class="hero-logo">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+          <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="hero-logo-text">InSkill<span>.online</span></span>
+      </a>
+      <span class="hero-slogan-sep">—</span>
+      <span class="hero-slogan-text" data-i="hero_subtitle">автоматизированная AI система управления спортивными клубами нового поколения</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ NARRATIVE BLOCK ═══ -->
+<div id="narrative-anchor"></div>
+<section class="narrative-block">
+  <div class="container-narrow">
+    <div class="narrative-tag">
+      <span class="dot" style="width:5px;height:5px;background:var(--accent);border-radius:50%;display:inline-block;"></span>
+      <span data-i="narr_tag">Наблюдение из практики</span>
+    </div>
+    <h2 data-i="narr_h">Мы проанализировали более 100 спортивных клубов — <em>и обнаружили повторяющийся факт.</em></h2>
+
+    <div class="story-steps">
+
+      <div class="story-step">
+        <div class="story-step-line">
+          <div class="story-step-dot accent"></div>
+          <div class="story-step-connector"></div>
+        </div>
+        <div class="story-step-content">
+          <div class="story-step-label" data-i="s1_lab">Наблюдение</div>
+          <div class="story-step-text" data-i="s1_txt">У клубов с большим количеством учеников и стабильной выручкой всегда есть одна общая черта — <strong>системный учёт студентов, посещений и оплат.</strong> Это не совпадение.</div>
+        </div>
+      </div>
+
+      <div class="story-step">
+        <div class="story-step-line">
+          <div class="story-step-dot accent"></div>
+          <div class="story-step-connector"></div>
+        </div>
+        <div class="story-step-content">
+          <div class="story-step-label" data-i="s2_lab">Второй вывод</div>
+          <div class="story-step-text" data-i="s2_txt">Многие сильные тренеры теряют учеников не из-за качества обучения, а из-за <strong>отсутствия системной коммуникации</strong> — с родителями, по посещаемости и прогрессу. Информация просто не доходит вовремя или теряется.</div>
+        </div>
+      </div>
+
+      <div class="story-step">
+        <div class="story-step-line">
+          <div class="story-step-dot"></div>
+          <div class="story-step-connector"></div>
+        </div>
+        <div class="story-step-content">
+          <div class="story-step-label" data-i="s3_lab">Парадокс</div>
+          <div class="story-step-text" data-i="s3_txt">Все без исключения тренеры и владельцы клубов прекрасно это понимают. Но в 90% секций учёт либо не системный, либо его нет вообще. Почему?</div>
+        </div>
+      </div>
+
+      <div class="story-step">
+        <div class="story-step-line">
+          <div class="story-step-dot"></div>
+          <div class="story-step-connector"></div>
+        </div>
+        <div class="story-step-content">
+          <div class="story-step-label" data-i="s4_lab">Причина</div>
+          <div class="story-step-text" data-i="s4_txt">Не потому что тренеры не понимают ценность учёта. А потому что любой учёт требовал ресурса — <strong>времени тренера или администратора.</strong> У тренера этого ресурса нет. Он занят тренировочным процессом. Поэтому учёт откладывается — и не ведётся вовсе.</div>
+        </div>
+      </div>
+
+      <div class="story-step">
+        <div class="story-step-line">
+          <div class="story-step-dot"></div>
+        </div>
+        <div class="story-step-content">
+          <div class="story-step-label" data-i="s5_lab">Следствие</div>
+          <div class="story-step-text" data-i="s5_txt">Ребёнок перестал ходить — никто не позвонил. Родитель сказал «заплачу завтра» три месяца назад. Справка просрочена — никто не знает. Группа полупустая, но новых берут в очередь. Каждый из этих сценариев — не катастрофа. Но вместе они формируют <em>постоянную утечку денег</em>, которую невозможно увидеть без системы.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PIVOT STRIP ═══ -->
+<section class="pivot-strip">
+  <div class="container-narrow">
+    <div class="pivot-tag" data-i="pivot_tag">Что изменилось с этого года</div>
+    <h2 data-i="pivot_h">Раньше учёт без участия человека<br>не существовал <em>в принципе.</em></h2>
+    <p data-i="pivot_p1">Любая CRM работала по одному правилу: если данные не ввели — их нет. Никаких автоматических источников данных не было. Ни посещений, ни оплат, ни статусов учеников. Учёт = постоянная ручная работа. Без неё система просто пустая.</p>
+    <p data-i="pivot_p2"><strong>С этого года появился новый класс систем на базе искусственного интеллекта.</strong> Они снимают главное ограничение учёта — необходимость ручного ввода. Посещения фиксируются через AI-распознавание лиц. Медицинские справки считываются автоматически. Спортивные достижения собираются из открытых источников. Учёт больше не ведётся вручную — он формируется системой.</p>
+  </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="features" id="features">
+  <div class="container">
+    <span class="section-label" data-i="feat_label">Конкретные автоматизации</span>
+    <h2 class="section-title" data-i="feat_h">Не CRM. Конкретные механизмы<br>без ручного ввода.</h2>
+    <p class="section-sub" data-i="feat_sub">Каждый пункт — это процесс, который раньше требовал времени. Теперь он происходит сам.</p>
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><circle cx="18" cy="6" r="3" fill="currentColor" stroke="none"/><path d="M16.5 4.5L17.5 5.5L20 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-title" data-i="f1_t">Автораспознавание посещаемости</div>
+        <div class="feature-desc" data-i="f1_d">Тренер загружает фото группы — система сама отмечает кто присутствовал. Без журналов, без галочек, без лишних действий.</div>
+        <div class="feature-tag">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          <span data-i="f1_tag">Журнал ведётся сам</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        </div>
+        <div class="feature-title" data-i="f2_t">Контроль оплат без Excel</div>
+        <div class="feature-desc" data-i="f2_d">Статусы оплат, долги, даты окончания абонементов — всё в одном месте. Система сама напоминает должникам.</div>
+        <div class="feature-tag">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          <span data-i="f2_tag">Долги не теряются</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6M9 17h4"/></svg>
+        </div>
+        <div class="feature-title" data-i="f3_t">Медицинские справки</div>
+        <div class="feature-desc" data-i="f3_d">Родитель присылает фото справки. Система читает данные и ставит статус допуска автоматически. Просроченные — в уведомление.</div>
+        <div class="feature-tag">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          <span data-i="f3_tag">Нет юридических рисков</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="feature-title" data-i="f4_t">Турниры и победы</div>
+        <div class="feature-desc" data-i="f4_d">Результаты соревнований фиксируются в профиле спортсмена. История побед, мест, способов победы — доступна в любой момент.</div>
+        <div class="feature-tag">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          <span data-i="f4_tag">Растёт ценность клуба</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="feature-title" data-i="f5_t">Учёт студентов</div>
+        <div class="feature-desc" data-i="f5_d">Полный профиль каждого спортсмена: пояса, посещения, оплаты, справки, контакты. Без ручного ввода — данные собираются автоматически.</div>
+        <div class="feature-tag">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          <span data-i="f5_tag">Всё в одном месте</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="feature-title" data-i="f6_t">Аналитика для директора</div>
+        <div class="feature-desc" data-i="f6_d">Кто не ходит вторую неделю. Какая группа полупустая. Сколько собрано за месяц. Всё в реальном времени, без запросов к тренеру.</div>
+        <div class="feature-tag">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          <span data-i="f6_tag">Решения на основе данных</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ SCREENSHOTS ═══ -->
+<div id="screenshots-anchor"></div>
+<section class="screenshots">
+  <div class="container">
+    <div class="screens-intro">
+      <span class="section-label" data-i="sc_label">Как выглядит система</span>
+      <h2 class="section-title" data-i="sc_h">Интерфейс, который не нужно изучать</h2>
+      <p class="section-sub" data-i="sc_sub">Тренер видит только то, что нужно прямо сейчас. Директор — цифры по всему клубу.</p>
+    </div>
+
+    <div class="sc-tabs">
+      <button class="sc-tab active" onclick="showScreen(this,'athletes')" data-i="tab1">Спортсмены</button>
+      <button class="sc-tab" onclick="showScreen(this,'attendance')" data-i="tab2">Посещаемость</button>
+      <button class="sc-tab" onclick="showScreen(this,'payments')" data-i="tab3">Оплаты</button>
+      <button class="sc-tab" onclick="showScreen(this,'medical')" data-i="tab4">Справки</button>
+      <button class="sc-tab" onclick="showScreen(this,'tournaments')" data-i="tab5">Турниры</button>
+      <button class="sc-tab" onclick="showScreen(this,'recognition')" data-i="tab6">Распознавание</button>
+    </div>
+
+    <div class="sc-panel active" id="panel-athletes">
+      <h3 class="sc-panel-h" data-i="sc1_h"></h3>
+      <p class="sc-panel-p" data-i="sc1_p"></p>
+      <div class="sc-tags">
+        <span class="stag stag-b" data-i="sc1_t1"></span>
+        <span class="stag stag-g" data-i="sc1_t2"></span>
+      </div>
+    </div>
+
+    <div class="sc-panel" id="panel-attendance">
+      <h3 class="sc-panel-h" data-i="sc2_h"></h3>
+      <p class="sc-panel-p" data-i="sc2_p"></p>
+      <div class="sc-tags">
+        <span class="stag stag-g" data-i="sc2_t1"></span>
+        <span class="stag stag-b" data-i="sc2_t2"></span>
+      </div>
+    </div>
+
+    <div class="sc-panel" id="panel-payments">
+      <h3 class="sc-panel-h" data-i="sc3_h"></h3>
+      <p class="sc-panel-p" data-i="sc3_p"></p>
+      <div class="sc-tags">
+        <span class="stag stag-g" data-i="sc3_t1"></span>
+        <span class="stag stag-b" data-i="sc3_t2"></span>
+        <span class="stag stag-a" data-i="sc3_t3"></span>
+      </div>
+    </div>
+
+    <div class="sc-panel" id="panel-medical">
+      <h3 class="sc-panel-h" data-i="sc4_h"></h3>
+      <p class="sc-panel-p" data-i="sc4_p"></p>
+      <div class="sc-tags">
+        <span class="stag stag-g" data-i="sc4_t1"></span>
+        <span class="stag stag-r" data-i="sc4_t2"></span>
+      </div>
+    </div>
+
+    <div class="sc-panel" id="panel-tournaments">
+      <h3 class="sc-panel-h" data-i="sc5_h"></h3>
+      <p class="sc-panel-p" data-i="sc5_p"></p>
+      <div class="sc-tags">
+        <span class="stag stag-g" data-i="sc5_t1"></span>
+        <span class="stag stag-b" data-i="sc5_t2"></span>
+        <span class="stag stag-a" data-i="sc5_t3"></span>
+      </div>
+    </div>
+
+    <div class="sc-panel" id="panel-recognition">
+      <h3 class="sc-panel-h" data-i="sc6_h"></h3>
+      <p class="sc-panel-p" data-i="sc6_p"></p>
+      <div class="sc-tags">
+        <span class="stag stag-g" data-i="sc6_t1"></span>
+        <span class="stag stag-a" data-i="sc6_t2"></span>
+        <span class="stag stag-b" data-i="sc6_t3"></span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ CLOSER ═══ -->
+<section class="closer">
+  <div class="closer-inner container">
+    <h2 data-i="closer_h">Тренер возвращается<br>к своей роли — <em>тренировать.</em></h2>
+    <p data-i="closer_p">Учёт — базовый механизм финансовой стабильности клуба. Теперь он работает без участия тренера. Данные собираются сами. Деньги не теряются. Клуб растёт.</p>
+    <div class="hero-actions" style="justify-content:center;">
+      <a href="#cta" class="btn-primary" data-i="closer_btn">Подключить клуб бесплатно</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta-section" id="cta">
+  <div class="container" style="position:relative;">
+    <div class="cta-eyebrow" data-i="cta_label">Подключение</div>
+    <h2 data-i="cta_h">Перестаньте терять деньги<br>из-за отсутствия <em>учёта</em></h2>
+    <p data-i="cta_p">Первые 14 дней бесплатно. Настройка — один звонок. Никакого сложного внедрения.</p>
+    <div class="cta-btns">
+      <a href="#" class="btn-cta-main" data-i="cta_btn1">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.36 2 2 0 0 1 3.62 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.59a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
+        Посмотреть на своём клубе
+      </a>
+      <a href="#" class="btn-cta-ghost" data-i="cta_btn2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        Написать в Telegram
+      </a>
+    </div>
+    <div class="cta-footnote" data-i="cta_note">Без долгих переговоров. Без сложного внедрения.</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="footer-logo">
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/><path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/><path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="footer-logo-text">InSkill<span>.online</span></span>
+  </a>
+  <div class="footer-copy" data-i="footer_copy">© 2025 InSkill. CRM для дитячих спортивних клубів.</div>
+</footer>
+
+<script>
+// ─── MOBILE MENU ───
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// ─── TRANSLATIONS ───
+const T = {
+  ua: {
+    nav_cta: "Спробувати",
+    hero_subtitle: "автоматизована AI система управління спортивними клубами нового покоління",
+    nav_login: "Вхід",
+    navl_why: "Чому облік",
+    navl_how: "Як працює",
+    navl_product: "Продукт",
+    navl_price: "Спробувати",
+    hero_eyebrow: "AI система нового покоління",
+    narr_tag: "Спостереження з практики",
+    hero_h1: "inSkill.online —<br><em>автоматизована AI система</em><br>управління спортивними клубами.",
+    hero_lead: "Відвідуваність, оплати, довідки, успіхи учнів — все фіксується саме. Без участі тренера.",
+    hero_btn1: "Як це працює",
+    hero_btn2: "Спробувати безкоштовно →",
+    narr_h: "Ми проаналізували понад 100 спортивних клубів — <em>і виявили факт, що повторюється.</em>",
+    s1_lab: "Спостереження", s1_txt: "У клубів з великою кількістю учнів і стабільною виручкою завжди є одна спільна риса — <strong>системний облік студентів, відвідувань і оплат.</strong> Це не збіг.",
+    s2_lab: "Другий висновок", s2_txt: "Багато сильних тренерів втрачають учнів не через якість навчання, а через <strong>відсутність системної комунікації</strong> — з батьками, щодо відвідуваності та прогресу. Інформація просто не доходить вчасно або губиться.",
+    s3_lab: "Парадокс", s3_txt: "Всі без винятку тренери та власники клубів прекрасно це розуміють. Але в 90% секцій облік або не системний, або його немає взагалі. Чому?",
+    s4_lab: "Причина", s4_txt: "Не тому що тренери не розуміють цінність обліку. А тому що будь-який облік потребував ресурсу — <strong>часу тренера або адміністратора.</strong> У тренера цього ресурсу немає. Він зайнятий тренувальним процесом. Тому облік відкладається — і не ведеться взагалі.",
+    s5_lab: "Наслідок", s5_txt: "Дитина перестала ходити — ніхто не подзвонив. Батько сказав «заплачу завтра» три місяці тому. Довідка прострочена — ніхто не знає. Група напівпорожня, але нових беруть у чергу. Кожен із цих сценаріїв — не катастрофа. Але разом вони формують <em>постійний витік грошей</em>, який неможливо побачити без системи.",
+    pivot_tag: "Що змінилося цього року",
+    pivot_h: "Раніше облік без участі людини<br>не існував <em>в принципі.</em>",
+    pivot_p1: "Будь-яка CRM працювала за одним правилом: якщо дані не ввели — їх немає. Жодних автоматичних джерел даних не було. Ні відвідувань, ні оплат, ні статусів учнів. Облік = постійна ручна робота. Без неї система просто порожня.",
+    pivot_p2: "<strong>З цього року з'явився новий клас систем на базі штучного інтелекту.</strong> Вони знімають головне обмеження обліку — необхідність ручного введення. Відвідування фіксуються через AI-розпізнавання облич. Медичні довідки зчитуються автоматично. Спортивні досягнення збираються з відкритих джерел. Облік більше не ведеться вручну — він формується системою.",
+    feat_label: "Конкретні автоматизації",
+    feat_h: "Не CRM. Конкретні механізми<br>без ручного введення.",
+    feat_sub: "Кожен пункт — це процес, який раніше потребував часу. Тепер він відбувається сам.",
+    f1_t: "Авторозпізнавання відвідуваності",
+    f1_d: "Тренер завантажує фото групи — система сама відмічає хто був присутній. Без журналів, без галочок, без зайвих дій.",
+    f1_tag: "Журнал ведеться сам",
+    f2_t: "Контроль оплат без Excel",
+    f2_d: "Статуси оплат, борги, дати закінчення абонементів — усе в одному місці. Система сама нагадує боржникам.",
+    f2_tag: "Борги не губляться",
+    f3_t: "Медичні довідки",
+    f3_d: "Батько надсилає фото довідки. Система читає дані й ставить статус допуску автоматично. Прострочені — у повідомлення.",
+    f3_tag: "Немає юридичних ризиків",
+    f4_t: "Турніри та перемоги",
+    f4_d: "Результати змагань фіксуються в профілі спортсмена. Історія перемог, місць, способів перемоги — доступна будь-коли.",
+    f4_tag: "Зростає цінність клубу",
+    f5_t: "Облік студентів",
+    f5_d: "Повний профіль кожного спортсмена: пояси, відвідування, оплати, довідки, контакти. Без ручного введення — дані збираються автоматично.",
+    f5_tag: "Все в одному місці",
+    f6_t: "Аналітика для директора",
+    f6_d: "Хто не ходить другий тиждень. Яка група напівпорожня. Скільки зібрано за місяць. Все в реальному часі, без запитів до тренера.",
+    f6_tag: "Рішення на основі даних",
+    sc_label: "Як виглядає система",
+    sc_h: "Інтерфейс, який не потрібно вивчати",
+    sc_sub: "Тренер бачить тільки те, що потрібно прямо зараз. Директор — цифри по всьому клубу.",
+    tab1: "Спортсмени", tab2: "Відвідуваність", tab3: "Оплати", tab4: "Довідки", tab5: "Турніри", tab6: "Розпізнавання",
+    ph_athletes_title: "Спортсмени",
+    ph_col_name: "ПІБ", ph_col_group: "Група",
+    group_bjj: "BJJ", group_aikido: "Айкідо", group_wrestling: "Боротьба",
+    tab_athletes: "Спортс.", tab_visits: "Відвід.", tab_chat: "Чат", tab_payments: "Оплат.",
+    belt_blue: "Синій пояс",
+    att_present: "Присутній", att_absent: "Пропустив", att_total: "Всього", att_streak: "Серія",
+    cal_month: "Травень 2026",
+    cal_mo:"Пн",cal_tu:"Вт",cal_we:"Ср",cal_th:"Чт",cal_fr:"Пт",cal_sa:"Сб",cal_su:"Нд",
+    pay_collected: "Зібрано / міс", pay_debtors: "Боржників",
+    pay_title: "Айкідо — Травень 2026",
+    pay_until:"до 31.05.2026", pay_until2:"до 20.05.2026", pay_until3:"до 19.05.2026",
+    pay_active:"Активний", pay_no:"Нет оплат",
+    med_section:"Медичний допуск", med_ok:"Дійсна", med_expired:"Закінчилась",
+    med_date1:"До 14.03.2027", med_days1:"ще 318 дн.",
+    med_date2:"До 30.11.2024", med_days2:"155 дн. прострочена",
+    med_conclusion:"Висновок:", med_facility:"Заклад:", med_doctor:"Лікар:",
+    med_val1:"практично здоровий", med_val2:"Міська клінічна лікарня №5", med_val3:"Шевченко О.В.",
+    med_val4:"варіант норми", med_val5:"Бондаренко Т.М.",
+    stat_wins:"Перемог", stat_losses:"Поразок", stat_att:"Відвід.", stat_rating:"Рейтинг",
+    t1_name:"Kyiv Kids Open 2026", t1_place:"Місце: 1",
+    t2_name:"Ukraine National Challenge 2025", t2_place:"Місце: 2",
+    t3_name:"TMS Challenge Cup 2025", t3_place:"Місце: 2",
+    result_win:"Перемога", result_loss:"Поразка",
+    rec_group:"Айкідо", rec_present:"Присутні:", rec_loads:"Завантажень у місяці:",
+    rec_title:"Розпізнавання облич", rec_sub:"Аналізуємо фото групи...",
+    sc1_h:"Всі спортсмени в одному місці",
+    sc1_p:"Повний список з фото, групами та поясами. Швидкий пошук, фільтри по клубу та дисципліні. Жодних таблиць Excel — дані оновлюються автоматично.",
+    sc1_t1:"BJJ / Айкідо / Боротьба", sc1_t2:"Без ручного введення",
+    sc2_h:"Відвідуваність кожного студента",
+    sc2_p:"Календар, серії присутності, загальна статистика. Видно одразу — хто ходить регулярно, а хто почав пропускати. Директор отримує повідомлення на третій день відсутності.",
+    sc2_t1:"Автоматичне відстеження", sc2_t2:"Повідомлення про відтік",
+    sc3_h:"Фінанси клубу в реальному часі",
+    sc3_p:"Скільки зібрано за місяць, хто винен, коли закінчується абонемент. Система автоматично нагадує боржникам. Директор бачить все без питань до тренера.",
+    sc3_t1:"Автонагадування", sc3_t2:"Без Excel", sc3_t3:"Реальний час",
+    sc4_h:"Медичні допуски під контролем",
+    sc4_p:"Батько надсилає фото довідки — система автоматично читає дату, лікаря та висновок. Прострочені довідки виділяються та потрапляють у повідомлення. Жодна дитина не займається без актуального допуску непомітно.",
+    sc4_t1:"AI-розпізнавання", sc4_t2:"Прострочені виділяються",
+    sc5_h:"Історія турнірів та результатів",
+    sc5_p:"Кожне змагання, кожен результат — у профілі спортсмена. Перемоги по очках, сабмісіях. Це історія прогресу, яка мотивує і показує цінність клубу батькам.",
+    sc5_t1:"Повна історія", sc5_t2:"Мотивація студентів", sc5_t3:"Репутація клубу",
+    sc6_h:"Розпізнавання облич — відвідуваність за секунди",
+    sc6_p:"Тренер завантажує одне фото групи — система розпізнає кожного студента і автоматично відмічає присутність. Жодних журналів. Займає менше 10 секунд.",
+    sc6_t1:"10 секунд на групу", sc6_t2:"Без ручних відміток", sc6_t3:"Працює по фото",
+    closer_h:"Тренер повертається<br>до своєї ролі — <em>тренувати.</em>",
+    closer_p:"Облік — базовий механізм фінансової стабільності клубу. Тепер він працює без участі тренера. Дані збираються самі. Гроші не губляться. Клуб зростає.",
+    closer_btn:"Підключити клуб безкоштовно",
+    cta_label:"Підключення",
+    cta_h:"Перестаньте втрачати гроші<br>через відсутність <em>обліку</em>",
+    cta_p:"Перші 14 днів безкоштовно. Налаштування — один дзвінок. Жодного складного впровадження.",
+    cta_btn1:"Подивитися на своєму клубі",
+    cta_btn2:"Написати в Telegram",
+    cta_note:"Без довгих переговорів. Без складного впровадження.",
+    footer_copy:"© 2025 InSkill. CRM для дитячих спортивних клубів.",
+  },
+  ru: {
+    nav_cta: "Попробовать",
+    hero_subtitle: "автоматизированная AI система управления спортивными клубами нового поколения",
+    nav_login: "Вход",
+    navl_why: "Почему учёт",
+    navl_how: "Как работает",
+    navl_product: "Продукт",
+    navl_price: "Попробовать",
+    hero_eyebrow: "AI система нового поколения",
+    narr_tag: "Наблюдение из практики",
+    hero_h1: "inSkill.online —<br><em>автоматизированная AI система</em><br>управления спортивными клубами.",
+    hero_lead: "Посещаемость, оплаты, справки, успехи учеников — всё фиксируется само. Без участия тренера.",
+    hero_btn1: "Как это работает",
+    hero_btn2: "Попробовать бесплатно →",
+    narr_h: "Мы проанализировали более 100 спортивных клубов — <em>и обнаружили повторяющийся факт.</em>",
+    s1_lab: "Наблюдение", s1_txt: "У клубов с большим количеством учеников и стабильной выручкой всегда есть одна общая черта — <strong>системный учёт студентов, посещений и оплат.</strong> Это не совпадение.",
+    s2_lab: "Второй вывод", s2_txt: "Многие сильные тренеры теряют учеников не из-за качества обучения, а из-за <strong>отсутствия системной коммуникации</strong> — с родителями, по посещаемости и прогрессу. Информация просто не доходит вовремя или теряется.",
+    s3_lab: "Парадокс", s3_txt: "Все без исключения тренеры и владельцы клубов прекрасно это понимают. Но в 90% секций учёт либо не системный, либо его нет вообще. Почему?",
+    s4_lab: "Причина", s4_txt: "Не потому что тренеры не понимают ценность учёта. А потому что любой учёт требовал ресурса — <strong>времени тренера или администратора.</strong> У тренера этого ресурса нет. Он занят тренировочным процессом. Поэтому учёт откладывается — и не ведётся вовсе.",
+    s5_lab: "Следствие", s5_txt: "Ребёнок перестал ходить — никто не позвонил. Родитель сказал «заплачу завтра» три месяца назад. Справка просрочена — никто не знает. Группа полупустая, но новых берут в очередь. Каждый из этих сценариев — не катастрофа. Но вместе они формируют <em>постоянную утечку денег</em>, которую невозможно увидеть без системы.",
+    pivot_tag: "Что изменилось с этого года",
+    pivot_h: "Раньше учёт без участия человека<br>не существовал <em>в принципе.</em>",
+    pivot_p1: "Любая CRM работала по одному правилу: если данные не ввели — их нет. Никаких автоматических источников данных не было. Ни посещений, ни оплат, ни статусов учеников. Учёт = постоянная ручная работа. Без неё система просто пустая.",
+    pivot_p2: "<strong>С этого года появился новый класс систем на базе искусственного интеллекта.</strong> Они снимают главное ограничение учёта — необходимость ручного ввода. Посещения фиксируются через AI-распознавание лиц. Медицинские справки считываются автоматически. Спортивные достижения собираются из открытых источников. Учёт больше не ведётся вручную — он формируется системой.",
+    feat_label: "Конкретные автоматизации",
+    feat_h: "Не CRM. Конкретные механизмы<br>без ручного ввода.",
+    feat_sub: "Каждый пункт — это процесс, который раньше требовал времени. Теперь он происходит сам.",
+    f1_t: "Автораспознавание посещаемости",
+    f1_d: "Тренер загружает фото группы — система сама отмечает кто присутствовал. Без журналов, без галочек, без лишних действий.",
+    f1_tag: "Журнал ведётся сам",
+    f2_t: "Контроль оплат без Excel",
+    f2_d: "Статусы оплат, долги, даты окончания абонементов — всё в одном месте. Система сама напоминает должникам.",
+    f2_tag: "Долги не теряются",
+    f3_t: "Медицинские справки",
+    f3_d: "Родитель присылает фото справки. Система читает данные и ставит статус допуска автоматически. Просроченные — в уведомление.",
+    f3_tag: "Нет юридических рисков",
+    f4_t: "Турниры и победы",
+    f4_d: "Результаты соревнований фиксируются в профиле спортсмена. История побед, мест, способов победы — доступна в любой момент.",
+    f4_tag: "Растёт ценность клуба",
+    f5_t: "Учёт студентов",
+    f5_d: "Полный профиль каждого спортсмена: пояса, посещения, оплаты, справки, контакты. Без ручного ввода — данные собираются автоматически.",
+    f5_tag: "Всё в одном месте",
+    f6_t: "Аналитика для директора",
+    f6_d: "Кто не ходит вторую неделю. Какая группа полупустая. Сколько собрано за месяц. Всё в реальном времени, без запросов к тренеру.",
+    f6_tag: "Решения на основе данных",
+    sc_label: "Как выглядит система",
+    sc_h: "Интерфейс, который не нужно изучать",
+    sc_sub: "Тренер видит только то, что нужно прямо сейчас. Директор — цифры по всему клубу.",
+    tab1: "Спортсмены", tab2: "Посещаемость", tab3: "Оплаты", tab4: "Справки", tab5: "Турниры", tab6: "Распознавание",
+    ph_athletes_title: "Спортсмены",
+    ph_col_name: "ФИО", ph_col_group: "Группа",
+    group_bjj: "BJJ", group_aikido: "Айкидо", group_wrestling: "Борьба",
+    tab_athletes: "Спортс.", tab_visits: "Посещ.", tab_chat: "Чат", tab_payments: "Оплат.",
+    belt_blue: "Синий пояс",
+    att_present: "Присутствовал", att_absent: "Пропустил", att_total: "Всего", att_streak: "Серия",
+    cal_month: "Май 2026",
+    cal_mo:"Пн",cal_tu:"Вт",cal_we:"Ср",cal_th:"Чт",cal_fr:"Пт",cal_sa:"Сб",cal_su:"Вс",
+    pay_collected: "Собрано / мес", pay_debtors: "Должников",
+    pay_title: "Айкидо — Май 2026",
+    pay_until:"до 31.05.2026", pay_until2:"до 20.05.2026", pay_until3:"до 19.05.2026",
+    pay_active:"Активен", pay_no:"Нет оплат",
+    med_section:"Медицинский допуск", med_ok:"Действительна", med_expired:"Истекла",
+    med_date1:"До 14.03.2027", med_days1:"ещё 318 дн.",
+    med_date2:"До 30.11.2024", med_days2:"155 дн. просрочена",
+    med_conclusion:"Заключение:", med_facility:"Учреждение:", med_doctor:"Врач:",
+    med_val1:"практически здоров", med_val2:"Городская клиническая больница №5", med_val3:"Шевченко О.В.",
+    med_val4:"вариант нормы", med_val5:"Бондаренко Т.Н.",
+    stat_wins:"Побед", stat_losses:"Поражений", stat_att:"Посещ.", stat_rating:"Рейтинг",
+    t1_name:"Kyiv Kids Open 2026", t1_place:"Место: 1",
+    t2_name:"Ukraine National Challenge 2025", t2_place:"Место: 2",
+    t3_name:"TMS Challenge Cup 2025", t3_place:"Место: 2",
+    result_win:"Победа", result_loss:"Поражение",
+    rec_group:"Айкидо", rec_present:"Присутствуют:", rec_loads:"Загрузок в месяце:",
+    rec_title:"Распознавание лиц", rec_sub:"Анализируем фото группы...",
+    sc1_h:"Все спортсмены в одном месте",
+    sc1_p:"Полный список с фото, группами и поясами. Быстрый поиск, фильтры по клубу и дисциплине. Никаких таблиц Excel — данные обновляются автоматически.",
+    sc1_t1:"BJJ / Айкидо / Борьба", sc1_t2:"Без ручного ввода",
+    sc2_h:"Посещаемость каждого студента",
+    sc2_p:"Календарь, серии присутствия, общая статистика. Видно сразу — кто ходит регулярно, а кто начал пропускать. Директор получает уведомление на третий день отсутствия.",
+    sc2_t1:"Автоматическое отслеживание", sc2_t2:"Уведомление об оттоке",
+    sc3_h:"Финансы клуба в реальном времени",
+    sc3_p:"Сколько собрано за месяц, кто должен, когда истекает абонемент. Система автоматически напоминает должникам. Директор видит всё без вопросов к тренеру.",
+    sc3_t1:"Автонапоминания", sc3_t2:"Без Excel", sc3_t3:"Реальное время",
+    sc4_h:"Медицинские допуски под контролем",
+    sc4_p:"Родитель присылает фото справки — система автоматически читает дату, врача и заключение. Просроченные справки выделяются и попадают в уведомление.",
+    sc4_t1:"AI-распознавание", sc4_t2:"Просроченные выделяются",
+    sc5_h:"История турниров и результатов",
+    sc5_p:"Каждое соревнование, каждый результат — в профиле спортсмена. Победы по очкам, сабмиссиям. Это история прогресса, которая мотивирует и показывает ценность клуба родителям.",
+    sc5_t1:"Полная история", sc5_t2:"Мотивация студентов", sc5_t3:"Репутация клуба",
+    sc6_h:"Распознавание лиц — посещаемость за секунды",
+    sc6_p:"Тренер загружает одно фото группы — система распознаёт каждого студента и автоматически отмечает присутствие. Никаких журналов. Занимает меньше 10 секунд.",
+    sc6_t1:"10 секунд на группу", sc6_t2:"Без ручных отметок", sc6_t3:"Работает по фото",
+    closer_h:"Тренер возвращается<br>к своей роли — <em>тренировать.</em>",
+    closer_p:"Учёт — базовый механизм финансовой стабильности клуба. Теперь он работает без участия тренера. Данные собираются сами. Деньги не теряются. Клуб растёт.",
+    closer_btn:"Подключить клуб бесплатно",
+    cta_label:"Подключение",
+    cta_h:"Перестаньте терять деньги<br>из-за отсутствия <em>учёта</em>",
+    cta_p:"Первые 14 дней бесплатно. Настройка — один звонок. Никакого сложного внедрения.",
+    cta_btn1:"Посмотреть на своём клубе",
+    cta_btn2:"Написать в Telegram",
+    cta_note:"Без долгих переговоров. Без сложного внедрения.",
+    footer_copy:"© 2025 InSkill. CRM для детских спортивных клубов.",
+  },
+  en: {
+    nav_cta: "Try free",
+    hero_subtitle: "an automated AI system for managing sports clubs of the next generation",
+    nav_login: "Log in",
+    navl_why: "Why tracking",
+    navl_how: "How it works",
+    navl_product: "Product",
+    navl_price: "Try free",
+    hero_eyebrow: "Next-generation AI system",
+    narr_tag: "Observation from practice",
+    hero_h1: "inSkill.online —<br><em>automated AI system</em><br>for managing sports clubs.",
+    hero_lead: "Attendance, payments, certificates, student achievements — all recorded automatically. Without the coach.",
+    hero_btn1: "How it works",
+    hero_btn2: "Try for free →",
+    narr_h: "We analyzed over 100 sports clubs — <em>and found a repeating pattern.</em>",
+    s1_lab: "Observation", s1_txt: "Clubs with many students and stable revenue always share one trait — <strong>systematic tracking of students, attendance, and payments.</strong> It is not a coincidence.",
+    s2_lab: "Second finding", s2_txt: "Many strong coaches lose students not because of training quality, but due to <strong>lack of systematic communication</strong> — with parents, about attendance and progress. Information simply does not arrive on time or gets lost.",
+    s3_lab: "The paradox", s3_txt: "Every single coach and club owner understands this perfectly. Yet in 90% of clubs tracking is either unsystematic or absent entirely. Why?",
+    s4_lab: "The reason", s4_txt: "Not because coaches do not understand the value of tracking. But because any tracking required a resource — <strong>the coach's or administrator's time.</strong> The coach does not have that resource. They are busy running training. So tracking gets postponed — and eventually abandoned.",
+    s5_lab: "The consequence", s5_txt: "A child stopped coming — nobody called. A parent said they would pay three months ago. A certificate is expired — nobody knows. A group is half-empty but new students are waitlisted. Each scenario is not a disaster. But together they form a <em>constant money leak</em> that is impossible to see without a system.",
+    pivot_tag: "What changed this year",
+    pivot_h: "Before, tracking without human involvement<br>simply <em>did not exist.</em>",
+    pivot_p1: "Every CRM worked by one rule: if data was not entered — it did not exist. There were no automatic data sources. No attendance, no payments, no student statuses. Tracking meant constant manual work. Without it the system was simply empty.",
+    pivot_p2: "<strong>This year a new class of AI-based systems emerged.</strong> They remove the core limitation of tracking — the need for manual input. Attendance is recorded via AI face recognition. Medical certificates are read automatically. Athletic achievements are collected from open sources. Tracking is no longer done manually — it is generated by the system.",
+    feat_label: "Specific automations",
+    feat_h: "Not CRM. Specific mechanisms<br>with zero manual input.",
+    feat_sub: "Each item is a process that used to require time. Now it happens automatically.",
+    f1_t: "Face recognition attendance",
+    f1_d: "The coach uploads a group photo — the system automatically marks who was present. No journals, no checkboxes, no extra actions.",
+    f1_tag: "Journal fills itself",
+    f2_t: "Payment control without Excel",
+    f2_d: "Payment statuses, debts, subscription expiry dates — all in one place. The system automatically reminds debtors.",
+    f2_tag: "No debts get lost",
+    f3_t: "Medical certificates",
+    f3_d: "A parent sends a photo of the certificate. The system reads the data and sets the clearance status automatically. Expired ones go to notifications.",
+    f3_tag: "No legal risks",
+    f4_t: "Tournaments and wins",
+    f4_d: "Competition results are recorded in the athlete's profile. History of wins, placements, finish methods — available any time.",
+    f4_tag: "Club value grows",
+    f5_t: "Student records",
+    f5_d: "Complete profile for each athlete: belts, attendance, payments, certificates, contacts. No manual input — data is collected automatically.",
+    f5_tag: "Everything in one place",
+    f6_t: "Analytics for the director",
+    f6_d: "Who hasn't come for two weeks. Which group is half-empty. How much was collected this month. All in real time, without asking the coach.",
+    f6_tag: "Data-driven decisions",
+    sc_label: "What the system looks like",
+    sc_h: "An interface you don't need to learn",
+    sc_sub: "The coach sees only what's needed right now. The director sees numbers across the whole club.",
+    tab1: "Athletes", tab2: "Attendance", tab3: "Payments", tab4: "Certificates", tab5: "Tournaments", tab6: "Recognition",
+    ph_athletes_title: "Athletes",
+    ph_col_name: "Name", ph_col_group: "Group",
+    group_bjj: "BJJ", group_aikido: "Aikido", group_wrestling: "Wrestling",
+    tab_athletes: "Athletes", tab_visits: "Attend.", tab_chat: "Chat", tab_payments: "Pay.",
+    belt_blue: "Blue belt",
+    att_present: "Present", att_absent: "Missed", att_total: "Total", att_streak: "Streak",
+    cal_month: "May 2026",
+    cal_mo:"Mo",cal_tu:"Tu",cal_we:"We",cal_th:"Th",cal_fr:"Fr",cal_sa:"Sa",cal_su:"Su",
+    pay_collected: "Collected / mo", pay_debtors: "Debtors",
+    pay_title: "Aikido — May 2026",
+    pay_until:"until 31.05.2026", pay_until2:"until 20.05.2026", pay_until3:"until 19.05.2026",
+    pay_active:"Active", pay_no:"No payment",
+    med_section:"Medical clearance", med_ok:"Valid", med_expired:"Expired",
+    med_date1:"Until 14.03.2027", med_days1:"318 days left",
+    med_date2:"Until 30.11.2024", med_days2:"155 days overdue",
+    med_conclusion:"Conclusion:", med_facility:"Facility:", med_doctor:"Doctor:",
+    med_val1:"clinically healthy", med_val2:"City Clinical Hospital No.5", med_val3:"Shevchenko O.V.",
+    med_val4:"within normal range", med_val5:"Bondarenko T.N.",
+    stat_wins:"Wins", stat_losses:"Losses", stat_att:"Attend.", stat_rating:"Rating",
+    t1_name:"Kyiv Kids Open 2026", t1_place:"Place: 1",
+    t2_name:"Ukraine National Challenge 2025", t2_place:"Place: 2",
+    t3_name:"TMS Challenge Cup 2025", t3_place:"Place: 2",
+    result_win:"Win", result_loss:"Loss",
+    rec_group:"Aikido", rec_present:"Present:", rec_loads:"Uploads this month:",
+    rec_title:"Face recognition", rec_sub:"Analyzing group photo...",
+    sc1_h:"All athletes in one place",
+    sc1_p:"Full list with photos, groups and belts. Quick search, filters by club and discipline. No Excel spreadsheets — data updates automatically.",
+    sc1_t1:"BJJ / Aikido / Wrestling", sc1_t2:"No manual input",
+    sc2_h:"Each student's attendance",
+    sc2_p:"Calendar, attendance streaks, overall statistics. Instantly visible — who comes regularly and who started missing. The director gets notified on the third day of absence.",
+    sc2_t1:"Automatic tracking", sc2_t2:"Churn alert",
+    sc3_h:"Club finances in real time",
+    sc3_p:"How much was collected this month, who owes, when subscriptions expire. The system automatically reminds debtors. The director sees everything without asking the coach.",
+    sc3_t1:"Auto-reminders", sc3_t2:"No Excel", sc3_t3:"Real time",
+    sc4_h:"Medical clearances under control",
+    sc4_p:"A parent sends a certificate photo — the system automatically reads the date, doctor, and conclusion. Expired certificates are highlighted and go into notifications.",
+    sc4_t1:"AI recognition", sc4_t2:"Expired ones are highlighted",
+    sc5_h:"Tournament and results history",
+    sc5_p:"Every competition, every result — in the athlete's profile. Wins by points, submissions. It's a progress history that motivates students and shows parents the club's value.",
+    sc5_t1:"Full history", sc5_t2:"Student motivation", sc5_t3:"Club reputation",
+    sc6_h:"Face recognition — attendance in seconds",
+    sc6_p:"The coach uploads one group photo — the system identifies each student and automatically marks attendance. No journals needed. Takes less than 10 seconds.",
+    sc6_t1:"10 seconds per group", sc6_t2:"No manual marks", sc6_t3:"Works from a photo",
+    closer_h:"The coach returns<br>to their role — <em>coaching.</em>",
+    closer_p:"Tracking is the core mechanism of a club's financial stability. Now it works without the coach's involvement. Data collects itself. Money doesn't leak. The club grows.",
+    closer_btn:"Connect your club for free",
+    cta_label:"Get started",
+    cta_h:"Stop losing money<br>due to lack of <em>tracking</em>",
+    cta_p:"First 14 days free. Setup — one call. No complex onboarding.",
+    cta_btn1:"See it on your club",
+    cta_btn2:"Write on Telegram",
+    cta_note:"No long negotiations. No complex setup.",
+    footer_copy:"© 2025 InSkill. CRM for children's sports clubs.",
+  }
+};
+
+// ─── LANG SWITCHER ───
+let currentLang = 'ru';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.setAttribute('data-lang', lang);
+
+  // Update buttons
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.toLowerCase() === lang);
+  });
+
+  // Update all data-i elements
+  const t = T[lang];
+  document.querySelectorAll('[data-i]').forEach(el => {
+    const key = el.getAttribute('data-i');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+
+  // Update phone lang indicators
+  const pairs = [
+    ['pl-a1','pl-u1','pl-e1'],['pl-a2','pl-u2','pl-e2'],
+    ['pl-a3','pl-r3','pl-e3'],['pl-a4','pl-u4','pl-e4'],
+    ['pl-a5','pl-u5','pl-e5'],['pl-a6','pl-u6','pl-e6'],
+  ];
+  const labels = {ua:'UA',ru:'RU',en:'EN'};
+  pairs.forEach(([a,u,e]) => {
+    const aEl = document.getElementById(a);
+    const uEl = document.getElementById(u);
+    const eEl = document.getElementById(e);
+    if (!aEl||!uEl||!eEl) return;
+    // Show all 3, highlight current
+    [aEl,uEl,eEl].forEach(el => el.classList.remove('active-lang'));
+    if (lang==='ua') aEl.classList.add('active-lang');
+    else if (lang==='ru') uEl.classList.add('active-lang');
+    else eEl.classList.add('active-lang');
+  });
+}
+
+// ─── SCREEN TABS ───
+
+// ─── SCREEN TABS ───
+function showScreen(btn, name) {
+  document.querySelectorAll('.sc-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.sc-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── SMOOTH SCROLL ───
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    const el = document.querySelector(id);
+    if (el) { e.preventDefault(); el.scrollIntoView({behavior:'smooth'}); }
+  });
+});
+
+// Init
+setLang('ru');
+</script>
+</body>
+</html>
