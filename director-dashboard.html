@@ -386,6 +386,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
     <span id="t-s-accounting">Бухгалтерия</span>
   </a>
+  <a href="/plastic-cards.html" class="sitem" id="sitem-plastic-cards">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6.5h14" stroke="currentColor" stroke-width="1.2"/><path d="M4 9.5h3M10 9.5h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <span id="t-s-plastic-cards">Пластикові карти</span>
+  </a>
   <button class="sitem" id="sitem-messages-admin" onclick="openInbox()" style="position:relative">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1.5 3h13l-6.5 7L1.5 3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M1.5 3v10h13V3" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
     <span id="t-s-messages">Сообщения</span>
@@ -1151,7 +1155,7 @@ const i18n={
     sClubLabel:'Клуб',sClubs:'Мої клуби',sGroups:'Групи',sPeopleLabel:'Люди',
     sTrainers:'Співробітники',sAthletes:'Спортсмени',sBelts:'Пояси / Ступені',
     sActivityLabel:'Активність',sEvents:'Заходи',sNews:'AI-Новини',sChat:'Чат',
-    sManageLabel:'Управління',sSubscription:'Підписка',sAccounting:'Бухгалтерія',sMessages:'Повідомлення',
+    sManageLabel:'Управління',sSubscription:'Підписка',sAccounting:'Бухгалтерія',sPlasticCards:'Пластикові карти',sMessages:'Повідомлення',
     mobTrainers:'Співроб.',mobAthletes:'Спортсм.',mobChat:'Чат',mobNews:'Новини',mobMore:'Ще',
     mobClubs:'Клуби',mobGroups:'Групи',mobBelts:'Пояси',mobEvents:'Заходи',mobSubscription:'Підписка',
     mobAccounting:'Бухгалт.',mobMessages:'Повідом.',mobLogout:'Вийти',
@@ -1294,7 +1298,7 @@ const i18n={
     sClubLabel:'Клуб',sClubs:'Мои клубы',sGroups:'Группы',sPeopleLabel:'Люди',
     sTrainers:'Сотрудники',sAthletes:'Спортсмены',sBelts:'Пояса / Степени',
     sActivityLabel:'Активность',sEvents:'Мероприятия',sNews:'AI-Новости',sChat:'Чат',
-    sManageLabel:'Управление',sSubscription:'Подписка',sAccounting:'Бухгалтерия',sMessages:'Сообщения',
+    sManageLabel:'Управление',sSubscription:'Подписка',sAccounting:'Бухгалтерия',sPlasticCards:'Пластиковые карты',sMessages:'Сообщения',
     mobTrainers:'Сотрудн.',mobAthletes:'Спортсм.',mobChat:'Чат',mobNews:'Новости',mobMore:'Ещё',
     mobClubs:'Клубы',mobGroups:'Группы',mobBelts:'Пояса',mobEvents:'Меропр.',mobSubscription:'Подписка',
     mobAccounting:'Бухгалт.',mobMessages:'Сообщ.',mobLogout:'Выход',
@@ -1440,7 +1444,7 @@ const i18n={
     sClubLabel:'Club',sClubs:'My clubs',sGroups:'Groups',sPeopleLabel:'People',
     sTrainers:'Staff',sAthletes:'Athletes',sBelts:'Belts / Grades',
     sActivityLabel:'Activity',sEvents:'Events',sNews:'AI-News',sChat:'Chat',
-    sManageLabel:'Management',sSubscription:'Subscription',sAccounting:'Accounting',sMessages:'Messages',
+    sManageLabel:'Management',sSubscription:'Subscription',sAccounting:'Accounting',sPlasticCards:'Plastic cards',sMessages:'Messages',
     mobTrainers:'Staff',mobAthletes:'Athletes',mobChat:'Chat',mobNews:'News',mobMore:'More',
     mobClubs:'Clubs',mobGroups:'Groups',mobBelts:'Belts',mobEvents:'Events',mobSubscription:'Subscr.',
     mobAccounting:'Acctng.',mobMessages:'Msgs.',mobLogout:'Logout',
@@ -3078,7 +3082,7 @@ function applyLang(){
     't-s-people-label':'sPeopleLabel','t-s-trainers':'sTrainers','t-s-athletes':'sAthletes',
     't-s-belts':'sBelts','t-s-activity-label':'sActivityLabel','t-s-events':'sEvents',
     't-s-news':'sNews','t-s-chat':'sChat','t-s-manage-label':'sManageLabel',
-    't-s-subscription':'sSubscription','t-s-accounting':'sAccounting','t-s-messages':'sMessages',
+    't-s-subscription':'sSubscription','t-s-accounting':'sAccounting','t-s-plastic-cards':'sPlasticCards','t-s-messages':'sMessages',
     't-mob-trainers':'mobTrainers','t-mob-athletes':'mobAthletes','t-mob-chat':'mobChat',
     't-mob-news':'mobNews','t-mob-more':'mobMore','t-mob-clubs':'mobClubs',
     't-mob-groups':'mobGroups','t-mob-belts':'mobBelts','t-mob-events':'mobEvents',
