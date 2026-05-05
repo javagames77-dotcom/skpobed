@@ -102,6 +102,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500;white-space:nowrap}
 .tag-green{background:var(--tag-green-bg);color:var(--tag-green)}
 .tag-red{background:var(--tag-red-bg);color:var(--tag-red)}
+.tag-yellow{background:#fff8e1;color:#e65100}
+[data-theme="dark"] .tag-yellow{background:#2a1800;color:#fbbf24}
+.color-dot{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid rgba(128,128,128,.3);vertical-align:middle;margin-right:3px;flex-shrink:0}
 .tag-gray{background:var(--tag-gray-bg);color:var(--tag-gray)}
 .tag-blue{background:var(--tag-blue-bg);color:var(--tag-blue)}
 
@@ -412,6 +415,16 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       <label class="filter-label" id="t-lbl-group">Група</label>
       <select class="filter-select" id="groupFilter"><option value="" id="t-opt-all-groups">Всі</option></select>
     </div>
+    <div class="filter-group">
+      <label class="filter-label" id="t-lbl-med">Медсправка</label>
+      <select class="filter-select" id="medFilter">
+        <option value="" id="t-opt-med-all">Всі</option>
+        <option value="ok" id="t-opt-med-ok">Діє</option>
+        <option value="warn" id="t-opt-med-warn">Спливає</option>
+        <option value="expired" id="t-opt-med-expired">Прострочена</option>
+        <option value="none" id="t-opt-med-none">Немає справки</option>
+      </select>
+    </div>
   </div>
 
   <div class="table-container">
@@ -421,8 +434,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       <thead><tr>
         <th id="th-photo">Фото</th>
         <th id="th-fio">ПІБ</th>
-        <th id="th-club">Клуб</th>
         <th id="th-group">Група</th>
+        <th id="th-med">Медсправка</th>
+        <th id="th-belt">Пояс / Екзамен</th>
         <th></th>
       </tr></thead>
       <tbody id="childrenTableBody"></tbody>
@@ -770,6 +784,11 @@ const i18n={
     requestDate:'Дата нар.:',requestLogin:'Логін:',requestPhone:'Тел.:',requestCreated:'Заявка від',
     groupCardDate:'Заявка від',
     inCannotDeleteGroup:'В групі "{name}" є {count} спортсменів.',
+    thMed:'Медсправка',thBelt:'Пояс / Екзамен',
+    lblMed:'Медсправка',
+    medFilterOk:'Діє',medFilterWarn:'Спливає',medFilterExpired:'Прострочена',medFilterNone:'Немає справки',
+    medOk:'до',medWarn:'Спливає',medExpired:'Прострочена',medNone:'—',medDays:'дн.',
+    beltCanExam:'Можна здавати!',beltUntilExam:'До екзамену:',beltMonths:'міс',beltDays:'дн',
   },
   ru:{
     pageTitle:'InSkill — Тренер',logout:'Выход',navBadge:'ТРЕНЕР',
@@ -827,6 +846,11 @@ const i18n={
     requestDate:'Дата рожд.:',requestLogin:'Логин:',requestPhone:'Тел.:',requestCreated:'Заявка от',
     groupCardDate:'Заявка от',
     inCannotDeleteGroup:'В группе "{name}" есть {count} спортсменов.',
+    thMed:'Медсправка',thBelt:'Пояс / Экзамен',
+    lblMed:'Медсправка',
+    medFilterOk:'Действует',medFilterWarn:'Истекает',medFilterExpired:'Просрочена',medFilterNone:'Нет справки',
+    medOk:'до',medWarn:'Истекает',medExpired:'Просрочена',medNone:'—',medDays:'дн.',
+    beltCanExam:'Можно сдавать!',beltUntilExam:'До экзамена:',beltMonths:'мес',beltDays:'дн',
   },
   en:{
     pageTitle:'InSkill — Trainer',logout:'Logout',navBadge:'TRAINER',
@@ -884,6 +908,11 @@ const i18n={
     requestDate:'Born:',requestLogin:'Login:',requestPhone:'Phone:',requestCreated:'Request from',
     groupCardDate:'Request from',
     inCannotDeleteGroup:'Group "{name}" has {count} athletes.',
+    thMed:'Med. cert',thBelt:'Belt / Exam',
+    lblMed:'Med. cert',
+    medFilterOk:'Valid',medFilterWarn:'Expiring',medFilterExpired:'Expired',medFilterNone:'No cert',
+    medOk:'until',medWarn:'Expiring',medExpired:'Expired',medNone:'—',medDays:'d.',
+    beltCanExam:'Can take exam!',beltUntilExam:'Until exam:',beltMonths:'mo',beltDays:'d',
   }
 };
 let currentLang=localStorage.getItem('lang')||'uk';
@@ -901,7 +930,7 @@ function applyLang(){
     't-btn-refresh':'btnRefresh','t-btn-send':'btnSend','t-btn-generate':'btnGenerate',
     't-lbl-search':'lblSearch','t-lbl-club':'lblClub','t-lbl-group':'lblGroup',
     't-opt-all-clubs':'optAllClubs','t-opt-all-groups':'optAllGroups',
-    'th-photo':'thPhoto','th-fio':'thFio','th-club':'thClub','th-group':'thGroup',
+    'th-photo':'thPhoto','th-fio':'thFio','th-group':'thGroup','th-med':'thMed','th-belt':'thBelt',
     't-req-loading':'requestsLoading','t-req-empty':'reqEmpty',
     't-chat-contacts':'chatContacts','t-chat-select':'chatSelect',
     't-att-title':'attTitle',
@@ -923,6 +952,16 @@ function applyLang(){
   // placeholder for search
   const si=document.getElementById('searchInput');if(si)si.placeholder=t('lblSearch')+'...';
   const ci=document.getElementById('chatSearchInput');if(ci)ci.placeholder=t('lblSearch')+'...';
+  // med filter label + options
+  const mfl=document.getElementById('t-lbl-med');if(mfl)mfl.textContent=t('lblMed');
+  const mf=document.getElementById('medFilter');
+  if(mf){
+    if(mf.options[0])mf.options[0].text=t('optAllClubs');
+    if(mf.options[1])mf.options[1].text=t('medFilterOk');
+    if(mf.options[2])mf.options[2].text=t('medFilterWarn');
+    if(mf.options[3])mf.options[3].text=t('medFilterExpired');
+    if(mf.options[4])mf.options[4].text=t('medFilterNone');
+  }
   // textarea placeholder
   const ta=document.getElementById('trainerChatTextarea');
   if(ta)ta.placeholder=currentLang==='uk'?'Написати повідомлення...':currentLang==='en'?'Write a message...':'Написать сообщение...';
@@ -1094,6 +1133,40 @@ async function loadChildren(){
   }
 }
 
+function _medCertStatus(c){
+  if(!c.medical_cert_expires)return 'none';
+  const exp=new Date(c.medical_cert_expires);
+  const diffDays=Math.ceil((exp-new Date())/(1000*60*60*24));
+  if(diffDays<0)return 'expired';
+  if(diffDays<=30)return 'warn';
+  return 'ok';
+}
+function _medCertCell(c){
+  if(!c.medical_cert_expires)return `<span class="tag tag-gray">${t('medNone')}</span>`;
+  const exp=new Date(c.medical_cert_expires);
+  const diffDays=Math.ceil((exp-new Date())/(1000*60*60*24));
+  const dateStr=exp.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});
+  if(diffDays<0)return `<span class="tag tag-red">${t('medExpired')}</span>`;
+  if(diffDays<=30)return `<div><span class="tag tag-yellow">${t('medWarn')}</span><br><span style="font-size:.75rem;color:#e65100">${dateStr} (${diffDays} ${t('medDays')})</span></div>`;
+  return `<span class="tag tag-green">${t('medOk')} ${dateStr}</span>`;
+}
+function _beltCountdown(c){
+  if(!c.current_belt_name)return '<span style="color:#bbb;font-size:.8rem">—</span>';
+  const color=c.current_belt_color||'#ccc';
+  const dot=`<span class="color-dot" style="background:${color}"></span>`;
+  const beltLabel=`${dot}<span style="font-size:.82rem;font-weight:600">${c.current_belt_name}</span>`;
+  const minDays=parseInt(c.belt_min_days)||0;
+  if(!minDays||!c.belt_awarded_at)return `<div>${beltLabel}</div>`;
+  const daysPassed=Math.floor((new Date()-new Date(c.belt_awarded_at))/(1000*60*60*24));
+  const daysLeft=minDays-daysPassed;
+  if(daysLeft<=0)return `<div>${beltLabel}<br><span style="color:#28a745;font-size:.75rem;font-weight:600">${t('beltCanExam')}</span></div>`;
+  const months=Math.floor(daysLeft/30);
+  const days=daysLeft%30;
+  let timeStr='';
+  if(months>0)timeStr+=months+t('beltMonths')+' ';
+  timeStr+=days+t('beltDays');
+  return `<div>${beltLabel}<br><span style="color:#e65100;font-size:.75rem">${t('beltUntilExam')} ${timeStr}</span></div>`;
+}
 function renderChildrenTable(){
   const tbody=document.getElementById('childrenTableBody');
   tbody.innerHTML='';
@@ -1102,8 +1175,9 @@ function renderChildrenTable(){
     tr.innerHTML=`
       <td><img src="${c.photo_url||'https://via.placeholder.com/32'}" class="child-photo" onerror="this.src='https://via.placeholder.com/32'"></td>
       <td><a href="/athlete-profile.html?id=${c.id}" style="color:var(--p);text-decoration:none;font-weight:500">${c.first_name} ${c.last_name}</a></td>
-      <td style="color:var(--muted)">${c.club_names||'—'}</td>
       <td><span class="tag tag-blue">${c.group_names||'—'}</span></td>
+      <td>${_medCertCell(c)}</td>
+      <td>${_beltCountdown(c)}</td>
       <td>
         <div class="row-actions">
           <button class="act-btn edit" onclick="editChild(${c.id})" title="Редагувати">
@@ -1147,18 +1221,21 @@ function renderGroupCheckboxes(selectedIds){
 document.getElementById('searchInput').addEventListener('input',filterChildren);
 document.getElementById('clubFilter').addEventListener('change',filterChildren);
 document.getElementById('groupFilter').addEventListener('change',filterChildren);
+document.getElementById('medFilter').addEventListener('change',filterChildren);
 
 function filterChildren(){
   const s=document.getElementById('searchInput').value.toLowerCase();
   const club=document.getElementById('clubFilter').value;
   const g=document.getElementById('groupFilter').value;
+  const med=document.getElementById('medFilter').value;
   filtered=children.filter(c=>{
     const n=(c.first_name+' '+c.last_name).toLowerCase().includes(s);
     const clubMatch=!club||(c.club_names&&c.club_names.includes(club));
-    if(!g)return n&&clubMatch;
+    if(!g&&!med)return n&&clubMatch;
     const groupName=groups.find(gr=>gr.group_id==g)?.group_name;
-    const gr=groupName&&c.group_names&&c.group_names.includes(groupName);
-    return n&&clubMatch&&gr;
+    const gr=!g||(groupName&&c.group_names&&c.group_names.includes(groupName));
+    const medMatch=!med||_medCertStatus(c)===med;
+    return n&&clubMatch&&gr&&medMatch;
   });
   renderChildrenTable();
 }
