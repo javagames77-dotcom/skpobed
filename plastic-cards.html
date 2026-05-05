@@ -138,6 +138,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .mob-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--muted);border:none;background:none;cursor:pointer;padding:4px 10px;font-family:inherit}
 @media(max-width:768px){.sidebar{display:none}.mob-nav{display:block}.main{padding:16px;padding-bottom:70px}.page-grid{grid-template-columns:1fr}}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -493,7 +494,7 @@ const i18n={
     tagline1:'www.inSkill.online — автоматизована AI система',
     tagline2:'управління спортивними клубами нового покоління',
     svgDobLabel:'Дата нар.:',svgValidLabel:'Дійсна:',
-    dlPng:'PNG',dlPdf:'PDF для друку',dlAll:'Завантажити всі PNG',dlPrint:'Друк PDF (всі)',
+    dlPng:'PNG',dlPdf:'PDF',dlAll:'Завантажити всі PNG',dlPrint:'PDF для типографії',
     generating:'Генерація...',generated:'Карти згенеровано!',
     errLoad:'Помилка завантаження даних',errGenerate:'Помилка генерації',
     noSelected:'Оберіть хоча б одного спортсмена',
@@ -520,7 +521,7 @@ const i18n={
     tagline1:'www.inSkill.online — автоматизированная AI система',
     tagline2:'управления спортивными клубами нового поколения',
     svgDobLabel:'Дата рожд.:',svgValidLabel:'Действительна:',
-    dlPng:'PNG',dlPdf:'PDF для печати',dlAll:'Скачать все PNG',dlPrint:'Печать PDF (все)',
+    dlPng:'PNG',dlPdf:'PDF',dlAll:'Скачать все PNG',dlPrint:'PDF для типографии',
     generating:'Генерация...',generated:'Карты сгенерированы!',
     errLoad:'Ошибка загрузки данных',errGenerate:'Ошибка генерации',
     noSelected:'Выберите хотя бы одного спортсмена',
@@ -547,7 +548,7 @@ const i18n={
     tagline1:'www.inSkill.online — AI-powered management system',
     tagline2:'for sports clubs of the new generation',
     svgDobLabel:'DOB:',svgValidLabel:'Valid:',
-    dlPng:'PNG',dlPdf:'PDF for print',dlAll:'Download all PNG',dlPrint:'Print PDF (all)',
+    dlPng:'PNG',dlPdf:'PDF',dlAll:'Download all PNG',dlPrint:'PDF for print shop',
     generating:'Generating...',generated:'Cards generated!',
     errLoad:'Error loading data',errGenerate:'Generation error',
     noSelected:'Select at least one athlete',
@@ -795,22 +796,24 @@ function renderAthletes(){
   });
 }
 
+let _rowCounter=0;
 function renderAthleteRow(c){
   const name=(c.last_name||'')+' '+(c.first_name||'');
   const dob=c.birth_date?fmtDate(c.birth_date.split('T')[0]):'';
+  const rowKey='rk-'+(++_rowCounter); // уникальный ключ для каждой строки
   const photoHtml=c.photo_url
     ?`<img src="${c.photo_url}" alt="">`
     :`<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
-  return `<div class="athlete-row" id="row-${c.id}">
-    <input type="checkbox" class="athlete-cb" data-id="${c.id}" data-name="${name.trim()}" data-dob="${dob}" data-photo="${c.photo_url||''}">
+  return `<div class="athlete-row" id="row-${rowKey}">
+    <input type="checkbox" class="athlete-cb" data-id="${c.id}" data-rowkey="${rowKey}" data-name="${name.trim()}" data-dob="${dob}" data-photo="${c.photo_url||''}">
     <div class="athlete-photo">${photoHtml}</div>
     <div class="athlete-name">${name.trim()}</div>
     <div class="athlete-meta">${dob}</div>
-    <div class="athlete-actions" id="actions-${c.id}">
-      <button class="dl-btn" id="dl-png-${c.id}" onclick="downloadCard(${c.id},'png')" title="${t('dlPng')}">
+    <div class="athlete-actions" id="actions-${rowKey}">
+      <button class="dl-btn" id="dl-png-${rowKey}" onclick="downloadCard('${rowKey}','png')" title="${t('dlPng')}">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 9v1.5A.5.5 0 001.5 11h9a.5.5 0 00.5-.5V9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       </button>
-      <button class="dl-btn dl-btn-pdf" id="dl-pdf-${c.id}" onclick="downloadCard(${c.id},'pdf')" title="${t('dlPdf')}">
+      <button class="dl-btn dl-btn-pdf" id="dl-pdf-${rowKey}" onclick="downloadCard('${rowKey}','pdf')" title="${t('dlPdf')}">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 7.5h2M3.5 5.5h5M3.5 3.5h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       </button>
     </div>
@@ -969,19 +972,23 @@ async function buildCardSVG(child,idx,settings){
     <text x="33" y="115" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555">${website}</text>
     ${logoBack}
     <line x1="0" y1="156" x2="323" y2="156" stroke="#efefef" stroke-width="0.5"/>
-    <rect x="12" y="164" width="32" height="32" rx="3" fill="#f5f5f5"/>
-    <rect x="15" y="167" width="10" height="10" rx="1" fill="#E53935"/><rect x="16" y="168" width="8" height="8" fill="#fff" rx="0.5"/><rect x="17" y="169" width="6" height="6" rx="0.5" fill="#E53935"/>
-    <rect x="27" y="167" width="10" height="10" rx="1" fill="#E53935"/><rect x="28" y="168" width="8" height="8" fill="#fff" rx="0.5"/><rect x="29" y="169" width="6" height="6" rx="0.5" fill="#E53935"/>
-    <rect x="15" y="179" width="10" height="10" rx="1" fill="#E53935"/><rect x="16" y="180" width="8" height="8" fill="#fff" rx="0.5"/><rect x="17" y="181" width="6" height="6" rx="0.5" fill="#E53935"/>
-    <rect x="27" y="179" width="3" height="3" fill="#E53935"/><rect x="31" y="179" width="3" height="3" fill="#E53935"/><rect x="35" y="179" width="3" height="3" fill="#E53935"/>
-    <rect x="27" y="183" width="3" height="3" fill="#E53935"/><rect x="31" y="183" width="3" height="3" fill="#E53935"/>
-    <rect x="35" y="189" width="3" height="3" fill="#E53935"/><rect x="31" y="189" width="3" height="3" fill="#E53935"/>
-    <rect x="48" y="167" width="14" height="14" rx="3.5" stroke="#1a1a1a" stroke-width="1.1" fill="none"/>
-    <path d="M51 178L57 172" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round"/>
-    <path d="M54 172h3v3" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
-    <text y="177" font-family="Inter,Arial,sans-serif" font-size="9"><tspan font-weight="700" fill="#1a1a1a" x="65">InSkill</tspan><tspan font-weight="400" fill="#E53935">.online</tspan></text>
-    <text x="48" y="188" font-family="Inter,Arial,sans-serif" font-size="7" fill="#aaa" textLength="267" lengthAdjust="spacing">${tc('tagline1')}</text>
-    <text x="48" y="197" font-family="Inter,Arial,sans-serif" font-size="7" fill="#aaa" textLength="267" lengthAdjust="spacing">${tc('tagline2')}</text>
+    <!-- QR — вертикально центрирован в панели 48px -->
+    <rect x="10" y="162" width="36" height="36" rx="3" fill="#f5f5f5"/>
+    <rect x="13" y="165" width="11" height="11" rx="1" fill="#E53935"/><rect x="14" y="166" width="9" height="9" fill="#fff" rx="0.5"/><rect x="15" y="167" width="7" height="7" rx="0.5" fill="#E53935"/>
+    <rect x="26" y="165" width="11" height="11" rx="1" fill="#E53935"/><rect x="27" y="166" width="9" height="9" fill="#fff" rx="0.5"/><rect x="28" y="167" width="7" height="7" rx="0.5" fill="#E53935"/>
+    <rect x="13" y="178" width="11" height="11" rx="1" fill="#E53935"/><rect x="14" y="179" width="9" height="9" fill="#fff" rx="0.5"/><rect x="15" y="180" width="7" height="7" rx="0.5" fill="#E53935"/>
+    <rect x="26" y="178" width="4" height="4" rx="0.5" fill="#E53935"/><rect x="31" y="178" width="4" height="4" rx="0.5" fill="#E53935"/><rect x="36" y="178" width="4" height="4" rx="0.5" fill="#E53935"/>
+    <rect x="26" y="183" width="4" height="4" rx="0.5" fill="#E53935"/><rect x="31" y="183" width="4" height="4" rx="0.5" fill="#E53935"/>
+    <rect x="36" y="188" width="4" height="4" rx="0.5" fill="#E53935"/><rect x="31" y="188" width="4" height="4" rx="0.5" fill="#E53935"/>
+    <!-- Иконка InSkill — центр панели y=180 -->
+    <rect x="52" y="166" width="14" height="14" rx="3.5" stroke="#1a1a1a" stroke-width="1.1" fill="none"/>
+    <path d="M55 177L61 171" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M58 171h3v3" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- InSkill.online — вертикально по центру панели -->
+    <text y="176" font-family="Inter,Arial,sans-serif" font-size="9"><tspan font-weight="700" fill="#1a1a1a" x="70">InSkill</tspan><tspan font-weight="400" fill="#E53935">.online</tspan></text>
+    <!-- Слоган — по левому краю, без растяжки -->
+    <text x="70" y="187" font-family="Inter,Arial,sans-serif" font-size="6.5" fill="#aaa">${tc('tagline1')}</text>
+    <text x="70" y="196" font-family="Inter,Arial,sans-serif" font-size="6.5" fill="#aaa">${tc('tagline2')}</text>
   </svg>`;
 
   return{frontSVG,backSVG,cardNum};
@@ -1026,11 +1033,10 @@ async function generateCards(){
     logoUrl:logoDataUrl
   };
 
-  // Фильтруем ТОЛЬКО отмеченных (checked содержит только их, но убедимся)
-  const checkedIds=checked.map(cb=>parseInt(cb.dataset.id));
   for(let i=0;i<checked.length;i++){
     const cb=checked[i];
     const id=parseInt(cb.dataset.id);
+    const rowKey=cb.dataset.rowkey; // уникальный ключ строки
     // Ищем в allChildren — там полные данные включая photo_url
     const found=allChildren.find(c=>c.id===id);
     const child=found?{...found}:{
@@ -1048,7 +1054,7 @@ async function generateCards(){
       child.dob=cb.dataset.dob||'';
     }
     const {frontSVG,backSVG,cardNum}=await buildCardSVG(child,i+1,settings);
-    // Конвертируем оба SVG в canvas и объединяем в PNG (лицевая сверху, обратная снизу)
+    // Конвертируем оба SVG в canvas и объединяем в PNG
     const [fc,bc]=await Promise.all([
       svgToCanvas(frontSVG,1063,672),
       svgToCanvas(backSVG,1063,672)
@@ -1064,14 +1070,15 @@ async function generateCards(){
       ctx.drawImage(bc,0,672+40);
       pngUrl=combined.toDataURL('image/png');
     }
-    generatedCards[id]={pngUrl,frontSVG,backSVG,cardNum,name:child.last_name+' '+child.first_name};
-    // Показываем кнопки скачивания и раскрываем группу
-    const dlPng=document.getElementById('dl-png-'+id);
-    const dlPdf=document.getElementById('dl-pdf-'+id);
+    // Ключ — rowKey, уникальный для каждой строки (спортсмен в двух группах = два ключа)
+    generatedCards[rowKey]={pngUrl,frontSVG,backSVG,cardNum,name:child.last_name+' '+child.first_name};
+    // Показываем кнопки скачивания
+    const dlPng=document.getElementById('dl-png-'+rowKey);
+    const dlPdf=document.getElementById('dl-pdf-'+rowKey);
     if(dlPng)dlPng.classList.add('visible');
     if(dlPdf)dlPdf.classList.add('visible');
-    // Раскрываем группу где находится этот спортсмен
-    const row=document.getElementById('row-'+id);
+    // Раскрываем группу
+    const row=document.getElementById('row-'+rowKey);
     if(row){
       const list=row.closest('.athletes-list');
       if(list&&!list.classList.contains('open')){
@@ -1107,45 +1114,51 @@ async function downloadAllPng(){
   }
 }
 
-async function printAllPdf(){
-  const ids=Object.keys(generatedCards);
-  if(!ids.length)return;
-  let pagesHtml='';
-  for(const id of ids){
-    const card=generatedCards[id];
+async function canvasToJpeg(canvas){
+  return canvas.toDataURL('image/jpeg',0.95);
+}
+
+async function generatePdfForTypo(keys){
+  // 90x58мм — стандарт ID-1, вылеты 2мм => размер страницы 94x62мм
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF({orientation:'landscape',unit:'mm',format:[94,62]});
+  let first=true;
+  for(const key of keys){
+    const card=generatedCards[key];
     if(!card)continue;
     const [fc,bc]=await Promise.all([
       svgToCanvas(card.frontSVG,1063,672),
       svgToCanvas(card.backSVG,1063,672)
     ]);
     if(!fc||!bc)continue;
-    pagesHtml+=`<div class="card-page"><img src="${fc.toDataURL('image/png')}"></div>`;
-    pagesHtml+=`<div class="card-page"><img src="${bc.toDataURL('image/png')}"></div>`;
+    if(!first)pdf.addPage([94,62],'landscape');
+    // Лицевая — позиционируем с вылетом 2мм со всех сторон
+    pdf.addImage(await canvasToJpeg(fc),'JPEG',0,0,94,62);
+    pdf.addPage([94,62],'landscape');
+    // Оборот
+    pdf.addImage(await canvasToJpeg(bc),'JPEG',0,0,94,62);
+    first=false;
   }
-  if(!pagesHtml)return;
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>InSkill — Карти</title>
-    <style>
-      @page{size:94mm 62mm;margin:2mm}
-      body{margin:0;padding:0}
-      .card-page{width:90mm;height:58mm;page-break-after:always;display:flex;align-items:center;justify-content:center}
-      .card-page img{width:90mm;height:58mm;border-radius:3.18mm;display:block}
-    </style></head><body>${pagesHtml}
-    \x3cscript\x3ewindow.onload=function(){window.print();}\x3c/script\x3e
-    </body></html>`;
-  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  // Используем iframe чтобы обойти блокировку popup
-  let pf=document.getElementById('print-frame');
-  if(!pf){pf=document.createElement('iframe');pf.id='print-frame';pf.style.cssText='position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none';document.body.appendChild(pf);}
-  pf.onload=function(){
-    try{pf.contentWindow.print();}catch(e){window.open(url,'_blank');}
-    setTimeout(()=>URL.revokeObjectURL(url),20000);
-  };
-  pf.src=url;
+  return pdf;
 }
 
-async function downloadCard(id,type){
-  const card=generatedCards[id];
+async function printAllPdf(){
+  const keys=Object.keys(generatedCards);
+  if(!keys.length)return;
+  const btn=document.getElementById('btn-dl-print');
+  const origText=btn.querySelector('span').textContent;
+  btn.querySelector('span').textContent='...';
+  btn.disabled=true;
+  try{
+    const pdf=await generatePdfForTypo(keys);
+    pdf.save('InSkill_cards_all.pdf');
+  }catch(e){console.error(e);showToast(t('errGenerate'),'error');}
+  btn.querySelector('span').textContent=origText;
+  btn.disabled=false;
+}
+
+async function downloadCard(key,type){
+  const card=generatedCards[key];
   if(!card){showToast(t('errGenerate'),'error');return;}
   const safeName=(card.name||'card').replace(/\s+/g,'_');
   if(type==='png'&&card.pngUrl){
