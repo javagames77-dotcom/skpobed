@@ -319,10 +319,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
                   <text id="svg-role" x="105" y="65" font-family="Inter,sans-serif" font-size="8.5" font-weight="600" fill="#1a1a1a">Учень</text>
                   <!-- Год водяной знак -->
                   <text id="svg-year" x="310" y="166" font-family="Inter,sans-serif" font-size="80" font-weight="800" fill="rgba(0,0,0,0.042)" text-anchor="end" letter-spacing="-5">2026</text>
-                  <!-- Лого клуба (placeholder) -->
-                  <rect id="svg-logo-club-rect" x="269" y="16" width="38" height="22" rx="4" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
-                  <text id="svg-logo-club-text" x="288" y="30" font-family="Inter,sans-serif" font-size="7" fill="#bbb" text-anchor="middle">ЛОГО</text>
-                  <image id="svg-logo-img" x="269" y="16" width="38" height="22" style="display:none" preserveAspectRatio="xMidYMid meet"/>
+                  <!-- Лого клуба убрано с лицевой -->
                   <!-- Разделитель -->
                   <line x1="16" y1="152" x2="307" y2="152" stroke="#e8e8e8" stroke-width="0.5"/>
                   <!-- Метка "Клуб" -->
@@ -378,9 +375,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
                   <path d="M22 113l4-4M24 109h2v2" stroke="#888" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                   <text id="svg-b-website" x="33" y="115" font-family="Inter,sans-serif" font-size="8.5" fill="#555">dynamo-poltava.ua</text>
                   <!-- Лого клуба на обороте -->
-                  <rect id="svg-b-logo-rect" x="245" y="70" width="64" height="44" rx="6" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
-                  <text id="svg-b-logo-text" x="277" y="95" font-family="Inter,sans-serif" font-size="8" fill="#bbb" text-anchor="middle" font-weight="500">ЛОГО</text>
-                  <image id="svg-b-logo-img" x="245" y="70" width="64" height="44" style="display:none" preserveAspectRatio="xMidYMid meet"/>
+                  <rect id="svg-b-logo-rect" x="187" y="62" width="128" height="88" rx="8" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
+                  <text id="svg-b-logo-text" x="251" y="110" font-family="Inter,sans-serif" font-size="10" fill="#bbb" text-anchor="middle" font-weight="500">ЛОГО</text>
+                  <image id="svg-b-logo-img" x="187" y="62" width="128" height="88" style="display:none" preserveAspectRatio="xMidYMid meet"/>
                   <!-- Разделитель перед рекламой -->
                   <line x1="0" y1="156" x2="323" y2="156" stroke="#efefef" stroke-width="0.5"/>
                   <!-- QR на сайт InSkill -->
@@ -702,23 +699,14 @@ function updatePreview(){
   }
 
   // Logo
-  const svgLogoImg=document.getElementById('svg-logo-img');
-  const svgLogoRect=document.getElementById('svg-logo-club-rect');
-  const svgLogoText=document.getElementById('svg-logo-club-text');
   const svgBLogoImg=document.getElementById('svg-b-logo-img');
   const svgBLogoRect=document.getElementById('svg-b-logo-rect');
   const svgBLogoText=document.getElementById('svg-b-logo-text');
   if(logoDataUrl){
-    if(svgLogoImg){svgLogoImg.setAttribute('href',logoDataUrl);svgLogoImg.style.display='';}
-    if(svgLogoRect)svgLogoRect.style.display='none';
-    if(svgLogoText)svgLogoText.style.display='none';
     if(svgBLogoImg){svgBLogoImg.setAttribute('href',logoDataUrl);svgBLogoImg.style.display='';}
     if(svgBLogoRect)svgBLogoRect.style.display='none';
     if(svgBLogoText)svgBLogoText.style.display='none';
   }else{
-    if(svgLogoImg)svgLogoImg.style.display='none';
-    if(svgLogoRect)svgLogoRect.style.display='';
-    if(svgLogoText)svgLogoText.style.display='';
     if(svgBLogoImg)svgBLogoImg.style.display='none';
     if(svgBLogoRect)svgBLogoRect.style.display='';
     if(svgBLogoText)svgBLogoText.style.display='';
@@ -863,24 +851,59 @@ function updateGenerateBtn(){
 }
 
 /* ═══ GENERATE CARDS ═══ */
-function buildCardSVG(child,idx,settings){
+async function loadImageAsBase64(url){
+  if(!url)return null;
+  try{
+    const resp=await fetch(url,{mode:'cors'});
+    if(!resp.ok)return null;
+    const blob=await resp.blob();
+    return new Promise(resolve=>{
+      const reader=new FileReader();
+      reader.onload=e=>resolve(e.target.result);
+      reader.onerror=()=>resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  }catch(e){
+    // Fallback: рисуем через canvas
+    try{
+      return new Promise(resolve=>{
+        const img=new Image();
+        img.crossOrigin='anonymous';
+        img.onload=function(){
+          const c=document.createElement('canvas');
+          c.width=img.naturalWidth||66;c.height=img.naturalHeight||80;
+          const ctx=c.getContext('2d');
+          ctx.drawImage(img,0,0);
+          resolve(c.toDataURL('image/jpeg',0.9));
+        };
+        img.onerror=()=>resolve(null);
+        img.src=url;
+      });
+    }catch(e2){return null;}
+  }
+}
+
+async function buildCardSVG(child,idx,settings){
   const {clubName,role,validFrom,validTo,address,phone,website,year,logoUrl}=settings;
   const name=(child.last_name||'')+' '+(child.first_name||'')+(child.middle_name?' '+child.middle_name:'');
   const dob=child.dob||'';
   const cardNum='IS-'+year+'-'+String(idx).padStart(5,'0');
 
-  const logoFront=logoUrl
-    ?`<image href="${logoUrl}" x="269" y="16" width="38" height="22" preserveAspectRatio="xMidYMid meet"/>`
-    :`<rect x="269" y="16" width="38" height="22" rx="4" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
-      <text x="288" y="30" font-family="Inter,sans-serif" font-size="7" fill="#bbb" text-anchor="middle">ЛОГО</text>`;
+  // Лого клуба только на обороте (убрано с лицевой)
 
-  const logoBack=logoUrl
-    ?`<image href="${logoUrl}" x="245" y="70" width="64" height="44" preserveAspectRatio="xMidYMid meet"/>`
-    :`<rect x="245" y="70" width="64" height="44" rx="6" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
-      <text x="277" y="95" font-family="Inter,sans-serif" font-size="8" fill="#bbb" text-anchor="middle" font-weight="500">ЛОГО</text>`;
+  // Предзагружаем лого как base64
+  const logoBase64=logoUrl?await loadImageAsBase64(logoUrl):null;
+  const logoBack=logoBase64
+    ?`<image href="${logoBase64}" x="187" y="62" width="128" height="88" preserveAspectRatio="xMidYMid meet"/>`
+    :logoUrl
+    ?`<image href="${logoUrl}" x="187" y="62" width="128" height="88" preserveAspectRatio="xMidYMid meet"/>`
+    :`<rect x="187" y="62" width="128" height="88" rx="8" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
+      <text x="251" y="110" font-family="Inter,sans-serif" font-size="10" fill="#bbb" text-anchor="middle" font-weight="500">ЛОГО</text>`;
 
-  const photoEl=child.photo_url
-    ?`<image href="${child.photo_url}" x="16" y="20" width="66" height="80" clip-path="url(#photoClip)" preserveAspectRatio="xMidYMid slice"/>`
+  // Предзагружаем фото как base64 чтобы SVG мог его отрендерить
+  const photoBase64=child.photo_url?await loadImageAsBase64(child.photo_url):null;
+  const photoEl=photoBase64
+    ?`<image href="${photoBase64}" x="16" y="20" width="66" height="80" clip-path="url(#photoClip)" preserveAspectRatio="xMidYMid slice"/>`
     :`<rect x="16" y="20" width="66" height="80" rx="7" fill="#f2f2f2" stroke="#e0e0e0" stroke-width="1.5"/>
       <circle cx="49" cy="52" r="10" stroke="#c0c0c0" stroke-width="1.5" fill="none"/>
       <path d="M35 90c0-8 6.3-14 14-14s14 6 14 14" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round" fill="none"/>`;
@@ -906,7 +929,6 @@ function buildCardSVG(child,idx,settings){
     <text x="105" y="50" font-family="Inter,Arial,sans-serif" font-size="9" fill="#888">${dob}</text>
     ${roleBlock}
     <text x="310" y="166" font-family="Inter,Arial,sans-serif" font-size="80" font-weight="800" fill="rgba(0,0,0,0.042)" text-anchor="end" letter-spacing="-5">${year}</text>
-    ${logoFront}
     <line x1="16" y1="152" x2="307" y2="152" stroke="#e8e8e8" stroke-width="0.5"/>
     <text x="16" y="164" font-family="Inter,Arial,sans-serif" font-size="8" fill="#bbb" letter-spacing="1">${tc('svgClubLabel')}</text>
     <text x="16" y="178" font-family="Inter,Arial,sans-serif" font-size="10" font-weight="600" fill="#444">${clubName}</text>
@@ -957,10 +979,9 @@ function buildCardSVG(child,idx,settings){
     <rect x="48" y="167" width="14" height="14" rx="3.5" stroke="#1a1a1a" stroke-width="1.1" fill="none"/>
     <path d="M51 178L57 172" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round"/>
     <path d="M54 172h3v3" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="65" y="177" font-family="Inter,Arial,sans-serif" font-size="9" font-weight="700" fill="#1a1a1a" letter-spacing="-0.3">InSkill</text>
-    <text x="101" y="177" font-family="Inter,Arial,sans-serif" font-size="9" font-weight="400" fill="#E53935">.online</text>
-    <text x="48" y="188" font-family="Inter,Arial,sans-serif" font-size="7" fill="#aaa">${tc('tagline1')}</text>
-    <text x="48" y="197" font-family="Inter,Arial,sans-serif" font-size="7" fill="#aaa">${tc('tagline2')}</text>
+    <text y="177" font-family="Inter,Arial,sans-serif" font-size="9"><tspan font-weight="700" fill="#1a1a1a" x="65">InSkill</tspan><tspan font-weight="400" fill="#E53935">.online</tspan></text>
+    <text x="48" y="188" font-family="Inter,Arial,sans-serif" font-size="7" fill="#aaa" textLength="267" lengthAdjust="spacing">${tc('tagline1')}</text>
+    <text x="48" y="197" font-family="Inter,Arial,sans-serif" font-size="7" fill="#aaa" textLength="267" lengthAdjust="spacing">${tc('tagline2')}</text>
   </svg>`;
 
   return{frontSVG,backSVG,cardNum};
@@ -1005,16 +1026,28 @@ async function generateCards(){
     logoUrl:logoDataUrl
   };
 
+  // Фильтруем ТОЛЬКО отмеченных (checked содержит только их, но убедимся)
+  const checkedIds=checked.map(cb=>parseInt(cb.dataset.id));
   for(let i=0;i<checked.length;i++){
     const cb=checked[i];
     const id=parseInt(cb.dataset.id);
-    const child=allChildren.find(c=>c.id===id)||{
-      id,first_name:cb.dataset.name.split(' ')[1]||'',
+    // Ищем в allChildren — там полные данные включая photo_url
+    const found=allChildren.find(c=>c.id===id);
+    const child=found?{...found}:{
+      id,
+      first_name:cb.dataset.name.split(' ').slice(1).join(' ')||'',
       last_name:cb.dataset.name.split(' ')[0]||'',
-      birth_date:cb.dataset.dob,photo_url:cb.dataset.photo
+      birth_date:'',
+      photo_url:cb.dataset.photo||''
     };
-    child.dob=cb.dataset.dob;
-    const {frontSVG,backSVG,cardNum}=buildCardSVG(child,i+1,settings);
+    // Дата рождения — берём из данных, форматируем
+    if(child.birth_date){
+      const rawDate=child.birth_date.split('T')[0];
+      child.dob=fmtDate(rawDate);
+    } else {
+      child.dob=cb.dataset.dob||'';
+    }
+    const {frontSVG,backSVG,cardNum}=await buildCardSVG(child,i+1,settings);
     // Конвертируем оба SVG в canvas и объединяем в PNG (лицевая сверху, обратная снизу)
     const [fc,bc]=await Promise.all([
       svgToCanvas(frontSVG,1063,672),
@@ -1101,8 +1134,14 @@ async function printAllPdf(){
     </body></html>`;
   const blob=new Blob([html],{type:'text/html;charset=utf-8'});
   const url=URL.createObjectURL(blob);
-  window.open(url,'_blank');
-  setTimeout(()=>URL.revokeObjectURL(url),15000);
+  // Используем iframe чтобы обойти блокировку popup
+  let pf=document.getElementById('print-frame');
+  if(!pf){pf=document.createElement('iframe');pf.id='print-frame';pf.style.cssText='position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none';document.body.appendChild(pf);}
+  pf.onload=function(){
+    try{pf.contentWindow.print();}catch(e){window.open(url,'_blank');}
+    setTimeout(()=>URL.revokeObjectURL(url),20000);
+  };
+  pf.src=url;
 }
 
 async function downloadCard(id,type){
