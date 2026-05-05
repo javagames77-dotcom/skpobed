@@ -364,16 +364,16 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
                   <rect y="18" width="323" height="36" fill="#1a1a1a"/>
                   <!-- Контакты клуба -->
                   <!-- Иконка геопин -->
-                  <path d="M25 84c-2.8 0-5-2.2-5-5 0-4 5-9 5-9s5 5 5 9c0 2.8-2.2 5-5 5z" stroke="#888" stroke-width="1.2" fill="none"/>
-                  <circle cx="25" cy="79" r="1.5" stroke="#888" stroke-width="1.1" fill="none"/>
-                  <text id="svg-b-address" x="33" y="83" font-family="Inter,sans-serif" font-size="8.5" fill="#555">м. Полтава, вул. Соборності, 45</text>
-                  <!-- Иконка телефона -->
-                  <path d="M21 93h2.5l1 3-1.5 1a7 7 0 003 3l1-1.5 3 1v2.5a1.5 1.5 0 01-1.5 1C22.8 103 19 99.2 19 94.5A1.5 1.5 0 0121 93z" stroke="#888" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
-                  <text id="svg-b-phone" x="33" y="99" font-family="Inter,sans-serif" font-size="8.5" fill="#555">+38 050 123 45 67</text>
-                  <!-- Иконка сайта -->
-                  <rect x="19" y="104" width="9" height="9" rx="2" stroke="#888" stroke-width="1.2" fill="none"/>
-                  <path d="M22 113l4-4M24 109h2v2" stroke="#888" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                  <text id="svg-b-website" x="33" y="115" font-family="Inter,sans-serif" font-size="8.5" fill="#555">dynamo-poltava.ua</text>
+                  <path d="M25 85c-2.8 0-5-2.2-5-5 0-4 5-9 5-9s5 5 5 9c0 2.8-2.2 5-5 5z" stroke="#888" stroke-width="1.2" fill="none"/>
+                  <circle cx="25" cy="80" r="1.5" stroke="#888" stroke-width="1.1" fill="none"/>
+                  <text id="svg-b-address" x="33" y="90" font-family="Inter,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">м. Полтава, вул. Соборності, 45</text>
+                  <!-- Іконка телефону -->
+                  <path d="M21 105h2.5l1 3-1.5 1a7 7 0 003 3l1-1.5 3 1v2.5a1.5 1.5 0 01-1.5 1C22.8 115 19 111.2 19 106.5A1.5 1.5 0 0121 105z" stroke="#888" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
+                  <text id="svg-b-phone" x="33" y="110" font-family="Inter,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">+38 050 123 45 67</text>
+                  <!-- Іконка сайту -->
+                  <rect x="19" y="125" width="9" height="9" rx="2" stroke="#888" stroke-width="1.2" fill="none"/>
+                  <path d="M22 134l4-4M24 130h2v2" stroke="#888" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  <text id="svg-b-website" x="33" y="130" font-family="Inter,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">dynamo-poltava.ua</text>
                   <!-- Лого клуба на обороте -->
                   <rect id="svg-b-logo-rect" x="187" y="62" width="128" height="88" rx="8" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
                   <text id="svg-b-logo-text" x="251" y="110" font-family="Inter,sans-serif" font-size="10" fill="#bbb" text-anchor="middle" font-weight="500">ЛОГО</text>
@@ -960,17 +960,17 @@ async function buildCardSVG(child,idx,settings){
     <rect width="323" height="204" rx="12" fill="#ffffff"/>
     <rect width="323" height="5" fill="#E53935"/>
     <rect y="18" width="323" height="36" fill="#1a1a1a"/>
-    <!-- Геопин: центр иконки y=86 -->
-    <path d="M25 81c-2.8 0-5-2.2-5-5 0-4 5-9 5-9s5 5 5 9c0 2.8-2.2 5-5 5z" stroke="#888" stroke-width="1.2" fill="none"/>
-    <circle cx="25" cy="76" r="1.5" stroke="#888" stroke-width="1.1" fill="none"/>
-    <text x="33" y="82" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">${address}</text>
-    <!-- Телефон: центр иконки y=102 -->
-    <path d="M21 98h2.5l1 3-1.5 1a7 7 0 003 3l1-1.5 3 1v2.5a1.5 1.5 0 01-1.5 1C22.8 108 19 104.2 19 99.5A1.5 1.5 0 0121 98z" stroke="#888" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
-    <text x="33" y="104" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">${phone}</text>
-    <!-- Сайт: центр иконки y=118 -->
-    <rect x="19" y="113" width="9" height="9" rx="2" stroke="#888" stroke-width="1.2" fill="none"/>
-    <path d="M22 122l4-4M24 118h2v2" stroke="#888" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <text x="33" y="122" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">${website}</text>
+    <!-- Геопин — центр y=90 -->
+    <path d="M25 85c-2.8 0-5-2.2-5-5 0-4 5-9 5-9s5 5 5 9c0 2.8-2.2 5-5 5z" stroke="#888" stroke-width="1.2" fill="none"/>
+    <circle cx="25" cy="80" r="1.5" stroke="#888" stroke-width="1.1" fill="none"/>
+    <text x="33" y="90" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">${address}</text>
+    <!-- Телефон — центр y=110 -->
+    <path d="M21 105h2.5l1 3-1.5 1a7 7 0 003 3l1-1.5 3 1v2.5a1.5 1.5 0 01-1.5 1C22.8 115 19 111.2 19 106.5A1.5 1.5 0 0121 105z" stroke="#888" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
+    <text x="33" y="110" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">${phone}</text>
+    <!-- Сайт — центр y=130 -->
+    <rect x="19" y="125" width="9" height="9" rx="2" stroke="#888" stroke-width="1.2" fill="none"/>
+    <path d="M22 134l4-4M24 130h2v2" stroke="#888" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="33" y="130" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">${website}</text>
     ${logoBack}
     <line x1="0" y1="156" x2="323" y2="156" stroke="#efefef" stroke-width="0.5"/>
     <!-- QR — вертикально центрирован в панели 48px -->
