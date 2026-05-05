@@ -249,6 +249,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
             <input type="text" class="form-input" id="inp-role" placeholder="Учень, Тренер, Бухгалтер..." oninput="updatePreview()">
           </div>
 
+          <!-- Год карты -->
+          <div class="form-group">
+            <label class="form-label" id="lbl-year-f">Рік карти</label>
+            <input type="number" class="form-input" id="inp-year" min="2020" max="2099" oninput="updatePreview()" style="width:120px">
+          </div>
+
           <!-- Срок действия -->
           <div class="form-group">
             <label class="form-label" id="lbl-valid-period">Термін дії</label>
@@ -480,7 +486,7 @@ const i18n={
     lblCardLang:'Мова карти',lblClubName:'Назва клубу',lblClubLogo:'Логотип клубу',
     lblLogoHint:'Натисніть щоб завантажити',lblRemoveLogo:'Видалити',
     lblRole:'Роль',lblOptional:'(опціонально)',
-    lblValidPeriod:'Термін дії',lblValidFrom:'З',lblValidTo:'До',
+    lblYear:'Рік карти',lblValidPeriod:'Термін дії',lblValidFrom:'З',lblValidTo:'До',
     lblContacts:'Контакти клубу',
     phClubName:'СК Динамо Полтава',phRole:'Учень, Тренер, Бухгалтер...',
     phAddress:'м. Полтава, вул. Соборності, 45',phPhone:'+38 050 123 45 67',phWebsite:'dynamo-poltava.ua',
@@ -507,7 +513,7 @@ const i18n={
     lblCardLang:'Язык карты',lblClubName:'Название клуба',lblClubLogo:'Логотип клуба',
     lblLogoHint:'Нажмите чтобы загрузить',lblRemoveLogo:'Удалить',
     lblRole:'Роль',lblOptional:'(опционально)',
-    lblValidPeriod:'Срок действия',lblValidFrom:'С',lblValidTo:'До',
+    lblYear:'Год карты',lblValidPeriod:'Срок действия',lblValidFrom:'С',lblValidTo:'До',
     lblContacts:'Контакты клуба',
     phClubName:'СК Динамо Полтава',phRole:'Ученик, Тренер, Бухгалтер...',
     phAddress:'г. Полтава, ул. Соборности, 45',phPhone:'+38 050 123 45 67',phWebsite:'dynamo-poltava.ua',
@@ -534,7 +540,7 @@ const i18n={
     lblCardLang:'Card language',lblClubName:'Club name',lblClubLogo:'Club logo',
     lblLogoHint:'Click to upload',lblRemoveLogo:'Remove',
     lblRole:'Role',lblOptional:'(optional)',
-    lblValidPeriod:'Valid period',lblValidFrom:'From',lblValidTo:'To',
+    lblYear:'Card year',lblValidPeriod:'Valid period',lblValidFrom:'From',lblValidTo:'To',
     lblContacts:'Club contacts',
     phClubName:'SC Dynamo Poltava',phRole:'Student, Trainer, Accountant...',
     phAddress:'Poltava, Sobornosti St., 45',phPhone:'+38 050 123 45 67',phWebsite:'dynamo-poltava.ua',
@@ -614,7 +620,7 @@ function applyLang(){
   s('lbl-card-lang','lblCardLang');s('lbl-club-name-f','lblClubName');
   s('lbl-club-logo','lblClubLogo');s('lbl-logo-hint','lblLogoHint');
   s('lbl-role-f','lblRole');s('lbl-optional','lblOptional');s('lbl-optional2','lblOptional');
-  s('lbl-valid-period','lblValidPeriod');s('lbl-valid-from','lblValidFrom');s('lbl-valid-to','lblValidTo');
+  s('lbl-year-f','lblYear');s('lbl-valid-period','lblValidPeriod');s('lbl-valid-from','lblValidFrom');s('lbl-valid-to','lblValidTo');
   s('lbl-contacts-f','lblContacts');
   s('lbl-preview-title','previewTitle');s('lbl-front-side','frontSide');s('lbl-back-side','backSide');
   s('lbl-personal-title','personalTitle');s('lbl-btn-generate','btnGenerate');
@@ -655,6 +661,8 @@ function removeLogo(){
 /* ═══ PREVIEW UPDATE ═══ */
 function fmtDate(d){if(!d)return'—';const p=d.split('-');if(p.length===3)return p[2]+'.'+p[1]+'.'+p[0];return d;}
 function getYear(){
+  const inp=document.getElementById('inp-year');
+  if(inp&&inp.value&&inp.value.length===4)return inp.value;
   const from=document.getElementById('inp-valid-from').value;
   if(from)return from.split('-')[0];
   return new Date().getFullYear().toString();
@@ -1217,6 +1225,7 @@ async function init(){
   }catch(e){}
   // Даты по умолчанию: с 1 января текущего года до 31 декабря
   const y=new Date().getFullYear();
+  document.getElementById('inp-year').value=y;
   document.getElementById('inp-valid-from').value=y+'-01-01';
   document.getElementById('inp-valid-to').value=y+'-12-31';
   // Кнопка языка карты
