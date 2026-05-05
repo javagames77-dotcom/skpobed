@@ -91,7 +91,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .athletes-list.open{display:block}
 .athlete-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
 .athlete-row:last-child{border-bottom:none}
-.athlete-cb{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.athlete-cb{width:15px;height:15px;accent-color:#1a1a1a;cursor:pointer;flex-shrink:0}
 .athlete-photo{width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
 .athlete-photo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .athlete-name{font-size:12px;font-weight:500;color:var(--black);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -104,7 +104,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 /* SELECT ALL */
 .select-all-row{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:4px}
-.select-all-cb{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+.select-all-cb{width:15px;height:15px;accent-color:#1a1a1a;cursor:pointer}
 .select-all-label{font-size:11px;color:var(--muted);cursor:pointer}
 
 /* BUTTONS */
@@ -304,7 +304,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
                     <path d="M-14 18c0-8 6.3-14 14-14s14 6 14 14" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round" fill="none"/>
                   </g>
                   <!-- ФИО -->
-                  <text id="svg-name" x="92" y="37" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#1a1a1a">ПІБ СПОРТСМЕНА</text>
+                  <text id="svg-name" x="92" y="38" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#1a1a1a">ПІБ СПОРТСМЕНА</text>
                   <!-- Дата рождения -->
                   <!-- Иконка календаря -->
                   <rect x="92" y="42" width="9" height="9" rx="1.5" stroke="#aaa" stroke-width="1.2" fill="none"/>
@@ -314,9 +314,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
                   <text id="svg-dob" x="105" y="50" font-family="Inter,sans-serif" font-size="9" fill="#888">01.01.2010</text>
                   <!-- Роль -->
                   <rect id="svg-role-bg" x="92" y="55" width="60" height="14" rx="3" fill="#f0f0f0"/>
-                  <!-- Иконка человека -->
-                  <circle cx="97" cy="61" r="3" stroke="#555" stroke-width="1.2" fill="none"/>
-                  <path d="M91.5 68c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="#555" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                  <!-- Иконка звёздочка -->
+                  <path id="svg-role-star" d="M97 57.5l1 3h3.2l-2.6 1.9 1 3L97 63.6l-2.6 1.8 1-3L93 60.5h3.2z" fill="#555"/>
                   <text id="svg-role" x="105" y="65" font-family="Inter,sans-serif" font-size="8.5" font-weight="600" fill="#1a1a1a">Учень</text>
                   <!-- Год водяной знак -->
                   <text id="svg-year" x="310" y="166" font-family="Inter,sans-serif" font-size="80" font-weight="800" fill="rgba(0,0,0,0.042)" text-anchor="end" letter-spacing="-5">2026</text>
@@ -324,13 +323,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
                   <!-- Разделитель -->
                   <line x1="16" y1="152" x2="307" y2="152" stroke="#e8e8e8" stroke-width="0.5"/>
                   <!-- Метка "Клуб" -->
-                  <text id="svg-club-label" x="16" y="164" font-family="Inter,sans-serif" font-size="8" fill="#bbb" letter-spacing="1">КЛУБ</text>
+                  <text id="svg-club-label" x="16" y="162" font-family="Inter,sans-serif" font-size="8" fill="#bbb" letter-spacing="1">КЛУБ</text>
                   <!-- Название клуба -->
-                  <text id="svg-club-name" x="16" y="178" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#444">СК Динамо Полтава</text>
+                  <text id="svg-club-name" x="16" y="179" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#444">СК Динамо Полтава</text>
                   <!-- Срок действия - иконка часов -->
-                  <circle cx="18" cy="194" r="6.5" stroke="#bbb" stroke-width="1.2" fill="none"/>
-                  <path d="M18 190.5v4l2 1.5" stroke="#bbb" stroke-width="1.2" stroke-linecap="round" fill="none"/>
-                  <text id="svg-valid" x="27" y="197" font-family="Inter,sans-serif" font-size="8" fill="#666" font-weight="500">01.01.2026 — 31.12.2026</text>
+                  <circle cx="18" cy="193" r="6.5" stroke="#bbb" stroke-width="1.2" fill="none"/>
+                  <path d="M18 189.5v4l2 1.5" stroke="#bbb" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                  <text id="svg-valid" x="27" y="196" font-family="Inter,sans-serif" font-size="8" fill="#666" font-weight="500">01.01.2026 — 31.12.2026</text>
                   <!-- Номер карты -->
                   <text id="svg-cardnum" x="261" y="150" font-family="monospace" font-size="7.5" fill="#bbb" text-anchor="end" letter-spacing="1">IS-2026-00001</text>
                   <!-- QR (декоративный) -->
@@ -399,15 +398,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
                   <rect x="31" y="183" width="3" height="3" fill="#E53935"/>
                   <rect x="35" y="189" width="3" height="3" fill="#E53935"/>
                   <rect x="31" y="189" width="3" height="3" fill="#E53935"/>
-                  <!-- Лого InSkill -->
-                  <rect x="48" y="167" width="14" height="14" rx="3.5" stroke="#1a1a1a" stroke-width="1.1" fill="none"/>
-                  <path d="M51 178L57 172" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round"/>
-                  <path d="M54 172h3v3" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
-                  <text x="65" y="177" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="#1a1a1a" letter-spacing="-0.3">InSkill</text>
-                  <text x="101" y="177" font-family="Inter,sans-serif" font-size="9" font-weight="400" fill="#E53935">.online</text>
-                  <!-- Слоган -->
-                  <text id="svg-b-tagline1" x="48" y="188" font-family="Inter,sans-serif" font-size="7" fill="#aaa">www.inSkill.online — автоматизована AI система</text>
-                  <text id="svg-b-tagline2" x="48" y="197" font-family="Inter,sans-serif" font-size="7" fill="#aaa">управління спортивними клубами нового покоління</text>
+                  <!-- Іконка InSkill — сдвинута правее от QR -->
+                  <rect x="58" y="163" width="14" height="14" rx="3.5" stroke="#1a1a1a" stroke-width="1.1" fill="none"/>
+                  <path d="M61 174L67 168" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round"/>
+                  <path d="M64 168h3v3" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+                  <text y="173" font-family="Inter,sans-serif" font-size="9"><tspan font-weight="700" fill="#1a1a1a" x="76">InSkill</tspan><tspan font-weight="400" fill="#E53935">.online</tspan></text>
+                  <!-- Слоган під логотипом -->
+                  <text id="svg-b-tagline1" x="76" y="184" font-family="Inter,sans-serif" font-size="6.5" fill="#aaa">www.inSkill.online — автоматизована AI система</text>
+                  <text id="svg-b-tagline2" x="76" y="193" font-family="Inter,sans-serif" font-size="6.5" fill="#aaa">управління спортивними клубами нового покоління</text>
                 </svg>
               </div>
             </div>
@@ -912,10 +910,9 @@ async function buildCardSVG(child,idx,settings){
       <path d="M35 90c0-8 6.3-14 14-14s14 6 14 14" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round" fill="none"/>`;
 
   const roleBlock=role?`
-    <rect x="92" y="55" width="${Math.max(60,role.length*6+16)}" height="14" rx="3" fill="#f0f0f0"/>
-    <circle cx="97" cy="61" r="3" stroke="#555" stroke-width="1.2" fill="none"/>
-    <path d="M91.5 68c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="#555" stroke-width="1.2" stroke-linecap="round" fill="none"/>
-    <text x="105" y="65" font-family="Inter,sans-serif" font-size="8.5" font-weight="600" fill="#1a1a1a">${role}</text>`:'';
+    <rect x="92" y="61" width="${Math.max(60,role.length*6+16)}" height="14" rx="3" fill="#f0f0f0"/>
+    <path d="M97 63.5l1 3h3.2l-2.6 1.9 1 3L97 69.6l-2.6 1.8 1-3L93 66.5h3.2z" fill="#555"/>
+    <text x="105" y="71" font-family="Inter,sans-serif" font-size="8.5" font-weight="600" fill="#1a1a1a">${role}</text>`:'';
 
   const validStr=validFrom&&validTo?validFrom+' — '+validTo:'';
 
@@ -924,20 +921,21 @@ async function buildCardSVG(child,idx,settings){
     <rect width="323" height="204" rx="12" fill="#ffffff"/>
     <rect width="323" height="5" fill="#E53935"/>
     ${photoEl}
-    <text x="92" y="37" font-family="Inter,Arial,sans-serif" font-size="11" font-weight="700" fill="#1a1a1a">${name.trim()}</text>
-    <rect x="92" y="42" width="9" height="9" rx="1.5" stroke="#aaa" stroke-width="1.2" fill="none"/>
-    <line x1="92" y1="45.5" x2="101" y2="45.5" stroke="#aaa" stroke-width="1.2"/>
-    <line x1="94.5" y1="41" x2="94.5" y2="43.5" stroke="#aaa" stroke-width="1.2" stroke-linecap="round"/>
-    <line x1="98.5" y1="41" x2="98.5" y2="43.5" stroke="#aaa" stroke-width="1.2" stroke-linecap="round"/>
-    <text x="105" y="50" font-family="Inter,Arial,sans-serif" font-size="9" fill="#888">${dob}</text>
+    <text x="92" y="38" font-family="Inter,Arial,sans-serif" font-size="11" font-weight="700" fill="#1a1a1a">${name.trim()}</text>
+    <!-- Иконка календаря — центр y=52 -->
+    <rect x="92" y="47" width="9" height="9" rx="1.5" stroke="#aaa" stroke-width="1.2" fill="none"/>
+    <line x1="92" y1="50.5" x2="101" y2="50.5" stroke="#aaa" stroke-width="1.2"/>
+    <line x1="94.5" y1="46" x2="94.5" y2="48.5" stroke="#aaa" stroke-width="1.2" stroke-linecap="round"/>
+    <line x1="98.5" y1="46" x2="98.5" y2="48.5" stroke="#aaa" stroke-width="1.2" stroke-linecap="round"/>
+    <text x="105" y="55" font-family="Inter,Arial,sans-serif" font-size="9" fill="#888">${dob}</text>
     ${roleBlock}
     <text x="310" y="166" font-family="Inter,Arial,sans-serif" font-size="80" font-weight="800" fill="rgba(0,0,0,0.042)" text-anchor="end" letter-spacing="-5">${year}</text>
     <line x1="16" y1="152" x2="307" y2="152" stroke="#e8e8e8" stroke-width="0.5"/>
-    <text x="16" y="164" font-family="Inter,Arial,sans-serif" font-size="8" fill="#bbb" letter-spacing="1">${tc('svgClubLabel')}</text>
-    <text x="16" y="178" font-family="Inter,Arial,sans-serif" font-size="10" font-weight="600" fill="#444">${clubName}</text>
-    <circle cx="18" cy="194" r="6.5" stroke="#bbb" stroke-width="1.2" fill="none"/>
-    <path d="M18 190.5v4l2 1.5" stroke="#bbb" stroke-width="1.2" stroke-linecap="round" fill="none"/>
-    <text x="27" y="197" font-family="Inter,Arial,sans-serif" font-size="8" fill="#666" font-weight="500">${validStr}</text>
+    <text x="16" y="162" font-family="Inter,Arial,sans-serif" font-size="8" fill="#bbb" letter-spacing="1">${tc('svgClubLabel')}</text>
+    <text x="16" y="179" font-family="Inter,Arial,sans-serif" font-size="10" font-weight="600" fill="#444">${clubName}</text>
+    <circle cx="18" cy="193" r="6.5" stroke="#bbb" stroke-width="1.2" fill="none"/>
+    <path d="M18 189.5v4l2 1.5" stroke="#bbb" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+    <text x="27" y="196" font-family="Inter,Arial,sans-serif" font-size="8" fill="#666" font-weight="500">${validStr}</text>
     <text x="261" y="150" font-family="monospace,Courier,sans-serif" font-size="7.5" fill="#bbb" text-anchor="end" letter-spacing="1">${cardNum}</text>
     <rect x="277" y="158" width="46" height="46" rx="4" fill="#fafafa"/>
     <rect x="281" y="162" width="14" height="14" rx="1.5" fill="#1a1a1a"/>
@@ -962,14 +960,17 @@ async function buildCardSVG(child,idx,settings){
     <rect width="323" height="204" rx="12" fill="#ffffff"/>
     <rect width="323" height="5" fill="#E53935"/>
     <rect y="18" width="323" height="36" fill="#1a1a1a"/>
-    <path d="M25 84c-2.8 0-5-2.2-5-5 0-4 5-9 5-9s5 5 5 9c0 2.8-2.2 5-5 5z" stroke="#888" stroke-width="1.2" fill="none"/>
-    <circle cx="25" cy="79" r="1.5" stroke="#888" stroke-width="1.1" fill="none"/>
-    <text x="33" y="83" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555">${address}</text>
-    <path d="M21 93h2.5l1 3-1.5 1a7 7 0 003 3l1-1.5 3 1v2.5a1.5 1.5 0 01-1.5 1C22.8 103 19 99.2 19 94.5A1.5 1.5 0 0121 93z" stroke="#888" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
-    <text x="33" y="99" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555">${phone}</text>
-    <rect x="19" y="104" width="9" height="9" rx="2" stroke="#888" stroke-width="1.2" fill="none"/>
-    <path d="M22 113l4-4M24 109h2v2" stroke="#888" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <text x="33" y="115" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555">${website}</text>
+    <!-- Геопин: центр иконки y=86 -->
+    <path d="M25 81c-2.8 0-5-2.2-5-5 0-4 5-9 5-9s5 5 5 9c0 2.8-2.2 5-5 5z" stroke="#888" stroke-width="1.2" fill="none"/>
+    <circle cx="25" cy="76" r="1.5" stroke="#888" stroke-width="1.1" fill="none"/>
+    <text x="33" y="82" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">${address}</text>
+    <!-- Телефон: центр иконки y=102 -->
+    <path d="M21 98h2.5l1 3-1.5 1a7 7 0 003 3l1-1.5 3 1v2.5a1.5 1.5 0 01-1.5 1C22.8 108 19 104.2 19 99.5A1.5 1.5 0 0121 98z" stroke="#888" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
+    <text x="33" y="104" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">${phone}</text>
+    <!-- Сайт: центр иконки y=118 -->
+    <rect x="19" y="113" width="9" height="9" rx="2" stroke="#888" stroke-width="1.2" fill="none"/>
+    <path d="M22 122l4-4M24 118h2v2" stroke="#888" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="33" y="122" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555" dominant-baseline="middle">${website}</text>
     ${logoBack}
     <line x1="0" y1="156" x2="323" y2="156" stroke="#efefef" stroke-width="0.5"/>
     <!-- QR — вертикально центрирован в панели 48px -->
@@ -980,15 +981,15 @@ async function buildCardSVG(child,idx,settings){
     <rect x="26" y="178" width="4" height="4" rx="0.5" fill="#E53935"/><rect x="31" y="178" width="4" height="4" rx="0.5" fill="#E53935"/><rect x="36" y="178" width="4" height="4" rx="0.5" fill="#E53935"/>
     <rect x="26" y="183" width="4" height="4" rx="0.5" fill="#E53935"/><rect x="31" y="183" width="4" height="4" rx="0.5" fill="#E53935"/>
     <rect x="36" y="188" width="4" height="4" rx="0.5" fill="#E53935"/><rect x="31" y="188" width="4" height="4" rx="0.5" fill="#E53935"/>
-    <!-- Иконка InSkill — центр панели y=180 -->
-    <rect x="52" y="166" width="14" height="14" rx="3.5" stroke="#1a1a1a" stroke-width="1.1" fill="none"/>
-    <path d="M55 177L61 171" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round"/>
-    <path d="M58 171h3v3" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
-    <!-- InSkill.online — вертикально по центру панели -->
-    <text y="176" font-family="Inter,Arial,sans-serif" font-size="9"><tspan font-weight="700" fill="#1a1a1a" x="70">InSkill</tspan><tspan font-weight="400" fill="#E53935">.online</tspan></text>
-    <!-- Слоган — по левому краю, без растяжки -->
-    <text x="70" y="187" font-family="Inter,Arial,sans-serif" font-size="6.5" fill="#aaa">${tc('tagline1')}</text>
-    <text x="70" y="196" font-family="Inter,Arial,sans-serif" font-size="6.5" fill="#aaa">${tc('tagline2')}</text>
+    <!-- Іконка InSkill — сдвинута правее от QR -->
+    <rect x="58" y="163" width="14" height="14" rx="3.5" stroke="#1a1a1a" stroke-width="1.1" fill="none"/>
+    <path d="M61 174L67 168" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M64 168h3v3" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- InSkill.online справа від іконки -->
+    <text y="173" font-family="Inter,Arial,sans-serif" font-size="9"><tspan font-weight="700" fill="#1a1a1a" x="76">InSkill</tspan><tspan font-weight="400" fill="#E53935">.online</tspan></text>
+    <!-- Слоган під логотипом, виравняний по x -->
+    <text x="76" y="184" font-family="Inter,Arial,sans-serif" font-size="6.5" fill="#aaa">${tc('tagline1')}</text>
+    <text x="76" y="193" font-family="Inter,Arial,sans-serif" font-size="6.5" fill="#aaa">${tc('tagline2')}</text>
   </svg>`;
 
   return{frontSVG,backSVG,cardNum};
