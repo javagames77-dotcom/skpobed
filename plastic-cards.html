@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Пластикові карти — InSkill.online</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+[data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--sidebar-bg:#ffffff;--input-bg:#fafafa;--card-bg:#ffffff;--card-shadow:0 1px 3px rgba(0,0,0,.06);--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green:#16a34a;--tag-red-bg:#fff0f0;--tag-red:#c0392b;--tag-blue-bg:#eff6ff;--tag-blue:#1d4ed8;--p:#0066CC;--s:#FF9933}
+[data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--sidebar-bg:#0a0a0a;--input-bg:#181818;--card-bg:#181818;--card-shadow:0 1px 3px rgba(0,0,0,.3);--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green:#4ade80;--tag-red-bg:#2a1010;--tag-red:#ff7070;--tag-blue-bg:#0c1a3a;--tag-blue:#93c5fd;--p:#4d9de0;--s:#FF9933}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+/* NAV */
+.nav{height:48px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:background .2s,border-color .2s}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:600;color:var(--black);letter-spacing:-.03em;transition:color .2s}
+.logo-text span{font-weight:300;color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-badge{font-size:10px;font-weight:500;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;letter-spacing:.02em}
+.nav-divider{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.theme-toggle{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;transition:all .15s}
+.theme-toggle:hover{border-color:var(--border2)}
+.lang-switcher{display:flex;align-items:center;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:3px;transition:all .2s}
+.lang-btn{padding:3px 8px;border:none;border-radius:5px;background:transparent;color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.lang-btn.active{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* LAYOUT */
+.layout{display:flex;height:calc(100vh - 48px)}
+
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:background .2s,border-color .2s;overflow-y:auto}
+.sidebar-user{padding:14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-avatar{width:32px;height:32px;border-radius:50%;background:var(--black);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;transition:all .2s}
+.sidebar-user-name{font-size:12px;font-weight:500;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .2s}
+.sidebar-user-id{font-size:10px;color:var(--muted2)}
+.sidebar-section{padding:14px 12px 6px;font-size:10px;font-weight:500;color:var(--muted2);letter-spacing:.08em;text-transform:uppercase}
+.sitem{display:flex;align-items:center;gap:9px;padding:7px 12px;margin:1px 6px;border:none;border-radius:7px;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;text-align:left;width:calc(100% - 12px);text-decoration:none}
+.sitem:hover{background:var(--bg3);color:var(--text)}
+.sitem.active{background:var(--bg3);color:var(--black)}
+.sitem svg{flex-shrink:0}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:24px}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.page-title{font-size:16px;font-weight:600;color:var(--black);letter-spacing:-.02em}
+
+/* CARDS */
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);margin-bottom:16px;transition:all .2s}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card-title{font-size:13px;font-weight:600;color:var(--black)}
+.card-body{padding:18px}
+
+/* FORM */
+.form-group{margin-bottom:14px}
+.form-group:last-child{margin-bottom:0}
+.form-label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.form-input{width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:7px;background:var(--input-bg);color:var(--text);font-size:12px;font-family:inherit;transition:border-color .15s;outline:none}
+.form-input:focus{border-color:var(--border2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* GRID LAYOUT */
+.page-grid{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}
+@media(max-width:900px){.page-grid{grid-template-columns:1fr}}
+
+/* CARD PREVIEW */
+.card-preview-wrap{display:flex;flex-direction:column;gap:12px}
+.preview-label{font-size:10px;font-weight:500;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.plastic-card{width:100%;max-width:323px;height:204px;border-radius:12px;position:relative;overflow:hidden;background:#fff;border:1px solid #e0e0e0;box-shadow:0 2px 14px rgba(0,0,0,.11);flex-shrink:0}
+
+/* LOGO UPLOAD */
+.logo-upload-area{border:1.5px dashed var(--border2);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:all .15s;background:var(--bg3);position:relative}
+.logo-upload-area:hover{border-color:var(--accent);background:var(--bg)}
+.logo-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.logo-preview{width:60px;height:36px;object-fit:contain;display:none;margin:0 auto 6px}
+.logo-upload-icon{color:var(--muted2);margin-bottom:4px}
+.logo-upload-text{font-size:11px;color:var(--muted);line-height:1.4}
+
+/* ATHLETES LIST */
+.group-section{margin-bottom:16px}
+.group-header{display:flex;align-items:center;gap:8px;padding:8px 0;cursor:pointer;user-select:none}
+.group-header-name{font-size:12px;font-weight:600;color:var(--black)}
+.group-header-count{font-size:10px;color:var(--muted2);background:var(--bg3);border-radius:10px;padding:1px 7px}
+.group-chevron{color:var(--muted2);transition:transform .2s;flex-shrink:0}
+.group-chevron.open{transform:rotate(90deg)}
+.athletes-list{display:none}
+.athletes-list.open{display:block}
+.athlete-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+.athlete-row:last-child{border-bottom:none}
+.athlete-cb{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.athlete-photo{width:28px;height:28px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.athlete-photo img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.athlete-name{font-size:12px;font-weight:500;color:var(--black);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.athlete-meta{font-size:10px;color:var(--muted2);white-space:nowrap}
+.athlete-actions{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.dl-btn{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:var(--bg);display:none;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .12s}
+.dl-btn:hover{border-color:var(--border2);color:var(--black)}
+.dl-btn.visible{display:flex}
+.dl-btn-pdf{color:var(--accent)}
+
+/* SELECT ALL */
+.select-all-row{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:4px}
+.select-all-cb{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+.select-all-label{font-size:11px;color:var(--muted);cursor:pointer}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;border:1px solid var(--border)}
+.btn-primary{background:var(--black);color:var(--bg);border-color:var(--black)}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-secondary{background:var(--bg);color:var(--text)}
+.btn-secondary:hover{background:var(--bg3)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--black);color:var(--bg);padding:9px 18px;border-radius:8px;font-size:12px;font-weight:500;opacity:0;transition:all .25s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:#c0392b}
+
+/* SKELETON */
+.skeleton{background:var(--bg3);border-radius:6px;animation:skpulse 1.2s ease-in-out infinite}
+@keyframes skpulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:32px 16px;color:var(--muted)}
+.empty-icon{margin-bottom:10px;opacity:.3}
+.empty-text{font-size:12px}
+
+/* LOADING */
+.loading-spinner{display:flex;align-items:center;justify-content:center;padding:24px;color:var(--muted2);font-size:12px;gap:8px}
+
+/* MOBILE NAV */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--nav-bg);border-top:1px solid var(--border);backdrop-filter:blur(10px);z-index:100}
+.mob-nav-items{display:flex;justify-content:space-around;padding:6px 0 max(6px,env(safe-area-inset-bottom))}
+.mob-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--muted);border:none;background:none;cursor:pointer;padding:4px 10px;font-family:inherit}
+@media(max-width:768px){.sidebar{display:none}.mob-nav{display:block}.main{padding:16px;padding-bottom:70px}.page-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/director-dashboard.html" class="nav-logo">
+    <svg width="23" height="23" viewBox="0 0 20 20" fill="none">
+      <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+      <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="logo-text">InSkill<span>.online</span></span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-badge" id="nav-badge">ДИРЕКТОР</span>
+    <div class="nav-divider"></div>
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="icon-sun" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.6 3.6l1.3 1.3M11.1 11.1l1.3 1.3M3.6 12.4l1.3-1.3M11.1 4.9l1.3-1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:none"><path d="M13.5 10A6 6 0 015 2.5a6 6 0 108 8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sideInitials">ДР</div>
+    <div>
+      <div class="sidebar-user-name" id="sideUserName">—</div>
+      <div class="sidebar-user-id" id="sideUserId"></div>
+    </div>
+  </div>
+
+  <div class="sidebar-section" id="lbl-side-section">Пластикові карти</div>
+  <a href="#" class="sitem active">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6.5h14" stroke="currentColor" stroke-width="1.2"/><path d="M4 9.5h3M10 9.5h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <span id="lbl-side-cards">Пластикові карти</span>
+  </a>
+
+  <div class="sidebar-section" id="lbl-side-nav">Навігація</div>
+  <a href="/director-dashboard.html" class="sitem">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="lbl-back">← Панель директора</span>
+  </a>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="page-header">
+    <h1 class="page-title" id="lbl-page-title">Пластикові карти</h1>
+  </div>
+
+  <div class="page-grid">
+
+    <!-- ЛЕВАЯ КОЛОНКА: НАСТРОЙКИ -->
+    <div>
+
+      <!-- НАСТРОЙКИ КАРТЫ -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title" id="lbl-card-settings">Налаштування карти</span>
+        </div>
+        <div class="card-body">
+
+          <!-- Язык карты -->
+          <div class="form-group">
+            <label class="form-label" id="lbl-card-lang">Мова карти</label>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-primary" id="lang-ua" onclick="setCardLang('uk')" style="flex:1;justify-content:center">UA</button>
+              <button class="btn btn-secondary" id="lang-ru" onclick="setCardLang('ru')" style="flex:1;justify-content:center">RU</button>
+              <button class="btn btn-secondary" id="lang-en" onclick="setCardLang('en')" style="flex:1;justify-content:center">EN</button>
+            </div>
+          </div>
+
+          <!-- Название клуба -->
+          <div class="form-group">
+            <label class="form-label" id="lbl-club-name-f">Назва клубу</label>
+            <input type="text" class="form-input" id="inp-club-name" placeholder="СК Динамо Полтава" oninput="updatePreview()">
+          </div>
+
+          <!-- Лого клуба -->
+          <div class="form-group">
+            <label class="form-label" id="lbl-club-logo">Логотип клубу</label>
+            <div class="logo-upload-area" id="logo-upload-area">
+              <input type="file" accept="image/*" onchange="handleLogoUpload(event)">
+              <img id="logo-preview-img" class="logo-preview" alt="logo">
+              <div id="logo-upload-icon" class="logo-upload-icon">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="1" y="1" width="18" height="18" rx="4" stroke="currentColor" stroke-width="1.2"/><path d="M10 6v8M6 10h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <div class="logo-upload-text" id="lbl-logo-hint">Натисніть щоб завантажити</div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:5px">
+              <button class="btn btn-secondary" onclick="removeLogo()" id="btn-remove-logo" style="display:none;font-size:11px;padding:4px 10px" id="lbl-remove-logo">Видалити</button>
+            </div>
+          </div>
+
+          <!-- Роль (опционально) -->
+          <div class="form-group">
+            <label class="form-label" id="lbl-role-f">Роль <span style="color:var(--muted2);font-weight:400;text-transform:none;letter-spacing:0" id="lbl-optional">(опціонально)</span></label>
+            <input type="text" class="form-input" id="inp-role" placeholder="Учень, Тренер, Бухгалтер..." oninput="updatePreview()">
+          </div>
+
+          <!-- Срок действия -->
+          <div class="form-group">
+            <label class="form-label" id="lbl-valid-period">Термін дії</label>
+            <div class="form-row">
+              <div>
+                <label class="form-label" id="lbl-valid-from">З</label>
+                <input type="date" class="form-input" id="inp-valid-from" onchange="updatePreview()">
+              </div>
+              <div>
+                <label class="form-label" id="lbl-valid-to">До</label>
+                <input type="date" class="form-input" id="inp-valid-to" onchange="updatePreview()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Контакты клуба (оборот) -->
+          <div class="form-group">
+            <label class="form-label" id="lbl-contacts-f">Контакти клубу <span style="color:var(--muted2);font-weight:400;text-transform:none;letter-spacing:0" id="lbl-optional2">(опціонально)</span></label>
+            <input type="text" class="form-input" id="inp-address" placeholder="м. Полтава, вул. Соборності, 45" oninput="updatePreview()" style="margin-bottom:6px">
+            <input type="text" class="form-input" id="inp-phone" placeholder="+38 050 123 45 67" oninput="updatePreview()" style="margin-bottom:6px">
+            <input type="text" class="form-input" id="inp-website" placeholder="dynamo-poltava.ua" oninput="updatePreview()">
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ПРАВАЯ КОЛОНКА: ПРЕВЬЮ + ПЕРСОНАЛИЗАЦИЯ -->
+    <div>
+
+      <!-- ПРЕВЬЮ -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title" id="lbl-preview-title">Попередній перегляд</span>
+        </div>
+        <div class="card-body">
+          <div class="card-preview-wrap">
+
+            <div>
+              <div class="preview-label" id="lbl-front-side">Лицьова сторона</div>
+              <!-- ЛИЦЕВАЯ КАРТА SVG -->
+              <div style="max-width:323px">
+                <svg id="card-front-svg" viewBox="0 0 323 204" width="100%" style="border-radius:12px;box-shadow:0 2px 14px rgba(0,0,0,.11);display:block">
+                  <!-- Фон -->
+                  <rect width="323" height="204" rx="12" fill="#ffffff"/>
+                  <!-- Красная полоса -->
+                  <rect width="323" height="5" rx="0" fill="#E53935"/>
+                  <!-- Фото -->
+                  <rect x="16" y="20" width="66" height="80" rx="7" fill="#f2f2f2" stroke="#e0e0e0" stroke-width="1.5"/>
+                  <g transform="translate(49,60)">
+                    <circle cx="0" cy="-8" r="10" stroke="#c0c0c0" stroke-width="1.5" fill="none"/>
+                    <path d="M-14 18c0-8 6.3-14 14-14s14 6 14 14" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                  </g>
+                  <!-- ФИО -->
+                  <text id="svg-name" x="92" y="37" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#1a1a1a">ПІБ СПОРТСМЕНА</text>
+                  <!-- Дата рождения -->
+                  <!-- Иконка календаря -->
+                  <rect x="92" y="42" width="9" height="9" rx="1.5" stroke="#aaa" stroke-width="1.2" fill="none"/>
+                  <line x1="92" y1="45.5" x2="101" y2="45.5" stroke="#aaa" stroke-width="1.2"/>
+                  <line x1="94.5" y1="41" x2="94.5" y2="43.5" stroke="#aaa" stroke-width="1.2" stroke-linecap="round"/>
+                  <line x1="98.5" y1="41" x2="98.5" y2="43.5" stroke="#aaa" stroke-width="1.2" stroke-linecap="round"/>
+                  <text id="svg-dob" x="105" y="50" font-family="Inter,sans-serif" font-size="9" fill="#888">01.01.2010</text>
+                  <!-- Роль -->
+                  <rect id="svg-role-bg" x="92" y="55" width="60" height="14" rx="3" fill="#f0f0f0"/>
+                  <!-- Иконка человека -->
+                  <circle cx="97" cy="61" r="3" stroke="#555" stroke-width="1.2" fill="none"/>
+                  <path d="M91.5 68c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="#555" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                  <text id="svg-role" x="105" y="65" font-family="Inter,sans-serif" font-size="8.5" font-weight="600" fill="#1a1a1a">Учень</text>
+                  <!-- Год водяной знак -->
+                  <text id="svg-year" x="310" y="166" font-family="Inter,sans-serif" font-size="80" font-weight="800" fill="rgba(0,0,0,0.042)" text-anchor="end" letter-spacing="-5">2026</text>
+                  <!-- Лого клуба (placeholder) -->
+                  <rect id="svg-logo-club-rect" x="269" y="16" width="38" height="22" rx="4" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
+                  <text id="svg-logo-club-text" x="288" y="30" font-family="Inter,sans-serif" font-size="7" fill="#bbb" text-anchor="middle">ЛОГО</text>
+                  <image id="svg-logo-img" x="269" y="16" width="38" height="22" style="display:none" preserveAspectRatio="xMidYMid meet"/>
+                  <!-- Разделитель -->
+                  <line x1="16" y1="152" x2="307" y2="152" stroke="#e8e8e8" stroke-width="0.5"/>
+                  <!-- Метка "Клуб" -->
+                  <text id="svg-club-label" x="16" y="164" font-family="Inter,sans-serif" font-size="8" fill="#bbb" letter-spacing="1">КЛУБ</text>
+                  <!-- Название клуба -->
+                  <text id="svg-club-name" x="16" y="178" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#444">СК Динамо Полтава</text>
+                  <!-- Срок действия - иконка часов -->
+                  <circle cx="18" cy="194" r="6.5" stroke="#bbb" stroke-width="1.2" fill="none"/>
+                  <path d="M18 190.5v4l2 1.5" stroke="#bbb" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                  <text id="svg-valid" x="27" y="197" font-family="Inter,sans-serif" font-size="8" fill="#666" font-weight="500">01.01.2026 — 31.12.2026</text>
+                  <!-- Номер карты -->
+                  <text id="svg-cardnum" x="261" y="150" font-family="monospace" font-size="7.5" fill="#bbb" text-anchor="end" letter-spacing="1">IS-2026-00001</text>
+                  <!-- QR (декоративный) -->
+                  <rect x="277" y="158" width="46" height="46" rx="4" fill="#fafafa"/>
+                  <rect x="281" y="162" width="14" height="14" rx="1.5" fill="#1a1a1a"/>
+                  <rect x="282.5" y="163.5" width="11" height="11" fill="#fff" rx="1"/>
+                  <rect x="284" y="165" width="8" height="8" rx="0.5" fill="#1a1a1a"/>
+                  <rect x="299" y="162" width="14" height="14" rx="1.5" fill="#1a1a1a"/>
+                  <rect x="300.5" y="163.5" width="11" height="11" fill="#fff" rx="1"/>
+                  <rect x="302" y="165" width="8" height="8" rx="0.5" fill="#1a1a1a"/>
+                  <rect x="281" y="180" width="14" height="14" rx="1.5" fill="#1a1a1a"/>
+                  <rect x="282.5" y="181.5" width="11" height="11" fill="#fff" rx="1"/>
+                  <rect x="284" y="183" width="8" height="8" rx="0.5" fill="#1a1a1a"/>
+                  <rect x="299" y="180" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+                  <rect x="305" y="180" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+                  <rect x="311" y="180" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+                  <rect x="299" y="186" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+                  <rect x="305" y="186" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+                  <rect x="311" y="192" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+                  <rect x="305" y="192" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+                </svg>
+              </div>
+            </div>
+
+            <div style="margin-top:4px">
+              <div class="preview-label" id="lbl-back-side">Зворотна сторона</div>
+              <div style="max-width:323px">
+                <svg id="card-back-svg" viewBox="0 0 323 204" width="100%" style="border-radius:12px;box-shadow:0 2px 14px rgba(0,0,0,.11);display:block">
+                  <rect width="323" height="204" rx="12" fill="#ffffff"/>
+                  <rect width="323" height="5" rx="0" fill="#E53935"/>
+                  <!-- Магнитная полоса -->
+                  <rect y="18" width="323" height="36" fill="#1a1a1a"/>
+                  <!-- Контакты клуба -->
+                  <!-- Иконка геопин -->
+                  <path d="M25 84c-2.8 0-5-2.2-5-5 0-4 5-9 5-9s5 5 5 9c0 2.8-2.2 5-5 5z" stroke="#888" stroke-width="1.2" fill="none"/>
+                  <circle cx="25" cy="79" r="1.5" stroke="#888" stroke-width="1.1" fill="none"/>
+                  <text id="svg-b-address" x="33" y="83" font-family="Inter,sans-serif" font-size="8.5" fill="#555">м. Полтава, вул. Соборності, 45</text>
+                  <!-- Иконка телефона -->
+                  <path d="M21 93h2.5l1 3-1.5 1a7 7 0 003 3l1-1.5 3 1v2.5a1.5 1.5 0 01-1.5 1C22.8 103 19 99.2 19 94.5A1.5 1.5 0 0121 93z" stroke="#888" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
+                  <text id="svg-b-phone" x="33" y="99" font-family="Inter,sans-serif" font-size="8.5" fill="#555">+38 050 123 45 67</text>
+                  <!-- Иконка сайта -->
+                  <rect x="19" y="104" width="9" height="9" rx="2" stroke="#888" stroke-width="1.2" fill="none"/>
+                  <path d="M22 113l4-4M24 109h2v2" stroke="#888" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  <text id="svg-b-website" x="33" y="115" font-family="Inter,sans-serif" font-size="8.5" fill="#555">dynamo-poltava.ua</text>
+                  <!-- Лого клуба на обороте -->
+                  <rect id="svg-b-logo-rect" x="245" y="70" width="64" height="44" rx="6" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
+                  <text id="svg-b-logo-text" x="277" y="95" font-family="Inter,sans-serif" font-size="8" fill="#bbb" text-anchor="middle" font-weight="500">ЛОГО</text>
+                  <image id="svg-b-logo-img" x="245" y="70" width="64" height="44" style="display:none" preserveAspectRatio="xMidYMid meet"/>
+                  <!-- Разделитель перед рекламой -->
+                  <line x1="0" y1="156" x2="323" y2="156" stroke="#efefef" stroke-width="0.5"/>
+                  <!-- QR на сайт InSkill -->
+                  <rect x="12" y="164" width="32" height="32" rx="3" fill="#f5f5f5"/>
+                  <rect x="15" y="167" width="10" height="10" rx="1" fill="#E53935"/>
+                  <rect x="16" y="168" width="8" height="8" fill="#fff" rx="0.5"/>
+                  <rect x="17" y="169" width="6" height="6" rx="0.5" fill="#E53935"/>
+                  <rect x="27" y="167" width="10" height="10" rx="1" fill="#E53935"/>
+                  <rect x="28" y="168" width="8" height="8" fill="#fff" rx="0.5"/>
+                  <rect x="29" y="169" width="6" height="6" rx="0.5" fill="#E53935"/>
+                  <rect x="15" y="179" width="10" height="10" rx="1" fill="#E53935"/>
+                  <rect x="16" y="180" width="8" height="8" fill="#fff" rx="0.5"/>
+                  <rect x="17" y="181" width="6" height="6" rx="0.5" fill="#E53935"/>
+                  <rect x="27" y="179" width="3" height="3" fill="#E53935"/>
+                  <rect x="31" y="179" width="3" height="3" fill="#E53935"/>
+                  <rect x="35" y="179" width="3" height="3" fill="#E53935"/>
+                  <rect x="27" y="183" width="3" height="3" fill="#E53935"/>
+                  <rect x="31" y="183" width="3" height="3" fill="#E53935"/>
+                  <rect x="35" y="189" width="3" height="3" fill="#E53935"/>
+                  <rect x="31" y="189" width="3" height="3" fill="#E53935"/>
+                  <!-- Лого InSkill -->
+                  <rect x="48" y="167" width="14" height="14" rx="3.5" stroke="#1a1a1a" stroke-width="1.1" fill="none"/>
+                  <path d="M51 178L57 172" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round"/>
+                  <path d="M54 172h3v3" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+                  <text x="65" y="177" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="#1a1a1a" letter-spacing="-0.3">InSkill</text>
+                  <text x="101" y="177" font-family="Inter,sans-serif" font-size="9" font-weight="400" fill="#E53935">.online</text>
+                  <!-- Слоган -->
+                  <text id="svg-b-tagline1" x="48" y="188" font-family="Inter,sans-serif" font-size="7" fill="#aaa">www.inSkill.online — автоматизована AI система</text>
+                  <text id="svg-b-tagline2" x="48" y="197" font-family="Inter,sans-serif" font-size="7" fill="#aaa">управління спортивними клубами нового покоління</text>
+                </svg>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ПЕРСОНАЛИЗАЦИЯ -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title" id="lbl-personal-title">Персоналізація</span>
+          <button class="btn btn-primary" id="btn-generate" onclick="generateCards()" disabled>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M4 6h4M6 4v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <span id="lbl-btn-generate">Згенерувати карти</span>
+          </button>
+        </div>
+        <div class="card-body" id="athletes-container">
+          <div class="loading-spinner">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5" stroke-dasharray="20 14" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 7 7" to="360 7 7" dur="0.9s" repeatCount="indefinite"/></circle></svg>
+            <span id="lbl-loading">Завантаження...</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+</div><!-- /layout -->
+
+<!-- MOBILE NAV -->
+<nav class="mob-nav">
+  <div class="mob-nav-items">
+    <a href="/director-dashboard.html" class="mob-nav-btn">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M10 3L6 8l4 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="mob-lbl-back">Назад</span>
+    </a>
+    <button class="mob-nav-btn" onclick="generateCards()" id="mob-btn-generate">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6.5h14" stroke="currentColor" stroke-width="1.2"/><path d="M4 9.5h3M10 9.5h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span id="mob-lbl-generate">Генерувати</span>
+    </button>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══ i18n ═══ */
+const i18n={
+  uk:{
+    navBadge:'ДИРЕКТОР',
+    sideSection:'Пластикові карти',sideCards:'Пластикові карти',sideNav:'Навігація',backDashboard:'← Панель директора',
+    pageTitle:'Пластикові карти',
+    cardSettings:'Налаштування карти',
+    lblCardLang:'Мова карти',lblClubName:'Назва клубу',lblClubLogo:'Логотип клубу',
+    lblLogoHint:'Натисніть щоб завантажити',lblRemoveLogo:'Видалити',
+    lblRole:'Роль',lblOptional:'(опціонально)',
+    lblValidPeriod:'Термін дії',lblValidFrom:'З',lblValidTo:'До',
+    lblContacts:'Контакти клубу',
+    phClubName:'СК Динамо Полтава',phRole:'Учень, Тренер, Бухгалтер...',
+    phAddress:'м. Полтава, вул. Соборності, 45',phPhone:'+38 050 123 45 67',phWebsite:'dynamo-poltava.ua',
+    previewTitle:'Попередній перегляд',frontSide:'Лицьова сторона',backSide:'Зворотна сторона',
+    personalTitle:'Персоналізація',btnGenerate:'Згенерувати карти',
+    loading:'Завантаження...',noAthletes:'Спортсменів не знайдено',
+    selectAll:'Обрати всіх',
+    svgClubLabel:'КЛУБ',
+    tagline1:'www.inSkill.online — автоматизована AI система',
+    tagline2:'управління спортивними клубами нового покоління',
+    svgDobLabel:'Дата нар.:',svgValidLabel:'Дійсна:',
+    dlPng:'Завантажити PNG',dlPdf:'PDF для друку',
+    generating:'Генерація...',generated:'Карти згенеровано!',
+    errLoad:'Помилка завантаження даних',errGenerate:'Помилка генерації',
+    noSelected:'Оберіть хоча б одного спортсмена',
+    mobBack:'Назад',mobGenerate:'Генерувати',
+    noGroups:'Групи не знайдено'
+  },
+  ru:{
+    navBadge:'ДИРЕКТОР',
+    sideSection:'Пластиковые карты',sideCards:'Пластиковые карты',sideNav:'Навигация',backDashboard:'← Панель директора',
+    pageTitle:'Пластиковые карты',
+    cardSettings:'Настройки карты',
+    lblCardLang:'Язык карты',lblClubName:'Название клуба',lblClubLogo:'Логотип клуба',
+    lblLogoHint:'Нажмите чтобы загрузить',lblRemoveLogo:'Удалить',
+    lblRole:'Роль',lblOptional:'(опционально)',
+    lblValidPeriod:'Срок действия',lblValidFrom:'С',lblValidTo:'До',
+    lblContacts:'Контакты клуба',
+    phClubName:'СК Динамо Полтава',phRole:'Ученик, Тренер, Бухгалтер...',
+    phAddress:'г. Полтава, ул. Соборности, 45',phPhone:'+38 050 123 45 67',phWebsite:'dynamo-poltava.ua',
+    previewTitle:'Предпросмотр',frontSide:'Лицевая сторона',backSide:'Обратная сторона',
+    personalTitle:'Персонализация',btnGenerate:'Сгенерировать карты',
+    loading:'Загрузка...',noAthletes:'Спортсменов не найдено',
+    selectAll:'Выбрать всех',
+    svgClubLabel:'КЛУБ',
+    tagline1:'www.inSkill.online — автоматизированная AI система',
+    tagline2:'управления спортивными клубами нового поколения',
+    svgDobLabel:'Дата рожд.:',svgValidLabel:'Действительна:',
+    dlPng:'Скачать PNG',dlPdf:'PDF для печати',
+    generating:'Генерация...',generated:'Карты сгенерированы!',
+    errLoad:'Ошибка загрузки данных',errGenerate:'Ошибка генерации',
+    noSelected:'Выберите хотя бы одного спортсмена',
+    mobBack:'Назад',mobGenerate:'Генерировать',
+    noGroups:'Группы не найдены'
+  },
+  en:{
+    navBadge:'DIRECTOR',
+    sideSection:'Plastic cards',sideCards:'Plastic cards',sideNav:'Navigation',backDashboard:'← Director panel',
+    pageTitle:'Plastic cards',
+    cardSettings:'Card settings',
+    lblCardLang:'Card language',lblClubName:'Club name',lblClubLogo:'Club logo',
+    lblLogoHint:'Click to upload',lblRemoveLogo:'Remove',
+    lblRole:'Role',lblOptional:'(optional)',
+    lblValidPeriod:'Valid period',lblValidFrom:'From',lblValidTo:'To',
+    lblContacts:'Club contacts',
+    phClubName:'SC Dynamo Poltava',phRole:'Student, Trainer, Accountant...',
+    phAddress:'Poltava, Sobornosti St., 45',phPhone:'+38 050 123 45 67',phWebsite:'dynamo-poltava.ua',
+    previewTitle:'Preview',frontSide:'Front side',backSide:'Back side',
+    personalTitle:'Personalization',btnGenerate:'Generate cards',
+    loading:'Loading...',noAthletes:'No athletes found',
+    selectAll:'Select all',
+    svgClubLabel:'CLUB',
+    tagline1:'www.inSkill.online — AI-powered management system',
+    tagline2:'for sports clubs of the new generation',
+    svgDobLabel:'DOB:',svgValidLabel:'Valid:',
+    dlPng:'Download PNG',dlPdf:'PDF for printing',
+    generating:'Generating...',generated:'Cards generated!',
+    errLoad:'Error loading data',errGenerate:'Generation error',
+    noSelected:'Select at least one athlete',
+    mobBack:'Back',mobGenerate:'Generate',
+    noGroups:'No groups found'
+  }
+};
+
+let currentLang=localStorage.getItem('lang')||'uk';
+let cardLang=currentLang;
+let logoDataUrl=null;
+let allGroups=[];
+let allChildren=[];
+let generatedCards={}; // childId -> {png, pdfReady}
+
+const API='https://primary-production-4b93e.up.railway.app/webhook/api';
+const token=localStorage.getItem('token');
+if(!token){location.href='/';throw new Error('No auth');}
+
+function t(k){return(i18n[currentLang]||i18n.ru)[k]||k;}
+function tc(k){return(i18n[cardLang]||i18n.uk)[k]||k;}
+
+/* ═══ THEME ═══ */
+function toggleTheme(){
+  const html=document.documentElement;
+  const isDark=html.getAttribute('data-theme')==='dark';
+  const n=isDark?'light':'dark';
+  html.setAttribute('data-theme',n);localStorage.setItem('theme',n);
+  document.getElementById('icon-sun').style.display=isDark?'block':'none';
+  document.getElementById('icon-moon').style.display=isDark?'none':'block';
+}
+(function(){
+  const s=localStorage.getItem('theme');
+  if(s==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('icon-sun').style.display='none';
+    document.getElementById('icon-moon').style.display='block';
+  }
+})();
+
+/* ═══ LANG UI ═══ */
+function setLang(lang){
+  currentLang=lang;localStorage.setItem('lang',lang);
+  applyLang();
+}
+function setCardLang(lang){
+  cardLang=lang;
+  ['lang-ua','lang-ru','lang-en'].forEach(id=>document.getElementById(id).className='btn btn-secondary');
+  const map={uk:'lang-ua',ru:'lang-ru',en:'lang-en'};
+  document.getElementById(map[lang]).className='btn btn-primary';
+  updatePreview();
+}
+function applyLang(){
+  document.documentElement.lang=currentLang;
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    const map={'UA':'uk','RU':'ru','EN':'en'};
+    btn.classList.toggle('active',map[btn.textContent]===currentLang);
+  });
+  const s=(id,key)=>{const e=document.getElementById(id);if(e)e.textContent=t(key);};
+  s('nav-badge','navBadge');
+  s('lbl-side-section','sideSection');s('lbl-side-cards','sideCards');
+  s('lbl-side-nav','sideNav');s('lbl-back','backDashboard');
+  s('lbl-page-title','pageTitle');
+  s('lbl-card-settings','cardSettings');
+  s('lbl-card-lang','lblCardLang');s('lbl-club-name-f','lblClubName');
+  s('lbl-club-logo','lblClubLogo');s('lbl-logo-hint','lblLogoHint');
+  s('lbl-role-f','lblRole');s('lbl-optional','lblOptional');s('lbl-optional2','lblOptional');
+  s('lbl-valid-period','lblValidPeriod');s('lbl-valid-from','lblValidFrom');s('lbl-valid-to','lblValidTo');
+  s('lbl-contacts-f','lblContacts');
+  s('lbl-preview-title','previewTitle');s('lbl-front-side','frontSide');s('lbl-back-side','backSide');
+  s('lbl-personal-title','personalTitle');s('lbl-btn-generate','btnGenerate');
+  s('lbl-loading','loading');
+  s('mob-lbl-back','mobBack');s('mob-lbl-generate','mobGenerate');
+  // placeholders
+  const ph=(id,key)=>{const e=document.getElementById(id);if(e)e.placeholder=t(key);};
+  ph('inp-club-name','phClubName');ph('inp-role','phRole');
+  ph('inp-address','phAddress');ph('inp-phone','phPhone');ph('inp-website','phWebsite');
+  // перерисовать список если загружен
+  if(allChildren.length)renderAthletes();
+}
+
+/* ═══ LOGO UPLOAD ═══ */
+function handleLogoUpload(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    logoDataUrl=ev.target.result;
+    const img=document.getElementById('logo-preview-img');
+    img.src=logoDataUrl;img.style.display='block';
+    document.getElementById('logo-upload-icon').style.display='none';
+    document.getElementById('btn-remove-logo').style.display='inline-flex';
+    updatePreview();
+  };
+  reader.readAsDataURL(file);
+}
+function removeLogo(){
+  logoDataUrl=null;
+  document.getElementById('logo-preview-img').style.display='none';
+  document.getElementById('logo-upload-icon').style.display='block';
+  document.getElementById('btn-remove-logo').style.display='none';
+  updatePreview();
+}
+
+/* ═══ PREVIEW UPDATE ═══ */
+function fmtDate(d){if(!d)return'—';const p=d.split('-');if(p.length===3)return p[2]+'.'+p[1]+'.'+p[0];return d;}
+function getYear(){
+  const from=document.getElementById('inp-valid-from').value;
+  if(from)return from.split('-')[0];
+  return new Date().getFullYear().toString();
+}
+function genCardNum(idx){
+  const y=getYear();
+  return 'IS-'+y+'-'+String(idx||1).padStart(5,'0');
+}
+
+function updatePreview(){
+  const clubName=document.getElementById('inp-club-name').value||tc('phClubName');
+  const role=document.getElementById('inp-role').value;
+  const validFrom=fmtDate(document.getElementById('inp-valid-from').value);
+  const validTo=fmtDate(document.getElementById('inp-valid-to').value);
+  const address=document.getElementById('inp-address').value||tc('phAddress');
+  const phone=document.getElementById('inp-phone').value||tc('phPhone');
+  const website=document.getElementById('inp-website').value||tc('phWebsite');
+  const year=getYear();
+
+  // Front
+  const setT=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val;};
+  setT('svg-club-name',clubName);
+  setT('svg-year',year);
+  setT('svg-club-label',tc('svgClubLabel'));
+  setT('svg-role',role||'—');
+  setT('svg-valid',(validFrom!=='—'||validTo!=='—')?validFrom+' — '+validTo:'');
+  setT('svg-b-tagline1',tc('tagline1'));
+  setT('svg-b-tagline2',tc('tagline2'));
+
+  // Back contacts
+  setT('svg-b-address',address);
+  setT('svg-b-phone',phone);
+  setT('svg-b-website',website);
+
+  // Role visibility
+  const roleEl=document.getElementById('svg-role');
+  const roleBg=document.getElementById('svg-role-bg');
+  if(roleEl&&roleBg){
+    roleEl.style.display=role?'':'none';
+    roleBg.style.display=role?'':'none';
+  }
+
+  // Logo
+  const svgLogoImg=document.getElementById('svg-logo-img');
+  const svgLogoRect=document.getElementById('svg-logo-club-rect');
+  const svgLogoText=document.getElementById('svg-logo-club-text');
+  const svgBLogoImg=document.getElementById('svg-b-logo-img');
+  const svgBLogoRect=document.getElementById('svg-b-logo-rect');
+  const svgBLogoText=document.getElementById('svg-b-logo-text');
+  if(logoDataUrl){
+    if(svgLogoImg){svgLogoImg.setAttribute('href',logoDataUrl);svgLogoImg.style.display='';}
+    if(svgLogoRect)svgLogoRect.style.display='none';
+    if(svgLogoText)svgLogoText.style.display='none';
+    if(svgBLogoImg){svgBLogoImg.setAttribute('href',logoDataUrl);svgBLogoImg.style.display='';}
+    if(svgBLogoRect)svgBLogoRect.style.display='none';
+    if(svgBLogoText)svgBLogoText.style.display='none';
+  }else{
+    if(svgLogoImg)svgLogoImg.style.display='none';
+    if(svgLogoRect)svgLogoRect.style.display='';
+    if(svgLogoText)svgLogoText.style.display='';
+    if(svgBLogoImg)svgBLogoImg.style.display='none';
+    if(svgBLogoRect)svgBLogoRect.style.display='';
+    if(svgBLogoText)svgBLogoText.style.display='';
+  }
+}
+
+/* ═══ TOAST ═══ */
+function showToast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast show'+(type?' '+type:'');
+  setTimeout(()=>el.className='toast',2800);
+}
+
+/* ═══ LOAD DATA ═══ */
+async function loadData(){
+  try{
+    // Параллельно грузим группы и спортсменов
+    const [rg,rc]=await Promise.all([
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,resource:'groups',action:'list'})}),
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,resource:'children',action:'list'})})
+    ]);
+    const dg=await rg.json();
+    const dc=await rc.json();
+    allGroups=(dg.merged&&Array.isArray(dg.merged)?dg.merged:(Array.isArray(dg)?dg:[])).filter(g=>g&&g.id);
+    allChildren=(dc.merged&&Array.isArray(dc.merged)?dc.merged:(Array.isArray(dc)?dc:[])).filter(c=>c&&c.id);
+    renderAthletes();
+  }catch(e){
+    console.error(e);
+    document.getElementById('athletes-container').innerHTML=
+      '<div class="empty-state"><div class="empty-text" style="color:var(--tag-red)">'+t('errLoad')+'</div></div>';
+  }
+}
+
+/* ═══ RENDER ATHLETES ═══ */
+function renderAthletes(){
+  const container=document.getElementById('athletes-container');
+  if(!allGroups.length&&!allChildren.length){
+    container.innerHTML='<div class="empty-state"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div class="empty-text">'+t('noAthletes')+'</div></div>';
+    return;
+  }
+  // Группируем детей по группам
+  const grouped={};
+  allGroups.forEach(g=>{grouped[g.name]=[];});
+  allChildren.forEach(c=>{
+    const names=(c.group_names||'').split(', ').filter(n=>n&&n!=='Без группы'&&n!=='Без групи');
+    if(!names.length){
+      if(!grouped['—'])grouped['—']=[];
+      grouped['—'].push(c);
+    }else{
+      names.forEach(n=>{
+        if(!grouped[n])grouped[n]=[];
+        grouped[n].push(c);
+      });
+    }
+  });
+  let html='';
+  Object.entries(grouped).forEach(([groupName,children],gi)=>{
+    if(!children.length)return;
+    const gid='group-'+gi;
+    html+=`<div class="group-section">
+      <div class="group-header" onclick="toggleGroup('${gid}')">
+        <svg class="group-chevron" id="chev-${gid}" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="group-header-name">${groupName}</span>
+        <span class="group-header-count">${children.length}</span>
+      </div>
+      <div class="athletes-list" id="${gid}">
+        <div class="select-all-row">
+          <input type="checkbox" class="select-all-cb" id="sa-${gid}" onchange="selectAllGroup('${gid}',this.checked)">
+          <label class="select-all-label" for="sa-${gid}">${t('selectAll')}</label>
+        </div>
+        ${children.map(c=>renderAthleteRow(c)).join('')}
+      </div>
+    </div>`;
+  });
+  if(!html){
+    container.innerHTML='<div class="empty-state"><div class="empty-text">'+t('noAthletes')+'</div></div>';
+    return;
+  }
+  container.innerHTML=html;
+  // Обновляем кнопку генерации
+  updateGenerateBtn();
+  container.querySelectorAll('.athlete-cb').forEach(cb=>{
+    cb.addEventListener('change',()=>{updateGenerateBtn();updateGroupSelectAll(cb);});
+  });
+}
+
+function renderAthleteRow(c){
+  const name=(c.last_name||'')+' '+(c.first_name||'');
+  const dob=c.birth_date?fmtDate(c.birth_date.split('T')[0]):'';
+  const photoHtml=c.photo_url
+    ?`<img src="${c.photo_url}" alt="">`
+    :`<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M2 14c0-4 2.7-6 6-6s6 2 6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+  return `<div class="athlete-row" id="row-${c.id}">
+    <input type="checkbox" class="athlete-cb" data-id="${c.id}" data-name="${name.trim()}" data-dob="${dob}" data-photo="${c.photo_url||''}">
+    <div class="athlete-photo">${photoHtml}</div>
+    <div class="athlete-name">${name.trim()}</div>
+    <div class="athlete-meta">${dob}</div>
+    <div class="athlete-actions" id="actions-${c.id}">
+      <button class="dl-btn" id="dl-png-${c.id}" onclick="downloadCard(${c.id},'png')" title="${t('dlPng')}">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 9v1.5A.5.5 0 001.5 11h9a.5.5 0 00.5-.5V9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </button>
+      <button class="dl-btn dl-btn-pdf" id="dl-pdf-${c.id}" onclick="downloadCard(${c.id},'pdf')" title="${t('dlPdf')}">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 7.5h2M3.5 5.5h5M3.5 3.5h5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>`;
+}
+
+function toggleGroup(gid){
+  const list=document.getElementById(gid);
+  const chev=document.getElementById('chev-'+gid);
+  if(!list)return;
+  list.classList.toggle('open');
+  if(chev)chev.classList.toggle('open');
+}
+
+function selectAllGroup(gid,checked){
+  const list=document.getElementById(gid);
+  if(!list)return;
+  list.querySelectorAll('.athlete-cb').forEach(cb=>{cb.checked=checked;});
+  updateGenerateBtn();
+}
+
+function updateGroupSelectAll(changedCb){
+  // Найдём родительский group list
+  const row=changedCb.closest('.athlete-row');
+  if(!row)return;
+  const list=row.closest('.athletes-list');
+  if(!list)return;
+  const all=list.querySelectorAll('.athlete-cb');
+  const allChecked=[...all].every(cb=>cb.checked);
+  const sa=list.querySelector('.select-all-cb');
+  if(sa)sa.checked=allChecked;
+}
+
+function updateGenerateBtn(){
+  const checked=document.querySelectorAll('.athlete-cb:checked').length;
+  const btn=document.getElementById('btn-generate');
+  if(btn)btn.disabled=checked===0;
+}
+
+/* ═══ GENERATE CARDS ═══ */
+function buildCardSVG(child,idx,settings){
+  const {clubName,role,validFrom,validTo,address,phone,website,year,logoUrl}=settings;
+  const name=(child.last_name||'')+' '+(child.first_name||'')+(child.middle_name?' '+child.middle_name:'');
+  const dob=child.dob||'';
+  const cardNum='IS-'+year+'-'+String(idx).padStart(5,'0');
+
+  const logoFront=logoUrl
+    ?`<image href="${logoUrl}" x="269" y="16" width="38" height="22" preserveAspectRatio="xMidYMid meet"/>`
+    :`<rect x="269" y="16" width="38" height="22" rx="4" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
+      <text x="288" y="30" font-family="Inter,sans-serif" font-size="7" fill="#bbb" text-anchor="middle">ЛОГО</text>`;
+
+  const logoBack=logoUrl
+    ?`<image href="${logoUrl}" x="245" y="70" width="64" height="44" preserveAspectRatio="xMidYMid meet"/>`
+    :`<rect x="245" y="70" width="64" height="44" rx="6" fill="#f5f5f5" stroke="#e8e8e8" stroke-width="1"/>
+      <text x="277" y="95" font-family="Inter,sans-serif" font-size="8" fill="#bbb" text-anchor="middle" font-weight="500">ЛОГО</text>`;
+
+  const photoEl=child.photo_url
+    ?`<image href="${child.photo_url}" x="16" y="20" width="66" height="80" clip-path="url(#photoClip)" preserveAspectRatio="xMidYMid slice"/>`
+    :`<rect x="16" y="20" width="66" height="80" rx="7" fill="#f2f2f2" stroke="#e0e0e0" stroke-width="1.5"/>
+      <circle cx="49" cy="52" r="10" stroke="#c0c0c0" stroke-width="1.5" fill="none"/>
+      <path d="M35 90c0-8 6.3-14 14-14s14 6 14 14" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round" fill="none"/>`;
+
+  const roleBlock=role?`
+    <rect x="92" y="55" width="${Math.max(60,role.length*6+16)}" height="14" rx="3" fill="#f0f0f0"/>
+    <circle cx="97" cy="61" r="3" stroke="#555" stroke-width="1.2" fill="none"/>
+    <path d="M91.5 68c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="#555" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+    <text x="105" y="65" font-family="Inter,sans-serif" font-size="8.5" font-weight="600" fill="#1a1a1a">${role}</text>`:'';
+
+  const validStr=validFrom&&validTo?validFrom+' — '+validTo:'';
+
+  const frontSVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 323 204" width="1063" height="672">
+    <defs><clipPath id="photoClip"><rect x="16" y="20" width="66" height="80" rx="7"/></clipPath></defs>
+    <rect width="323" height="204" rx="12" fill="#ffffff"/>
+    <rect width="323" height="5" fill="#E53935"/>
+    ${photoEl}
+    <text x="92" y="37" font-family="Inter,Arial,sans-serif" font-size="11" font-weight="700" fill="#1a1a1a">${name.trim()}</text>
+    <rect x="92" y="42" width="9" height="9" rx="1.5" stroke="#aaa" stroke-width="1.2" fill="none"/>
+    <line x1="92" y1="45.5" x2="101" y2="45.5" stroke="#aaa" stroke-width="1.2"/>
+    <line x1="94.5" y1="41" x2="94.5" y2="43.5" stroke="#aaa" stroke-width="1.2" stroke-linecap="round"/>
+    <line x1="98.5" y1="41" x2="98.5" y2="43.5" stroke="#aaa" stroke-width="1.2" stroke-linecap="round"/>
+    <text x="105" y="50" font-family="Inter,Arial,sans-serif" font-size="9" fill="#888">${dob}</text>
+    ${roleBlock}
+    <text x="310" y="166" font-family="Inter,Arial,sans-serif" font-size="80" font-weight="800" fill="rgba(0,0,0,0.042)" text-anchor="end" letter-spacing="-5">${year}</text>
+    ${logoFront}
+    <line x1="16" y1="152" x2="307" y2="152" stroke="#e8e8e8" stroke-width="0.5"/>
+    <text x="16" y="164" font-family="Inter,Arial,sans-serif" font-size="8" fill="#bbb" letter-spacing="1">${tc('svgClubLabel')}</text>
+    <text x="16" y="178" font-family="Inter,Arial,sans-serif" font-size="10" font-weight="600" fill="#444">${clubName}</text>
+    <circle cx="18" cy="194" r="6.5" stroke="#bbb" stroke-width="1.2" fill="none"/>
+    <path d="M18 190.5v4l2 1.5" stroke="#bbb" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+    <text x="27" y="197" font-family="Inter,Arial,sans-serif" font-size="8" fill="#666" font-weight="500">${validStr}</text>
+    <text x="261" y="150" font-family="monospace,Courier,sans-serif" font-size="7.5" fill="#bbb" text-anchor="end" letter-spacing="1">${cardNum}</text>
+    <rect x="277" y="158" width="46" height="46" rx="4" fill="#fafafa"/>
+    <rect x="281" y="162" width="14" height="14" rx="1.5" fill="#1a1a1a"/>
+    <rect x="282.5" y="163.5" width="11" height="11" fill="#fff" rx="1"/>
+    <rect x="284" y="165" width="8" height="8" rx="0.5" fill="#1a1a1a"/>
+    <rect x="299" y="162" width="14" height="14" rx="1.5" fill="#1a1a1a"/>
+    <rect x="300.5" y="163.5" width="11" height="11" fill="#fff" rx="1"/>
+    <rect x="302" y="165" width="8" height="8" rx="0.5" fill="#1a1a1a"/>
+    <rect x="281" y="180" width="14" height="14" rx="1.5" fill="#1a1a1a"/>
+    <rect x="282.5" y="181.5" width="11" height="11" fill="#fff" rx="1"/>
+    <rect x="284" y="183" width="8" height="8" rx="0.5" fill="#1a1a1a"/>
+    <rect x="299" y="180" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+    <rect x="305" y="180" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+    <rect x="311" y="180" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+    <rect x="299" y="186" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+    <rect x="305" y="186" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+    <rect x="311" y="192" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+    <rect x="305" y="192" width="4" height="4" rx="0.5" fill="#1a1a1a"/>
+  </svg>`;
+
+  const backSVG=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 323 204" width="1063" height="672">
+    <rect width="323" height="204" rx="12" fill="#ffffff"/>
+    <rect width="323" height="5" fill="#E53935"/>
+    <rect y="18" width="323" height="36" fill="#1a1a1a"/>
+    <path d="M25 84c-2.8 0-5-2.2-5-5 0-4 5-9 5-9s5 5 5 9c0 2.8-2.2 5-5 5z" stroke="#888" stroke-width="1.2" fill="none"/>
+    <circle cx="25" cy="79" r="1.5" stroke="#888" stroke-width="1.1" fill="none"/>
+    <text x="33" y="83" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555">${address}</text>
+    <path d="M21 93h2.5l1 3-1.5 1a7 7 0 003 3l1-1.5 3 1v2.5a1.5 1.5 0 01-1.5 1C22.8 103 19 99.2 19 94.5A1.5 1.5 0 0121 93z" stroke="#888" stroke-width="1.2" stroke-linejoin="round" fill="none"/>
+    <text x="33" y="99" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555">${phone}</text>
+    <rect x="19" y="104" width="9" height="9" rx="2" stroke="#888" stroke-width="1.2" fill="none"/>
+    <path d="M22 113l4-4M24 109h2v2" stroke="#888" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="33" y="115" font-family="Inter,Arial,sans-serif" font-size="8.5" fill="#555">${website}</text>
+    ${logoBack}
+    <line x1="0" y1="156" x2="323" y2="156" stroke="#efefef" stroke-width="0.5"/>
+    <rect x="12" y="164" width="32" height="32" rx="3" fill="#f5f5f5"/>
+    <rect x="15" y="167" width="10" height="10" rx="1" fill="#E53935"/><rect x="16" y="168" width="8" height="8" fill="#fff" rx="0.5"/><rect x="17" y="169" width="6" height="6" rx="0.5" fill="#E53935"/>
+    <rect x="27" y="167" width="10" height="10" rx="1" fill="#E53935"/><rect x="28" y="168" width="8" height="8" fill="#fff" rx="0.5"/><rect x="29" y="169" width="6" height="6" rx="0.5" fill="#E53935"/>
+    <rect x="15" y="179" width="10" height="10" rx="1" fill="#E53935"/><rect x="16" y="180" width="8" height="8" fill="#fff" rx="0.5"/><rect x="17" y="181" width="6" height="6" rx="0.5" fill="#E53935"/>
+    <rect x="27" y="179" width="3" height="3" fill="#E53935"/><rect x="31" y="179" width="3" height="3" fill="#E53935"/><rect x="35" y="179" width="3" height="3" fill="#E53935"/>
+    <rect x="27" y="183" width="3" height="3" fill="#E53935"/><rect x="31" y="183" width="3" height="3" fill="#E53935"/>
+    <rect x="35" y="189" width="3" height="3" fill="#E53935"/><rect x="31" y="189" width="3" height="3" fill="#E53935"/>
+    <rect x="48" y="167" width="14" height="14" rx="3.5" stroke="#1a1a1a" stroke-width="1.1" fill="none"/>
+    <path d="M51 178L57 172" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round"/>
+    <path d="M54 172h3v3" stroke="#1a1a1a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="65" y="177" font-family="Inter,Arial,sans-serif" font-size="9" font-weight="700" fill="#1a1a1a" letter-spacing="-0.3">InSkill</text>
+    <text x="101" y="177" font-family="Inter,Arial,sans-serif" font-size="9" font-weight="400" fill="#E53935">.online</text>
+    <text x="48" y="188" font-family="Inter,Arial,sans-serif" font-size="7" fill="#aaa">${tc('tagline1')}</text>
+    <text x="48" y="197" font-family="Inter,Arial,sans-serif" font-size="7" fill="#aaa">${tc('tagline2')}</text>
+  </svg>`;
+
+  return{frontSVG,backSVG,cardNum};
+}
+
+function svgToCanvas(svgStr,w,h){
+  return new Promise(resolve=>{
+    const blob=new Blob([svgStr],{type:'image/svg+xml;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const img=new Image();
+    img.onload=function(){
+      const canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);
+      resolve(canvas);
+    };
+    img.onerror=function(){URL.revokeObjectURL(url);resolve(null);};
+    img.src=url;
+  });
+}
+
+async function generateCards(){
+  const checked=[...document.querySelectorAll('.athlete-cb:checked')];
+  if(!checked.length){showToast(t('noSelected'),'error');return;}
+
+  const btn=document.getElementById('btn-generate');
+  btn.disabled=true;
+  const origText=btn.querySelector('span').textContent;
+  btn.querySelector('span').textContent=t('generating');
+
+  const settings={
+    clubName:document.getElementById('inp-club-name').value||tc('phClubName'),
+    role:document.getElementById('inp-role').value,
+    validFrom:fmtDate(document.getElementById('inp-valid-from').value),
+    validTo:fmtDate(document.getElementById('inp-valid-to').value),
+    address:document.getElementById('inp-address').value||tc('phAddress'),
+    phone:document.getElementById('inp-phone').value||tc('phPhone'),
+    website:document.getElementById('inp-website').value||tc('phWebsite'),
+    year:getYear(),
+    logoUrl:logoDataUrl
+  };
+
+  for(let i=0;i<checked.length;i++){
+    const cb=checked[i];
+    const id=parseInt(cb.dataset.id);
+    const child=allChildren.find(c=>c.id===id)||{
+      id,first_name:cb.dataset.name.split(' ')[1]||'',
+      last_name:cb.dataset.name.split(' ')[0]||'',
+      birth_date:cb.dataset.dob,photo_url:cb.dataset.photo
+    };
+    child.dob=cb.dataset.dob;
+    const {frontSVG,backSVG,cardNum}=buildCardSVG(child,i+1,settings);
+    // Конвертируем оба SVG в canvas и объединяем в PNG (лицевая сверху, обратная снизу)
+    const [fc,bc]=await Promise.all([
+      svgToCanvas(frontSVG,1063,672),
+      svgToCanvas(backSVG,1063,672)
+    ]);
+    let pngUrl=null;
+    if(fc&&bc){
+      const combined=document.createElement('canvas');
+      combined.width=1063;combined.height=1344+40;
+      const ctx=combined.getContext('2d');
+      ctx.fillStyle='#f0f0f0';
+      ctx.fillRect(0,0,combined.width,combined.height);
+      ctx.drawImage(fc,0,0);
+      ctx.drawImage(bc,0,672+40);
+      pngUrl=combined.toDataURL('image/png');
+    }
+    generatedCards[id]={pngUrl,frontSVG,backSVG,cardNum,name:child.last_name+' '+child.first_name};
+    // Показываем кнопки скачивания
+    const dlPng=document.getElementById('dl-png-'+id);
+    const dlPdf=document.getElementById('dl-pdf-'+id);
+    if(dlPng)dlPng.classList.add('visible');
+    if(dlPdf)dlPdf.classList.add('visible');
+  }
+
+  btn.disabled=false;
+  btn.querySelector('span').textContent=origText;
+  showToast(t('generated'));
+  updateGenerateBtn();
+}
+
+async function downloadCard(id,type){
+  const card=generatedCards[id];
+  if(!card){showToast(t('errGenerate'),'error');return;}
+  const safeName=(card.name||'card').replace(/\s+/g,'_');
+  if(type==='png'&&card.pngUrl){
+    const a=document.createElement('a');
+    a.href=card.pngUrl;
+    a.download='InSkill_'+safeName+'_'+card.cardNum+'.png';
+    a.click();
+  }else if(type==='pdf'){
+    // Генерируем PDF с двумя страницами 90x58мм каждая (с вылетами 2мм = 94x62мм)
+    // Используем SVG -> встраиваем в HTML -> печатаем
+    const W=358,H=226; // 90+2*4=98px at 96dpi ~ 94x62mm at 96dpi, scaled
+    const [fc,bc]=await Promise.all([
+      svgToCanvas(card.frontSVG,1063,672),
+      svgToCanvas(card.backSVG,1063,672)
+    ]);
+    if(!fc||!bc){showToast(t('errGenerate'),'error');return;}
+    const frontPng=fc.toDataURL('image/png');
+    const backPng=bc.toDataURL('image/png');
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8">
+      <title>${safeName}</title>
+      <style>
+        @page{size:94mm 62mm;margin:2mm}
+        body{margin:0;padding:0}
+        .card-page{width:90mm;height:58mm;page-break-after:always;display:flex;align-items:center;justify-content:center}
+        .card-page img{width:90mm;height:58mm;border-radius:3.18mm;display:block}
+      </style></head><body>
+      <div class="card-page"><img src="${frontPng}"></div>
+      <div class="card-page" style="page-break-after:auto"><img src="${backPng}"></div>
+      <script>window.onload=function(){window.print();}<\/script>
+      </body></html>`;
+    const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    window.open(url,'_blank');
+    setTimeout(()=>URL.revokeObjectURL(url),10000);
+  }
+}
+
+/* ═══ INIT ═══ */
+async function init(){
+  // Тема
+  const savedTheme=localStorage.getItem('theme');
+  if(savedTheme==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('icon-sun').style.display='none';
+    document.getElementById('icon-moon').style.display='block';
+  }
+  // Пользователь
+  try{
+    const u=JSON.parse(localStorage.getItem('user')||'{}');
+    const fn=u.first_name||'',ln=u.last_name||'';
+    const ini=(fn[0]||'')+(ln[0]||'')||'ДР';
+    document.getElementById('sideInitials').textContent=ini;
+    document.getElementById('sideUserName').textContent=(fn+' '+ln).trim()||'—';
+    document.getElementById('sideUserId').textContent=u.id?'ID '+u.id:'';
+  }catch(e){}
+  // Даты по умолчанию: с 1 января текущего года до 31 декабря
+  const y=new Date().getFullYear();
+  document.getElementById('inp-valid-from').value=y+'-01-01';
+  document.getElementById('inp-valid-to').value=y+'-12-31';
+  // Кнопка языка карты
+  setCardLang(cardLang);
+  applyLang();
+  updatePreview();
+  await loadData();
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
