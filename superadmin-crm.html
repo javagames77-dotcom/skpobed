@@ -847,7 +847,7 @@ const token = localStorage.getItem('token') || '';
 if(!token){ alert('Не авторизований'); window.location.href='/'; }
 
 // STATE
-let leads=[], folders=[], stats={};
+let leads=[], allLeads=[], folders=[], stats={};
 let activeFolderId=null, activeCityFilter=null;
 let folderMode='type', currentView='list';
 let page=0, perPage=50;
@@ -894,10 +894,19 @@ async function loadLeads(){
   const r=await api('leads.list',data);
   if(r.success){
     leads=r.leads||[];
+    // Also load all leads (no filter) for sidebar counts
+    if(activeFolderId||activeCityFilter){
+      const rAll=await api('leads.list',{});
+      if(rAll.success) allLeads=rAll.leads||[];
+    } else {
+      allLeads=leads;
+    }
     renderTable();
     renderKanban();
+    renderFoldersSidebar();
     renderCitiesSidebar();
   }
+}
 }
 
 async function loadStats(){
@@ -925,9 +934,9 @@ function folderDisplayName(f){
 
 // SIDEBAR
 function renderFoldersSidebar(){
-  document.getElementById('sf-all-count').textContent=leads.length||'';
+  document.getElementById('sf-all-count').textContent=allLeads.length||'';
   const html=folders.map(f=>{
-    const count=leads.filter(l=>l.folder_id===f.id).length;
+    const count=allLeads.filter(l=>l.folder_id===f.id).length;
     return`<button class="sitem${activeFolderId===f.id?' active':''}" id="sf-${f.id}" onclick="setFolder(${f.id},'type')">
       <span class="sitem-dot" style="background:${f.color}"></span>
       <span style="flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${folderDisplayName(f)}</span>
@@ -1169,6 +1178,7 @@ function setView(v){
   document.getElementById('paginationBar').style.display=v==='list'?'flex':'none';
   document.getElementById('vtog-list').classList.toggle('active',v==='list');
   document.getElementById('vtog-kanban').classList.toggle('active',v==='kanban');
+  loadLeads();
 }
 
 // BULK
