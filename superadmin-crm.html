@@ -163,13 +163,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .kan-col-body{display:flex;flex-direction:column;gap:6px;flex:1;min-height:300px;border-radius:8px;transition:background .15s}
 .kan-col-header{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:4px 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .kan-count{background:var(--bg3);border-radius:10px;padding:1px 6px;font-size:10px}
-.kan-card{background:var(--tbl-bg);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:grab;transition:box-shadow .12s,opacity .12s;touch-action:none;-webkit-user-select:none;user-select:none}
+.kan-card{background:var(--tbl-bg);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:box-shadow .12s,opacity .12s;-webkit-user-select:none;user-select:none}
 .kan-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .kan-ghost{opacity:.4;background:var(--bg3)}
 .kan-dragging{box-shadow:0 8px 24px rgba(0,0,0,.18)!important}
 .kan-col-body.drag-over{background:var(--bg3);outline:2px dashed var(--border2)}
 .kan-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px}
-.kan-drag-handle{color:var(--muted2);cursor:grab;padding:2px;flex-shrink:0;touch-action:none}
+.kan-drag-handle{color:var(--muted2);cursor:grab;padding:4px;flex-shrink:0;touch-action:none;-webkit-user-select:none}
 .kan-drag-handle:active{cursor:grabbing}
 .kan-card-name{font-size:12px;font-weight:500;color:var(--black)}
 .kan-card-city{font-size:11px;color:var(--muted)}
@@ -1446,6 +1446,8 @@ function closeLeadModal(){
   document.getElementById('leadModal').classList.remove('active');
   document.body.style.overflow='';
   editLeadId=null;
+  // Re-init SortableJS after modal closes (iOS Safari loses drag state)
+  if(currentView==='kanban') renderKanban();
 }
 
 async function deleteLead(id){
