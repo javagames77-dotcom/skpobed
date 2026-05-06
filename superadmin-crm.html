@@ -1198,7 +1198,6 @@ function getStatusLabels(){return{new:t('sNew'),contacted:t('sContacted'),intere
 const STATUS_COLORS={new:'var(--muted2)',contacted:'#1d4ed8',interested:'#c2410c',proposal:'#7c3aed',won:'#16a34a',lost:'var(--accent)'};
 
 let dragLeadId=null, dragMoved=false;
-let _touchClone=null, _touchOffX=0, _touchOffY=0;
 function renderKanban(){
   const fl=filtered();
   const wrap=document.getElementById('kanbanWrap');
@@ -1234,34 +1233,19 @@ function renderKanban(){
     </div>`;
   }).join('');
 
-  // Attach touch listeners - drag handle only triggers drag, card tap = modal
+  // Simple: click = modal, desktop drag via handle
   wrap.querySelectorAll('.kan-card').forEach(card=>{
     const id=parseInt(card.dataset.id);
     const handle=card.querySelector('.kan-drag-handle');
 
-    // Tap on card = open modal
     card.addEventListener('click', e=>{
-      if(!dragMoved) openLeadModal(id);
+      if(e.target.closest('.kan-drag-handle')) return;
+      openLeadModal(id);
     });
 
-    // Touch on handle = drag
-    handle.addEventListener('touchstart', e=>{
-      e.stopPropagation();
-      onTouchStart(e, id, card);
-    }, {passive:true});
-    handle.addEventListener('touchmove', e=>{
-      onTouchMove(e);
-    }, {passive:false});
-    handle.addEventListener('touchend', e=>{
-      onTouchEnd(e);
-    }, {passive:false});
-
-    // Mouse drag on handle
-    handle.addEventListener('mousedown', e=>{
-      card.setAttribute('draggable','true');
-    });
+    handle.addEventListener('mousedown', ()=>card.setAttribute('draggable','true'));
     card.addEventListener('dragstart', e=>onDragStart(e,id));
-    card.addEventListener('dragend',   e=>{onDragEnd(e); card.setAttribute('draggable','false');});
+    card.addEventListener('dragend', e=>{onDragEnd(e); card.setAttribute('draggable','false');});
   });
 }
 
@@ -1300,59 +1284,6 @@ function handleKanbanClick(e,id){
   openLeadModal(id);
 }
 
-// TOUCH DRAG
-function onTouchStart(e, id, card){
-  dragLeadId=id; dragMoved=false;
-  const el=card||e.currentTarget;
-  const rect=el.getBoundingClientRect();
-  const t=e.touches[0];
-  _touchOffX=t.clientX-rect.left;
-  _touchOffY=t.clientY-rect.top;
-  _touchClone=el.cloneNode(true);
-  _touchClone.style.cssText=`position:fixed;z-index:9999;width:${rect.width}px;opacity:0.85;pointer-events:none;left:${rect.left}px;top:${rect.top}px;box-shadow:0 8px 24px rgba(0,0,0,.18);border-radius:8px;`;
-  document.body.appendChild(_touchClone);
-  el.style.opacity='0.3';
-}
-function onTouchMove(e){
-  if(!dragLeadId)return;
-  e.preventDefault();
-  dragMoved=true;
-  const t=e.touches[0];
-  _touchClone.style.left=(t.clientX-_touchOffX)+'px';
-  _touchClone.style.top=(t.clientY-_touchOffY)+'px';
-  // Highlight drop target
-  document.querySelectorAll('.kan-col-body').forEach(col=>{
-    const r=col.getBoundingClientRect();
-    const over=t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom;
-    col.classList.toggle('drag-over',over);
-  });
-}
-async function onTouchEnd(e){
-  if(!dragLeadId)return;
-  if(_touchClone){_touchClone.remove();_touchClone=null;}
-  document.querySelectorAll('.kan-card').forEach(c=>c.style.opacity='');
-  document.querySelectorAll('.kan-col-body').forEach(c=>c.classList.remove('drag-over'));
-  if(!dragMoved){dragLeadId=null;return;}
-  const t=e.changedTouches[0];
-  // Try exact element, then walk up to find kan-col
-  let target=document.elementFromPoint(t.clientX,t.clientY);
-  let col=target?.closest('.kan-col-body');
-  if(!col){
-    // Try finding nearest kan-col and use its body
-    const kanCol=target?.closest('.kan-col');
-    if(kanCol) col=kanCol.querySelector('.kan-col-body');
-  }
-  if(!col){dragLeadId=null;return;}
-  const status=col.dataset.status;
-  const lead=leads.find(l=>l.id===dragLeadId);
-  if(lead&&lead.status!==status){
-    lead.status=status;
-    renderKanban();
-    await api('leads.update',{id:dragLeadId,status});
-    await loadStats();
-  }
-  dragLeadId=null;
-}
 
 function setView(v){
   currentView=v;
