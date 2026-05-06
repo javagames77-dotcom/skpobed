@@ -132,7 +132,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 /* LOADING / EMPTY */
 .loading-state{text-align:center;padding:48px 24px;color:var(--muted);font-size:13px}
 .empty-state{text-align:center;padding:48px 24px}
-.empty-icon{font-size:32px;margin-bottom:12px}
+.empty-icon{margin-bottom:12px;color:var(--muted2)}
 .empty-text{font-size:13px;color:var(--muted)}
 
 /* VIEW */
@@ -277,7 +277,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       </div>
       <div id="reqLoading" class="loading-state" style="display:none"></div>
       <div id="reqEmpty" class="empty-state" style="display:none">
-        <div class="empty-icon">📭</div>
+        <div class="empty-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="7" width="28" height="20" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M2 11l12.586 8.293a2.5 2.5 0 002.828 0L30 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div class="empty-text" id="t-req-empty">Нових заявок немає</div>
       </div>
       <div class="req-grid" id="reqList"></div>
@@ -348,15 +348,15 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6.5h14" stroke="currentColor" stroke-width="1.2"/></svg>
       <span id="t-mob-plans">Тарифи</span>
     </button>
-    <button class="mob-nav-btn" id="mob-providers" onclick="show('providers',this)">
-      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5v13M1.5 8h13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      <span id="t-mob-providers">Платіж</span>
-    </button>
     <button class="mob-nav-btn" id="mob-messages" onclick="show('messages',this)">
       <div class="mob-nav-dot" id="mobMsgDot"></div>
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M1.5 2h13v9H9l-2.5 3L4 11H1.5V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
       <span id="t-mob-messages">Повідом.</span>
     </button>
+    <a href="/superadmin-crm.html" class="mob-nav-btn" style="text-decoration:none">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 13c0-2.76 1.79-5 4-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="11" cy="9" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M11 7.5v3M9.5 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <span id="t-mob-crm" data-i18n="mobCrm">Ліди</span>
+    </a>
   </div>
 </nav>
 
@@ -442,7 +442,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="modal-body" id="directorInfoBody"></div>
 <div class="modal-footer">
 <button class="btn-ghost" onclick="closeDirectorInfo()" id="t-info-close">Закрити</button>
-<button class="btn-primary" onclick="closeDirectorInfo();editDirector(window._infoDirectorId)" id="t-info-edit">✏️ Редагувати</button>
+<button class="btn-primary" onclick="closeDirectorInfo();editDirector(window._infoDirectorId)" id="t-info-edit"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5l2 2-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg> <span id="t-info-edit-txt">Редагувати</span></button>
 </div>
 </div></div>
 
@@ -567,15 +567,15 @@ const i18n={
     hintPassword:'Мінімум 6 символів',lblPhone:'Телефон',lblPlan:'Тарифний план *',
     lblLimit:'Ліміт груп *',lblActivation:'Тип активації *',optManual:'Ручна (оплата готівкою)',
     optAuto:'Автооплата (платіжна система)',lblUntil:'Активний до *',hintUntil:'За замовчуванням +30 днів',
-    btnCancel:'Скасувати',btnCreate:'Створити',btnSave:'Зберегти',btnEdit:'✏️ Редагувати',btnClose:'Закрити',
+    btnCancel:'Скасувати',btnCreate:'Створити',btnSave:'Зберегти',btnEdit:'Редагувати',btnClose:'Закрити',
     planName:'Назва *',planCountry:'Країна',planCurrency:'Валюта',planPrice:'$/групу на місяць *',
     planPhotos:'Фото/день/група',planChanges:'Змін/міс/спортсмен',planDocs:'Доків/міс/спортсмен',
     planDocsGroup:'Доків/міс/група',planChangesGroup:'Змін/міс/група',planOverPhoto:'Додат. фото ($)',
     planOverChange:'Додат. зміна ($)',planOverDoc:'Додат. документ ($)',planThreshold:'Поріг рахунку ($)',
     planGrace:'Grace period (днів)',planCancel:'Скасувати',planSave:'Зберегти',
     msgLabel:'Повідомлення *',msgCancel:'Скасувати',msgSend:'Надіслати',
-    infoClose:'Закрити',infoEdit:'✏️ Редагувати',
-    mobDirectors:'Директори',mobRequests:'Заявки',mobPlans:'Тарифи',mobProviders:'Платіж',mobMessages:'Повідом.',mobCrm:'Ліди',
+    infoClose:'Закрити',infoEdit:'Редагувати',
+    mobDirectors:'Директори',mobRequests:'Заявки',mobPlans:'Тарифи',mobProviders:'Платіж',mobMessages:'Повідом.',mobCrm:'Ліди',sCrmLabel:'CRM',sCrm:'Ліди',
     leadSecInfo:'Основна інформація',leadCity:'Місто',leadFolder:'Папка',leadPriorityLbl:'Пріоритет',leadNextLbl:'Наст. контакт',leadDescLbl:'Опис',
     leadNoTouches:'Касань ще немає',touchMsg:'Повідомлення',touchCall:'Дзвінок',touchEmail:'Email',touchPres:'Презентація',touchTrial:'Тест запущено',touchNote:'Заметка',
     touchResNone:'Результат',touchResAns:'Відповів',touchResNo:'Без відповіді',touchResInt:'Зацікавлений',touchResDec:'Відмовився',
@@ -585,8 +585,8 @@ const i18n={
     statusActive:'Активний',statusInactive:'Деактивовано',statusTrial:'Пробний',statusGrace:'Пільговий',statusBlocked:'Заблокований',
     tagActive:'Активний',tagInactive:'Неактивний',
     approve:'Прийняти',reject:'Відхилити',
-    msgTypeMsg:'💬 Повідомлення',msgTypeRenewal:'🔄 Запит продовження',msgTypeReply:'↩️ Відповідь',
-    msgNew:'Нове',msgReply:'↩️ Відповісти',noMessages:'Немає повідомлень',
+    msgTypeMsg:'Повідомлення',msgTypeRenewal:'Запит продовження',msgTypeReply:'Відповідь',
+    msgNew:'Нове',msgReply:'Відповісти',noMessages:'Немає повідомлень',
     loading:'Завантаження...',
     alertDeactivate:'Деактивувати директора?',alertDeactivated:'Директора деактивовано',
     alertProviderLast:'Не можна вимкнути останнього активного провайдера!',
@@ -616,15 +616,15 @@ const i18n={
     hintPassword:'Минимум 6 символов',lblPhone:'Телефон',lblPlan:'Тарифный план *',
     lblLimit:'Лимит групп *',lblActivation:'Тип активации *',optManual:'Ручная (оплата наличными)',
     optAuto:'Автооплата (платёжная система)',lblUntil:'Активен до *',hintUntil:'По умолчанию +30 дней',
-    btnCancel:'Отмена',btnCreate:'Создать',btnSave:'Сохранить',btnEdit:'✏️ Редактировать',btnClose:'Закрыть',
+    btnCancel:'Отмена',btnCreate:'Создать',btnSave:'Сохранить',btnEdit:'Редактировать',btnClose:'Закрыть',
     planName:'Название *',planCountry:'Страна',planCurrency:'Валюта',planPrice:'$/группу в месяц *',
     planPhotos:'Фото/день/группа',planChanges:'Смен/мес/спортсмен',planDocs:'Доков/мес/спортсмен',
     planDocsGroup:'Доков/мес/группа',planChangesGroup:'Смен/мес/группа',planOverPhoto:'Доп. фото ($)',
     planOverChange:'Доп. смена ($)',planOverDoc:'Доп. документ ($)',planThreshold:'Порог счёта ($)',
     planGrace:'Grace period (дней)',planCancel:'Отмена',planSave:'Сохранить',
     msgLabel:'Сообщение *',msgCancel:'Отмена',msgSend:'Отправить',
-    infoClose:'Закрыть',infoEdit:'✏️ Редактировать',
-    mobDirectors:'Директора',mobRequests:'Заявки',mobPlans:'Тарифы',mobProviders:'Платёж',mobMessages:'Сообщ.',mobCrm:'Лиды',
+    infoClose:'Закрыть',infoEdit:'Редактировать',
+    mobDirectors:'Директора',mobRequests:'Заявки',mobPlans:'Тарифы',mobProviders:'Платёж',mobMessages:'Сообщ.',mobCrm:'Лиды',sCrmLabel:'CRM',sCrm:'Лиды',
     leadSecInfo:'Основная информация',leadCity:'Город',leadFolder:'Папка',leadPriorityLbl:'Приоритет',leadNextLbl:'След. контакт',leadDescLbl:'Описание',
     leadNoTouches:'Касаний ещё нет',touchMsg:'Сообщение',touchCall:'Звонок',touchEmail:'Email',touchPres:'Презентация',touchTrial:'Тест запущен',touchNote:'Заметка',
     touchResNone:'Результат',touchResAns:'Ответил',touchResNo:'Без ответа',touchResInt:'Заинтересован',touchResDec:'Отказался',
@@ -634,8 +634,8 @@ const i18n={
     statusActive:'Активен',statusInactive:'Деактивирован',statusTrial:'Пробный',statusGrace:'Льготный',statusBlocked:'Заблокирован',
     tagActive:'Активен',tagInactive:'Неактивен',
     approve:'Принять',reject:'Отклонить',
-    msgTypeMsg:'💬 Сообщение',msgTypeRenewal:'🔄 Запрос продления',msgTypeReply:'↩️ Ответ',
-    msgNew:'Новое',msgReply:'↩️ Ответить',noMessages:'Нет сообщений',
+    msgTypeMsg:'Сообщение',msgTypeRenewal:'Запрос продления',msgTypeReply:'Ответ',
+    msgNew:'Новое',msgReply:'Ответить',noMessages:'Нет сообщений',
     loading:'Загрузка...',
     alertDeactivate:'Деактивировать директора?',alertDeactivated:'Директор деактивирован',
     alertProviderLast:'Нельзя отключить последнего активного провайдера!',
@@ -665,14 +665,14 @@ const i18n={
     hintPassword:'Minimum 6 characters',lblPhone:'Phone',lblPlan:'Billing plan *',
     lblLimit:'Groups limit *',lblActivation:'Activation type *',optManual:'Manual (cash payment)',
     optAuto:'Auto (payment system)',lblUntil:'Active until *',hintUntil:'Default +30 days',
-    btnCancel:'Cancel',btnCreate:'Create',btnSave:'Save',btnEdit:'✏️ Edit',btnClose:'Close',
+    btnCancel:'Cancel',btnCreate:'Create',btnSave:'Save',btnEdit:'Edit',btnClose:'Close',
     planName:'Name *',planCountry:'Country',planCurrency:'Currency',planPrice:'$/group per month *',
     planPhotos:'Photos/day/group',planChanges:'Changes/mo/athlete',planDocs:'Docs/mo/athlete',
     planDocsGroup:'Docs/mo/group',planChangesGroup:'Changes/mo/group',planOverPhoto:'Extra photo ($)',
     planOverChange:'Extra change ($)',planOverDoc:'Extra doc ($)',planThreshold:'Invoice threshold ($)',
     planGrace:'Grace period (days)',planCancel:'Cancel',planSave:'Save',
     msgLabel:'Message *',msgCancel:'Cancel',msgSend:'Send',
-    infoClose:'Close',infoEdit:'✏️ Edit',
+    infoClose:'Close',infoEdit:'Edit',
     mobDirectors:'Directors',mobRequests:'Requests',mobPlans:'Plans',mobProviders:'Payment',mobMessages:'Messages',mobCrm:'Leads',
     sCrmLabel:'CRM',sCrm:'Leads',
     leadSecInfo:'Basic info',leadCity:'City',leadFolder:'Folder',leadPriorityLbl:'Priority',leadNextLbl:'Next contact',leadDescLbl:'Description',
@@ -684,8 +684,8 @@ const i18n={
     statusActive:'Active',statusInactive:'Deactivated',statusTrial:'Trial',statusGrace:'Grace',statusBlocked:'Blocked',
     tagActive:'Active',tagInactive:'Inactive',
     approve:'Approve',reject:'Reject',
-    msgTypeMsg:'💬 Message',msgTypeRenewal:'🔄 Renewal request',msgTypeReply:'↩️ Reply',
-    msgNew:'New',msgReply:'↩️ Reply',noMessages:'No messages',
+    msgTypeMsg:'Message',msgTypeRenewal:'Renewal request',msgTypeReply:'Reply',
+    msgNew:'New',msgReply:'Reply',noMessages:'No messages',
     loading:'Loading...',
     alertDeactivate:'Deactivate director?',alertDeactivated:'Director deactivated',
     alertProviderLast:'Cannot disable the last active provider!',
@@ -1286,17 +1286,17 @@ async function loadSAMessages(){
       body:JSON.stringify({token:token,resource:'admin_messages',action:'list',data:{}})});
     var text=await r.text();
     loading.style.display='none';
-    if(!text||!text.trim()){list.innerHTML='<div class="empty-state"><div class="empty-icon">💬</div><div class="empty-text">'+t('noMessages')+'</div></div>';return;}
+    if(!text||!text.trim()){list.innerHTML='<div class="empty-state"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 6h24a2 2 0 012 2v14a2 2 0 01-2 2H10l-6 4V8a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div class="empty-text">'+t('noMessages')+'</div></div>';return;}
     var d=JSON.parse(text);
     var msgs=(d.merged||d||[]).filter(function(m){return m&&m.id;});
-    if(!msgs.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">💬</div><div class="empty-text">'+t('noMessages')+'</div></div>';return;}
+    if(!msgs.length){list.innerHTML='<div class="empty-state"><div class="empty-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M4 6h24a2 2 0 012 2v14a2 2 0 01-2 2H10l-6 4V8a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div><div class="empty-text">'+t('noMessages')+'</div></div>';return;}
     list.innerHTML=msgs.map(function(m){
       var date=new Date(m.created_at).toLocaleDateString('ru-RU');
       var isFromDir=m.from_user_id!==SUPERADMIN_ID;
       var typeLabel=m.type==='renewal_request'?t('msgTypeRenewal'):m.type==='reply'?t('msgTypeReply'):t('msgTypeMsg');
       var fromName=((m.from_first_name||'')+' '+(m.from_last_name||'')).trim();
       var toName=((m.to_first_name||'')+' '+(m.to_last_name||'')).trim();
-      var replyBtn=isFromDir?'<button class="btn-ghost" style="font-size:11px;padding:5px 10px" data-dirid="'+m.from_user_id+'" data-dirname="'+fromName+'" onclick="openSendMessageFromBtn(this)">'+t('msgReply')+'</button>':'';
+      var replyBtn=isFromDir?'<button class="btn-ghost" style="font-size:11px;padding:5px 10px" data-dirid="'+m.from_user_id+'" data-dirname="'+fromName+'" onclick="openSendMessageFromBtn(this)"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1 4l4-3v2c4 0 6.5 2 6.5 6.5-1.5-2.5-3.5-3.5-6.5-3.5v2L1 4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg> '+t('msgReply')+'</button>':'';
       return '<div class="msg-card'+(isFromDir&&!m.is_read?' unread':'')+'">'+
         '<div class="msg-card-header">'+
         '<div><span class="msg-card-from">'+fromName+'</span><span style="color:var(--muted2);font-size:11px"> → '+toName+'</span></div>'+
