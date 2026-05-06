@@ -1575,15 +1575,36 @@ function showParseResults(){
   const res=document.getElementById('parseResults');
   const list=document.getElementById('parseList');
   document.getElementById('parseResultTitle').textContent=`${t('parseFoundN')}${parseData.length}`;
-  list.innerHTML=parseData.map((p,i)=>`
-    <div class="parse-item">
-      <input type="checkbox" checked data-idx="${i}" onchange="updateParseSelCount()" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer">
-      <span class="parse-item-name">${p.name}</span>
-      <span class="parse-item-city">${p.city||''}</span>
-      ${p.google_rating?`<span style="font-size:10px;color:var(--muted)">★${p.google_rating}</span>`:''}
-    </div>`).join('');
+  list.innerHTML=parseData.map((p,i)=>{
+    const hasDetails=p.website||p.phone||p.snippet||p.address;
+    return`<div class="parse-item" style="flex-direction:column;align-items:flex-start;gap:4px">
+      <div style="display:flex;align-items:center;gap:10px;width:100%">
+        <input type="checkbox" checked data-idx="${i}" onchange="updateParseSelCount()" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer;flex-shrink:0">
+        <span class="parse-item-name" style="flex:1">${p.name}</span>
+        <span class="parse-item-city" style="font-size:11px;color:var(--muted)">${p.city||''}</span>
+        ${p.google_rating?`<span style="font-size:10px;color:var(--muted)">★${p.google_rating}</span>`:''}
+        ${hasDetails?`<button onclick="toggleParsePreview(${i})" style="border:none;background:none;cursor:pointer;color:var(--muted);font-size:10px;padding:0 4px;flex-shrink:0" id="prev-btn-${i}">▼</button>`:''}
+      </div>
+      ${hasDetails?`<div id="prev-${i}" style="display:none;padding:6px 10px 4px 24px;width:100%;border-top:1px solid var(--border);margin-top:4px">
+        ${p.phone?`<div style="font-size:11px;color:var(--text);margin-bottom:3px">📞 ${p.phone}</div>`:''}
+        ${p.website?`<div style="font-size:11px;margin-bottom:3px"><a href="${p.website}" target="_blank" style="color:var(--tag-blue);text-decoration:none;word-break:break-all">🌐 ${p.website}</a></div>`:''}
+        ${p.instagram?`<div style="font-size:11px;margin-bottom:3px"><a href="${p.instagram}" target="_blank" style="color:#e1306c;text-decoration:none">📷 ${p.instagram}</a></div>`:''}
+        ${p.address?`<div style="font-size:11px;color:var(--muted);margin-bottom:3px">📍 ${p.address}</div>`:''}
+        ${p.snippet?`<div style="font-size:11px;color:var(--muted);line-height:1.4;margin-top:4px">${p.snippet}</div>`:''}
+      </div>`:''}
+    </div>`;
+  }).join('');
   res.style.display='block';
   updateParseSelCount();
+}
+
+function toggleParsePreview(i){
+  const el=document.getElementById('prev-'+i);
+  const btn=document.getElementById('prev-btn-'+i);
+  if(!el)return;
+  const open=el.style.display==='none';
+  el.style.display=open?'block':'none';
+  btn.textContent=open?'▲':'▼';
 }
 
 function selectAllParseItems(checked){
