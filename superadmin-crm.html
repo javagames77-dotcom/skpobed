@@ -1560,15 +1560,22 @@ function updateParseSelCount(){
 
 async function saveParseSelected(){
   const folderId=document.getElementById('parseFolderSelect').value||null;
+  // Get the city that the user searched in - this is the real city name
+  const activeTab=document.getElementById('ptab-search').classList.contains('active')?'search':'types';
+  const userCity=(activeTab==='search'
+    ? document.getElementById('searchCity').value.trim()
+    : document.getElementById('parseCity').value.trim()) || '';
   const selected=[...document.querySelectorAll('#parseList input[type=checkbox]:checked')]
     .map(c=>parseData[parseInt(c.dataset.idx)]).filter(Boolean)
     .map(p=>{
       const folder=folderId?null:folders.find(f=>f.slug===p.type);
       return{
-        name:p.name,type:p.type||'sport_club',city:p.city||'',
+        name:p.name,type:p.type||'sport_club',
+        city:userCity,  // always use the user-entered city, not p.city (which is a street)
         lat:p.lat||null,lng:p.lng||null,
         phone:p.phone||null,website:p.website||null,
-        instagram:p.instagram||null,address:p.address||null,
+        instagram:p.instagram||null,
+        address:p.address||p.city||null,  // save Google's "city" (street) as address
         google_place_id:p.google_place_id||null,
         google_rating:p.google_rating||null,
         google_reviews:p.google_reviews||null,
