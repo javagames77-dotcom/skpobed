@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InSkill CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+[data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--sidebar-bg:#ffffff;--input-bg:#fafafa;--tbl-bg:#ffffff;--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green:#16a34a;--tag-red-bg:#fff0f0;--tag-red:#c0392b;--tag-blue-bg:#eff6ff;--tag-blue:#1d4ed8;--tag-orange-bg:#fff7ed;--tag-orange:#c2410c;--card-shadow:0 1px 3px rgba(0,0,0,.06)}
+[data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--sidebar-bg:#0a0a0a;--input-bg:#181818;--tbl-bg:#181818;--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green:#4ade80;--tag-red-bg:#2a1010;--tag-red:#ff7070;--tag-blue-bg:#0c1a3a;--tag-blue:#93c5fd;--tag-orange-bg:#1a0e00;--tag-orange:#fb923c;--card-shadow:0 1px 3px rgba(0,0,0,.3)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+
+/* NAV */
+.nav{height:48px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:600;color:var(--black);letter-spacing:-.03em}
+.logo-text span{font-weight:300;color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.nav-badge{font-size:10px;font-weight:500;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;letter-spacing:.02em}
+.nav-divider{width:1px;height:18px;background:var(--border)}
+.theme-toggle{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s}
+.theme-toggle:hover{border-color:var(--border2)}
+
+/* LAYOUT */
+.layout{display:flex;height:calc(100vh - 48px)}
+
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.sidebar-back{display:flex;align-items:center;gap:8px;padding:12px 12px 8px;font-size:12px;color:var(--muted);text-decoration:none;transition:color .12s;border-bottom:1px solid var(--border);margin-bottom:8px}
+.sidebar-back:hover{color:var(--text)}
+.sidebar-section{padding:12px 12px 6px;font-size:10px;font-weight:500;color:var(--muted2);letter-spacing:.08em;text-transform:uppercase}
+.folder-toggle{display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:2px;margin:4px 8px 8px}
+.ftog-btn{flex:1;padding:4px 0;border:none;background:transparent;border-radius:5px;color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s}
+.ftog-btn.active{background:var(--bg);color:var(--black)}
+.sitem{display:flex;align-items:center;gap:9px;padding:7px 12px;margin:1px 6px;border:none;border-radius:7px;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;text-align:left;width:calc(100% - 12px)}
+.sitem:hover{background:var(--bg3);color:var(--text)}
+.sitem.active{background:var(--bg3);color:var(--black)}
+.sitem-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sitem-count{margin-left:auto;font-size:10px;color:var(--muted2)}
+.sidebar-sep{height:1px;background:var(--border);margin:6px 8px}
+.sidebar-add{display:flex;align-items:center;gap:8px;padding:6px 12px;margin:1px 6px;border:none;border-radius:7px;background:transparent;color:var(--muted2);font-size:11px;font-family:inherit;cursor:pointer;transition:all .12s;width:calc(100% - 12px)}
+.sidebar-add:hover{background:var(--bg3);color:var(--muted)}
+
+/* MAIN */
+.main{flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+
+/* KPI STRIP */
+.kpi-strip{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--tbl-bg);flex-shrink:0}
+.kpi-item{flex:1;padding:12px 16px;border-right:1px solid var(--border)}
+.kpi-item:last-child{border-right:none}
+.kpi-val{font-size:22px;font-weight:600;color:var(--black);letter-spacing:-.02em}
+.kpi-val.blue{color:#1d4ed8}
+.kpi-val.red{color:var(--accent)}
+.kpi-val.green{color:#16a34a}
+.kpi-lbl{font-size:11px;color:var(--muted);margin-top:1px}
+[data-theme="dark"] .kpi-val.blue{color:#93c5fd}
+[data-theme="dark"] .kpi-val.green{color:#4ade80}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:8px;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--tbl-bg);flex-shrink:0;flex-wrap:wrap}
+.search-input{padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s;width:160px}
+.search-input:focus{border-color:var(--border2)}
+.filter-select{padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;cursor:pointer}
+.view-toggle{display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:2px}
+.vtog-btn{padding:4px 10px;border:none;background:transparent;border-radius:5px;color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .15s}
+.vtog-btn.active{background:var(--bg);color:var(--black)}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:7px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--black);color:var(--bg);border:none;border-radius:7px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:opacity .15s}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+
+/* CONTENT AREA */
+.content{flex:1;overflow-y:auto;padding:0}
+
+/* TABLE VIEW */
+.tbl-wrap{background:var(--tbl-bg)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{padding:10px 14px;text-align:left;font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--tbl-bg);z-index:1}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:var(--tbl-hover)}
+.lead-name-btn{background:none;border:none;cursor:pointer;color:var(--black);font-weight:500;font-size:12px;padding:0;text-align:left;font-family:inherit;transition:color .12s}
+.lead-name-btn:hover{color:var(--accent)}
+
+/* STATUS PILLS */
+.status-pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500;cursor:pointer;transition:opacity .12s}
+.status-pill:hover{opacity:.8}
+.s-new{background:var(--bg3);color:var(--muted)}
+.s-contacted{background:var(--tag-blue-bg);color:var(--tag-blue)}
+.s-interested{background:var(--tag-orange-bg);color:var(--tag-orange)}
+.s-proposal{background:#f3e8ff;color:#7c3aed}
+.s-won{background:var(--tag-green-bg);color:var(--tag-green)}
+.s-lost{background:var(--tag-red-bg);color:var(--tag-red)}
+[data-theme="dark"] .s-new{background:var(--bg3);color:var(--muted)}
+[data-theme="dark"] .s-proposal{background:#1a0e2a;color:#a78bfa}
+
+/* PRIORITY */
+.pri-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0}
+.pri-high{background:var(--accent)}
+.pri-med{background:#f59e0b}
+.pri-low{background:var(--muted2)}
+
+/* ENRICHMENT */
+.enrich-status{font-size:10px;padding:2px 6px;border-radius:4px}
+.e-done{background:var(--tag-green-bg);color:var(--tag-green)}
+.e-pending{background:var(--bg3);color:var(--muted)}
+
+/* ACTION BUTTONS */
+.act-btn{width:26px;height:26px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.act-btn:hover{border-color:var(--border2);color:var(--text)}
+.act-btn.del:hover{border-color:var(--tag-red);color:var(--tag-red);background:var(--tag-red-bg)}
+.row-actions{display:flex;gap:3px}
+
+/* KANBAN */
+.kanban-wrap{display:flex;gap:12px;padding:16px 20px;overflow-x:auto;height:100%}
+.kan-col{min-width:220px;max-width:220px;display:flex;flex-direction:column;gap:6px}
+.kan-col-header{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:4px 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.kan-count{background:var(--bg3);border-radius:10px;padding:1px 6px;font-size:10px}
+.kan-card{background:var(--tbl-bg);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:box-shadow .12s}
+.kan-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.kan-card-name{font-size:12px;font-weight:500;color:var(--black);margin-bottom:4px}
+.kan-card-city{font-size:11px;color:var(--muted)}
+.kan-card-footer{display:flex;align-items:center;gap:6px;margin-top:7px}
+.kan-card-type{font-size:10px;color:var(--muted);background:var(--bg3);border-radius:3px;padding:1px 5px}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);background:var(--tbl-bg);flex-shrink:0}
+
+/* PARSE PANEL */
+.parse-panel{background:var(--tbl-bg);border-bottom:1px solid var(--border);padding:16px 20px;display:none}
+.parse-panel.open{display:block}
+.parse-tabs{display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:2px;margin-bottom:14px;width:fit-content}
+.parse-tab{padding:5px 14px;border:none;background:transparent;border-radius:5px;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s}
+.parse-tab.active{background:var(--bg);color:var(--black)}
+.parse-form{display:grid;grid-template-columns:1fr 1fr 120px auto;gap:10px;align-items:end;margin-bottom:12px}
+.form-label{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.form-input{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s}
+.form-input:focus{border-color:var(--border2)}
+#parseMap{height:240px;border-radius:8px;overflow:hidden;background:var(--bg3);margin-bottom:10px}
+.map-coords{font-size:11px;color:var(--muted);font-family:monospace;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;margin-bottom:10px}
+.radius-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.radius-slider{flex:1;accent-color:var(--black);cursor:pointer}
+.radius-val{font-size:12px;font-weight:500;color:var(--black);min-width:48px;text-align:right}
+.parse-result-list{max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:10px}
+.parse-item{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:12px}
+.parse-item:last-child{border-bottom:none}
+.parse-item:hover{background:var(--bg3)}
+.parse-item input[type=checkbox]{width:13px;height:13px;accent-color:var(--black);flex-shrink:0;cursor:pointer}
+.parse-item-name{font-weight:500;color:var(--black);flex:1}
+.parse-item-city{font-size:11px;color:var(--muted);margin-right:6px}
+.parse-save-bar{display:flex;align-items:center;gap:10px}
+
+/* FOLDER SWITCHER CITIES */
+.city-list{padding:4px 8px}
+.city-item{display:flex;align-items:center;justify-content:space-between;padding:5px 8px;border-radius:6px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .12s}
+.city-item:hover{background:var(--bg3);color:var(--text)}
+.city-item.active{background:var(--bg3);color:var(--black)}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.modal.active{display:flex}
+.modal-content{background:var(--bg);border:1px solid var(--border);border-radius:14px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:14px;font-weight:600;color:var(--black)}
+.modal-close{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;transition:all .12s}
+.modal-close:hover{border-color:var(--border2);color:var(--text)}
+.modal-body{padding:20px}
+.modal-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:16px}
+.modal-tab{padding:8px 16px;border:none;background:transparent;border-bottom:2px solid transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.modal-tab.active{color:var(--black);border-bottom-color:var(--black)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{margin-bottom:14px}
+.form-group:last-child{margin-bottom:0}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* TOUCH LOG */
+.touch-item{padding:10px 0;border-bottom:1px solid var(--border)}
+.touch-item:last-child{border-bottom:none}
+.touch-meta{font-size:11px;color:var(--muted);margin-bottom:3px;display:flex;gap:8px}
+.touch-content{font-size:12px;color:var(--text)}
+.touch-type{background:var(--bg3);border-radius:4px;padding:1px 6px;font-size:10px}
+
+/* STATUS DROPDOWN */
+.status-dropdown{position:relative;display:inline-block}
+.status-menu{position:absolute;top:100%;left:0;background:var(--bg);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:100;min-width:150px;padding:4px;display:none}
+.status-menu.open{display:block}
+.status-option{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--text);transition:background .12s}
+.status-option:hover{background:var(--bg3)}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:48px 16px;color:var(--muted)}
+.empty-icon{margin-bottom:10px;opacity:.3}
+.empty-text{font-size:12px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--black);color:var(--bg);padding:9px 18px;border-radius:8px;font-size:12px;font-weight:500;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;z-index:9999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.error{background:var(--tag-red)}
+.toast.success{background:#16a34a}
+
+/* BULK BAR */
+.bulk-bar{display:none;align-items:center;gap:10px;padding:8px 20px;background:var(--tag-blue-bg);border-bottom:1px solid var(--border);font-size:12px;flex-shrink:0}
+.bulk-bar.show{display:flex}
+.btn-danger{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--tag-red-bg);color:var(--tag-red);border:1px solid var(--tag-red);border-radius:7px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s}
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{overflow-y:auto}
+  .kpi-item{padding:10px 12px}
+  .kpi-val{font-size:18px}
+  .parse-form{grid-template-columns:1fr}
+  .toolbar{padding:10px 12px}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/superadmin-dashboard.html" class="nav-logo">
+    <svg width="23" height="23" viewBox="0 0 20 20" fill="none">
+      <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
+      <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="logo-text">InSkill<span>.online</span></span>
+  </a>
+  <div class="nav-right">
+    <span class="nav-badge">CRM</span>
+    <div class="nav-divider"></div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <svg id="icon-sun" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.6 3.6l1.3 1.3M11.1 11.1l1.3 1.3M3.6 12.4l1.3-1.3M11.1 4.9l1.3-1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <svg id="icon-moon" width="15" height="15" viewBox="0 0 16 16" fill="none" style="display:none"><path d="M13.5 10A6 6 0 015 2.5a6 6 0 108 8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="/superadmin-dashboard.html" class="sidebar-back">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Назад у дашборд
+  </a>
+
+  <!-- Folder mode toggle: by type / by city -->
+  <div style="padding:0 8px 4px">
+    <div class="folder-toggle">
+      <button class="ftog-btn active" id="ftog-type" onclick="setFolderMode('type')">Тип</button>
+      <button class="ftog-btn" id="ftog-city" onclick="setFolderMode('city')">Місто</button>
+    </div>
+  </div>
+
+  <!-- Type folders -->
+  <div id="sidebar-type">
+    <button class="sitem active" id="sf-all" onclick="setFolder(null,'all')">
+      <span class="sitem-dot" style="background:var(--muted2)"></span>
+      Всі ліди
+      <span class="sitem-count" id="sf-all-count">0</span>
+    </button>
+    <div id="folders-list"></div>
+    <div class="sidebar-sep"></div>
+    <button class="sidebar-add" onclick="openFolderModal(null)">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Нова папка
+    </button>
+  </div>
+
+  <!-- City folders -->
+  <div id="sidebar-city" style="display:none">
+    <button class="sitem active" id="sc-all" onclick="setCityFilter(null)">
+      <span class="sitem-dot" style="background:var(--muted2)"></span>
+      Всі міста
+      <span class="sitem-count" id="sc-all-count">0</span>
+    </button>
+    <div id="cities-list"></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi-item">
+      <div class="kpi-val" id="kpi-total">—</div>
+      <div class="kpi-lbl">Всього лідів</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-val blue" id="kpi-new">—</div>
+      <div class="kpi-lbl">Нових</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-val red" id="kpi-today">—</div>
+      <div class="kpi-lbl">Контакт сьогодні</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-val green" id="kpi-won">—</div>
+      <div class="kpi-lbl">Won %</div>
+    </div>
+    <div class="kpi-item">
+      <div class="kpi-val" id="kpi-cities">—</div>
+      <div class="kpi-lbl">Міст</div>
+    </div>
+  </div>
+
+  <!-- PARSE PANEL -->
+  <div class="parse-panel" id="parsePanel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--black)">Парсинг об'єктів</div>
+      <button class="act-btn" onclick="toggleParsePanel()">✕</button>
+    </div>
+    <div class="parse-tabs">
+      <button class="parse-tab active" id="ptab-types" onclick="setParseTab('types')">За типами</button>
+      <button class="parse-tab" id="ptab-search" onclick="setParseTab('search')">Пошук</button>
+    </div>
+
+    <!-- Types tab -->
+    <div id="parse-types-section">
+      <div class="parse-form">
+        <div>
+          <div class="form-label">Місто</div>
+          <div style="display:flex;gap:6px">
+            <input class="form-input" id="parseCity" placeholder="Полтава, Харків..." onkeydown="if(event.key==='Enter')geocodeCity()">
+            <button class="btn-ghost" onclick="geocodeCity()" style="white-space:nowrap;padding:6px 12px">Знайти</button>
+          </div>
+        </div>
+        <div>
+          <div class="form-label">Зберегти в папку</div>
+          <select class="form-input" id="parseFolderSelect">
+            <option value="">— Автоматично —</option>
+          </select>
+        </div>
+        <div>
+          <div class="form-label">Радіус: <span id="radiusVal">3</span> км</div>
+          <input type="range" class="radius-slider" id="parseRadius" min="500" max="15000" step="500" value="3000" oninput="onRadiusChange()" style="width:100%;margin-top:4px;accent-color:var(--black);cursor:pointer">
+        </div>
+        <div style="align-self:flex-end">
+          <button class="btn-primary" onclick="runParse()" id="runParseBtn" disabled>
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Запустити
+          </button>
+        </div>
+      </div>
+      <div id="parseMap"></div>
+      <div class="map-coords" id="mapCoords">Клікніть на карту щоб вибрати точку</div>
+    </div>
+
+    <!-- Search tab -->
+    <div id="parse-search-section" style="display:none">
+      <div class="parse-form">
+        <div>
+          <div class="form-label">Запит</div>
+          <input class="form-input" id="searchQuery" placeholder="Айкідо, BJJ, Бокс...">
+        </div>
+        <div>
+          <div class="form-label">Місто</div>
+          <div style="display:flex;gap:6px">
+            <input class="form-input" id="searchCity" placeholder="Полтава..." onkeydown="if(event.key==='Enter')geocodeCitySearch()">
+            <button class="btn-ghost" onclick="geocodeCitySearch()" style="white-space:nowrap;padding:6px 12px">Знайти</button>
+          </div>
+        </div>
+        <div>
+          <div class="form-label">Радіус: <span id="searchRadiusVal">5</span> км</div>
+          <input type="range" class="radius-slider" id="searchRadius" min="500" max="15000" step="500" value="5000" oninput="document.getElementById('searchRadiusVal').textContent=Math.round(this.value/1000)" style="width:100%;margin-top:4px;accent-color:var(--black);cursor:pointer">
+        </div>
+        <div style="align-self:flex-end">
+          <button class="btn-primary" onclick="runSearch()" id="runSearchBtn" disabled>
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Знайти
+          </button>
+        </div>
+      </div>
+      <div id="searchMap"></div>
+      <div class="map-coords" id="searchMapCoords" style="display:none"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="parseResults" style="display:none;margin-top:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:12px;font-weight:500;color:var(--black)" id="parseResultTitle"></div>
+        <label style="font-size:12px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px">
+          <input type="checkbox" id="selectAllParse" onchange="selectAllParseItems(this.checked)" style="width:13px;height:13px;accent-color:var(--black)">
+          Вибрати всі
+        </label>
+      </div>
+      <div class="parse-result-list" id="parseList"></div>
+      <div class="parse-save-bar">
+        <button class="btn-primary" onclick="saveParseSelected()">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Додати вибрані
+        </button>
+        <span style="font-size:12px;color:var(--muted)" id="parseSelCount"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <input class="search-input" id="searchInput" placeholder="Пошук..." oninput="renderTable()">
+    <select class="filter-select" id="filterStatus" onchange="renderTable()">
+      <option value="">Всі статуси</option>
+      <option value="new">New</option>
+      <option value="contacted">Contacted</option>
+      <option value="interested">Зацікавлений</option>
+      <option value="proposal">Пропозиція</option>
+      <option value="won">Won</option>
+      <option value="lost">Lost</option>
+    </select>
+    <select class="filter-select" id="filterPriority" onchange="renderTable()">
+      <option value="">Всі пріоритети</option>
+      <option value="high">Високий</option>
+      <option value="medium">Середній</option>
+      <option value="low">Низький</option>
+    </select>
+    <div class="view-toggle">
+      <button class="vtog-btn active" id="vtog-list" onclick="setView('list')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="2" rx="1" fill="currentColor" opacity=".6"/><rect x="1" y="5" width="10" height="2" rx="1" fill="currentColor" opacity=".6"/><rect x="1" y="9" width="10" height="2" rx="1" fill="currentColor" opacity=".6"/></svg>
+        Список
+      </button>
+      <button class="vtog-btn" id="vtog-kanban" onclick="setView('kanban')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="3" height="10" rx="1" fill="currentColor" opacity=".6"/><rect x="5" y="1" width="3" height="7" rx="1" fill="currentColor" opacity=".6"/><rect x="9" y="1" width="2" height="5" rx="1" fill="currentColor" opacity=".6"/></svg>
+        Kanban
+      </button>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:6px">
+      <button class="btn-ghost" onclick="toggleParsePanel()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        Парсинг
+      </button>
+      <button class="btn-primary" onclick="openLeadModal(null)">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Додати
+      </button>
+    </div>
+  </div>
+
+  <!-- BULK BAR -->
+  <div class="bulk-bar" id="bulkBar">
+    <span id="bulkCount" style="color:var(--tag-blue)">0 вибрано</span>
+    <button class="btn-danger" onclick="deleteSelected()">Видалити вибрані</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content" id="contentArea">
+    <!-- TABLE VIEW -->
+    <div id="view-list">
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th style="width:32px"><input type="checkbox" id="checkAll" onchange="toggleAllChecks(this.checked)" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer"></th>
+            <th>Назва</th>
+            <th>Папка</th>
+            <th>Місто</th>
+            <th>Статус</th>
+            <th>Пріоритет</th>
+            <th>Наст. контакт</th>
+            <th>Касань</th>
+            <th>Обогащ.</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="leadsBody"></tbody>
+        </table>
+      </div>
+      <div id="emptyState" class="empty-state" style="display:none">
+        <div class="empty-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="var(--muted2)" stroke-width="1.5"/><path d="M10 16h12M16 10v12" stroke="var(--muted2)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="empty-text">Лідів немає. Запустіть парсинг!</div>
+      </div>
+    </div>
+
+    <!-- KANBAN VIEW -->
+    <div id="view-kanban" style="display:none;height:100%">
+      <div class="kanban-wrap" id="kanbanWrap"></div>
+    </div>
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination" id="paginationBar">
+    <span id="pagInfo" style="color:var(--muted)"></span>
+    <div style="display:flex;gap:4px">
+      <button class="btn-ghost" id="pagPrev" onclick="changePage(-1)" style="padding:4px 10px">‹</button>
+      <button class="btn-ghost" id="pagNext" onclick="changePage(1)" style="padding:4px 10px">›</button>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- STATUS DROPDOWN -->
+<div class="status-menu" id="statusMenu">
+  <div class="status-option" onclick="setLeadStatus('new')"><span class="status-pill s-new">New</span></div>
+  <div class="status-option" onclick="setLeadStatus('contacted')"><span class="status-pill s-contacted">Contacted</span></div>
+  <div class="status-option" onclick="setLeadStatus('interested')"><span class="status-pill s-interested">Зацікавлений</span></div>
+  <div class="status-option" onclick="setLeadStatus('proposal')"><span class="status-pill s-proposal">Пропозиція</span></div>
+  <div class="status-option" onclick="setLeadStatus('won')"><span class="status-pill s-won">Won ✓</span></div>
+  <div class="status-option" onclick="setLeadStatus('lost')"><span class="status-pill s-lost">Lost</span></div>
+</div>
+
+<!-- LEAD MODAL -->
+<div class="modal" id="leadModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title" id="leadModalTitle">Лід</div>
+      <button class="modal-close" onclick="closeLeadModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-tabs">
+        <button class="modal-tab active" onclick="setLeadTab('info',this)">Інфо</button>
+        <button class="modal-tab" onclick="setLeadTab('contacts',this)">Контакти</button>
+        <button class="modal-tab" onclick="setLeadTab('history',this)">Історія</button>
+      </div>
+
+      <!-- INFO TAB -->
+      <div id="ltab-info">
+        <div class="form-row">
+          <div class="form-group">
+            <div class="form-label">Назва</div>
+            <input class="form-input" id="lf-name" placeholder="Назва клубу">
+          </div>
+          <div class="form-group">
+            <div class="form-label">Місто</div>
+            <input class="form-input" id="lf-city" placeholder="Місто">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <div class="form-label">Тип</div>
+            <select class="form-input" id="lf-type">
+              <option value="sport_club">Спортклуб</option>
+              <option value="dance">Танці</option>
+              <option value="fitness">Фітнес</option>
+              <option value="martial_arts">Єдиноборства</option>
+              <option value="swimming">Плавання</option>
+              <option value="gymnastics">Гімнастика</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Папка</div>
+            <select class="form-input" id="lf-folder"></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <div class="form-label">Статус</div>
+            <select class="form-input" id="lf-status">
+              <option value="new">New</option>
+              <option value="contacted">Contacted</option>
+              <option value="interested">Зацікавлений</option>
+              <option value="proposal">Пропозиція</option>
+              <option value="won">Won</option>
+              <option value="lost">Lost</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <div class="form-label">Пріоритет</div>
+            <select class="form-input" id="lf-priority">
+              <option value="medium">Середній</option>
+              <option value="high">Високий</option>
+              <option value="low">Низький</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Наступний контакт</div>
+          <input class="form-input" type="date" id="lf-next-contact">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Опис</div>
+          <textarea class="form-input" id="lf-description" rows="3" style="resize:vertical"></textarea>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Адреса</div>
+          <input class="form-input" id="lf-address">
+        </div>
+      </div>
+
+      <!-- CONTACTS TAB -->
+      <div id="ltab-contacts" style="display:none">
+        <div class="form-row">
+          <div class="form-group">
+            <div class="form-label">Телефон</div>
+            <input class="form-input" id="lf-phone" placeholder="+380...">
+          </div>
+          <div class="form-group">
+            <div class="form-label">Email</div>
+            <input class="form-input" id="lf-email" type="email">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Сайт</div>
+          <input class="form-input" id="lf-website" placeholder="https://...">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Instagram</div>
+          <input class="form-input" id="lf-instagram" placeholder="https://instagram.com/...">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Facebook</div>
+          <input class="form-input" id="lf-facebook" placeholder="https://facebook.com/...">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Telegram</div>
+          <input class="form-input" id="lf-telegram" placeholder="@username">
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn-ghost" onclick="enrichLead()" id="enrichBtn" style="font-size:11px;padding:5px 12px">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            Google
+          </button>
+          <button class="btn-ghost" onclick="enrichDeepLead()" id="enrichDeepBtn" style="font-size:11px;padding:5px 12px">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M6 2v6M4 4h4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+            GPT Сайт
+          </button>
+        </div>
+      </div>
+
+      <!-- HISTORY TAB -->
+      <div id="ltab-history" style="display:none">
+        <div id="touchesList" style="margin-bottom:14px;max-height:200px;overflow-y:auto"></div>
+        <div style="border-top:1px solid var(--border);padding-top:12px">
+          <div class="form-label" style="margin-bottom:8px">Додати касання</div>
+          <div class="form-row" style="margin-bottom:10px">
+            <div>
+              <select class="form-input" id="touch-type">
+                <option value="call">Дзвінок</option>
+                <option value="email">Email</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="visit">Зустріч</option>
+                <option value="note">Нотатка</option>
+              </select>
+            </div>
+            <div>
+              <input class="form-input" type="date" id="touch-next-contact" placeholder="Наст. контакт">
+            </div>
+          </div>
+          <textarea class="form-input" id="touch-content" rows="2" placeholder="Зміст касання..." style="margin-bottom:8px;resize:vertical"></textarea>
+          <div style="display:flex;gap:8px">
+            <select class="form-input" id="touch-new-status" style="flex:1">
+              <option value="">— Не змінювати статус —</option>
+              <option value="contacted">→ Contacted</option>
+              <option value="interested">→ Зацікавлений</option>
+              <option value="proposal">→ Пропозиція</option>
+              <option value="won">→ Won</option>
+              <option value="lost">→ Lost</option>
+            </select>
+            <button class="btn-primary" onclick="addTouch()">Зберегти</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeLeadModal()">Скасувати</button>
+      <button class="btn-primary" onclick="saveLead()">Зберегти</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOLDER MODAL -->
+<div class="modal" id="folderModal">
+  <div class="modal-content" style="max-width:380px">
+    <div class="modal-header">
+      <div class="modal-title" id="folderModalTitle">Нова папка</div>
+      <button class="modal-close" onclick="closeFolderModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">Назва</div>
+        <input class="form-input" id="folder-name" placeholder="Назва папки">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Колір</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="color" id="folder-color" value="#5b8dee" style="width:40px;height:32px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:none;padding:2px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <div style="width:22px;height:22px;border-radius:50%;background:#5b8dee;cursor:pointer;border:2px solid transparent" onclick="document.getElementById('folder-color').value='#5b8dee'"></div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#9b6dff;cursor:pointer" onclick="document.getElementById('folder-color').value='#9b6dff'"></div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#3ecf8e;cursor:pointer" onclick="document.getElementById('folder-color').value='#3ecf8e'"></div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#E53935;cursor:pointer" onclick="document.getElementById('folder-color').value='#E53935'"></div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#22d3ee;cursor:pointer" onclick="document.getElementById('folder-color').value='#22d3ee'"></div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#f5a623;cursor:pointer" onclick="document.getElementById('folder-color').value='#f5a623'"></div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#ff6b6b;cursor:pointer" onclick="document.getElementById('folder-color').value='#ff6b6b'"></div>
+            <div style="width:22px;height:22px;border-radius:50%;background:#6b6b6b;cursor:pointer" onclick="document.getElementById('folder-color').value='#6b6b6b'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeFolderModal()">Скасувати</button>
+      <button class="btn-primary" onclick="saveFolder()">Зберегти</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://primary-production-4b93e.up.railway.app/webhook/crm';
+const token = localStorage.getItem('token') || '';
+if(!token){ alert('Не авторизований'); window.location.href='/'; }
+
+// STATE
+let leads=[], folders=[], stats={};
+let activeFolderId=null, activeCityFilter=null;
+let folderMode='type', currentView='list';
+let page=0, perPage=50;
+let parseMap=null, parseMapMarker=null, parseMapCircle=null, parseLat=null, parseLng=null;
+let searchMap=null, searchMapMarker=null, searchMapCircle=null, searchLat=null, searchLng=null;
+let parseData=[];
+let editLeadId=null, editFolderId=null;
+let statusMenuLeadId=null;
+
+// API CALL
+async function api(action, data={}){
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({token,resource:'crm',action,data})});
+  return r.json();
+}
+
+// INIT
+async function init(){
+  checkAuth();
+  await Promise.all([loadFolders(),loadLeads(),loadStats()]);
+  initTheme();
+}
+
+function checkAuth(){
+  const u=JSON.parse(localStorage.getItem('user')||'{}');
+  if(u.role!=='superadmin'){alert('Доступ заборонено');window.location.href='/';return;}
+}
+
+// DATA
+async function loadFolders(){
+  const r=await api('folders.list');
+  if(r.success){
+    folders=r.folders;
+    renderFoldersSidebar();
+    renderFolderSelect();
+  }
+}
+
+async function loadLeads(){
+  const data={};
+  if(activeFolderId)data.folder_id=activeFolderId;
+  if(activeCityFilter)data.city=activeCityFilter;
+  const r=await api('leads.list',data);
+  if(r.success){
+    leads=r.leads||[];
+    renderTable();
+    renderKanban();
+    renderCitiesSidebar();
+  }
+}
+
+async function loadStats(){
+  const r=await api('leads.stats');
+  if(r.success){
+    stats=r.stats;
+    document.getElementById('kpi-total').textContent=stats.total||0;
+    document.getElementById('kpi-new').textContent=stats.new_count||0;
+    document.getElementById('kpi-today').textContent=stats.due_today||0;
+    document.getElementById('kpi-won').textContent=(stats.win_rate||0)+'%';
+    document.getElementById('kpi-cities').textContent=stats.cities_count||0;
+  }
+}
+
+// SIDEBAR
+function renderFoldersSidebar(){
+  document.getElementById('sf-all-count').textContent=leads.length||'';
+  const html=folders.map(f=>`
+    <button class="sitem${activeFolderId===f.id?' active':''}" id="sf-${f.id}" onclick="setFolder(${f.id},'type')">
+      <span class="sitem-dot" style="background:${f.color}"></span>
+      <span style="flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>
+      ${!f.is_default?`<button onclick="event.stopPropagation();deleteFolder(${f.id})" style="border:none;background:none;cursor:pointer;color:var(--muted2);font-size:12px;line-height:1;padding:0 2px" title="Видалити">×</button>`:''}
+    </button>`).join('');
+  document.getElementById('folders-list').innerHTML=html;
+}
+
+function renderCitiesSidebar(){
+  const cities=[...new Set(leads.map(l=>l.city).filter(Boolean))].sort();
+  document.getElementById('sc-all-count').textContent=leads.length;
+  const html=cities.map(c=>`
+    <button class="sitem${activeCityFilter===c?' active':''}" onclick="setCityFilter('${c}')">
+      <span class="sitem-dot" style="background:var(--muted2)"></span>
+      <span style="flex:1;text-align:left">${c}</span>
+      <span class="sitem-count">${leads.filter(l=>l.city===c).length}</span>
+    </button>`).join('');
+  document.getElementById('cities-list').innerHTML=html;
+}
+
+function setFolderMode(mode){
+  folderMode=mode;
+  document.getElementById('ftog-type').classList.toggle('active',mode==='type');
+  document.getElementById('ftog-city').classList.toggle('active',mode==='city');
+  document.getElementById('sidebar-type').style.display=mode==='type'?'':'none';
+  document.getElementById('sidebar-city').style.display=mode==='city'?'':'none';
+}
+
+function setFolder(id,mode){
+  activeFolderId=id;
+  activeCityFilter=null;
+  document.querySelectorAll('.sitem').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById(id?`sf-${id}`:'sf-all');
+  if(el)el.classList.add('active');
+  loadLeads();
+}
+
+function setCityFilter(city){
+  activeCityFilter=city;
+  activeFolderId=null;
+  document.querySelectorAll('#sidebar-city .sitem').forEach(el=>el.classList.remove('active'));
+  const el=city?null:document.getElementById('sc-all');
+  if(!city&&el)el.classList.add('active');
+  loadLeads();
+}
+
+function renderFolderSelect(){
+  const opts=`<option value="">— Автоматично —</option>`+folders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
+  document.getElementById('parseFolderSelect').innerHTML=opts;
+  const lf=document.getElementById('lf-folder');
+  if(lf)lf.innerHTML=`<option value="">— Без папки —</option>`+folders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
+}
+
+// STATUS HELPERS
+function statusPill(s){
+  const map={new:'s-new',contacted:'s-contacted',interested:'s-interested',proposal:'s-proposal',won:'s-won',lost:'s-lost'};
+  const label={new:'New',contacted:'Contacted',interested:'Зацікавлений',proposal:'Пропозиція',won:'Won ✓',lost:'Lost'};
+  return `<span class="status-pill ${map[s]||'s-new'}" onclick="openStatusMenu(event,${arguments[1]})">${label[s]||s}</span>`;
+}
+
+function priorityHtml(p){
+  const cls={high:'pri-high',medium:'pri-med',low:'pri-low'};
+  const label={high:'Високий',medium:'Середній',low:'Низький'};
+  return `<span style="display:inline-flex;align-items:center"><span class="pri-dot ${cls[p]||'pri-med'}"></span>${label[p]||p}</span>`;
+}
+
+function enrichBadge(s){
+  if(s==='done')return '<span class="enrich-status e-done">✓</span>';
+  return '<span class="enrich-status e-pending">—</span>';
+}
+
+function fmtDate(d){
+  if(!d)return'—';
+  const dt=new Date(d);
+  const today=new Date();
+  today.setHours(0,0,0,0);
+  const diff=(dt-today)/86400000;
+  if(diff<0)return`<span style="color:var(--accent)">${dt.toLocaleDateString('uk')}</span>`;
+  if(diff<1)return`<span style="color:#f59e0b">Сьогодні</span>`;
+  return dt.toLocaleDateString('uk');
+}
+
+// FILTER
+function filtered(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const st=document.getElementById('filterStatus').value;
+  const pr=document.getElementById('filterPriority').value;
+  return leads.filter(l=>{
+    if(q&&!l.name?.toLowerCase().includes(q)&&!l.city?.toLowerCase().includes(q))return false;
+    if(st&&l.status!==st)return false;
+    if(pr&&l.priority!==pr)return false;
+    return true;
+  });
+}
+
+// TABLE
+function renderTable(){
+  const fl=filtered();
+  const total=fl.length;
+  const start=page*perPage;
+  const slice=fl.slice(start,start+perPage);
+  const body=document.getElementById('leadsBody');
+  const empty=document.getElementById('emptyState');
+  if(!fl.length){body.innerHTML='';empty.style.display='block';document.getElementById('paginationBar').style.display='none';return;}
+  empty.style.display='none';
+  document.getElementById('paginationBar').style.display='flex';
+  document.getElementById('pagInfo').textContent=`${start+1}–${Math.min(start+perPage,total)} з ${total}`;
+  document.getElementById('pagPrev').disabled=page===0;
+  document.getElementById('pagNext').disabled=start+perPage>=total;
+  body.innerHTML=slice.map(l=>`
+    <tr>
+      <td><input type="checkbox" data-id="${l.id}" class="lead-cb" onchange="updateBulkBar()" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer"></td>
+      <td><button class="lead-name-btn" onclick="openLeadModal(${l.id})">${l.name||'—'}</button></td>
+      <td>${l.folder_name?`<span style="display:inline-flex;align-items:center;gap:4px"><span class="sitem-dot" style="background:${l.folder_color||'#ccc'}"></span>${l.folder_name}</span>`:'—'}</td>
+      <td style="color:var(--muted)">${l.city||'—'}</td>
+      <td>${statusPill(l.status,l.id)}</td>
+      <td>${priorityHtml(l.priority)}</td>
+      <td>${fmtDate(l.next_contact_at)}</td>
+      <td style="color:var(--muted)">${l.touches_count||0}</td>
+      <td>${enrichBadge(l.enrichment_status)}</td>
+      <td>
+        <div class="row-actions">
+          <button class="act-btn" onclick="openLeadModal(${l.id})" title="Редагувати">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5l2 2L3 11H1v-2L8.5 1.5z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="act-btn del" onclick="deleteLead(${l.id})" title="Видалити">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5v4M7 5v4M3 3l.5 7h5L9 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function changePage(dir){page=Math.max(0,page+dir);renderTable();}
+
+// KANBAN
+const STATUSES=['new','contacted','interested','proposal','won','lost'];
+const STATUS_LABELS={new:'New',contacted:'Contacted',interested:'Зацікавлений',proposal:'Пропозиція',won:'Won',lost:'Lost'};
+const STATUS_COLORS={new:'var(--muted2)',contacted:'#1d4ed8',interested:'#c2410c',proposal:'#7c3aed',won:'#16a34a',lost:'var(--accent)'};
+
+function renderKanban(){
+  const fl=filtered();
+  const wrap=document.getElementById('kanbanWrap');
+  wrap.innerHTML=STATUSES.map(st=>{
+    const items=fl.filter(l=>l.status===st);
+    return`<div class="kan-col">
+      <div class="kan-col-header" style="color:${STATUS_COLORS[st]}">
+        ${STATUS_LABELS[st]}
+        <span class="kan-count">${items.length}</span>
+      </div>
+      ${items.map(l=>`<div class="kan-card" onclick="openLeadModal(${l.id})">
+        <div class="kan-card-name">${l.name||'—'}</div>
+        <div class="kan-card-city">${l.city||''}</div>
+        <div class="kan-card-footer">
+          <span class="kan-card-type">${l.type||''}</span>
+          <span class="pri-dot ${l.priority==='high'?'pri-high':l.priority==='low'?'pri-low':'pri-med'}" style="margin-left:auto;margin-right:0"></span>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function setView(v){
+  currentView=v;
+  document.getElementById('view-list').style.display=v==='list'?'':'none';
+  document.getElementById('view-kanban').style.display=v==='kanban'?'':'none';
+  document.getElementById('paginationBar').style.display=v==='list'?'flex':'none';
+  document.getElementById('vtog-list').classList.toggle('active',v==='list');
+  document.getElementById('vtog-kanban').classList.toggle('active',v==='kanban');
+}
+
+// BULK
+function toggleAllChecks(checked){document.querySelectorAll('.lead-cb').forEach(c=>c.checked=checked);updateBulkBar();}
+function updateBulkBar(){
+  const n=document.querySelectorAll('.lead-cb:checked').length;
+  const bar=document.getElementById('bulkBar');
+  bar.classList.toggle('show',n>0);
+  document.getElementById('bulkCount').textContent=n+' вибрано';
+}
+async function deleteSelected(){
+  const ids=[...document.querySelectorAll('.lead-cb:checked')].map(c=>parseInt(c.dataset.id));
+  if(!ids.length||!confirm(`Видалити ${ids.length} лідів?`))return;
+  await Promise.all(ids.map(id=>api('leads.delete',{id})));
+  toast('Видалено','success');
+  await loadLeads();
+  await loadStats();
+}
+
+// STATUS DROPDOWN
+function openStatusMenu(e,id){
+  e.stopPropagation();
+  statusMenuLeadId=id;
+  const menu=document.getElementById('statusMenu');
+  menu.style.top=(e.clientY+4)+'px';
+  menu.style.left=e.clientX+'px';
+  menu.classList.add('open');
+}
+async function setLeadStatus(s){
+  document.getElementById('statusMenu').classList.remove('open');
+  if(!statusMenuLeadId)return;
+  await api('leads.update',{id:statusMenuLeadId,status:s});
+  toast('Статус оновлено','success');
+  await loadLeads();
+  await loadStats();
+}
+document.addEventListener('click',()=>document.getElementById('statusMenu').classList.remove('open'));
+
+// LEAD MODAL
+async function openLeadModal(id){
+  editLeadId=id;
+  const lead=id?leads.find(l=>l.id===id):null;
+  document.getElementById('leadModalTitle').textContent=lead?lead.name:'Новий лід';
+  setLeadTab('info',document.querySelector('.modal-tab'));
+
+  document.getElementById('lf-name').value=lead?.name||'';
+  document.getElementById('lf-city').value=lead?.city||'';
+  document.getElementById('lf-type').value=lead?.type||'sport_club';
+  document.getElementById('lf-folder').value=lead?.folder_id||'';
+  document.getElementById('lf-status').value=lead?.status||'new';
+  document.getElementById('lf-priority').value=lead?.priority||'medium';
+  document.getElementById('lf-next-contact').value=lead?.next_contact_at?lead.next_contact_at.split('T')[0]:'';
+  document.getElementById('lf-description').value=lead?.description||'';
+  document.getElementById('lf-address').value=lead?.address||'';
+  document.getElementById('lf-phone').value=lead?.phone||'';
+  document.getElementById('lf-email').value=lead?.email||'';
+  document.getElementById('lf-website').value=lead?.website||'';
+  document.getElementById('lf-instagram').value=lead?.instagram||'';
+  document.getElementById('lf-facebook').value=lead?.facebook||'';
+  document.getElementById('lf-telegram').value=lead?.telegram||'';
+
+  document.getElementById('enrichBtn').disabled=!id;
+  document.getElementById('enrichDeepBtn').disabled=!lead?.website;
+
+  document.getElementById('touchesList').innerHTML='<div style="color:var(--muted);font-size:12px">Завантаження...</div>';
+  document.getElementById('leadModal').classList.add('active');
+  document.body.style.overflow='hidden';
+
+  if(id){
+    const r=await api('touches.list',{lead_id:id});
+    renderTouches(r.touches||[]);
+  } else {
+    document.getElementById('touchesList').innerHTML='';
+  }
+}
+
+function setLeadTab(tab,el){
+  ['info','contacts','history'].forEach(t=>{
+    document.getElementById('ltab-'+t).style.display=t===tab?'':'none';
+  });
+  document.querySelectorAll('.modal-tab').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  else document.querySelectorAll('.modal-tab')[['info','contacts','history'].indexOf(tab)]?.classList.add('active');
+}
+
+function renderTouches(touches){
+  if(!touches.length){document.getElementById('touchesList').innerHTML='<div style="color:var(--muted);font-size:12px">Касань ще немає</div>';return;}
+  const typeLabel={call:'Дзвінок',email:'Email',whatsapp:'WhatsApp',visit:'Зустріч',note:'Нотатка'};
+  document.getElementById('touchesList').innerHTML=touches.map(t=>`
+    <div class="touch-item">
+      <div class="touch-meta">
+        <span class="touch-type">${typeLabel[t.type]||t.type}</span>
+        <span>${new Date(t.created_at).toLocaleString('uk')}</span>
+        ${t.result?`<span style="color:var(--tag-green)">→ ${t.result}</span>`:''}
+      </div>
+      <div class="touch-content">${t.content||''}</div>
+    </div>`).join('');
+}
+
+async function addTouch(){
+  if(!editLeadId)return;
+  const content=document.getElementById('touch-content').value.trim();
+  if(!content)return;
+  const data={
+    lead_id:editLeadId,
+    type:document.getElementById('touch-type').value,
+    content,
+    result:document.getElementById('touch-new-status').value||null,
+    next_contact_at:document.getElementById('touch-next-contact').value||null,
+    new_status:document.getElementById('touch-new-status').value||null
+  };
+  await api('touches.add',data);
+  document.getElementById('touch-content').value='';
+  document.getElementById('touch-next-contact').value='';
+  document.getElementById('touch-new-status').value='';
+  const r=await api('touches.list',{lead_id:editLeadId});
+  renderTouches(r.touches||[]);
+  toast('Касання додано','success');
+  await loadLeads();
+  await loadStats();
+}
+
+async function saveLead(){
+  const data={
+    name:document.getElementById('lf-name').value.trim(),
+    city:document.getElementById('lf-city').value.trim(),
+    type:document.getElementById('lf-type').value,
+    folder_id:document.getElementById('lf-folder').value||null,
+    status:document.getElementById('lf-status').value,
+    priority:document.getElementById('lf-priority').value,
+    next_contact_at:document.getElementById('lf-next-contact').value||null,
+    description:document.getElementById('lf-description').value.trim()||null,
+    address:document.getElementById('lf-address').value.trim()||null,
+    phone:document.getElementById('lf-phone').value.trim()||null,
+    email:document.getElementById('lf-email').value.trim()||null,
+    website:document.getElementById('lf-website').value.trim()||null,
+    instagram:document.getElementById('lf-instagram').value.trim()||null,
+    facebook:document.getElementById('lf-facebook').value.trim()||null,
+    telegram:document.getElementById('lf-telegram').value.trim()||null
+  };
+  if(!data.name){toast('Введіть назву','error');return;}
+  let r;
+  if(editLeadId){
+    data.id=editLeadId;
+    r=await api('leads.update',data);
+  } else {
+    r=await api('leads.save',{leads:[data]});
+  }
+  if(r.success){
+    toast('Збережено','success');
+    closeLeadModal();
+    await loadLeads();
+    await loadStats();
+  } else {
+    toast('Помилка','error');
+  }
+}
+
+function closeLeadModal(){
+  document.getElementById('leadModal').classList.remove('active');
+  document.body.style.overflow='';
+  editLeadId=null;
+}
+
+async function deleteLead(id){
+  if(!confirm('Видалити цей лід?'))return;
+  await api('leads.delete',{id});
+  toast('Видалено','success');
+  await loadLeads();
+  await loadStats();
+}
+
+// ENRICH
+async function enrichLead(){
+  if(!editLeadId)return;
+  document.getElementById('enrichBtn').disabled=true;
+  document.getElementById('enrichBtn').textContent='...';
+  const r=await api('leads.enrich',{id:editLeadId});
+  document.getElementById('enrichBtn').disabled=false;
+  document.getElementById('enrichBtn').innerHTML='<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> Google';
+  if(r.success&&r.lead){
+    document.getElementById('lf-phone').value=r.lead.phone||document.getElementById('lf-phone').value;
+    document.getElementById('lf-website').value=r.lead.website||document.getElementById('lf-website').value;
+    document.getElementById('lf-instagram').value=r.lead.instagram||document.getElementById('lf-instagram').value;
+    document.getElementById('lf-address').value=r.lead.address||document.getElementById('lf-address').value;
+    document.getElementById('enrichDeepBtn').disabled=!r.lead.website;
+    toast('Дані з Google оновлено','success');
+  } else {
+    toast('Не вдалось знайти','error');
+  }
+}
+
+async function enrichDeepLead(){
+  if(!editLeadId)return;
+  document.getElementById('enrichDeepBtn').disabled=true;
+  document.getElementById('enrichDeepBtn').textContent='...';
+  const r=await api('leads.enrich.deep',{id:editLeadId});
+  document.getElementById('enrichDeepBtn').disabled=false;
+  document.getElementById('enrichDeepBtn').innerHTML='<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M6 2v6M4 4h4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg> GPT Сайт';
+  if(r.success&&r.lead){
+    if(r.lead.description)document.getElementById('lf-description').value=r.lead.description;
+    if(r.lead.instagram)document.getElementById('lf-instagram').value=r.lead.instagram;
+    if(r.lead.facebook)document.getElementById('lf-facebook').value=r.lead.facebook;
+    toast('GPT дані оновлено','success');
+  } else {
+    toast('Помилка GPT','error');
+  }
+}
+
+// FOLDER MODAL
+function openFolderModal(id){
+  editFolderId=id;
+  const f=id?folders.find(x=>x.id===id):null;
+  document.getElementById('folderModalTitle').textContent=f?'Редагувати папку':'Нова папка';
+  document.getElementById('folder-name').value=f?.name||'';
+  document.getElementById('folder-color').value=f?.color||'#5b8dee';
+  document.getElementById('folderModal').classList.add('active');
+  document.body.style.overflow='hidden';
+}
+
+async function saveFolder(){
+  const name=document.getElementById('folder-name').value.trim();
+  const color=document.getElementById('folder-color').value;
+  if(!name){toast('Введіть назву','error');return;}
+  let r;
+  if(editFolderId){
+    r=await api('folders.update',{id:editFolderId,name,color});
+  } else {
+    r=await api('folders.create',{name,color});
+  }
+  if(r.success){
+    toast('Збережено','success');
+    closeFolderModal();
+    await loadFolders();
+  }
+}
+
+function closeFolderModal(){
+  document.getElementById('folderModal').classList.remove('active');
+  document.body.style.overflow='';
+  editFolderId=null;
+}
+
+async function deleteFolder(id){
+  if(!confirm('Видалити папку?'))return;
+  const r=await api('folders.delete',{id});
+  if(r.deleted){toast('Видалено','success');await loadFolders();}
+  else toast('Системну папку не можна видалити','error');
+}
+
+// PARSE PANEL
+function toggleParsePanel(){
+  const p=document.getElementById('parsePanel');
+  const isOpen=p.classList.toggle('open');
+  if(isOpen&&!parseMap)initParseMap();
+}
+
+function setParseTab(tab){
+  document.getElementById('ptab-types').classList.toggle('active',tab==='types');
+  document.getElementById('ptab-search').classList.toggle('active',tab==='search');
+  document.getElementById('parse-types-section').style.display=tab==='types'?'':'none';
+  document.getElementById('parse-search-section').style.display=tab==='search'?'':'none';
+  document.getElementById('parseResults').style.display='none';
+  if(tab==='search'&&!searchMap)initSearchMap();
+}
+
+function initParseMap(){
+  parseMap=L.map('parseMap',{center:[49.5883,34.5514],zoom:12});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(parseMap);
+  parseMap.on('click',e=>{
+    parseLat=e.latlng.lat;parseLng=e.latlng.lng;
+    if(parseMapMarker)parseMap.removeLayer(parseMapMarker);
+    if(parseMapCircle)parseMap.removeLayer(parseMapCircle);
+    const r=parseInt(document.getElementById('parseRadius').value);
+    parseMapMarker=L.marker(e.latlng).addTo(parseMap);
+    parseMapCircle=L.circle(e.latlng,{radius:r,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(parseMap);
+    document.getElementById('mapCoords').textContent=`${parseLat.toFixed(5)}, ${parseLng.toFixed(5)} · Радіус: ${Math.round(r/1000)} км`;
+    document.getElementById('runParseBtn').disabled=false;
+  });
+}
+
+function initSearchMap(){
+  document.getElementById('searchMap').style.height='200px';
+  searchMap=L.map('searchMap',{center:[49.5883,34.5514],zoom:11});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(searchMap);
+  searchMap.on('click',e=>{
+    searchLat=e.latlng.lat;searchLng=e.latlng.lng;
+    if(searchMapMarker)searchMap.removeLayer(searchMapMarker);
+    if(searchMapCircle)searchMap.removeLayer(searchMapCircle);
+    const r=parseInt(document.getElementById('searchRadius').value);
+    searchMapMarker=L.marker(e.latlng).addTo(searchMap);
+    searchMapCircle=L.circle(e.latlng,{radius:r,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(searchMap);
+    document.getElementById('searchMapCoords').style.display='block';
+    document.getElementById('searchMapCoords').textContent=`${searchLat.toFixed(5)}, ${searchLng.toFixed(5)}`;
+    document.getElementById('runSearchBtn').disabled=false;
+  });
+}
+
+function onRadiusChange(){
+  const r=parseInt(document.getElementById('parseRadius').value);
+  document.getElementById('radiusVal').textContent=Math.round(r/1000);
+  if(parseMapCircle&&parseLat){
+    parseMap.removeLayer(parseMapCircle);
+    parseMapCircle=L.circle([parseLat,parseLng],{radius:r,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(parseMap);
+  }
+}
+
+async function geocodeCity(){
+  const city=document.getElementById('parseCity').value.trim();
+  if(!city)return;
+  const r=await api('crm.geocode',{city});
+  if(r.success&&r.results.length){
+    const {lat,lon}=r.results[0];
+    parseLat=parseFloat(lat);parseLng=parseFloat(lon);
+    parseMap.setView([parseLat,parseLng],12);
+    if(parseMapMarker)parseMap.removeLayer(parseMapMarker);
+    if(parseMapCircle)parseMap.removeLayer(parseMapCircle);
+    const radius=parseInt(document.getElementById('parseRadius').value);
+    parseMapMarker=L.marker([parseLat,parseLng]).addTo(parseMap);
+    parseMapCircle=L.circle([parseLat,parseLng],{radius,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(parseMap);
+    document.getElementById('mapCoords').textContent=`${parseLat.toFixed(5)}, ${parseLng.toFixed(5)}`;
+    document.getElementById('runParseBtn').disabled=false;
+  } else {
+    toast('Місто не знайдено','error');
+  }
+}
+
+async function geocodeCitySearch(){
+  const city=document.getElementById('searchCity').value.trim();
+  if(!city)return;
+  const r=await api('crm.geocode',{city});
+  if(r.success&&r.results.length){
+    const {lat,lon}=r.results[0];
+    searchLat=parseFloat(lat);searchLng=parseFloat(lon);
+    searchMap.setView([searchLat,searchLng],12);
+    if(searchMapMarker)searchMap.removeLayer(searchMapMarker);
+    const radius=parseInt(document.getElementById('searchRadius').value);
+    searchMapMarker=L.marker([searchLat,searchLng]).addTo(searchMap);
+    searchMapCircle=L.circle([searchLat,searchLng],{radius,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(searchMap);
+    document.getElementById('runSearchBtn').disabled=false;
+  } else {
+    toast('Місто не знайдено','error');
+  }
+}
+
+async function runParse(){
+  if(!parseLat||!parseLng)return;
+  const btn=document.getElementById('runParseBtn');
+  btn.disabled=true;btn.textContent='Завантаження...';
+  const r=await api('parse',{
+    city:document.getElementById('parseCity').value.trim(),
+    lat:parseLat,lng:parseLng,
+    radius:parseInt(document.getElementById('parseRadius').value)
+  });
+  btn.disabled=false;btn.innerHTML='<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> Запустити';
+  if(r.success){
+    parseData=r.places||[];
+    showParseResults();
+  } else {
+    toast('Помилка парсингу','error');
+  }
+}
+
+async function runSearch(){
+  if(!searchLat||!searchLng)return;
+  const query=document.getElementById('searchQuery').value.trim();
+  if(!query){toast('Введіть запит','error');return;}
+  const btn=document.getElementById('runSearchBtn');
+  btn.disabled=true;btn.textContent='Пошук...';
+  const r=await api('parse.search',{
+    city:document.getElementById('searchCity').value.trim(),
+    lat:searchLat,lng:searchLng,
+    radius:parseInt(document.getElementById('searchRadius').value),
+    query
+  });
+  btn.disabled=false;btn.innerHTML='<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> Знайти';
+  if(r.success){
+    parseData=r.places||[];
+    showParseResults();
+  } else {
+    toast('Помилка пошуку','error');
+  }
+}
+
+function showParseResults(){
+  const res=document.getElementById('parseResults');
+  const list=document.getElementById('parseList');
+  document.getElementById('parseResultTitle').textContent=`Знайдено: ${parseData.length}`;
+  list.innerHTML=parseData.map((p,i)=>`
+    <div class="parse-item">
+      <input type="checkbox" checked data-idx="${i}" onchange="updateParseSelCount()" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer">
+      <span class="parse-item-name">${p.name}</span>
+      <span class="parse-item-city">${p.city||''}</span>
+      ${p.google_rating?`<span style="font-size:10px;color:var(--muted)">★${p.google_rating}</span>`:''}
+    </div>`).join('');
+  res.style.display='block';
+  updateParseSelCount();
+}
+
+function selectAllParseItems(checked){
+  document.querySelectorAll('#parseList input[type=checkbox]').forEach(c=>c.checked=checked);
+  updateParseSelCount();
+}
+
+function updateParseSelCount(){
+  const n=document.querySelectorAll('#parseList input[type=checkbox]:checked').length;
+  document.getElementById('parseSelCount').textContent=n+' вибрано';
+}
+
+async function saveParseSelected(){
+  const folderId=document.getElementById('parseFolderSelect').value||null;
+  const selected=[...document.querySelectorAll('#parseList input[type=checkbox]:checked')]
+    .map(c=>parseData[parseInt(c.dataset.idx)]).filter(Boolean)
+    .map(p=>{
+      const folder=folderId?null:folders.find(f=>f.slug===p.type);
+      return{
+        name:p.name,type:p.type||'sport_club',city:p.city||'',
+        lat:p.lat||null,lng:p.lng||null,
+        phone:p.phone||null,website:p.website||null,
+        instagram:p.instagram||null,address:p.address||null,
+        google_place_id:p.google_place_id||null,
+        google_rating:p.google_rating||null,
+        google_reviews:p.google_reviews||null,
+        folder_id:folderId||(folder?folder.id:null)
+      };
+    });
+  if(!selected.length)return;
+  const r=await api('leads.save',{leads:selected});
+  if(r.success){
+    toast(`Збережено: ${r.count}/${selected.length}`,'success');
+    document.getElementById('parseResults').style.display='none';
+    parseData=[];
+    await loadLeads();
+    await loadStats();
+    await loadFolders();
+  }
+}
+
+// THEME
+function toggleTheme(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',isDark?'light':'dark');
+  document.getElementById('icon-sun').style.display=isDark?'':'none';
+  document.getElementById('icon-moon').style.display=isDark?'none':'';
+  localStorage.setItem('theme',isDark?'light':'dark');
+}
+function initTheme(){
+  const s=localStorage.getItem('theme');
+  if(s==='dark'){
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('icon-sun').style.display='none';
+    document.getElementById('icon-moon').style.display='block';
+  }
+}
+
+// TOAST
+function toast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.className='toast '+(type||'');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+// START
+init();
+</script>
+</body>
+</html>
