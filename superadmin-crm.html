@@ -1192,8 +1192,8 @@ const STATUSES=['new','contacted','interested','proposal','won','lost'];
 function getStatusLabels(){return{new:t('sNew'),contacted:t('sContacted'),interested:t('sInterested'),proposal:t('sProposal'),won:t('sWon'),lost:t('sLost')};}
 const STATUS_COLORS={new:'var(--muted2)',contacted:'#1d4ed8',interested:'#c2410c',proposal:'#7c3aed',won:'#16a34a',lost:'var(--accent)'};
 
-let dragLeadId=null;
-
+let dragLeadId=null, dragMoved=false;
+let _touchClone=null, _touchOffX=0, _touchOffY=0;
 function renderKanban(){
   const fl=filtered();
   const wrap=document.getElementById('kanbanWrap');
@@ -1205,7 +1205,10 @@ function renderKanban(){
         data-id="${l.id}"
         onclick="handleKanbanClick(event,${l.id})"
         ondragstart="onDragStart(event,${l.id})"
-        ondragend="onDragEnd(event)">
+        ondragend="onDragEnd(event)"
+        ontouchstart="onTouchStart(event,${l.id})"
+        ontouchmove="onTouchMove(event)"
+        ontouchend="onTouchEnd(event)">
         <div class="kan-card-name">${l.name||'—'}</div>
         <div class="kan-card-city">${l.city||''}</div>
         <div class="kan-card-footer">
@@ -1229,10 +1232,8 @@ function renderKanban(){
   }).join('');
 }
 
-let dragMoved=false;
 function onDragStart(e,id){
-  dragLeadId=id;
-  dragMoved=false;
+  dragLeadId=id; dragMoved=false;
   e.target.classList.add('dragging');
   e.dataTransfer.effectAllowed='move';
 }
@@ -1255,7 +1256,6 @@ async function onDrop(e,status){
   if(!dragLeadId)return;
   const lead=leads.find(l=>l.id===dragLeadId);
   if(!lead||lead.status===status)return;
-  // Optimistic update
   lead.status=status;
   renderKanban();
   await api('leads.update',{id:dragLeadId,status});
@@ -1263,9 +1263,57 @@ async function onDrop(e,status){
   dragLeadId=null;
 }
 function handleKanbanClick(e,id){
-  // Only open modal if not dragging
   if(dragMoved)return;
   openLeadModal(id);
+}
+
+// TOUCH DRAG
+function onTouchStart(e,id){
+  dragLeadId=id; dragMoved=false;
+  const card=e.currentTarget;
+  const rect=card.getBoundingClientRect();
+  const t=e.touches[0];
+  _touchOffX=t.clientX-rect.left;
+  _touchOffY=t.clientY-rect.top;
+  _touchClone=card.cloneNode(true);
+  _touchClone.style.cssText=`position:fixed;z-index:9999;width:${rect.width}px;opacity:0.85;pointer-events:none;left:${rect.left}px;top:${rect.top}px;box-shadow:0 8px 24px rgba(0,0,0,.18);border-radius:8px;`;
+  document.body.appendChild(_touchClone);
+  card.style.opacity='0.3';
+}
+function onTouchMove(e){
+  if(!dragLeadId)return;
+  e.preventDefault();
+  dragMoved=true;
+  const t=e.touches[0];
+  _touchClone.style.left=(t.clientX-_touchOffX)+'px';
+  _touchClone.style.top=(t.clientY-_touchOffY)+'px';
+  // Highlight drop target
+  document.querySelectorAll('.kan-col-body').forEach(col=>{
+    const r=col.getBoundingClientRect();
+    const over=t.clientX>=r.left&&t.clientX<=r.right&&t.clientY>=r.top&&t.clientY<=r.bottom;
+    col.classList.toggle('drag-over',over);
+  });
+}
+async function onTouchEnd(e){
+  if(!dragLeadId)return;
+  if(_touchClone){_touchClone.remove();_touchClone=null;}
+  // Restore card opacity
+  document.querySelectorAll('.kan-card').forEach(c=>c.style.opacity='');
+  document.querySelectorAll('.kan-col-body').forEach(c=>c.classList.remove('drag-over'));
+  if(!dragMoved){dragLeadId=null;return;}
+  const t=e.changedTouches[0];
+  const target=document.elementFromPoint(t.clientX,t.clientY);
+  const col=target?.closest('.kan-col-body');
+  if(!col){dragLeadId=null;return;}
+  const status=col.dataset.status;
+  const lead=leads.find(l=>l.id===dragLeadId);
+  if(lead&&lead.status!==status){
+    lead.status=status;
+    renderKanban();
+    await api('leads.update',{id:dragLeadId,status});
+    await loadStats();
+  }
+  dragLeadId=null;
 }
 
 function setView(v){
@@ -1647,10 +1695,10 @@ function showParseResults(){
         ${hasDetails?`<button onclick="toggleParsePreview(${i})" style="border:none;background:none;cursor:pointer;color:var(--muted);font-size:10px;padding:0 4px;flex-shrink:0" id="prev-btn-${i}">▼</button>`:''}
       </div>
       ${hasDetails?`<div id="prev-${i}" style="display:none;padding:6px 10px 4px 24px;width:100%;border-top:1px solid var(--border);margin-top:4px">
-        ${p.phone?`<div style="font-size:11px;color:var(--text);margin-bottom:3px">📞 ${p.phone}</div>`:''}
-        ${p.website?`<div style="font-size:11px;margin-bottom:3px"><a href="${p.website}" target="_blank" style="color:var(--tag-blue);text-decoration:none;word-break:break-all">🌐 ${p.website}</a></div>`:''}
-        ${p.instagram?`<div style="font-size:11px;margin-bottom:3px"><a href="${p.instagram}" target="_blank" style="color:#e1306c;text-decoration:none">📷 ${p.instagram}</a></div>`:''}
-        ${p.address?`<div style="font-size:11px;color:var(--muted);margin-bottom:3px">📍 ${p.address}</div>`:''}
+        ${p.phone?`<div style="font-size:11px;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:4px"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 1h2.5l1 2.5-1.5 1a7 7 0 003.5 3.5l1-1.5L11 7.5V10A1 1 0 0110 11 9 9 0 011 2a1 1 0 011-1z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg> ${p.phone}</div>`:''}
+        ${p.website?`<div style="font-size:11px;margin-bottom:3px;display:flex;align-items:center;gap:4px"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.1"/><path d="M6 1c-1.5 2-1.5 8 0 10M6 1c1.5 2 1.5 8 0 10M1 6h10" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><a href="${p.website}" target="_blank" style="color:var(--tag-blue);text-decoration:none;word-break:break-all">${p.website}</a></div>`:''}
+        ${p.instagram?`<div style="font-size:11px;margin-bottom:3px;display:flex;align-items:center;gap:4px"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="3" stroke="currentColor" stroke-width="1.1"/><circle cx="6" cy="6" r="2.5" stroke="currentColor" stroke-width="1.1"/><circle cx="9" cy="3" r=".6" fill="currentColor"/></svg><a href="${p.instagram}" target="_blank" style="color:#e1306c;text-decoration:none">${p.instagram}</a></div>`:''}
+        ${p.address?`<div style="font-size:11px;color:var(--muted);margin-bottom:3px;display:flex;align-items:center;gap:4px"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1a4 4 0 014 4c0 3-4 7-4 7S2 8 2 5a4 4 0 014-4z" stroke="currentColor" stroke-width="1.1"/><circle cx="6" cy="5" r="1.2" stroke="currentColor" stroke-width="1"/></svg> ${p.address}</div>`:''}
         ${p.snippet?`<div style="font-size:11px;color:var(--muted);line-height:1.4;margin-top:4px">${p.snippet}</div>`:''}
       </div>`:''}
     </div>`;
