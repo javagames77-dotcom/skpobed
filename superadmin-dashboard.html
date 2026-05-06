@@ -705,6 +705,11 @@ function t(k){return (i18n[currentLang]||i18n.uk)[k]||k;}
 function applyLang(){
   document.documentElement.lang=currentLang==='uk'?'uk':currentLang==='ru'?'ru':'en';
   document.title=t('pageTitle');
+  // Process data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key=el.dataset.i18n;
+    if(t(key)!==key) el.textContent=t(key);
+  });
   const ids={
     't-logout':'logout','t-nav-badge':'navBadge',
     't-s-directors-label':'sDirLabel','t-s-directors':'sDirectors','t-s-requests':'sRequests',
