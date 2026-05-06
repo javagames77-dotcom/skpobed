@@ -166,7 +166,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .kan-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .kan-card.dragging{opacity:.4;cursor:grabbing}
 .kan-col-body.drag-over{background:var(--bg3);outline:2px dashed var(--border2)}
-.kan-card-name{font-size:12px;font-weight:500;color:var(--black);margin-bottom:4px}
+.kan-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px}
+.kan-drag-handle{color:var(--muted2);cursor:grab;padding:2px;flex-shrink:0;touch-action:none}
+.kan-drag-handle:active{cursor:grabbing}
+.kan-card-name{font-size:12px;font-weight:500;color:var(--black)}
 .kan-card-city{font-size:11px;color:var(--muted)}
 .kan-card-footer{display:flex;align-items:center;gap:6px;margin-top:7px}
 .kan-card-type{font-size:10px;color:var(--muted);background:var(--bg3);border-radius:3px;padding:1px 5px}
@@ -1203,11 +1206,13 @@ function renderKanban(){
   wrap.innerHTML=STATUSES.map(st=>{
     const items=fl.filter(l=>l.status===st);
     const cards=items.map(l=>`
-      <div class="kan-card" draggable="true"
-        data-id="${l.id}"
-        ondragstart="onDragStart(event,${l.id})"
-        ondragend="onDragEnd(event)">
-        <div class="kan-card-name">${l.name||'—'}</div>
+      <div class="kan-card" data-id="${l.id}">
+        <div class="kan-card-top">
+          <div class="kan-card-name">${l.name||'—'}</div>
+          <div class="kan-drag-handle" title="Перетягнути">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="5" cy="3.5" r="1" fill="currentColor"/><circle cx="9" cy="3.5" r="1" fill="currentColor"/><circle cx="5" cy="7" r="1" fill="currentColor"/><circle cx="9" cy="7" r="1" fill="currentColor"/><circle cx="5" cy="10.5" r="1" fill="currentColor"/><circle cx="9" cy="10.5" r="1" fill="currentColor"/></svg>
+          </div>
+        </div>
         <div class="kan-card-city">${l.city||''}</div>
         <div class="kan-card-footer">
           <span class="kan-card-type">${l.type||''}</span>
@@ -1229,13 +1234,34 @@ function renderKanban(){
     </div>`;
   }).join('');
 
-  // Attach touch listeners via JS (passive:false required for iOS Safari)
+  // Attach touch listeners - drag handle only triggers drag, card tap = modal
   wrap.querySelectorAll('.kan-card').forEach(card=>{
     const id=parseInt(card.dataset.id);
-    card.addEventListener('touchstart', e=>onTouchStart(e,id), {passive:true});
-    card.addEventListener('touchmove',  e=>onTouchMove(e),     {passive:false});
-    card.addEventListener('touchend',   e=>onTouchEnd(e),      {passive:false});
-    card.addEventListener('click',      e=>handleKanbanClick(e,id));
+    const handle=card.querySelector('.kan-drag-handle');
+
+    // Tap on card = open modal
+    card.addEventListener('click', e=>{
+      if(!dragMoved) openLeadModal(id);
+    });
+
+    // Touch on handle = drag
+    handle.addEventListener('touchstart', e=>{
+      e.stopPropagation();
+      onTouchStart(e, id, card);
+    }, {passive:true});
+    handle.addEventListener('touchmove', e=>{
+      onTouchMove(e);
+    }, {passive:false});
+    handle.addEventListener('touchend', e=>{
+      onTouchEnd(e);
+    }, {passive:false});
+
+    // Mouse drag on handle
+    handle.addEventListener('mousedown', e=>{
+      card.setAttribute('draggable','true');
+    });
+    card.addEventListener('dragstart', e=>onDragStart(e,id));
+    card.addEventListener('dragend',   e=>{onDragEnd(e); card.setAttribute('draggable','false');});
   });
 }
 
@@ -1275,17 +1301,17 @@ function handleKanbanClick(e,id){
 }
 
 // TOUCH DRAG
-function onTouchStart(e,id){
+function onTouchStart(e, id, card){
   dragLeadId=id; dragMoved=false;
-  const card=e.currentTarget;
-  const rect=card.getBoundingClientRect();
+  const el=card||e.currentTarget;
+  const rect=el.getBoundingClientRect();
   const t=e.touches[0];
   _touchOffX=t.clientX-rect.left;
   _touchOffY=t.clientY-rect.top;
-  _touchClone=card.cloneNode(true);
+  _touchClone=el.cloneNode(true);
   _touchClone.style.cssText=`position:fixed;z-index:9999;width:${rect.width}px;opacity:0.85;pointer-events:none;left:${rect.left}px;top:${rect.top}px;box-shadow:0 8px 24px rgba(0,0,0,.18);border-radius:8px;`;
   document.body.appendChild(_touchClone);
-  card.style.opacity='0.3';
+  el.style.opacity='0.3';
 }
 function onTouchMove(e){
   if(!dragLeadId)return;
