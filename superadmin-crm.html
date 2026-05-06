@@ -24,6 +24,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .nav-divider{width:1px;height:18px;background:var(--border)}
 .theme-toggle{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s}
 .theme-toggle:hover{border-color:var(--border2)}
+.lang-switcher{display:flex;align-items:center;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:3px}
+.lang-btn{padding:3px 8px;border:none;border-radius:5px;background:transparent;color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+.lang-btn.active{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
 
 /* LAYOUT */
 .layout{display:flex;height:calc(100vh - 48px)}
@@ -235,6 +238,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div class="nav-right">
     <span class="nav-badge">CRM</span>
     <div class="nav-divider"></div>
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLang('uk')">UA</button>
+      <button class="lang-btn" onclick="setLang('ru')">RU</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
     <button class="theme-toggle" onclick="toggleTheme()">
       <svg id="icon-sun" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3.2" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.6 3.6l1.3 1.3M11.1 11.1l1.3 1.3M3.6 12.4l1.3-1.3M11.1 4.9l1.3-1.3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       <svg id="icon-moon" width="15" height="15" viewBox="0 0 16 16" fill="none" style="display:none"><path d="M13.5 10A6 6 0 015 2.5a6 6 0 108 8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
@@ -703,6 +711,166 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 </div>
 
 <script>
+// I18N
+const i18n = {
+  uk:{
+    back:'← Назад у дашборд',crmTitle:'CRM — Ліди',
+    folderModeType:'Тип',folderModeCity:'Місто',
+    allLeads:'Всі ліди',allCities:'Всі міста',addFolder:'Нова папка',
+    kpiTotal:'Всього лідів',kpiNew:'Нових',kpiToday:'Контакт сьогодні',kpiWon:'Won %',kpiCities:'Міст',
+    parseTitle:"Парсинг об'єктів",parseTabTypes:'За типами',parseTabSearch:'Пошук',
+    parseCity:'Місто',parseFind:'Знайти',parseSaveTo:'Зберегти в папку',parseAutoFolder:'— Автоматично —',
+    parseRadius:'Радіус',parseRun:'Запустити',parseQuery:'Запит',parseQueryPlh:'Айкідо, BJJ, Бокс...',
+    parseFoundN:'Знайдено: ',parseSelectAll:'Вибрати всі',parseAddSelected:'Додати вибрані',parseSelected:'вибрано',
+    searchPlh:'Пошук...',filterAllStatus:'Всі статуси',filterAllPriority:'Всі пріоритети',
+    filterHigh:'Високий',filterMed:'Середній',filterLow:'Низький',
+    viewList:'Список',viewKanban:'Kanban',btnParse:'Парсинг',btnAdd:'Додати',
+    bulkDelete:'Видалити вибрані',
+    thName:'Назва',thFolder:'Папка',thCity:'Місто',thStatus:'Статус',thPriority:'Пріоритет',
+    thNext:'Наст. контакт',thTouches:'Касань',thEnrich:'Обогащ.',
+    emptyText:'Лідів немає. Запустіть парсинг!',
+    today:'Сьогодні',
+    sNew:'New',sContacted:'Contacted',sInterested:'Зацікавлений',sProposal:'Пропозиція',sWon:'Won ✓',sLost:'Lost',
+    priHigh:'Високий',priMed:'Середній',priLow:'Низький',
+    newLead:'Новий лід',tabInfo:'Інфо',tabContacts:'Контакти',tabHistory:'Історія',
+    lblName:'Назва',lblCity:'Місто',lblType:'Тип',lblFolder:'Папка',lblStatus:'Статус',lblPriority:'Пріоритет',
+    lblNextContact:'Наступний контакт',lblDesc:'Опис',lblAddress:'Адреса',
+    lblPhone:'Телефон',lblEmail:'Email',lblWebsite:'Сайт',lblInstagram:'Instagram',lblFacebook:'Facebook',lblTelegram:'Telegram',
+    btnGoogle:'Google',btnGpt:'GPT Сайт',
+    noTouches:'Касань ще немає',addTouch:'Додати касання',
+    touchTypeCall:'Дзвінок',touchTypeEmail:'Email',touchTypeWA:'WhatsApp',touchTypeVisit:'Зустріч',touchTypeNote:'Нотатка',
+    touchNextContact:'Наст. контакт',touchContent:'Зміст касання...',touchSave:'Зберегти',
+    touchNoStatus:'— Не змінювати статус —',
+    btnCancel:'Скасувати',btnSave:'Зберегти',
+    folderTitle:'Нова папка',folderEdit:'Редагувати папку',folderName:'Назва',folderColor:'Колір',
+    typeAll:'— Тип —',typeSport:'Спортклуб',typeDance:'Танці',typeFitness:'Фітнес',
+    typeMartial:'Єдиноборства',typeSwim:'Плавання',typeGym:'Гімнастика',
+    confirmDelete:'Видалити цей лід?',confirmDeleteMulti:'лідів буде видалено. Продовжити?',
+    confirmDeleteFolder:'Видалити папку?',
+    toastSaved:'Збережено',toastDeleted:'Видалено',toastError:'Помилка',toastCityNotFound:'Місто не знайдено',
+    toastEnrichOk:'Дані з Google оновлено',toastEnrichFail:'Не вдалось знайти',toastGptOk:'GPT дані оновлено',toastGptFail:'Помилка GPT',
+    toastTouchAdded:'Касання додано',toastParseError:'Помилка парсингу',
+    enterName:'Введіть назву',enterQuery:'Введіть запит',
+    cityPlh:'Полтава, Харків...',mapClick:'Клікніть на карту щоб вибрати точку',
+    touchStatusContacted:'→ Contacted',touchStatusInterested:'→ Зацікавлений',touchStatusProposal:'→ Пропозиція',touchStatusWon:'→ Won',touchStatusLost:'→ Lost',
+    enriching:'...',saved:'Збережено: ',
+  },
+  ru:{
+    back:'← Назад в дашборд',crmTitle:'CRM — Лиды',
+    folderModeType:'Тип',folderModeCity:'Город',
+    allLeads:'Все лиды',allCities:'Все города',addFolder:'Новая папка',
+    kpiTotal:'Всего лидов',kpiNew:'Новых',kpiToday:'Контакт сегодня',kpiWon:'Won %',kpiCities:'Городов',
+    parseTitle:'Парсинг объектов',parseTabTypes:'По типам',parseTabSearch:'Поиск',
+    parseCity:'Город',parseFind:'Найти',parseSaveTo:'Сохранить в папку',parseAutoFolder:'— Автоматически —',
+    parseRadius:'Радиус',parseRun:'Запустить',parseQuery:'Запрос',parseQueryPlh:'Айкидо, BJJ, Бокс...',
+    parseFoundN:'Найдено: ',parseSelectAll:'Выбрать все',parseAddSelected:'Добавить выбранные',parseSelected:'выбрано',
+    searchPlh:'Поиск...',filterAllStatus:'Все статусы',filterAllPriority:'Все приоритеты',
+    filterHigh:'Высокий',filterMed:'Средний',filterLow:'Низкий',
+    viewList:'Список',viewKanban:'Kanban',btnParse:'Парсинг',btnAdd:'Добавить',
+    bulkDelete:'Удалить выбранные',
+    thName:'Название',thFolder:'Папка',thCity:'Город',thStatus:'Статус',thPriority:'Приоритет',
+    thNext:'След. контакт',thTouches:'Касаний',thEnrich:'Обогащ.',
+    emptyText:'Лидов нет. Запустите парсинг!',
+    today:'Сегодня',
+    sNew:'New',sContacted:'Contacted',sInterested:'Заинтересован',sProposal:'Предложение',sWon:'Won ✓',sLost:'Lost',
+    priHigh:'Высокий',priMed:'Средний',priLow:'Низкий',
+    newLead:'Новый лид',tabInfo:'Инфо',tabContacts:'Контакты',tabHistory:'История',
+    lblName:'Название',lblCity:'Город',lblType:'Тип',lblFolder:'Папка',lblStatus:'Статус',lblPriority:'Приоритет',
+    lblNextContact:'Следующий контакт',lblDesc:'Описание',lblAddress:'Адрес',
+    lblPhone:'Телефон',lblEmail:'Email',lblWebsite:'Сайт',lblInstagram:'Instagram',lblFacebook:'Facebook',lblTelegram:'Telegram',
+    btnGoogle:'Google',btnGpt:'GPT Сайт',
+    noTouches:'Касаний ещё нет',addTouch:'Добавить касание',
+    touchTypeCall:'Звонок',touchTypeEmail:'Email',touchTypeWA:'WhatsApp',touchTypeVisit:'Встреча',touchTypeNote:'Заметка',
+    touchNextContact:'След. контакт',touchContent:'Содержание касания...',touchSave:'Сохранить',
+    touchNoStatus:'— Не менять статус —',
+    btnCancel:'Отмена',btnSave:'Сохранить',
+    folderTitle:'Новая папка',folderEdit:'Редактировать папку',folderName:'Название',folderColor:'Цвет',
+    typeAll:'— Тип —',typeSport:'Спортклуб',typeDance:'Танцы',typeFitness:'Фитнес',
+    typeMartial:'Единоборства',typeSwim:'Плавание',typeGym:'Гимнастика',
+    confirmDelete:'Удалить этот лид?',confirmDeleteMulti:'лидов будет удалено. Продолжить?',
+    confirmDeleteFolder:'Удалить папку?',
+    toastSaved:'Сохранено',toastDeleted:'Удалено',toastError:'Ошибка',toastCityNotFound:'Город не найден',
+    toastEnrichOk:'Данные из Google обновлены',toastEnrichFail:'Не удалось найти',toastGptOk:'GPT данные обновлены',toastGptFail:'Ошибка GPT',
+    toastTouchAdded:'Касание добавлено',toastParseError:'Ошибка парсинга',
+    enterName:'Введите название',enterQuery:'Введите запрос',
+    cityPlh:'Полтава, Харьков...',mapClick:'Кликните на карту чтобы выбрать точку',
+    touchStatusContacted:'→ Contacted',touchStatusInterested:'→ Заинтересован',touchStatusProposal:'→ Предложение',touchStatusWon:'→ Won',touchStatusLost:'→ Lost',
+    enriching:'...',saved:'Сохранено: ',
+  },
+  en:{
+    back:'← Back to dashboard',crmTitle:'CRM — Leads',
+    folderModeType:'Type',folderModeCity:'City',
+    allLeads:'All leads',allCities:'All cities',addFolder:'New folder',
+    kpiTotal:'Total leads',kpiNew:'New',kpiToday:"Today's contacts",kpiWon:'Won %',kpiCities:'Cities',
+    parseTitle:'Parse objects',parseTabTypes:'By types',parseTabSearch:'Search',
+    parseCity:'City',parseFind:'Find',parseSaveTo:'Save to folder',parseAutoFolder:'— Auto —',
+    parseRadius:'Radius',parseRun:'Run',parseQuery:'Query',parseQueryPlh:'Aikido, BJJ, Boxing...',
+    parseFoundN:'Found: ',parseSelectAll:'Select all',parseAddSelected:'Add selected',parseSelected:'selected',
+    searchPlh:'Search...',filterAllStatus:'All statuses',filterAllPriority:'All priorities',
+    filterHigh:'High',filterMed:'Medium',filterLow:'Low',
+    viewList:'List',viewKanban:'Kanban',btnParse:'Parse',btnAdd:'Add',
+    bulkDelete:'Delete selected',
+    thName:'Name',thFolder:'Folder',thCity:'City',thStatus:'Status',thPriority:'Priority',
+    thNext:'Next contact',thTouches:'Touches',thEnrich:'Enrich',
+    emptyText:'No leads. Run parsing!',
+    today:'Today',
+    sNew:'New',sContacted:'Contacted',sInterested:'Interested',sProposal:'Proposal',sWon:'Won ✓',sLost:'Lost',
+    priHigh:'High',priMed:'Medium',priLow:'Low',
+    newLead:'New lead',tabInfo:'Info',tabContacts:'Contacts',tabHistory:'History',
+    lblName:'Name',lblCity:'City',lblType:'Type',lblFolder:'Folder',lblStatus:'Status',lblPriority:'Priority',
+    lblNextContact:'Next contact',lblDesc:'Description',lblAddress:'Address',
+    lblPhone:'Phone',lblEmail:'Email',lblWebsite:'Website',lblInstagram:'Instagram',lblFacebook:'Facebook',lblTelegram:'Telegram',
+    btnGoogle:'Google',btnGpt:'GPT Site',
+    noTouches:'No touches yet',addTouch:'Add touch',
+    touchTypeCall:'Call',touchTypeEmail:'Email',touchTypeWA:'WhatsApp',touchTypeVisit:'Meeting',touchTypeNote:'Note',
+    touchNextContact:'Next contact',touchContent:'Touch content...',touchSave:'Save',
+    touchNoStatus:'— Keep status —',
+    btnCancel:'Cancel',btnSave:'Save',
+    folderTitle:'New folder',folderEdit:'Edit folder',folderName:'Name',folderColor:'Color',
+    typeAll:'— Type —',typeSport:'Sports club',typeDance:'Dance',typeFitness:'Fitness',
+    typeMartial:'Martial arts',typeSwim:'Swimming',typeGym:'Gymnastics',
+    confirmDelete:'Delete this lead?',confirmDeleteMulti:'leads will be deleted. Continue?',
+    confirmDeleteFolder:'Delete folder?',
+    toastSaved:'Saved',toastDeleted:'Deleted',toastError:'Error',toastCityNotFound:'City not found',
+    toastEnrichOk:'Google data updated',toastEnrichFail:'Not found',toastGptOk:'GPT data updated',toastGptFail:'GPT error',
+    toastTouchAdded:'Touch added',toastParseError:'Parse error',
+    enterName:'Enter name',enterQuery:'Enter query',
+    cityPlh:'Poltava, Kharkiv...',mapClick:'Click on map to select point',
+    touchStatusContacted:'→ Contacted',touchStatusInterested:'→ Interested',touchStatusProposal:'→ Proposal',touchStatusWon:'→ Won',touchStatusLost:'→ Lost',
+    enriching:'...',saved:'Saved: ',
+  }
+};
+let currentLang = localStorage.getItem('lang') || 'uk';
+function t(k){ return (i18n[currentLang]||i18n.uk)[k] || k; }
+function setLang(lang){ currentLang=lang; localStorage.setItem('lang',lang); applyLang(); }
+function applyLang(){
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    const map={'UA':'uk','RU':'ru','EN':'en'};
+    b.classList.toggle('active', map[b.textContent]===currentLang);
+  });
+  // Static elements
+  document.querySelector('.sidebar-back').childNodes[1] && (document.querySelector('.sidebar-back').lastChild.textContent = ' '+t('back'));
+  document.getElementById('ftog-type').textContent = t('folderModeType');
+  document.getElementById('ftog-city').textContent = t('folderModeCity');
+  document.getElementById('sf-all').querySelector('span:nth-child(2)').textContent = t('allLeads');
+  document.getElementById('sc-all').querySelector('span:nth-child(2)').textContent = t('allCities');
+  document.querySelector('.sidebar-add span') && (document.querySelector('.sidebar-add').lastChild.textContent = ' '+t('addFolder'));
+  document.getElementById('kpi-total').nextElementSibling.textContent = t('kpiTotal');
+  document.getElementById('kpi-new').nextElementSibling.textContent = t('kpiNew');
+  document.getElementById('kpi-today').nextElementSibling.textContent = t('kpiToday');
+  document.getElementById('kpi-won').nextElementSibling.textContent = t('kpiWon');
+  document.getElementById('kpi-cities').nextElementSibling.textContent = t('kpiCities');
+  document.getElementById('searchInput').placeholder = t('searchPlh');
+  document.getElementById('parseCity').placeholder = t('cityPlh');
+  document.getElementById('searchCity') && (document.getElementById('searchCity').placeholder = t('cityPlh'));
+  document.getElementById('searchQuery') && (document.getElementById('searchQuery').placeholder = t('parseQueryPlh'));
+  document.getElementById('mapCoords').textContent = t('mapClick');
+  // Re-render dynamic content
+  renderTable();
+  renderKanban();
+  renderFoldersSidebar();
+}
+
 const API = 'https://primary-production-4b93e.up.railway.app/webhook/crm';
 const token = localStorage.getItem('token') || '';
 if(!token){ alert('Не авторизований'); window.location.href='/'; }
@@ -728,8 +896,9 @@ async function api(action, data={}){
 // INIT
 async function init(){
   checkAuth();
-  await Promise.all([loadFolders(),loadLeads(),loadStats()]);
   initTheme();
+  applyLang();
+  await Promise.all([loadFolders(),loadLeads(),loadStats()]);
 }
 
 function checkAuth(){
@@ -830,16 +999,16 @@ function renderFolderSelect(){
 }
 
 // STATUS HELPERS
-function statusPill(s){
+function statusPill(s,id){
   const map={new:'s-new',contacted:'s-contacted',interested:'s-interested',proposal:'s-proposal',won:'s-won',lost:'s-lost'};
-  const label={new:'New',contacted:'Contacted',interested:'Зацікавлений',proposal:'Пропозиція',won:'Won ✓',lost:'Lost'};
-  return `<span class="status-pill ${map[s]||'s-new'}" onclick="openStatusMenu(event,${arguments[1]})">${label[s]||s}</span>`;
+  const label={new:()=>t('sNew'),contacted:()=>t('sContacted'),interested:()=>t('sInterested'),proposal:()=>t('sProposal'),won:()=>t('sWon'),lost:()=>t('sLost')};
+  return `<span class="status-pill ${map[s]||'s-new'}" onclick="openStatusMenu(event,${id})">${(label[s]||label.new)()}</span>`;
 }
 
 function priorityHtml(p){
   const cls={high:'pri-high',medium:'pri-med',low:'pri-low'};
-  const label={high:'Високий',medium:'Середній',low:'Низький'};
-  return `<span style="display:inline-flex;align-items:center"><span class="pri-dot ${cls[p]||'pri-med'}"></span>${label[p]||p}</span>`;
+  const label={high:()=>t('priHigh'),medium:()=>t('priMed'),low:()=>t('priLow')};
+  return `<span style="display:inline-flex;align-items:center"><span class="pri-dot ${cls[p]||'pri-med'}"></span>${(label[p]||label.medium)()}</span>`;
 }
 
 function enrichBadge(s){
@@ -854,7 +1023,7 @@ function fmtDate(d){
   today.setHours(0,0,0,0);
   const diff=(dt-today)/86400000;
   if(diff<0)return`<span style="color:var(--accent)">${dt.toLocaleDateString('uk')}</span>`;
-  if(diff<1)return`<span style="color:#f59e0b">Сьогодні</span>`;
+  if(diff<1)return`<span style="color:#f59e0b">${t('today')}</span>`;
   return dt.toLocaleDateString('uk');
 }
 
@@ -879,7 +1048,7 @@ function renderTable(){
   const slice=fl.slice(start,start+perPage);
   const body=document.getElementById('leadsBody');
   const empty=document.getElementById('emptyState');
-  if(!fl.length){body.innerHTML='';empty.style.display='block';document.getElementById('paginationBar').style.display='none';return;}
+  if(!fl.length){body.innerHTML='';empty.style.display='block';empty.querySelector('.empty-text').textContent=t('emptyText');document.getElementById('paginationBar').style.display='none';return;}
   empty.style.display='none';
   document.getElementById('paginationBar').style.display='flex';
   document.getElementById('pagInfo').textContent=`${start+1}–${Math.min(start+perPage,total)} з ${total}`;
@@ -953,13 +1122,13 @@ function updateBulkBar(){
   const n=document.querySelectorAll('.lead-cb:checked').length;
   const bar=document.getElementById('bulkBar');
   bar.classList.toggle('show',n>0);
-  document.getElementById('bulkCount').textContent=n+' вибрано';
+  document.getElementById('bulkCount').textContent=n+' '+t('parseSelected');
 }
 async function deleteSelected(){
   const ids=[...document.querySelectorAll('.lead-cb:checked')].map(c=>parseInt(c.dataset.id));
-  if(!ids.length||!confirm(`Видалити ${ids.length} лідів?`))return;
+  if(!ids.length||!confirm(`${ids.length} ${t('confirmDeleteMulti')}`))return;
   await Promise.all(ids.map(id=>api('leads.delete',{id})));
-  toast('Видалено','success');
+  toast(t('toastDeleted'),'success');
   await loadLeads();
   await loadStats();
 }
@@ -1031,16 +1200,16 @@ function setLeadTab(tab,el){
 }
 
 function renderTouches(touches){
-  if(!touches.length){document.getElementById('touchesList').innerHTML='<div style="color:var(--muted);font-size:12px">Касань ще немає</div>';return;}
-  const typeLabel={call:'Дзвінок',email:'Email',whatsapp:'WhatsApp',visit:'Зустріч',note:'Нотатка'};
-  document.getElementById('touchesList').innerHTML=touches.map(t=>`
+  if(!touches.length){document.getElementById('touchesList').innerHTML=`<div style="color:var(--muted);font-size:12px">${t('noTouches')}</div>`;return;}
+  const typeLabel={call:()=>t('touchTypeCall'),email:()=>t('touchTypeEmail'),whatsapp:()=>t('touchTypeWA'),visit:()=>t('touchTypeVisit'),note:()=>t('touchTypeNote')};
+  document.getElementById('touchesList').innerHTML=touches.map((t2)=>`
     <div class="touch-item">
       <div class="touch-meta">
-        <span class="touch-type">${typeLabel[t.type]||t.type}</span>
-        <span>${new Date(t.created_at).toLocaleString('uk')}</span>
-        ${t.result?`<span style="color:var(--tag-green)">→ ${t.result}</span>`:''}
+        <span class="touch-type">${(typeLabel[t2.type]||typeLabel.note)()}</span>
+        <span>${new Date(t2.created_at).toLocaleString('uk')}</span>
+        ${t2.result?`<span style="color:var(--tag-green)">→ ${t2.result}</span>`:''}
       </div>
-      <div class="touch-content">${t.content||''}</div>
+      <div class="touch-content">${t2.content||''}</div>
     </div>`).join('');
 }
 
@@ -1062,7 +1231,7 @@ async function addTouch(){
   document.getElementById('touch-new-status').value='';
   const r=await api('touches.list',{lead_id:editLeadId});
   renderTouches(r.touches||[]);
-  toast('Касання додано','success');
+  toast(t('toastTouchAdded'),'success');
   await loadLeads();
   await loadStats();
 }
@@ -1085,7 +1254,7 @@ async function saveLead(){
     facebook:document.getElementById('lf-facebook').value.trim()||null,
     telegram:document.getElementById('lf-telegram').value.trim()||null
   };
-  if(!data.name){toast('Введіть назву','error');return;}
+  if(!data.name){toast(t('enterName'),'error');return;}
   let r;
   if(editLeadId){
     data.id=editLeadId;
@@ -1094,12 +1263,12 @@ async function saveLead(){
     r=await api('leads.save',{leads:[data]});
   }
   if(r.success){
-    toast('Збережено','success');
+    toast(t('toastSaved'),'success');
     closeLeadModal();
     await loadLeads();
     await loadStats();
   } else {
-    toast('Помилка','error');
+    toast(t('toastError'),'error');
   }
 }
 
@@ -1110,9 +1279,9 @@ function closeLeadModal(){
 }
 
 async function deleteLead(id){
-  if(!confirm('Видалити цей лід?'))return;
+  if(!confirm(t('confirmDelete')))return;
   await api('leads.delete',{id});
-  toast('Видалено','success');
+  toast(t('toastDeleted'),'success');
   await loadLeads();
   await loadStats();
 }
@@ -1131,9 +1300,9 @@ async function enrichLead(){
     document.getElementById('lf-instagram').value=r.lead.instagram||document.getElementById('lf-instagram').value;
     document.getElementById('lf-address').value=r.lead.address||document.getElementById('lf-address').value;
     document.getElementById('enrichDeepBtn').disabled=!r.lead.website;
-    toast('Дані з Google оновлено','success');
+    toast(t('toastEnrichOk'),'success');
   } else {
-    toast('Не вдалось знайти','error');
+    toast(t('toastEnrichFail'),'error');
   }
 }
 
@@ -1148,9 +1317,9 @@ async function enrichDeepLead(){
     if(r.lead.description)document.getElementById('lf-description').value=r.lead.description;
     if(r.lead.instagram)document.getElementById('lf-instagram').value=r.lead.instagram;
     if(r.lead.facebook)document.getElementById('lf-facebook').value=r.lead.facebook;
-    toast('GPT дані оновлено','success');
+    toast(t('toastGptOk'),'success');
   } else {
-    toast('Помилка GPT','error');
+    toast(t('toastGptFail'),'error');
   }
 }
 
@@ -1176,7 +1345,7 @@ async function saveFolder(){
     r=await api('folders.create',{name,color});
   }
   if(r.success){
-    toast('Збережено','success');
+    toast(t('toastSaved'),'success');
     closeFolderModal();
     await loadFolders();
   }
@@ -1189,10 +1358,10 @@ function closeFolderModal(){
 }
 
 async function deleteFolder(id){
-  if(!confirm('Видалити папку?'))return;
+  if(!confirm(t('confirmDeleteFolder')))return;
   const r=await api('folders.delete',{id});
-  if(r.deleted){toast('Видалено','success');await loadFolders();}
-  else toast('Системну папку не можна видалити','error');
+  if(r.deleted){toast(t('toastDeleted'),'success');await loadFolders();}
+  else toast(t('toastError'),'error');
 }
 
 // PARSE PANEL
@@ -1268,7 +1437,7 @@ async function geocodeCity(){
     document.getElementById('mapCoords').textContent=`${parseLat.toFixed(5)}, ${parseLng.toFixed(5)}`;
     document.getElementById('runParseBtn').disabled=false;
   } else {
-    toast('Місто не знайдено','error');
+    toast(t('toastCityNotFound'),'error');
   }
 }
 
@@ -1286,7 +1455,7 @@ async function geocodeCitySearch(){
     searchMapCircle=L.circle([searchLat,searchLng],{radius,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(searchMap);
     document.getElementById('runSearchBtn').disabled=false;
   } else {
-    toast('Місто не знайдено','error');
+    toast(t('toastCityNotFound'),'error');
   }
 }
 
@@ -1304,14 +1473,14 @@ async function runParse(){
     parseData=r.places||[];
     showParseResults();
   } else {
-    toast('Помилка парсингу','error');
+    toast(t('toastParseError'),'error');
   }
 }
 
 async function runSearch(){
   if(!searchLat||!searchLng)return;
   const query=document.getElementById('searchQuery').value.trim();
-  if(!query){toast('Введіть запит','error');return;}
+  if(!query){toast(t('enterQuery'),'error');return;}
   const btn=document.getElementById('runSearchBtn');
   btn.disabled=true;btn.textContent='Пошук...';
   const r=await api('parse.search',{
@@ -1325,14 +1494,14 @@ async function runSearch(){
     parseData=r.places||[];
     showParseResults();
   } else {
-    toast('Помилка пошуку','error');
+    toast(t('toastParseError'),'error');
   }
 }
 
 function showParseResults(){
   const res=document.getElementById('parseResults');
   const list=document.getElementById('parseList');
-  document.getElementById('parseResultTitle').textContent=`Знайдено: ${parseData.length}`;
+  document.getElementById('parseResultTitle').textContent=`${t('parseFoundN')}${parseData.length}`;
   list.innerHTML=parseData.map((p,i)=>`
     <div class="parse-item">
       <input type="checkbox" checked data-idx="${i}" onchange="updateParseSelCount()" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer">
@@ -1351,7 +1520,7 @@ function selectAllParseItems(checked){
 
 function updateParseSelCount(){
   const n=document.querySelectorAll('#parseList input[type=checkbox]:checked').length;
-  document.getElementById('parseSelCount').textContent=n+' вибрано';
+  document.getElementById('parseSelCount').textContent=n+' '+t('parseSelected');
 }
 
 async function saveParseSelected(){
@@ -1374,7 +1543,7 @@ async function saveParseSelected(){
   if(!selected.length)return;
   const r=await api('leads.save',{leads:selected});
   if(r.success){
-    toast(`Збережено: ${r.count}/${selected.length}`,'success');
+    toast(`${t('saved')}${r.count}/${selected.length}`,'success');
     document.getElementById('parseResults').style.display='none';
     parseData=[];
     await loadLeads();
