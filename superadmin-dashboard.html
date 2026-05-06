@@ -160,80 +160,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 @media(max-width:480px){
   .main{padding:12px;padding-bottom:72px}
 }
-/* CRM */
-.crm-layout{display:flex;gap:0;min-height:100%}
-.crm-folders-panel{width:196px;flex-shrink:0;border-right:1px solid var(--border);padding:10px 8px;display:flex;flex-direction:column;gap:2px}
-.crm-folder-btn{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;text-align:left;width:100%;position:relative}
-.crm-folder-btn:hover{background:var(--bg3);color:var(--text)}
-.crm-folder-btn.active{background:var(--bg3);color:var(--black)}
-.crm-folder-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.crm-folder-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.crm-folder-count{font-size:10px;color:var(--muted2);flex-shrink:0;min-width:14px;text-align:right}
-.crm-folder-acts{display:flex;gap:2px;flex-shrink:0;opacity:0;transition:opacity .12s}
-.crm-folder-btn:hover .crm-folder-acts{opacity:1}
-.crm-folder-act{width:18px;height:18px;border:none;background:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;border-radius:4px;padding:0;font-family:inherit}
-.crm-folder-act:hover{color:var(--text);background:var(--bg3)}
-.crm-folders-sep{height:1px;background:var(--border);margin:6px 2px}
-.crm-main{flex:1;min-width:0;padding:20px;overflow-y:auto}
-.crm-filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
-.crm-filter-input,.crm-filter-select{padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;transition:border-color .15s;cursor:pointer}
-.crm-filter-input:focus{border-color:var(--border2)}
-.crm-parse-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);border-radius:7px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s;margin-left:auto}
-.crm-parse-btn:hover{border-color:var(--border2);color:var(--text)}
-.crm-stats{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-.crm-stat{background:var(--tbl-bg);border:1px solid var(--border);border-radius:8px;padding:10px 16px}
-.crm-stat-val{font-size:20px;font-weight:600;color:var(--black)}
-.crm-stat-lbl{font-size:11px;color:var(--muted);margin-top:1px}
-.crm-row-overdue td{background:rgba(192,57,43,.05)!important}
-.crm-row-today td{background:rgba(245,166,35,.05)!important}
-.crm-lead-name{background:none;border:none;cursor:pointer;color:var(--black);font-weight:500;font-size:12px;padding:0;text-align:left;font-family:inherit}
-.crm-lead-name:hover{text-decoration:underline}
-.crm-folder-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:5px;font-size:10px;font-weight:500}
-.crm-parse-panel{background:var(--tbl-bg);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;display:none}
-.crm-parse-panel.open{display:block}
-.crm-parse-grid{display:grid;grid-template-columns:1fr 1fr 100px;gap:10px;margin-bottom:10px}
-.crm-type-checks{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.crm-type-check{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:12px;color:var(--muted);transition:all .12s;user-select:none;font-family:inherit;background:transparent}
-.crm-type-check.sel{border-color:var(--border2);color:var(--text);background:var(--bg3)}
-.crm-parse-result-list{max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;margin-bottom:10px}
-.crm-parse-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px}
-.crm-parse-item:last-child{border-bottom:none}
-.crm-parse-item:hover{background:var(--bg3)}
-.crm-parse-item input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:var(--black);flex-shrink:0}
-.crm-parse-item-name{font-weight:500;color:var(--black);flex:1}
-.crm-parse-item-type{color:var(--muted);font-size:11px;margin-right:4px}
-.crm-parse-save-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.lead-section-title{font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.07em;margin:16px 0 8px;padding-top:4px;border-top:1px solid var(--border)}
-.lead-section-title:first-child{margin-top:0;border-top:none;padding-top:0}
-.lead-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.lead-status-flow{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
-.lead-status-btn{padding:5px 11px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .12s}
-.lead-status-btn.cur{background:var(--black);color:var(--bg);border-color:var(--black)}
-.lead-status-btn:hover:not(.cur){border-color:var(--border2);color:var(--text)}
-.touches-list{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto;margin-bottom:10px}
-.touch-item{padding:10px 12px;background:var(--bg3);border-radius:7px;border:1px solid var(--border)}
-.touch-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.touch-type-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;background:var(--bg);border:1px solid var(--border);color:var(--muted)}
-.touch-date{font-size:11px;color:var(--muted2);margin-left:auto}
-.touch-text{font-size:12px;color:var(--text);line-height:1.5}
-.touch-result{font-size:11px;color:var(--muted);margin-top:3px}
-.enrich-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:11px;color:var(--muted);background:var(--bg3);font-family:inherit;cursor:pointer;transition:all .12s}
-.enrich-btn:hover{border-color:var(--border2);color:var(--text)}
-.enrich-btn:disabled{opacity:.5;cursor:not-allowed}
-.color-picker-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.color-opt{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .12s;flex-shrink:0}
-.color-opt.sel{border-color:var(--black);transform:scale(1.2)}
-@media(max-width:768px){.crm-folders-panel{display:none}.crm-folders-panel.mob-open{display:flex;position:fixed;left:0;top:48px;bottom:56px;z-index:150;box-shadow:4px 0 16px rgba(0,0,0,.15);overflow-y:auto;background:var(--bg)}.crm-mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:149}.crm-mob-overlay.active{display:block}.crm-parse-grid{grid-template-columns:1fr 1fr}.lead-modal-grid{grid-template-columns:1fr}}
 /* MAP */
-#crmParseMap{height:280px;border-radius:8px;overflow:hidden;background:var(--bg3);margin-bottom:10px}
 .leaflet-container{font-family:var(--sans)!important}
 [data-theme="dark"] .leaflet-tile{filter:brightness(.7) saturate(.6) hue-rotate(200deg)}
-.crm-map-coords{font-family:monospace;font-size:11px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:5px 10px;margin-bottom:10px}
-.crm-radius-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.crm-radius-slider{flex:1;accent-color:var(--black);cursor:pointer}
-.crm-radius-val{font-size:12px;font-weight:500;color:var(--black);min-width:48px;text-align:right}
-.crm-city-search{display:flex;gap:6px;margin-bottom:10px}
-.crm-city-search input{flex:1}
 </style>
 </head>
 <body>
@@ -293,11 +222,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5v13M1.5 8h13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M5 4.5c0 0 1 1.5 3 1.5s3-1.5 3-1.5M5 11.5c0 0 1-1.5 3-1.5s3 1.5 3 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span id="t-s-providers">Платіжні системи</span>
     </button>
-    <div class="sidebar-section" id="t-s-crm-label">CRM</div>
-    <button class="sitem" id="sitem-crm" onclick="show('crm',this)">
+    <div class="sidebar-section">CRM</div>
+    <a href="/superadmin-crm.html" class="sitem" style="text-decoration:none">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 13c0-2.76 1.79-5 4-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="11" cy="9" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M11 7.5v3M9.5 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      <span id="t-s-crm">Ліди</span>
-    </button>
+      <span>Ліди</span>
+    </a>
     <div class="sidebar-section" id="t-s-comm-label">Комунікація</div>
     <button class="sitem" id="sitem-messages" onclick="show('messages',this)">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1.5 2h13v9H9l-2.5 3L4 11H1.5V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="5.5" cy="7" r=".85" fill="currentColor"/><circle cx="8" cy="7" r=".85" fill="currentColor"/><circle cx="10.5" cy="7" r=".85" fill="currentColor"/></svg>
@@ -391,175 +320,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       </div>
     </div>
 
-    <!-- CRM VIEW -->
-    <div class="view" id="v-crm" style="padding:0;height:100%">
-      <div class="crm-layout">
-
-        <!-- Folders panel -->
-        <div class="crm-folders-panel" id="crmFoldersPanel">
-          <button class="crm-folder-btn active" id="crm-folder-all" onclick="crmSetFolder(null,this);crmCloseMobFolders()">
-            <div class="crm-folder-dot" style="background:var(--muted2)"></div>
-            <span class="crm-folder-name" id="t-crm-all">Всі ліди</span>
-            <span class="crm-folder-count" id="crm-count-all">0</span>
-          </button>
-          <div id="crmFoldersList"></div>
-          <div class="crm-folders-sep"></div>
-          <button class="crm-folder-btn" onclick="openFolderModal(null)" style="color:var(--muted2);font-size:11px">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-            <span id="t-crm-add-folder">Нова папка</span>
-          </button>
-        </div>
-
-        <!-- Mobile overlay -->
-        <div class="crm-mob-overlay" id="crmMobOverlay" onclick="crmCloseMobFolders()"></div>
-
-        <!-- Main area -->
-        <div class="crm-main">
-
-          <!-- Parse panel -->
-          <div class="crm-parse-panel" id="crmParsePanel">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-              <div style="font-size:13px;font-weight:600;color:var(--black)" id="t-crm-parse-title">Парсинг об'єктів</div>
-              <button class="act-btn" onclick="closeParsPanel()">✕</button>
-            </div>
-
-            <!-- Пошук міста -->
-            <div class="form-label" style="margin-bottom:5px" id="t-crm-city">Місто</div>
-            <div class="crm-city-search">
-              <input class="form-input" id="crmParseCity" placeholder="Полтава, Харків..." style="font-size:12px" onkeydown="if(event.key==='Enter')crmSearchCity()">
-              <button class="btn-ghost" onclick="crmSearchCity()" style="padding:6px 12px;font-size:12px" id="t-crm-city-find">Знайти</button>
-            </div>
-
-            <!-- Карта -->
-            <div id="crmParseMap"></div>
-            <div class="crm-map-coords" id="crmMapCoords">Клікніть на карту щоб вибрати точку</div>
-
-            <!-- Радіус -->
-            <div class="form-label" style="margin-bottom:5px" id="t-crm-radius">Радіус пошуку</div>
-            <div class="crm-radius-row">
-              <input type="range" class="crm-radius-slider" id="crmParseRadius" min="500" max="10000" step="500" value="3000" oninput="crmOnRadiusChange()">
-              <span class="crm-radius-val"><span id="crmRadiusVal">3</span> км</span>
-            </div>
-
-            <!-- Типи -->
-            <div class="form-label" style="margin-bottom:6px" id="t-crm-types">Типи об'єктів</div>
-            <div class="crm-type-checks" id="crmTypeChecks">
-              <button class="crm-type-check sel" data-type="sport_club" onclick="crmToggleType(this)" id="t-type-sport_club">Спортклуб</button>
-              <button class="crm-type-check sel" data-type="dance" onclick="crmToggleType(this)" id="t-type-dance">Танці</button>
-              <button class="crm-type-check sel" data-type="fitness" onclick="crmToggleType(this)" id="t-type-fitness">Фітнес</button>
-              <button class="crm-type-check sel" data-type="martial_arts" onclick="crmToggleType(this)" id="t-type-martial_arts">Єдиноборства</button>
-              <button class="crm-type-check sel" data-type="swimming" onclick="crmToggleType(this)" id="t-type-swimming">Плавання</button>
-              <button class="crm-type-check sel" data-type="gymnastics" onclick="crmToggleType(this)" id="t-type-gymnastics">Гімнастика</button>
-            </div>
-
-            <button class="btn-primary" onclick="runParse()" id="crmRunParseBtn" disabled>
-              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-              <span id="t-crm-run-parse">Запустити парсинг</span>
-            </button>
-
-            <!-- Results -->
-            <div id="crmParseResults" style="display:none;margin-top:16px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-                <div style="font-size:12px;font-weight:500;color:var(--black)" id="crmParseResultTitle"></div>
-                <label style="font-size:12px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px">
-                  <input type="checkbox" id="crmSelectAll" onchange="crmSelectAllParse(this.checked)" style="width:13px;height:13px;accent-color:var(--black)">
-                  <span id="t-crm-select-all">Вибрати всі</span>
-                </label>
-              </div>
-              <div class="crm-parse-result-list" id="crmParseList"></div>
-              <div class="crm-parse-save-bar">
-                <button class="btn-primary" onclick="saveParseSelected()" id="crmSaveSelectedBtn">
-                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  <span id="t-crm-save-selected">Додати вибрані</span>
-                </button>
-                <span style="font-size:12px;color:var(--muted)" id="crmParseSelCount"></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Filters row -->
-          <div class="crm-filters">
-            <button class="crm-parse-btn" onclick="crmToggleMobFolders()" id="crmMobFoldersBtn" style="display:none">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 3.5C1 2.67 1.67 2 2.5 2H5l1 1.5h3.5C10.33 3.5 11 4.17 11 5v3.5C11 9.33 10.33 10 9.5 10h-7C1.67 10 1 9.33 1 8.5v-5z" stroke="currentColor" stroke-width="1.1"/></svg>
-              <span id="t-crm-folders-btn">Папки</span>
-            </button>
-            <input class="crm-filter-input" id="crmSearch" placeholder="Пошук..." style="width:160px" oninput="crmRenderTable()">
-            <input class="crm-filter-input" id="crmFilterCity" placeholder="Місто..." style="width:130px" oninput="crmRenderTable()">
-            <select class="crm-filter-select" id="crmFilterType" onchange="crmRenderTable()">
-              <option value="">— Тип —</option>
-              <option value="sport_club" id="t-ftype-sport_club">Спортклуб</option>
-              <option value="dance" id="t-ftype-dance">Танці</option>
-              <option value="fitness" id="t-ftype-fitness">Фітнес</option>
-              <option value="martial_arts" id="t-ftype-martial_arts">Єдиноборства</option>
-              <option value="swimming" id="t-ftype-swimming">Плавання</option>
-              <option value="gymnastics" id="t-ftype-gymnastics">Гімнастика</option>
-            </select>
-            <select class="crm-filter-select" id="crmFilterStatus" onchange="crmRenderTable()">
-              <option value="" id="t-crm-f-all-status">Всі статуси</option>
-              <option value="new">New</option>
-              <option value="contacted">Contacted</option>
-              <option value="presentation">Presentation</option>
-              <option value="trial">Trial</option>
-              <option value="converted">Converted</option>
-              <option value="lost">Lost</option>
-            </select>
-            <select class="crm-filter-select" id="crmFilterPriority" onchange="crmRenderTable()">
-              <option value="" id="t-crm-f-all-priority">Всі пріоритети</option>
-              <option value="high" id="t-crm-f-high">Високий</option>
-              <option value="medium" id="t-crm-f-medium">Середній</option>
-              <option value="low" id="t-crm-f-low">Низький</option>
-            </select>
-            <button class="crm-parse-btn" onclick="toggleParsePanel()">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-              <span id="t-crm-parse-btn">Парсинг</span>
-            </button>
-            <button class="crm-parse-btn" onclick="openLeadModal(null)">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-              <span id="t-crm-add-lead-btn">Додати</span>
-            </button>
-          </div>
-
-          <!-- Stats -->
-          <div class="crm-stats" id="crmStats"></div>
-
-          <!-- Table -->
-          <div class="tbl-wrap">
-            <table class="tbl">
-              <thead><tr>
-                <th style="width:32px"><input type="checkbox" id="crmCheckAll" onchange="crmToggleAllChecks(this.checked)" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer"></th>
-                <th id="t-crm-th-name">Назва</th>
-                <th id="t-crm-th-folder">Папка</th>
-                <th id="t-crm-th-city">Місто</th>
-                <th id="t-crm-th-status">Статус</th>
-                <th id="t-crm-th-priority">Пріоритет</th>
-                <th id="t-crm-th-next">Наст. контакт</th>
-                <th id="t-crm-th-touches">Касань</th>
-                <th></th>
-              </tr></thead>
-              <tbody id="crmTbody"></tbody>
-            </table>
-          </div>
-          <div id="crmBulkBar" style="display:none;padding:10px 0;display:none;align-items:center;gap:10px">
-            <span id="crmBulkCount" style="font-size:12px;color:var(--muted)"></span>
-            <button class="btn-danger" onclick="crmDeleteSelected()" id="t-crm-bulk-delete" style="font-size:12px;padding:5px 12px">Видалити вибрані</button>
-          </div>
-          <div id="crmPagination" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;font-size:12px;color:var(--muted)">
-            <span id="crmPagInfo"></span>
-            <div style="display:flex;gap:4px">
-              <button class="btn-ghost" id="crmPagPrev" onclick="crmChangePage(-1)" style="padding:4px 10px;font-size:12px">‹</button>
-              <button class="btn-ghost" id="crmPagNext" onclick="crmChangePage(1)" style="padding:4px 10px;font-size:12px">›</button>
-            </div>
-          </div>
-          <div id="crmEmpty" class="empty-state" style="display:none">
-            <div class="empty-icon">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="var(--muted2)" stroke-width="1.5"/><path d="M10 16h12M16 10v12" stroke="var(--muted2)" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </div>
-            <div class="empty-text" id="t-crm-empty">Лідів ще немає. Запустіть парсинг!</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- MESSAGES VIEW -->
     <div class="view" id="v-messages">
       <div class="ph">
@@ -591,10 +351,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <button class="mob-nav-btn" id="mob-providers" onclick="show('providers',this)">
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5v13M1.5 8h13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span id="t-mob-providers">Платіж</span>
-    </button>
-    <button class="mob-nav-btn" id="mob-crm" onclick="show('crm',this)">
-      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 13c0-2.76 1.79-5 4-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="11" cy="9" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M11 7.5v3M9.5 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      <span id="t-mob-crm">Ліди</span>
     </button>
     <button class="mob-nav-btn" id="mob-messages" onclick="show('messages',this)">
       <div class="mob-nav-dot" id="mobMsgDot"></div>
@@ -820,22 +576,12 @@ const i18n={
     msgLabel:'Повідомлення *',msgCancel:'Скасувати',msgSend:'Надіслати',
     infoClose:'Закрити',infoEdit:'✏️ Редагувати',
     mobDirectors:'Директори',mobRequests:'Заявки',mobPlans:'Тарифи',mobProviders:'Платіж',mobMessages:'Повідом.',mobCrm:'Ліди',
-    sCrmLabel:'CRM',sCrm:'Ліди',
-    crmAll:'Всі ліди',crmAddFolder:'Нова папка',crmParseTitle:"Парсинг об'єктів",crmCity:'Місто',crmCityFind:'Знайти',crmRadius:'Радіус пошуку',crmTypes:'Типи об\'єктів',crmSaveTo:'Зберегти в папку',crmRunParse:'Запустити парсинг',crmSelectAll:'Вибрати всі',crmSaveSelected:'Додати вибрані',crmParseBtn:'Парсинг',crmEmpty:'Лідів ще немає. Запустіть парсинг!',
-    crmTypeSportClub:'Спортклуб',crmTypeDance:'Танці',crmTypeFitness:'Фітнес',crmTypeMartialArts:'Єдиноборства',crmTypeSwimming:'Плавання',crmTypeGymnastics:'Гімнастика',
-    crmSelected:'вибрано',crmBulkDelete:'Видалити вибрані',alertConfirmDeleteMultiple:'лідів буде видалено. Продовжити?',
-    crmFoldersMobBtn:'Папки',
-    crmThName:'Назва',crmThFolder:'Папка',crmThCity:'Місто',crmThStatus:'Статус',crmThPriority:'Пріоритет',crmThNext:'Наст. контакт',crmThTouches:'Касань',
-    crmFAllStatus:'Всі статуси',crmFHigh:'Високий',crmFMedium:'Середній',crmFLow:'Низький',crmFAllPriority:'Всі пріоритети',
     leadSecInfo:'Основна інформація',leadCity:'Місто',leadFolder:'Папка',leadPriorityLbl:'Пріоритет',leadNextLbl:'Наст. контакт',leadDescLbl:'Опис',
-    leadSecContacts:'Контакти',leadEnrich:'Google',leadEnrichDeep:'Сайт',leadSecStatus:'Воронка продажів',leadSecTouches:'Історія касань',crmAddLead:'Додати',
     leadNoTouches:'Касань ще немає',touchMsg:'Повідомлення',touchCall:'Дзвінок',touchEmail:'Email',touchPres:'Презентація',touchTrial:'Тест запущено',touchNote:'Заметка',
     touchResNone:'Результат',touchResAns:'Відповів',touchResNo:'Без відповіді',touchResInt:'Зацікавлений',touchResDec:'Відмовився',
     touchAddBtn:'+ Додати касання',leadDelete:'Видалити',leadCancel:'Скасувати',leadSave:'Зберегти',
     leadPriHigh:'Високий',leadPriMed:'Середній',leadPriLow:'Низький',
     folderNameLbl:'Назва *',folderColorLbl:'Колір',folderCancel:'Скасувати',folderSave:'Зберегти',
-    crmStatTotal:'Всього',crmStatNew:'Нові',crmStatTrial:'Триал',crmStatConverted:'Конверсія',
-    alertLeadSaved:'Збережено!',alertLeadDeleted:'Лід видалено',alertFolderSaved:'Папку збережено!',alertFolderDeleted:'Папку видалено',alertConfirmDelete:'Видалити лід?',alertConfirmFolder:'Видалити папку? Ліди залишаться.',alertTouchAdded:'Касання додано!',alertParsing:'Парсинг...',alertParseErr:'Помилка парсингу',alertSelectTypes:'Оберіть хоча б один тип',alertEnterCity:'Введіть місто',
     statusActive:'Активний',statusInactive:'Деактивовано',statusTrial:'Пробний',statusGrace:'Пільговий',statusBlocked:'Заблокований',
     tagActive:'Активний',tagInactive:'Неактивний',
     approve:'Прийняти',reject:'Відхилити',
@@ -879,22 +625,12 @@ const i18n={
     msgLabel:'Сообщение *',msgCancel:'Отмена',msgSend:'Отправить',
     infoClose:'Закрыть',infoEdit:'✏️ Редактировать',
     mobDirectors:'Директора',mobRequests:'Заявки',mobPlans:'Тарифы',mobProviders:'Платёж',mobMessages:'Сообщ.',mobCrm:'Лиды',
-    sCrmLabel:'CRM',sCrm:'Лиды',
-    crmAll:'Все лиды',crmAddFolder:'Новая папка',crmParseTitle:'Парсинг объектов',crmCity:'Город',crmCityFind:'Найти',crmRadius:'Радиус поиска',crmTypes:'Типы объектов',crmSaveTo:'Сохранить в папку',crmRunParse:'Запустить парсинг',crmSelectAll:'Выбрать все',crmSaveSelected:'Добавить выбранные',crmParseBtn:'Парсинг',crmEmpty:'Лидов ещё нет. Запустите парсинг!',
-    crmTypeSportClub:'Спортклуб',crmTypeDance:'Танці',crmTypeFitness:'Фитнес',crmTypeMartialArts:'Единоборства',crmTypeSwimming:'Плавание',crmTypeGymnastics:'Гимнастика',
-    crmSelected:'выбрано',crmBulkDelete:'Удалить выбранные',alertConfirmDeleteMultiple:'лидов будет удалено. Продолжить?',
-    crmFoldersMobBtn:'Папки',
-    crmThName:'Название',crmThFolder:'Папка',crmThCity:'Город',crmThStatus:'Статус',crmThPriority:'Приоритет',crmThNext:'След. контакт',crmThTouches:'Касаний',
-    crmFAllStatus:'Все статусы',crmFHigh:'Высокий',crmFMedium:'Средний',crmFLow:'Низкий',crmFAllPriority:'Все приоритеты',
     leadSecInfo:'Основная информация',leadCity:'Город',leadFolder:'Папка',leadPriorityLbl:'Приоритет',leadNextLbl:'След. контакт',leadDescLbl:'Описание',
-    leadSecContacts:'Контакты',leadEnrich:'Google',leadEnrichDeep:'Сайт',leadSecStatus:'Воронка продаж',leadSecTouches:'История касаний',crmAddLead:'Добавить',
     leadNoTouches:'Касаний ещё нет',touchMsg:'Сообщение',touchCall:'Звонок',touchEmail:'Email',touchPres:'Презентация',touchTrial:'Тест запущен',touchNote:'Заметка',
     touchResNone:'Результат',touchResAns:'Ответил',touchResNo:'Без ответа',touchResInt:'Заинтересован',touchResDec:'Отказался',
     touchAddBtn:'+ Добавить касание',leadDelete:'Удалить',leadCancel:'Отмена',leadSave:'Сохранить',
     leadPriHigh:'Высокий',leadPriMed:'Средний',leadPriLow:'Низкий',
     folderNameLbl:'Название *',folderColorLbl:'Цвет',folderCancel:'Отмена',folderSave:'Сохранить',
-    crmStatTotal:'Всего',crmStatNew:'Новые',crmStatTrial:'Триал',crmStatConverted:'Конверсия',
-    alertLeadSaved:'Сохранено!',alertLeadDeleted:'Лид удалён',alertFolderSaved:'Папка сохранена!',alertFolderDeleted:'Папка удалена',alertConfirmDelete:'Удалить лид?',alertConfirmFolder:'Удалить папку? Лиды останутся.',alertTouchAdded:'Касание добавлено!',alertParsing:'Парсинг...',alertParseErr:'Ошибка парсинга',alertSelectTypes:'Выберите хотя бы один тип',alertEnterCity:'Введите город',
     statusActive:'Активен',statusInactive:'Деактивирован',statusTrial:'Пробный',statusGrace:'Льготный',statusBlocked:'Заблокирован',
     tagActive:'Активен',tagInactive:'Неактивен',
     approve:'Принять',reject:'Отклонить',
@@ -939,21 +675,12 @@ const i18n={
     infoClose:'Close',infoEdit:'✏️ Edit',
     mobDirectors:'Directors',mobRequests:'Requests',mobPlans:'Plans',mobProviders:'Payment',mobMessages:'Messages',mobCrm:'Leads',
     sCrmLabel:'CRM',sCrm:'Leads',
-    crmAll:'All leads',crmAddFolder:'New folder',crmParseTitle:'Parse objects',crmCity:'City',crmCityFind:'Find',crmRadius:'Search radius',crmTypes:'Object types',crmSaveTo:'Save to folder',crmRunParse:'Run parsing',crmSelectAll:'Select all',crmSaveSelected:'Add selected',crmParseBtn:'Parse',crmEmpty:'No leads yet. Run parsing!',
-    crmTypeSportClub:'Sports club',crmTypeDance:'Dance',crmTypeFitness:'Fitness',crmTypeMartialArts:'Martial arts',crmTypeSwimming:'Swimming',crmTypeGymnastics:'Gymnastics',
-    crmSelected:'selected',crmBulkDelete:'Delete selected',alertConfirmDeleteMultiple:'leads will be deleted. Continue?',
-    crmFoldersMobBtn:'Folders',
-    crmThName:'Name',crmThFolder:'Folder',crmThCity:'City',crmThStatus:'Status',crmThPriority:'Priority',crmThNext:'Next contact',crmThTouches:'Touches',
-    crmFAllStatus:'All statuses',crmFHigh:'High',crmFMedium:'Medium',crmFLow:'Low',crmFAllPriority:'All priorities',
     leadSecInfo:'Basic info',leadCity:'City',leadFolder:'Folder',leadPriorityLbl:'Priority',leadNextLbl:'Next contact',leadDescLbl:'Description',
-    leadSecContacts:'Contacts',leadEnrich:'Google',leadEnrichDeep:'Website',leadSecStatus:'Sales funnel',leadSecTouches:'Touch history',crmAddLead:'Add',
     leadNoTouches:'No touches yet',touchMsg:'Message',touchCall:'Call',touchEmail:'Email',touchPres:'Presentation',touchTrial:'Trial started',touchNote:'Note',
     touchResNone:'Result',touchResAns:'Answered',touchResNo:'No response',touchResInt:'Interested',touchResDec:'Declined',
     touchAddBtn:'+ Add touch',leadDelete:'Delete',leadCancel:'Cancel',leadSave:'Save',
     leadPriHigh:'High',leadPriMed:'Medium',leadPriLow:'Low',
     folderNameLbl:'Name *',folderColorLbl:'Color',folderCancel:'Cancel',folderSave:'Save',
-    crmStatTotal:'Total',crmStatNew:'New',crmStatTrial:'Trial',crmStatConverted:'Converted',
-    alertLeadSaved:'Saved!',alertLeadDeleted:'Lead deleted',alertFolderSaved:'Folder saved!',alertFolderDeleted:'Folder deleted',alertConfirmDelete:'Delete lead?',alertConfirmFolder:'Delete folder? Leads will remain.',alertTouchAdded:'Touch added!',alertParsing:'Parsing...',alertParseErr:'Parse error',alertSelectTypes:'Select at least one type',alertEnterCity:'Enter city',
     statusActive:'Active',statusInactive:'Deactivated',statusTrial:'Trial',statusGrace:'Grace',statusBlocked:'Blocked',
     tagActive:'Active',tagInactive:'Inactive',
     approve:'Approve',reject:'Reject',
@@ -1007,26 +734,10 @@ function applyLang(){
     't-msg-label':'msgLabel','t-msg-cancel':'msgCancel','t-msg-send':'msgSend',
     't-info-close':'infoClose','t-info-edit':'infoEdit',
     't-mob-directors':'mobDirectors','t-mob-requests':'mobRequests','t-mob-plans':'mobPlans',
-    't-mob-providers':'mobProviders','t-mob-messages':'mobMessages','t-mob-crm':'mobCrm',
-    't-s-crm-label':'sCrmLabel','t-s-crm':'sCrm',
-    't-crm-all':'crmAll','t-crm-add-folder':'crmAddFolder','t-crm-parse-title':'crmParseTitle',
-    't-crm-city':'crmCity','t-crm-city-find':'crmCityFind','t-crm-radius':'crmRadius',
-    't-type-sport_club':'crmTypeSportClub','t-type-dance':'crmTypeDance','t-type-fitness':'crmTypeFitness',
-    't-type-martial_arts':'crmTypeMartialArts','t-type-swimming':'crmTypeSwimming','t-type-gymnastics':'crmTypeGymnastics',
-    't-crm-bulk-delete':'crmBulkDelete',
-    't-crm-folders-btn':'crmFoldersMobBtn',
-    't-ftype-sport_club':'crmTypeSportClub','t-ftype-dance':'crmTypeDance','t-ftype-fitness':'crmTypeFitness',
-    't-ftype-martial_arts':'crmTypeMartialArts','t-ftype-swimming':'crmTypeSwimming','t-ftype-gymnastics':'crmTypeGymnastics',
-    't-crm-types':'crmTypes','t-crm-save-to':'crmSaveTo','t-crm-run-parse':'crmRunParse',
-    't-crm-select-all':'crmSelectAll','t-crm-save-selected':'crmSaveSelected','t-crm-parse-btn':'crmParseBtn',
-    't-crm-empty':'crmEmpty',
-    't-crm-th-name':'crmThName','t-crm-th-folder':'crmThFolder','t-crm-th-city':'crmThCity',
-    't-crm-th-status':'crmThStatus','t-crm-th-priority':'crmThPriority','t-crm-th-next':'crmThNext','t-crm-th-touches':'crmThTouches',
-    't-crm-f-all-status':'crmFAllStatus','t-crm-f-high':'crmFHigh','t-crm-f-medium':'crmFMedium','t-crm-f-low':'crmFLow','t-crm-f-all-priority':'crmFAllPriority',
+    't-mob-providers':'mobProviders','t-mob-messages':'mobMessages',
     't-lead-sec-info':'leadSecInfo','t-lead-city':'leadCity','t-lead-folder':'leadFolder',
     't-lead-priority-lbl':'leadPriorityLbl','t-lead-next-lbl':'leadNextLbl','t-lead-desc-lbl':'leadDescLbl',
     't-lead-sec-contacts':'leadSecContacts','t-lead-enrich':'leadEnrich','t-lead-enrich-deep':'leadEnrichDeep','t-lead-sec-status':'leadSecStatus','t-lead-sec-touches':'leadSecTouches',
-    't-crm-add-lead-btn':'crmAddLead',
     't-lead-no-touches':'leadNoTouches','t-touch-msg':'touchMsg','t-touch-call':'touchCall','t-touch-email':'touchEmail',
     't-touch-pres':'touchPres','t-touch-trial':'touchTrial','t-touch-note':'touchNote',
     't-touch-res-none':'touchResNone','t-touch-res-ans':'touchResAns','t-touch-res-no':'touchResNo','t-touch-res-int':'touchResInt','t-touch-res-dec':'touchResDec',
@@ -1040,7 +751,6 @@ function applyLang(){
     btn.classList.toggle('active',map[btn.textContent]===currentLang);
   });
   // Re-render CRM folders with new language
-  if(crmFolders.length){renderCRMFolders();renderCRMFolderSelects();}
 }
 function setLang(lang){currentLang=lang;localStorage.setItem('lang',lang);applyLang();}
 
@@ -1078,7 +788,6 @@ function show(name,clickedEl){
   if(name==='plans')loadPlans();
   if(name==='providers')loadProviders();
   if(name==='messages')loadSAMessages();
-  if(name==='crm'){loadCRM();setTimeout(()=>{if(crmMap)crmMap.invalidateSize();},200);}
 }
 
 /* ── USER ── */
@@ -1599,595 +1308,6 @@ async function loadSAMessages(){
     updateSABadge(0);
   }catch(e){console.error(e);loading.style.display='none';}
 }
-
-let crmLeads=[],crmAllLeads=[],crmFolders=[],crmActiveFolderId=null,crmEditLeadId=null,crmParseData=[],crmPage=0;
-const CRM_PAGE_SIZE=50;
-
-async function loadCRM(){
-  await Promise.all([loadCRMFolders(),loadCRMLeads()]);
-}
-
-async function loadCRMFolders(){
-  try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'folders.list'})});
-    const d=JSON.parse(await r.text());
-    crmFolders=(d.folders||d||[]).filter(f=>f&&f.id);
-    renderCRMFolders();
-    renderCRMFolderSelects();
-  }catch(e){console.error('loadCRMFolders',e);}
-}
-
-async function loadCRMLeads(){
-  try{
-    // Always load ALL leads for counters
-    const rAll=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'leads.list',data:{}})});
-    const dAll=JSON.parse(await rAll.text());
-    crmAllLeads=(dAll.leads||dAll||[]).filter(l=>l&&l.id);
-
-    // Load filtered leads for table
-    const filters={};
-    if(crmActiveFolderId)filters.folder_id=crmActiveFolderId;
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'leads.list',data:filters})});
-    const d=JSON.parse(await r.text());
-    crmLeads=(d.leads||d||[]).filter(l=>l&&l.id);
-    renderCRMFolders();
-    crmRenderTable();
-    crmRenderStats();
-  }catch(e){console.error('loadCRMLeads',e);}
-}
-
-function renderCRMFolders(){
-  const el=document.getElementById('crmFoldersList');
-  if(!el)return;
-  // Show mobile folders button
-  const mobBtn=document.getElementById('crmMobFoldersBtn');
-  if(mobBtn)mobBtn.style.display='';
-  el.innerHTML=crmFolders.map(f=>{
-    const cnt=crmAllLeads.filter(l=>l.folder_id===f.id).length;
-    const displayName=getFolderName(f);
-    const editBtn=!f.is_default?`<button class="crm-folder-act" onclick="event.stopPropagation();openFolderModal(${f.id})" title="Редагувати"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>`:'';
-    const delBtn=!f.is_default?`<button class="crm-folder-act" onclick="event.stopPropagation();deleteFolder(${f.id})" title="Видалити"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`:'';
-    const editDef=f.is_default?`<button class="crm-folder-act" onclick="event.stopPropagation();openFolderModal(${f.id})" title="Редагувати"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>`:'';
-    return `<button class="crm-folder-btn${crmActiveFolderId===f.id?' active':''}" onclick="crmSetFolder(${f.id},this);crmCloseMobFolders()" id="crm-folder-${f.id}">
-      <div class="crm-folder-dot" style="background:${f.color}"></div>
-      <span class="crm-folder-name">${displayName}</span>
-      <span class="crm-folder-count">${cnt||''}</span>
-      <div class="crm-folder-acts">${editDef}${editBtn}${delBtn}</div>
-    </button>`;
-  }).join('');
-  document.getElementById('crm-count-all').textContent=crmAllLeads.length||'';
-}
-
-function renderCRMFolderSelects(){
-  const opts=crmFolders.map(f=>`<option value="${f.id}">${getFolderName(f)}</option>`).join('');
-  const noOpt=`<option value="">— Без папки —</option>`;
-  const el=document.getElementById('leadFolder');
-  if(el)el.innerHTML=noOpt+opts;
-}
-
-function crmSetFolder(id,el){
-  crmActiveFolderId=id;
-  document.querySelectorAll('.crm-folder-btn').forEach(b=>b.classList.remove('active'));
-  if(el)el.classList.add('active');
-  loadCRMLeads();
-}
-
-function crmRenderStats(){
-  const total=crmLeads.length;
-  const newC=crmLeads.filter(l=>l.status==='new').length;
-  const trial=crmLeads.filter(l=>l.status==='trial').length;
-  const conv=crmLeads.filter(l=>l.status==='converted').length;
-  document.getElementById('crmStats').innerHTML=
-    `<div class="crm-stat"><div class="crm-stat-val">${total}</div><div class="crm-stat-lbl">${t('crmStatTotal')}</div></div>`+
-    `<div class="crm-stat"><div class="crm-stat-val">${newC}</div><div class="crm-stat-lbl">${t('crmStatNew')}</div></div>`+
-    `<div class="crm-stat"><div class="crm-stat-val">${trial}</div><div class="crm-stat-lbl">${t('crmStatTrial')}</div></div>`+
-    `<div class="crm-stat"><div class="crm-stat-val">${conv}</div><div class="crm-stat-lbl">${t('crmStatConverted')}</div></div>`;
-}
-
-function crmRenderTable(){
-  const search=document.getElementById('crmSearch').value.toLowerCase();
-  const cityF=document.getElementById('crmFilterCity').value.toLowerCase();
-  const typeF=document.getElementById('crmFilterType').value;
-  const stF=document.getElementById('crmFilterStatus').value;
-  const prF=document.getElementById('crmFilterPriority').value;
-  const today=new Date().toISOString().split('T')[0];
-  let filtered=crmLeads.filter(l=>{
-    if(search&&!l.name.toLowerCase().includes(search))return false;
-    if(cityF&&!(l.city||'').toLowerCase().includes(cityF))return false;
-    if(typeF&&l.type!==typeF)return false;
-    if(stF&&l.status!==stF)return false;
-    if(prF&&l.priority!==prF)return false;
-    return true;
-  });
-  const tb=document.getElementById('crmTbody');
-  const empty=document.getElementById('crmEmpty');
-  const bulkBar=document.getElementById('crmBulkBar');
-  bulkBar.style.display='none';
-  if(!filtered.length){tb.innerHTML='';empty.style.display='block';document.getElementById('crmPagination').style.display='none';return;}
-  empty.style.display='none';
-
-  // Pagination
-  const totalPages=Math.ceil(filtered.length/CRM_PAGE_SIZE);
-  if(crmPage>=totalPages)crmPage=Math.max(0,totalPages-1);
-  const pageItems=filtered.slice(crmPage*CRM_PAGE_SIZE,(crmPage+1)*CRM_PAGE_SIZE);
-  const pagEl=document.getElementById('crmPagination');
-  const pagInfo=document.getElementById('crmPagInfo');
-  if(filtered.length>CRM_PAGE_SIZE){
-    pagEl.style.display='flex';
-    pagInfo.textContent=`${crmPage*CRM_PAGE_SIZE+1}–${Math.min((crmPage+1)*CRM_PAGE_SIZE,filtered.length)} з ${filtered.length}`;
-    document.getElementById('crmPagPrev').disabled=crmPage===0;
-    document.getElementById('crmPagNext').disabled=crmPage>=totalPages-1;
-  } else {
-    pagEl.style.display='none';
-  }
-  const STATUS_COLOR={new:'tag-gray',contacted:'tag-blue',presentation:'tag-blue',trial:'tag-yellow',converted:'tag-green',lost:'tag-red'};
-  const PRI_COLOR={high:'tag-red',medium:'tag-gray',low:'tag-gray'};
-  tb.innerHTML=pageItems.map(l=>{
-    const folder=crmFolders.find(f=>f.id===l.folder_id);
-    const folderHtml=folder?`<span class="crm-folder-tag" style="background:${folder.color}22;color:${folder.color}"><div style="width:6px;height:6px;border-radius:50%;background:${folder.color};flex-shrink:0"></div>${getFolderName(folder)}</span>`:'<span style="color:var(--muted2);font-size:11px">—</span>';
-    const nc=l.next_contact_at?l.next_contact_at.split('T')[0]:'';
-    const isOverdue=nc&&nc<today;
-    const isToday=nc&&nc===today;
-    const ncHtml=nc?`<span style="color:${isOverdue?'var(--tag-red-text)':isToday?'var(--yellow)':'var(--muted)'};font-size:11px">${nc}</span>`:'<span style="color:var(--muted2)">—</span>';
-    const rowClass=isOverdue?'crm-row-overdue':isToday?'crm-row-today':'';
-    return `<tr class="${rowClass}">
-      <td><input type="checkbox" class="crm-row-check" data-id="${l.id}" onchange="crmUpdateBulkBar()" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer"></td>
-      <td><button class="crm-lead-name" onclick="openLeadModal(${l.id})">${l.name}</button></td>
-      <td>${folderHtml}</td>
-      <td style="color:var(--muted);font-size:12px">${l.city||'—'}</td>
-      <td><span class="tag ${STATUS_COLOR[l.status]||'tag-gray'}" style="font-size:10px">${l.status}</span></td>
-      <td><span class="tag ${PRI_COLOR[l.priority]||'tag-gray'}" style="font-size:10px">${l.priority||'—'}</span></td>
-      <td>${ncHtml}</td>
-      <td style="color:var(--muted);font-size:12px">${l.touches_count||0}</td>
-      <td><div class="row-actions">
-        <button class="act-btn" onclick="openLeadModal(${l.id})"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
-        <button class="act-btn del" onclick="deleteLeadById(${l.id})"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      </div></td>
-    </tr>`;
-  }).join('');
-}
-
-function crmChangePage(dir){crmPage=Math.max(0,crmPage+dir);crmRenderTable();}
-
-function crmToggleAllChecks(checked){
-  document.querySelectorAll('.crm-row-check').forEach(c=>c.checked=checked);
-  crmUpdateBulkBar();
-}
-
-function crmUpdateBulkBar(){
-  const sel=document.querySelectorAll('.crm-row-check:checked');
-  const bar=document.getElementById('crmBulkBar');
-  const allCb=document.getElementById('crmCheckAll');
-  const all=document.querySelectorAll('.crm-row-check');
-  if(sel.length>0){
-    bar.style.display='flex';
-    document.getElementById('crmBulkCount').textContent=sel.length+' '+t('crmSelected');
-  } else {
-    bar.style.display='none';
-  }
-  if(allCb)allCb.indeterminate=sel.length>0&&sel.length<all.length;
-  if(allCb)allCb.checked=sel.length>0&&sel.length===all.length;
-}
-
-async function crmDeleteSelected(){
-  const ids=[...document.querySelectorAll('.crm-row-check:checked')].map(c=>parseInt(c.dataset.id));
-  if(!ids.length)return;
-  if(!confirm(ids.length+' '+t('alertConfirmDeleteMultiple')))return;
-  try{
-    await Promise.all(ids.map(id=>
-      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,resource:'crm',action:'leads.delete',data:{id}})})
-    ));
-    await loadCRMLeads();
-    await loadCRMFolders();
-  }catch(e){alert('Помилка: '+e.message);}
-}
-
-/* ── PARSE MAP ── */
-let crmMap=null,crmMapMarker=null,crmMapCircle=null,crmMapCoords=null;
-
-function toggleParsePanel(){
-  const p=document.getElementById('crmParsePanel');
-  const wasOpen=p.classList.contains('open');
-  p.classList.toggle('open');
-  if(!wasOpen){
-    setTimeout(()=>{
-      if(!crmMap){
-        crmMap=L.map('crmParseMap',{center:[49.5888,34.5514],zoom:12});
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(crmMap);
-        crmMap.on('click',crmOnMapClick);
-      }
-      crmMap.invalidateSize();
-    },150);
-  }
-}
-
-function closeParsPanel(){
-  document.getElementById('crmParsePanel').classList.remove('open');
-}
-
-function crmOnMapClick(e){
-  crmMapCoords=e.latlng;
-  const radius=parseInt(document.getElementById('crmParseRadius').value)||3000;
-  if(crmMapMarker)crmMapMarker.remove();
-  if(crmMapCircle)crmMapCircle.remove();
-  crmMapMarker=L.marker(e.latlng,{
-    icon:L.divIcon({className:'',html:`<div style="width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 4px rgba(229,57,53,.25)"></div>`,iconAnchor:[6,6]})
-  }).addTo(crmMap);
-  crmMapCircle=L.circle(e.latlng,{radius,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(crmMap);
-  document.getElementById('crmMapCoords').textContent=`${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)}`;
-  document.getElementById('crmRunParseBtn').disabled=false;
-}
-
-function crmOnRadiusChange(){
-  const radius=parseInt(document.getElementById('crmParseRadius').value)||3000;
-  document.getElementById('crmRadiusVal').textContent=Math.round(radius/1000*10)/10;
-  if(crmMapCircle&&crmMapCoords)crmMapCircle.setRadius(radius);
-}
-
-async function crmSearchCity(){
-  const q=document.getElementById('crmParseCity').value.trim();
-  if(!q)return;
-  try{
-    const r=await fetch('https://primary-production-4b93e.up.railway.app/webhook/geocode',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:q})});
-    const rd=await r.json();
-    const results=rd.results||rd;
-    if(!results||!results.length){alert('Місто не знайдено');return;}
-    const lat=parseFloat(results[0].lat),lng=parseFloat(results[0].lon);
-    crmMap.setView([lat,lng],13);
-    setTimeout(()=>crmMap.invalidateSize(),100);
-  }catch(e){alert('Помилка пошуку: '+e.message);}
-}
-
-function crmToggleType(btn){btn.classList.toggle('sel');}
-
-function crmToggleMobFolders(){
-  const panel=document.getElementById('crmFoldersPanel');
-  const overlay=document.getElementById('crmMobOverlay');
-  panel.classList.toggle('mob-open');
-  if(overlay)overlay.classList.toggle('active');
-}
-
-function crmCloseMobFolders(){
-  document.getElementById('crmFoldersPanel').classList.remove('mob-open');
-  const overlay=document.getElementById('crmMobOverlay');
-  if(overlay)overlay.classList.remove('active');
-}
-
-// Folder name translations for default folders
-const FOLDER_NAMES={
-  sport_club:{uk:'Спортивні клуби',ru:'Спортивные клубы',en:'Sports clubs'},
-  dance:{uk:'Танці',ru:'Танцы',en:'Dance'},
-  fitness:{uk:'Фітнес',ru:'Фитнес',en:'Fitness'},
-  martial_arts:{uk:'Єдиноборства',ru:'Единоборства',en:'Martial arts'},
-  swimming:{uk:'Плавання',ru:'Плавание',en:'Swimming'},
-  gymnastics:{uk:'Гімнастика',ru:'Гимнастика',en:'Gymnastics'}
-};
-
-function getFolderName(f){
-  if(f.is_default&&FOLDER_NAMES[f.slug]){
-    return FOLDER_NAMES[f.slug][currentLang]||FOLDER_NAMES[f.slug].uk||f.name;
-  }
-  return f.name;
-}
-
-async function runParse(){
-  if(!crmMapCoords){alert('Клікніть на карту щоб вибрати точку');return;}
-  const city=document.getElementById('crmParseCity').value.trim()||'Unknown';
-  const radius=parseInt(document.getElementById('crmParseRadius').value)||3000;
-  const types=[...document.querySelectorAll('.crm-type-check.sel')].map(b=>b.dataset.type);
-  if(!types.length){alert(t('alertSelectTypes'));return;}
-  const btn=document.getElementById('crmRunParseBtn');
-  btn.disabled=true;btn.textContent=t('alertParsing');
-  try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'parse',data:{city,lat:crmMapCoords.lat,lng:crmMapCoords.lng,radius,types}})});
-    const d=JSON.parse(await r.text());
-    crmParseData=d.places||d.objects||d||[];
-    renderParseResults();
-  }catch(e){alert(t('alertParseErr')+': '+e.message);}
-  finally{btn.disabled=false;btn.textContent=t('crmRunParse');}
-}
-
-function renderParseResults(){
-  const list=document.getElementById('crmParseList');
-  const res=document.getElementById('crmParseResults');
-  document.getElementById('crmParseResultTitle').textContent=crmParseData.length+' об\'єктів знайдено';
-  if(!crmParseData.length){res.style.display='none';return;}
-  res.style.display='block';
-  list.innerHTML=crmParseData.map((p,i)=>
-    `<div class="crm-parse-item">
-      <input type="checkbox" checked data-idx="${i}" onchange="updateParseSelCount()">
-      <span class="crm-parse-item-name">${p.name}</span>
-      <span class="crm-parse-item-type">${p.category||p.type||''}</span>
-    </div>`
-  ).join('');
-  updateParseSelCount();
-}
-
-function crmSelectAllParse(checked){
-  document.querySelectorAll('#crmParseList input[type=checkbox]').forEach(c=>c.checked=checked);
-  updateParseSelCount();
-}
-
-function updateParseSelCount(){
-  const sel=document.querySelectorAll('#crmParseList input[type=checkbox]:checked').length;
-  document.getElementById('crmParseSelCount').textContent=sel+' вибрано';
-}
-
-async function saveParseSelected(){
-  const cityInput=document.getElementById('crmParseCity').value.trim();
-  const selected=[...document.querySelectorAll('#crmParseList input[type=checkbox]:checked')]
-    .map(c=>crmParseData[parseInt(c.dataset.idx)])
-    .filter(Boolean)
-    .map(p=>{
-      const city=p.city||cityInput||'';
-      const folder=crmFolders.find(f=>f.slug===p.category);
-      return {
-        name:p.name,
-        type:p.category||'sport_club',
-        city,
-        lat:p.latitude||p.lat||null,
-        lng:p.longitude||p.lng||null,
-        phone:p.phone||null,
-        website:p.website||null,
-        description:p.address||null,
-        google_place_id:p.google_place_id||null,
-        google_rating:p.google_rating||null,
-        google_reviews:p.google_reviews||null,
-        folder_id:folder?folder.id:null
-      };
-    });
-  if(!selected.length)return;
-  try{
-    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'leads.save',data:{leads:selected}})});
-    document.getElementById('crmParseResults').style.display='none';
-    crmParseData=[];
-    closeParsPanel();
-    await loadCRMLeads();
-    await loadCRMFolders();
-  }catch(e){alert('Помилка: '+e.message);}
-}
-
-/* ── LEAD MODAL ── */
-async function openLeadModal(id){
-  const lead=id?crmLeads.find(l=>l.id===id):null;
-  crmEditLeadId=id||null;
-  document.getElementById('leadModalTitle').textContent=lead?lead.name:t('crmAddLead')||'Новий лід';
-  document.getElementById('leadModalId').value=id||'';
-  document.getElementById('leadName').value=lead?lead.name||'':'';
-  document.getElementById('leadCity').value=lead?lead.city||'':'';
-  document.getElementById('leadPhone').value=lead?lead.phone||'':'';
-  document.getElementById('leadEmail').value=lead?lead.email||'':'';
-  document.getElementById('leadWebsite').value=lead?lead.website||'':'';
-  document.getElementById('leadInstagram').value=lead?lead.instagram||'':'';
-  document.getElementById('leadTelegram').value=lead?lead.telegram||'':'';
-  document.getElementById('leadFacebook').value=lead?lead.facebook||'':'';
-  document.getElementById('leadAddress').value=lead?lead.address||'':'';
-  document.getElementById('leadDesc').value=lead?lead.description||'':'';
-  document.getElementById('leadPriority').value=lead?lead.priority||'medium':'medium';
-  document.getElementById('leadNextContact').value=lead&&lead.next_contact_at?lead.next_contact_at.split('T')[0]:'';
-  renderCRMFolderSelects();
-  document.getElementById('leadFolder').value=lead?lead.folder_id||'':'';
-  renderLeadStatusFlow(lead?lead.status||'new':'new');
-  if(id)await loadLeadTouches(id);
-  else document.getElementById('leadTouchesList').innerHTML=`<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px">${t('leadNoTouches')}</div>`;
-  document.getElementById('leadModal').classList.add('active');
-  document.body.style.overflow='hidden';
-}
-
-function renderLeadStatusFlow(current){
-  const statuses=['new','contacted','presentation','trial','converted','lost'];
-  document.getElementById('leadStatusFlow').innerHTML=statuses.map(s=>
-    `<button class="lead-status-btn${s===current?' cur':''}" onclick="setLeadStatus('${s}',this)">${s}</button>`
-  ).join('');
-}
-
-function setLeadStatus(status,btn){
-  document.querySelectorAll('.lead-status-btn').forEach(b=>b.classList.remove('cur'));
-  btn.classList.add('cur');
-}
-
-async function loadLeadTouches(leadId){
-  try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'touches.list',data:{lead_id:leadId}})});
-    const d=JSON.parse(await r.text());
-    const touches=(d.touches||d||[]).filter(t=>t&&t.id);
-    const list=document.getElementById('leadTouchesList');
-    if(!touches.length){list.innerHTML=`<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px">${t('leadNoTouches')}</div>`;return;}
-    list.innerHTML=touches.reverse().map(touch=>{
-      const date=new Date(touch.created_at).toLocaleDateString('ru-RU');
-      return `<div class="touch-item">
-        <div class="touch-header">
-          <span class="touch-type-tag">${touch.type}</span>
-          ${touch.result?`<span style="font-size:10px;color:var(--muted)">${touch.result}</span>`:''}
-          <span class="touch-date">${date}</span>
-        </div>
-        ${touch.content?`<div class="touch-text">${touch.content}</div>`:''}
-      </div>`;
-    }).join('');
-  }catch(e){console.error('loadLeadTouches',e);}
-}
-
-async function addTouch(){
-  const type=document.getElementById('newTouchType').value;
-  const content=document.getElementById('newTouchText').value.trim();
-  const result=document.getElementById('newTouchResult').value||null;
-  if(!crmEditLeadId)return;
-  try{
-    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'touches.add',data:{lead_id:crmEditLeadId,type,content,result}})});
-    document.getElementById('newTouchText').value='';
-    document.getElementById('newTouchResult').value='';
-    await loadLeadTouches(crmEditLeadId);
-  }catch(e){alert('Помилка: '+e.message);}
-}
-
-async function saveLead(){
-  const id=parseInt(document.getElementById('leadModalId').value);
-  const statusBtn=document.querySelector('.lead-status-btn.cur');
-  const data={
-    id,
-    name:document.getElementById('leadName').value.trim(),
-    city:document.getElementById('leadCity').value.trim(),
-    phone:document.getElementById('leadPhone').value.trim()||null,
-    email:document.getElementById('leadEmail').value.trim()||null,
-    website:document.getElementById('leadWebsite').value.trim()||null,
-    instagram:document.getElementById('leadInstagram').value.trim()||null,
-    telegram:document.getElementById('leadTelegram').value.trim()||null,
-    facebook:document.getElementById('leadFacebook').value.trim()||null,
-    address:document.getElementById('leadAddress').value.trim()||null,
-    description:document.getElementById('leadDesc').value.trim()||null,
-    priority:document.getElementById('leadPriority').value,
-    status:statusBtn?statusBtn.textContent:'new',
-    folder_id:document.getElementById('leadFolder').value?parseInt(document.getElementById('leadFolder').value):null,
-    next_contact_at:document.getElementById('leadNextContact').value||null,
-  };
-  try{
-    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'leads.update',data})});
-    closeLeadModal();
-    await loadCRMLeads();
-    await loadCRMFolders();
-  }catch(e){alert('Помилка: '+e.message);}
-}
-
-async function deleteLead(){
-  if(!confirm(t('alertConfirmDelete')))return;
-  await deleteLeadById(parseInt(document.getElementById('leadModalId').value));
-  closeLeadModal();
-}
-
-async function deleteLeadById(id){
-  if(!confirm(t('alertConfirmDelete')))return;
-  try{
-    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'leads.delete',data:{id}})});
-    await loadCRMLeads();
-    await loadCRMFolders();
-  }catch(e){alert('Помилка: '+e.message);}
-}
-
-async function enrichLead(){
-  if(!crmEditLeadId)return;
-  const btn=document.getElementById('leadEnrichBtn');
-  btn.disabled=true;
-  btn.querySelector('span').textContent='...';
-  try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'leads.enrich',data:{id:crmEditLeadId}})});
-    const d=JSON.parse(await r.text());
-    if(d.success&&d.lead){
-      const l=d.lead;
-      const updated=[];
-      if(l.phone){document.getElementById('leadPhone').value=l.phone;updated.push('Телефон');}
-      if(l.website){document.getElementById('leadWebsite').value=l.website;updated.push('Сайт');}
-      if(l.instagram){document.getElementById('leadInstagram').value=l.instagram;updated.push('Instagram');}
-      if(l.address){document.getElementById('leadAddress').value=l.address;updated.push('Адреса');}
-      if(l.description){document.getElementById('leadDesc').value=l.description;updated.push('Опис');}
-      if(l.google_rating){updated.push('Рейтинг Google: '+l.google_rating);}
-      // Show inline notification
-      let note=document.getElementById('enrichNote');
-      if(!note){
-        note=document.createElement('div');
-        note.id='enrichNote';
-        note.style.cssText='font-size:11px;color:var(--tag-green-text);background:var(--tag-green-bg);border:1px solid var(--tag-green-text);border-radius:6px;padding:6px 10px;margin-top:6px';
-        btn.parentNode.insertBefore(note,btn.nextSibling);
-      }
-      note.textContent=updated.length?'Оновлено: '+updated.join(', '):'Нових даних не знайдено';
-      await loadCRMLeads();
-    }else{
-      let note=document.getElementById('enrichNote');
-      if(!note){note=document.createElement('div');note.id='enrichNote';note.style.cssText='font-size:11px;color:var(--tag-red-text);background:var(--tag-red-bg);border:1px solid var(--tag-red-text);border-radius:6px;padding:6px 10px;margin-top:6px';btn.parentNode.insertBefore(note,btn.nextSibling);}
-      note.textContent='Помилка: '+(d.error||'не вдалось збагатити');
-    }
-  }catch(e){alert('Помилка: '+e.message);}
-  finally{btn.disabled=false;btn.querySelector('span').textContent='Збагатити через Google';}
-}
-
-async function enrichLeadDeep(){
-  if(!crmEditLeadId)return;
-  const btn=document.getElementById('leadEnrichDeepBtn');
-  btn.disabled=true;
-  btn.querySelector('span').textContent='...';
-  try{
-    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'leads.enrich.deep',data:{id:crmEditLeadId}})});
-    const d=JSON.parse(await r.text());
-    if(d.success&&d.lead){
-      const l=d.lead;
-      const updated=[];
-      if(l.description){document.getElementById('leadDesc').value=l.description;updated.push('Опис');}
-      if(l.phone&&!document.getElementById('leadPhone').value){document.getElementById('leadPhone').value=l.phone;updated.push('Телефон');}
-      if(l.address&&!document.getElementById('leadAddress').value){document.getElementById('leadAddress').value=l.address;updated.push('Адреса');}
-      if(l.instagram&&!document.getElementById('leadInstagram').value){document.getElementById('leadInstagram').value=l.instagram;updated.push('Instagram');}
-      if(l.facebook&&!document.getElementById('leadFacebook').value){document.getElementById('leadFacebook').value=l.facebook;updated.push('Facebook');}
-      let note=document.getElementById('enrichNoteDeep');
-      if(!note){note=document.createElement('div');note.id='enrichNoteDeep';note.style.cssText='font-size:11px;color:var(--tag-green-text);background:var(--tag-green-bg);border:1px solid var(--tag-green-text);border-radius:6px;padding:6px 10px;margin-top:6px';document.getElementById('leadEnrichDeepBtn').parentNode.insertBefore(note,document.getElementById('leadEnrichDeepBtn').nextSibling);}
-      note.textContent=updated.length?'Оновлено: '+updated.join(', '):'Нових даних не знайдено';
-      await loadCRMLeads();
-    }
-  }catch(e){alert('Помилка: '+e.message);}
-  finally{btn.disabled=false;btn.querySelector('span').textContent=t('leadEnrichDeep');}
-}
-
-/* ── FOLDER MODAL ── */
-function closeLeadModal(){document.getElementById('leadModal').classList.remove('active');document.body.style.overflow='';crmEditLeadId=null;}
-
-function openFolderModal(id){
-  const folder=id?crmFolders.find(f=>f.id===id):null;
-  document.getElementById('folderModalTitle').textContent=folder?folder.name:t('crmAddFolder');
-  document.getElementById('folderModalId').value=id||'';
-  document.getElementById('folderModalName').value=folder?folder.name:'';
-  const selectedColor=folder?folder.color:CRM_COLORS[0];
-  document.getElementById('folderModalColor').value=selectedColor;
-  const row=document.getElementById('colorPickerRow');
-  row.innerHTML=CRM_COLORS.map(c=>`<div class="color-opt${c===selectedColor?' sel':''}" style="background:${c}" onclick="selectFolderColor('${c}',this)" title="${c}"></div>`).join('');
-  // disable name for default
-  const nameInput=document.getElementById('folderModalName');
-  nameInput.disabled=false;
-  document.getElementById('folderModal').classList.add('active');
-  document.body.style.overflow='hidden';
-}
-
-function selectFolderColor(color,el){
-  document.getElementById('folderModalColor').value=color;
-  document.querySelectorAll('.color-opt').forEach(o=>o.classList.remove('sel'));
-  el.classList.add('sel');
-}
-
-async function saveFolder(){
-  const id=document.getElementById('folderModalId').value;
-  const name=document.getElementById('folderModalName').value.trim();
-  const color=document.getElementById('folderModalColor').value;
-  if(!name)return;
-  const action=id?'folders.update':'folders.create';
-  const data=id?{id:parseInt(id),name,color}:{name,color};
-  try{
-    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action,data})});
-    closeFolderModal();
-    await loadCRMFolders();
-  }catch(e){alert('Помилка: '+e.message);}
-}
-
-async function deleteFolder(id){
-  if(!confirm(t('alertConfirmFolder')))return;
-  try{
-    await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'crm',action:'folders.delete',data:{id}})});
-    if(crmActiveFolderId===id)crmActiveFolderId=null;
-    await loadCRMFolders();
-    await loadCRMLeads();
-  }catch(e){alert('Помилка: '+e.message);}
-}
-
-function closeFolderModal(){document.getElementById('folderModal').classList.remove('active');document.body.style.overflow='';}
 
 /* ── INIT ── */
 loadUserInfo();
