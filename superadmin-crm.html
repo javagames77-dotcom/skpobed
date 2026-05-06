@@ -894,13 +894,7 @@ async function loadLeads(){
   const r=await api('leads.list',data);
   if(r.success){
     leads=r.leads||[];
-    // Also load all leads (no filter) for sidebar counts
-    if(activeFolderId||activeCityFilter){
-      const rAll=await api('leads.list',{});
-      if(rAll.success) allLeads=rAll.leads||[];
-    } else {
-      allLeads=leads;
-    }
+    if(!activeFolderId&&!activeCityFilter) allLeads=leads;
     renderTable();
     renderKanban();
     renderFoldersSidebar();
@@ -1178,7 +1172,8 @@ function setView(v){
   document.getElementById('paginationBar').style.display=v==='list'?'flex':'none';
   document.getElementById('vtog-list').classList.toggle('active',v==='list');
   document.getElementById('vtog-kanban').classList.toggle('active',v==='kanban');
-  loadLeads();
+  if(v==='list') renderTable();
+  if(v==='kanban') renderKanban();
 }
 
 // BULK
