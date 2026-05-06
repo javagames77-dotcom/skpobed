@@ -256,14 +256,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <aside class="sidebar">
   <a href="/superadmin-dashboard.html" class="sidebar-back">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Назад у дашборд
+    <span data-i18n="back">Назад у дашборд</span>
   </a>
 
   <!-- Folder mode toggle: by type / by city -->
   <div style="padding:0 8px 4px">
     <div class="folder-toggle">
-      <button class="ftog-btn active" id="ftog-type" onclick="setFolderMode('type')">Тип</button>
-      <button class="ftog-btn" id="ftog-city" onclick="setFolderMode('city')">Місто</button>
+      <button class="ftog-btn active" id="ftog-type" onclick="setFolderMode('type')" data-i18n="folderModeType">Тип</button>
+      <button class="ftog-btn" id="ftog-city" onclick="setFolderMode('city')" data-i18n="folderModeCity">Місто</button>
     </div>
   </div>
 
@@ -300,55 +300,55 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div class="kpi-strip">
     <div class="kpi-item">
       <div class="kpi-val" id="kpi-total">—</div>
-      <div class="kpi-lbl">Всього лідів</div>
+      <div class="kpi-lbl" data-i18n="kpiTotal">Всього лідів</div>
     </div>
     <div class="kpi-item">
       <div class="kpi-val blue" id="kpi-new">—</div>
-      <div class="kpi-lbl">Нових</div>
+      <div class="kpi-lbl" data-i18n="kpiNew">Нових</div>
     </div>
     <div class="kpi-item">
       <div class="kpi-val red" id="kpi-today">—</div>
-      <div class="kpi-lbl">Контакт сьогодні</div>
+      <div class="kpi-lbl" data-i18n="kpiToday">Контакт сьогодні</div>
     </div>
     <div class="kpi-item">
       <div class="kpi-val green" id="kpi-won">—</div>
-      <div class="kpi-lbl">Won %</div>
+      <div class="kpi-lbl" data-i18n="kpiWon">Won %</div>
     </div>
     <div class="kpi-item">
       <div class="kpi-val" id="kpi-cities">—</div>
-      <div class="kpi-lbl">Міст</div>
+      <div class="kpi-lbl" data-i18n="kpiCities">Міст</div>
     </div>
   </div>
 
   <!-- PARSE PANEL -->
   <div class="parse-panel" id="parsePanel">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div style="font-size:13px;font-weight:600;color:var(--black)">Парсинг об'єктів</div>
+      <div style="font-size:13px;font-weight:600;color:var(--black)" data-i18n="parseTitle">Парсинг об'єктів</div>
       <button class="act-btn" onclick="toggleParsePanel()">✕</button>
     </div>
     <div class="parse-tabs">
-      <button class="parse-tab active" id="ptab-types" onclick="setParseTab('types')">За типами</button>
-      <button class="parse-tab" id="ptab-search" onclick="setParseTab('search')">Пошук</button>
+      <button class="parse-tab active" id="ptab-types" onclick="setParseTab('types')" data-i18n="parseTabTypes">За типами</button>
+      <button class="parse-tab" id="ptab-search" onclick="setParseTab('search')" data-i18n="parseTabSearch">Пошук</button>
     </div>
 
     <!-- Types tab -->
     <div id="parse-types-section">
       <div class="parse-form">
         <div>
-          <div class="form-label">Місто</div>
+          <div class="form-label" data-i18n="parseCity">Місто</div>
           <div style="display:flex;gap:6px">
-            <input class="form-input" id="parseCity" placeholder="Полтава, Харків..." onkeydown="if(event.key==='Enter')geocodeCity()">
-            <button class="btn-ghost" onclick="geocodeCity()" style="white-space:nowrap;padding:6px 12px">Знайти</button>
+            <input class="form-input" id="parseCity" data-i18n-ph="cityPlh" placeholder="Полтава, Харків..." onkeydown="if(event.key==='Enter')geocodeCity()">
+            <button class="btn-ghost" onclick="geocodeCity()" style="white-space:nowrap;padding:6px 12px" data-i18n="parseFind">Знайти</button>
           </div>
         </div>
         <div>
-          <div class="form-label">Зберегти в папку</div>
+          <div class="form-label" data-i18n="parseSaveTo">Зберегти в папку</div>
           <select class="form-input" id="parseFolderSelect">
-            <option value="">— Автоматично —</option>
+            <option value="" data-i18n="parseAutoFolder">— Автоматично —</option>
           </select>
         </div>
         <div>
-          <div class="form-label">Радіус: <span id="radiusVal">3</span> км</div>
+          <div class="form-label" data-i18n-prefix="parseRadius">Радіус: <span id="radiusVal">3</span> км</div>
           <input type="range" class="radius-slider" id="parseRadius" min="500" max="15000" step="500" value="3000" oninput="onRadiusChange()" style="width:100%;margin-top:4px;accent-color:var(--black);cursor:pointer">
         </div>
         <div style="align-self:flex-end">
@@ -366,14 +366,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <div id="parse-search-section" style="display:none">
       <div class="parse-form">
         <div>
-          <div class="form-label">Запит</div>
-          <input class="form-input" id="searchQuery" placeholder="Айкідо, BJJ, Бокс...">
+          <div class="form-label" data-i18n="parseQuery">Запит</div>
+          <input class="form-input" id="searchQuery" data-i18n-ph="parseQueryPlh" placeholder="Айкідо, BJJ, Бокс...">
         </div>
         <div>
-          <div class="form-label">Місто</div>
+          <div class="form-label" data-i18n="parseCity">Місто</div>
           <div style="display:flex;gap:6px">
-            <input class="form-input" id="searchCity" placeholder="Полтава..." onkeydown="if(event.key==='Enter')geocodeCitySearch()">
-            <button class="btn-ghost" onclick="geocodeCitySearch()" style="white-space:nowrap;padding:6px 12px">Знайти</button>
+            <input class="form-input" id="searchCity" data-i18n-ph="cityPlh" placeholder="Полтава..." onkeydown="if(event.key==='Enter')geocodeCitySearch()">
+            <button class="btn-ghost" onclick="geocodeCitySearch()" style="white-space:nowrap;padding:6px 12px" data-i18n="parseFind">Знайти</button>
           </div>
         </div>
         <div>
@@ -413,21 +413,21 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
   <!-- TOOLBAR -->
   <div class="toolbar">
-    <input class="search-input" id="searchInput" placeholder="Пошук..." oninput="renderTable()">
+    <input class="search-input" id="searchInput" data-i18n-ph="searchPlh" placeholder="Пошук..." oninput="renderTable()">
     <select class="filter-select" id="filterStatus" onchange="renderTable()">
-      <option value="">Всі статуси</option>
-      <option value="new">New</option>
-      <option value="contacted">Contacted</option>
-      <option value="interested">Зацікавлений</option>
-      <option value="proposal">Пропозиція</option>
-      <option value="won">Won</option>
-      <option value="lost">Lost</option>
+      <option value="" data-i18n="filterAllStatus">Всі статуси</option>
+      <option value="new" data-i18n="sNew">New</option>
+      <option value="contacted" data-i18n="sContacted">Contacted</option>
+      <option value="interested" data-i18n="sInterested">Зацікавлений</option>
+      <option value="proposal" data-i18n="sProposal">Пропозиція</option>
+      <option value="won" data-i18n="sWon">Won</option>
+      <option value="lost" data-i18n="sLost">Lost</option>
     </select>
     <select class="filter-select" id="filterPriority" onchange="renderTable()">
-      <option value="">Всі пріоритети</option>
-      <option value="high">Високий</option>
-      <option value="medium">Середній</option>
-      <option value="low">Низький</option>
+      <option value="" data-i18n="filterAllPriority">Всі пріоритети</option>
+      <option value="high" data-i18n="filterHigh">Високий</option>
+      <option value="medium" data-i18n="filterMed">Середній</option>
+      <option value="low" data-i18n="filterLow">Низький</option>
     </select>
     <div class="view-toggle">
       <button class="vtog-btn active" id="vtog-list" onclick="setView('list')">
@@ -454,7 +454,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <!-- BULK BAR -->
   <div class="bulk-bar" id="bulkBar">
     <span id="bulkCount" style="color:var(--tag-blue)">0 вибрано</span>
-    <button class="btn-danger" onclick="deleteSelected()">Видалити вибрані</button>
+    <button class="btn-danger" onclick="deleteSelected()" data-i18n="bulkDelete">Видалити вибрані</button>
   </div>
 
   <!-- CONTENT -->
@@ -465,14 +465,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
         <table class="tbl">
           <thead><tr>
             <th style="width:32px"><input type="checkbox" id="checkAll" onchange="toggleAllChecks(this.checked)" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer"></th>
-            <th>Назва</th>
-            <th>Папка</th>
-            <th>Місто</th>
-            <th>Статус</th>
-            <th>Пріоритет</th>
-            <th>Наст. контакт</th>
-            <th>Касань</th>
-            <th>Обогащ.</th>
+            <th data-i18n="thName">Назва</th>
+            <th data-i18n="thFolder" data-i18n="thFolder">Папка</th>
+            <th data-i18n="thCity" data-i18n="thCity">Місто</th>
+            <th data-i18n="thStatus" data-i18n="thStatus">Статус</th>
+            <th data-i18n="thPriority" data-i18n="thPriority">Пріоритет</th>
+            <th data-i18n="thNext" data-i18n="thNext">Наст. контакт</th>
+            <th data-i18n="thTouches" data-i18n="thTouches">Касань</th>
+            <th data-i18n="thEnrich">Обогащ.</th>
             <th></th>
           </tr></thead>
           <tbody id="leadsBody"></tbody>
@@ -480,7 +480,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       </div>
       <div id="emptyState" class="empty-state" style="display:none">
         <div class="empty-icon"><svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="var(--muted2)" stroke-width="1.5"/><path d="M10 16h12M16 10v12" stroke="var(--muted2)" stroke-width="1.5" stroke-linecap="round"/></svg></div>
-        <div class="empty-text">Лідів немає. Запустіть парсинг!</div>
+        <div class="empty-text" data-i18n="emptyText">Лідів немає. Запустіть парсинг!</div>
       </div>
     </div>
 
@@ -507,12 +507,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 <!-- STATUS DROPDOWN -->
 <div class="status-menu" id="statusMenu">
-  <div class="status-option" onclick="setLeadStatus('new')"><span class="status-pill s-new">New</span></div>
-  <div class="status-option" onclick="setLeadStatus('contacted')"><span class="status-pill s-contacted">Contacted</span></div>
-  <div class="status-option" onclick="setLeadStatus('interested')"><span class="status-pill s-interested">Зацікавлений</span></div>
-  <div class="status-option" onclick="setLeadStatus('proposal')"><span class="status-pill s-proposal">Пропозиція</span></div>
-  <div class="status-option" onclick="setLeadStatus('won')"><span class="status-pill s-won">Won ✓</span></div>
-  <div class="status-option" onclick="setLeadStatus('lost')"><span class="status-pill s-lost">Lost</span></div>
+  <div class="status-option" onclick="setLeadStatus('new')"><span class="status-pill s-new" data-i18n="sNew">New</span></div>
+  <div class="status-option" onclick="setLeadStatus('contacted')"><span class="status-pill s-contacted" data-i18n="sContacted">Contacted</span></div>
+  <div class="status-option" onclick="setLeadStatus('interested')"><span class="status-pill s-interested" data-i18n="sInterested">Зацікавлений</span></div>
+  <div class="status-option" onclick="setLeadStatus('proposal')"><span class="status-pill s-proposal" data-i18n="sProposal">Пропозиція</span></div>
+  <div class="status-option" onclick="setLeadStatus('won')"><span class="status-pill s-won" data-i18n="sWon">Won ✓</span></div>
+  <div class="status-option" onclick="setLeadStatus('lost')"><span class="status-pill s-lost" data-i18n="sLost">Lost</span></div>
 </div>
 
 <!-- LEAD MODAL -->
@@ -524,9 +524,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     </div>
     <div class="modal-body">
       <div class="modal-tabs">
-        <button class="modal-tab active" onclick="setLeadTab('info',this)">Інфо</button>
-        <button class="modal-tab" onclick="setLeadTab('contacts',this)">Контакти</button>
-        <button class="modal-tab" onclick="setLeadTab('history',this)">Історія</button>
+        <button class="modal-tab active" onclick="setLeadTab('info',this)" data-i18n="tabInfo">Інфо</button>
+        <button class="modal-tab" onclick="setLeadTab('contacts',this)" data-i18n="tabContacts">Контакти</button>
+        <button class="modal-tab" onclick="setLeadTab('history',this)" data-i18n="tabHistory">Історія</button>
       </div>
 
       <!-- INFO TAB -->
@@ -534,23 +534,23 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
         <div class="form-row">
           <div class="form-group">
             <div class="form-label">Назва</div>
-            <input class="form-input" id="lf-name" placeholder="Назва клубу">
+            <input class="form-input" id="lf-name" data-i18n-ph="lblName" placeholder="Назва клубу">
           </div>
           <div class="form-group">
             <div class="form-label">Місто</div>
-            <input class="form-input" id="lf-city" placeholder="Місто">
+            <input class="form-input" id="lf-city" data-i18n-ph="lblCity" placeholder="Місто">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <div class="form-label">Тип</div>
+            <div class="form-label" data-i18n="lblType">Тип</div>
             <select class="form-input" id="lf-type">
-              <option value="sport_club">Спортклуб</option>
-              <option value="dance">Танці</option>
-              <option value="fitness">Фітнес</option>
-              <option value="martial_arts">Єдиноборства</option>
-              <option value="swimming">Плавання</option>
-              <option value="gymnastics">Гімнастика</option>
+              <option value="sport_club" data-i18n="typeSport">Спортклуб</option>
+              <option value="dance" data-i18n="typeDance">Танці</option>
+              <option value="fitness" data-i18n="typeFitness">Фітнес</option>
+              <option value="martial_arts" data-i18n="typeMartial">Єдиноборства</option>
+              <option value="swimming" data-i18n="typeSwim">Плавання</option>
+              <option value="gymnastics" data-i18n="typeGym">Гімнастика</option>
             </select>
           </div>
           <div class="form-group">
@@ -573,22 +573,22 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
           <div class="form-group">
             <div class="form-label">Пріоритет</div>
             <select class="form-input" id="lf-priority">
-              <option value="medium">Середній</option>
-              <option value="high">Високий</option>
-              <option value="low">Низький</option>
+              <option value="medium" data-i18n="filterMed">Середній</option>
+              <option value="high" data-i18n="filterHigh">Високий</option>
+              <option value="low" data-i18n="filterLow">Низький</option>
             </select>
           </div>
         </div>
         <div class="form-group">
-          <div class="form-label">Наступний контакт</div>
+          <div class="form-label" data-i18n="lblNextContact">Наступний контакт</div>
           <input class="form-input" type="date" id="lf-next-contact">
         </div>
         <div class="form-group">
-          <div class="form-label">Опис</div>
+          <div class="form-label" data-i18n="lblDesc">Опис</div>
           <textarea class="form-input" id="lf-description" rows="3" style="resize:vertical"></textarea>
         </div>
         <div class="form-group">
-          <div class="form-label">Адреса</div>
+          <div class="form-label" data-i18n="lblAddress">Адреса</div>
           <input class="form-input" id="lf-address">
         </div>
       </div>
@@ -597,7 +597,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       <div id="ltab-contacts" style="display:none">
         <div class="form-row">
           <div class="form-group">
-            <div class="form-label">Телефон</div>
+            <div class="form-label" data-i18n="lblPhone">Телефон</div>
             <input class="form-input" id="lf-phone" placeholder="+380...">
           </div>
           <div class="form-group">
@@ -606,7 +606,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
           </div>
         </div>
         <div class="form-group">
-          <div class="form-label">Сайт</div>
+          <div class="form-label" data-i18n="lblWebsite">Сайт</div>
           <input class="form-input" id="lf-website" placeholder="https://...">
         </div>
         <div class="form-group">
@@ -637,30 +637,30 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       <div id="ltab-history" style="display:none">
         <div id="touchesList" style="margin-bottom:14px;max-height:200px;overflow-y:auto"></div>
         <div style="border-top:1px solid var(--border);padding-top:12px">
-          <div class="form-label" style="margin-bottom:8px">Додати касання</div>
+          <div class="form-label" style="margin-bottom:8px" data-i18n="addTouch">Додати касання</div>
           <div class="form-row" style="margin-bottom:10px">
             <div>
               <select class="form-input" id="touch-type">
-                <option value="call">Дзвінок</option>
+                <option value="call" data-i18n="touchTypeCall">Дзвінок</option>
                 <option value="email">Email</option>
-                <option value="whatsapp">WhatsApp</option>
-                <option value="visit">Зустріч</option>
-                <option value="note">Нотатка</option>
+                <option value="whatsapp" data-i18n="touchTypeWA">WhatsApp</option>
+                <option value="visit" data-i18n="touchTypeVisit">Зустріч</option>
+                <option value="note" data-i18n="touchTypeNote">Нотатка</option>
               </select>
             </div>
             <div>
-              <input class="form-input" type="date" id="touch-next-contact" placeholder="Наст. контакт">
+              <input class="form-input" type="date" id="touch-next-contact" data-i18n-ph="touchNextContact" placeholder="Наст. контакт">
             </div>
           </div>
-          <textarea class="form-input" id="touch-content" rows="2" placeholder="Зміст касання..." style="margin-bottom:8px;resize:vertical"></textarea>
+          <textarea class="form-input" id="touch-content" rows="2" data-i18n-ph="touchContent" placeholder="Зміст касання..." style="margin-bottom:8px;resize:vertical"></textarea>
           <div style="display:flex;gap:8px">
             <select class="form-input" id="touch-new-status" style="flex:1">
-              <option value="">— Не змінювати статус —</option>
-              <option value="contacted">→ Contacted</option>
-              <option value="interested">→ Зацікавлений</option>
-              <option value="proposal">→ Пропозиція</option>
-              <option value="won">→ Won</option>
-              <option value="lost">→ Lost</option>
+              <option value="" data-i18n="touchNoStatus">— Не змінювати статус —</option>
+              <option value="contacted" data-i18n="touchStatusContacted">→ Contacted</option>
+              <option value="interested" data-i18n="touchStatusInterested">→ Зацікавлений</option>
+              <option value="proposal" data-i18n="touchStatusProposal">→ Пропозиція</option>
+              <option value="won" data-i18n="touchStatusWon">→ Won</option>
+              <option value="lost" data-i18n="touchStatusLost">→ Lost</option>
             </select>
             <button class="btn-primary" onclick="addTouch()">Зберегти</button>
           </div>
@@ -668,8 +668,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeLeadModal()">Скасувати</button>
-      <button class="btn-primary" onclick="saveLead()">Зберегти</button>
+      <button class="btn-ghost" onclick="closeLeadModal()" data-i18n="btnCancel">Скасувати</button>
+      <button class="btn-primary" onclick="saveLead()" data-i18n="btnSave">Зберегти</button>
     </div>
   </div>
 </div>
@@ -684,10 +684,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <div class="modal-body">
       <div class="form-group">
         <div class="form-label">Назва</div>
-        <input class="form-input" id="folder-name" placeholder="Назва папки">
+        <input class="form-input" id="folder-name" data-i18n-ph="folderName" placeholder="Назва папки">
       </div>
       <div class="form-group">
-        <div class="form-label">Колір</div>
+        <div class="form-label" data-i18n="folderColor">Колір</div>
         <div style="display:flex;gap:8px;align-items:center">
           <input type="color" id="folder-color" value="#5b8dee" style="width:40px;height:32px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:none;padding:2px">
           <div style="display:flex;gap:6px;flex-wrap:wrap">
@@ -704,8 +704,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-ghost" onclick="closeFolderModal()">Скасувати</button>
-      <button class="btn-primary" onclick="saveFolder()">Зберегти</button>
+      <button class="btn-ghost" onclick="closeFolderModal()" data-i18n="btnCancel">Скасувати</button>
+      <button class="btn-primary" onclick="saveFolder()" data-i18n="btnSave">Зберегти</button>
     </div>
   </div>
 </div>
@@ -844,6 +844,14 @@ let currentLang = localStorage.getItem('lang') || 'uk';
 function t(k){ return (i18n[currentLang]||i18n.uk)[k] || k; }
 function setLang(lang){ currentLang=lang; localStorage.setItem('lang',lang); applyLang(); }
 function applyLang(){
+  // Apply all data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  // Apply placeholders
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPh);
+  });
   document.querySelectorAll('.lang-btn').forEach(b=>{
     const map={'UA':'uk','RU':'ru','EN':'en'};
     b.classList.toggle('active', map[b.textContent]===currentLang);
