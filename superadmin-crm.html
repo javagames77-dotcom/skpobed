@@ -942,23 +942,53 @@ async function loadStats(){
   }
 }
 
+// Slug → i18n key mapping for default folders
+const FOLDER_SLUG_I18N={
+  'sport_club':'typeSport','dance':'typeDance','fitness':'typeFitness',
+  'martial_arts':'typeMartial','swimming':'typeSwim','gymnastics':'typeGym'
+};
+
+function folderDisplayName(f){
+  if(f.is_default && FOLDER_SLUG_I18N[f.slug]) return t(FOLDER_SLUG_I18N[f.slug]);
+  return f.name;
+}
+
 // SIDEBAR
 function renderFoldersSidebar(){
   document.getElementById('sf-all-count').textContent=leads.length||'';
-  const html=folders.map(f=>`
-    <button class="sitem${activeFolderId===f.id?' active':''}" id="sf-${f.id}" onclick="setFolder(${f.id},'type')">
+  const html=folders.map(f=>{
+    const count=leads.filter(l=>l.folder_id===f.id).length;
+    return`<button class="sitem${activeFolderId===f.id?' active':''}" id="sf-${f.id}" onclick="setFolder(${f.id},'type')">
       <span class="sitem-dot" style="background:${f.color}"></span>
-      <span style="flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>
+      <span style="flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${folderDisplayName(f)}</span>
+      <span class="sitem-count">${count||''}</span>
       ${!f.is_default?`<button onclick="event.stopPropagation();deleteFolder(${f.id})" style="border:none;background:none;cursor:pointer;color:var(--muted2);font-size:12px;line-height:1;padding:0 2px" title="Видалити">×</button>`:''}
-    </button>`).join('');
+    </button>`;
+  }).join('');
   document.getElementById('folders-list').innerHTML=html;
 }
 
+// Known Ukrainian cities list for smart filtering
+const KNOWN_CITIES_RE=/^(київ|харків|харьков|полтава|одеса|одесса|дніпро|дніпропетровськ|запоріжжя|запорожье|львів|львов|миколаїв|николаев|херсон|вінниця|винница|черкаси|черкассы|чернівці|черновцы|суми|сумы|житомир|рівне|ровно|хмельницький|хмельницкий|тернопіль|тернополь|луцьк|луцк|ужгород|івано-франківськ|кропивницький|кривий ріг|кривой рог|маріуполь|мелітополь|бровари|біла церква|біла цéрква)$/i;
+
+function isRealCity(str){
+  if(!str || str.length>40) return false;
+  // Has digits (likely address/street number) → skip
+  if(/\d/.test(str)) return false;
+  // Too many words (likely address) → skip
+  const words=str.trim().split(/\s+/);
+  if(words.length>3) return false;
+  // Contains typical address keywords → skip
+  if(/вулиця|вул\.|проспект|провулок|площа|шосе|бульвар|набережна|alley|street|ave|blvd|пров\.|пл\./i.test(str)) return false;
+  return true;
+}
+
 function renderCitiesSidebar(){
-  const cities=[...new Set(leads.map(l=>l.city).filter(Boolean))].sort();
+  const allCities=[...new Set(leads.map(l=>l.city).filter(Boolean))].sort();
+  const cities=allCities.filter(isRealCity);
   document.getElementById('sc-all-count').textContent=leads.length;
   const html=cities.map(c=>`
-    <button class="sitem${activeCityFilter===c?' active':''}" onclick="setCityFilter('${c}')">
+    <button class="sitem${activeCityFilter===c?' active':''}" onclick="setCityFilter('${c.replace(/'/g,"\\'")}')">
       <span class="sitem-dot" style="background:var(--muted2)"></span>
       <span style="flex:1;text-align:left">${c}</span>
       <span class="sitem-count">${leads.filter(l=>l.city===c).length}</span>
@@ -993,10 +1023,10 @@ function setCityFilter(city){
 }
 
 function renderFolderSelect(){
-  const opts=`<option value="">${t('parseAutoFolder')}</option>`+folders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
+  const opts=`<option value="">${t('parseAutoFolder')}</option>`+folders.map(f=>`<option value="${f.id}">${folderDisplayName(f)}</option>`).join('');
   document.getElementById('parseFolderSelect').innerHTML=opts;
   const lf=document.getElementById('lf-folder');
-  if(lf)lf.innerHTML=`<option value="">${t('noFolder')}</option>`+folders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
+  if(lf)lf.innerHTML=`<option value="">${t('noFolder')}</option>`+folders.map(f=>`<option value="${f.id}">${folderDisplayName(f)}</option>`).join('');
 }
 
 // STATUS HELPERS
@@ -1059,7 +1089,7 @@ function renderTable(){
     <tr>
       <td><input type="checkbox" data-id="${l.id}" class="lead-cb" onchange="updateBulkBar()" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer"></td>
       <td><button class="lead-name-btn" onclick="openLeadModal(${l.id})">${l.name||'—'}</button></td>
-      <td>${l.folder_name?`<span style="display:inline-flex;align-items:center;gap:4px"><span class="sitem-dot" style="background:${l.folder_color||'#ccc'}"></span>${l.folder_name}</span>`:'—'}</td>
+      <td>${l.folder_id?(()=>{const f=folders.find(x=>x.id===l.folder_id);return f?`<span style="display:inline-flex;align-items:center;gap:4px"><span class="sitem-dot" style="background:${f.color||'#ccc'}"></span>${folderDisplayName(f)}</span>`:'—';})():'—'}</td>
       <td style="color:var(--muted)">${l.city||'—'}</td>
       <td>${statusPill(l.status,l.id)}</td>
       <td>${priorityHtml(l.priority)}</td>
