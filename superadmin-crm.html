@@ -148,17 +148,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   /* Modal full screen on mobile */
   .modal{padding:0;align-items:flex-end}
   .modal-content{border-radius:14px 14px 0 0;max-height:92vh;width:100%}
-  /* Hide lang switcher in nav on mobile - move to sidebar */
-  .nav .lang-switcher{display:none}
+  /* Hide lang switcher in nav on mobile - keep visible */
   /* Kanban horizontal scroll */
   .kanban-wrap{padding:12px}
-  /* Hide table columns on mobile */
-  .tbl-wrap table th:nth-child(5),
-  .tbl-wrap table td:nth-child(5),
-  .tbl-wrap table th:nth-child(6),
-  .tbl-wrap table td:nth-child(6),
-  .tbl-wrap table th:nth-child(7),
-  .tbl-wrap table td:nth-child(7){display:none}
+  /* Hide only Touches and Enrich columns on mobile - keep Status, Priority, Next contact */
+  .tbl-wrap table th:nth-child(8),
+  .tbl-wrap table td:nth-child(8),
+  .tbl-wrap table th:nth-child(9),
+  .tbl-wrap table td:nth-child(9){display:none}
 }
 .kanban-wrap{display:flex;gap:12px;padding:16px 20px;overflow-x:auto;height:100%}
 .kan-col{min-width:220px;max-width:220px;display:flex;flex-direction:column;gap:6px}
