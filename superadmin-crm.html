@@ -989,8 +989,6 @@ function setCityFilter(city){
 }
 
 function renderFolderSelect(){
-  const opts=`<option value="">${t('parseAutoFolder')}</option>`+folders.map(f=>`<option value="${f.id}">${folderDisplayName(f)}</option>`).join('');
-  document.getElementById('parseFolderSelect').innerHTML=opts;
   const lf=document.getElementById('lf-folder');
   if(lf)lf.innerHTML=`<option value="">${t('noFolder')}</option>`+folders.map(f=>`<option value="${f.id}">${folderDisplayName(f)}</option>`).join('');
 }
@@ -1371,30 +1369,6 @@ function toggleParsePanel(){
   if(isOpen&&!searchMap)initSearchMap();
 }
 
-function setParseTab(tab){
-  document.getElementById('ptab-types').classList.toggle('active',tab==='types');
-  document.getElementById('ptab-search').classList.toggle('active',tab==='search');
-  document.getElementById('parse-types-section').style.display=tab==='types'?'':'none';
-  document.getElementById('parse-search-section').style.display=tab==='search'?'':'none';
-  document.getElementById('parseResults').style.display='none';
-  if(tab==='search'&&!searchMap)initSearchMap();
-}
-
-function initParseMap(){
-  parseMap=L.map('parseMap',{center:[49.5883,34.5514],zoom:12});
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM'}).addTo(parseMap);
-  parseMap.on('click',e=>{
-    parseLat=e.latlng.lat;parseLng=e.latlng.lng;
-    if(parseMapMarker)parseMap.removeLayer(parseMapMarker);
-    if(parseMapCircle)parseMap.removeLayer(parseMapCircle);
-    const r=parseInt(document.getElementById('parseRadius').value);
-    parseMapMarker=L.marker(e.latlng).addTo(parseMap);
-    parseMapCircle=L.circle(e.latlng,{radius:r,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(parseMap);
-    document.getElementById('mapCoords').textContent=`${parseLat.toFixed(5)}, ${parseLng.toFixed(5)} · Радіус: ${Math.round(r/1000)} км`;
-    document.getElementById('runParseBtn').disabled=false;
-  });
-}
-
 function initSearchMap(){
   document.getElementById('searchMap').style.height='200px';
   searchMap=L.map('searchMap',{center:[49.5883,34.5514],zoom:11});
@@ -1412,38 +1386,8 @@ function initSearchMap(){
   });
 }
 
-function onRadiusChange(){
-  const r=parseInt(document.getElementById('parseRadius').value);
-  document.getElementById('radiusVal').textContent=Math.round(r/1000);
-  if(parseMapCircle&&parseLat){
-    parseMap.removeLayer(parseMapCircle);
-    parseMapCircle=L.circle([parseLat,parseLng],{radius:r,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(parseMap);
-  }
-}
-
 // Store last geocoded city names
 let parseCityName='', searchCityName='';
-
-async function geocodeCity(){
-  const city=document.getElementById('parseCity').value.trim();
-  if(!city)return;
-  const r=await api('crm.geocode',{city});
-  if(r.success&&r.results.length){
-    const {lat,lon}=r.results[0];
-    parseLat=parseFloat(lat);parseLng=parseFloat(lon);
-    parseCityName=city;
-    parseMap.setView([parseLat,parseLng],12);
-    if(parseMapMarker)parseMap.removeLayer(parseMapMarker);
-    if(parseMapCircle)parseMap.removeLayer(parseMapCircle);
-    const radius=parseInt(document.getElementById('parseRadius').value);
-    parseMapMarker=L.marker([parseLat,parseLng]).addTo(parseMap);
-    parseMapCircle=L.circle([parseLat,parseLng],{radius,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(parseMap);
-    document.getElementById('mapCoords').textContent=`${parseLat.toFixed(5)}, ${parseLng.toFixed(5)}`;
-    document.getElementById('runParseBtn').disabled=false;
-  } else {
-    toast(t('toastCityNotFound'),'error');
-  }
-}
 
 async function geocodeCitySearch(){
   const city=document.getElementById('searchCity').value.trim();
@@ -1461,24 +1405,6 @@ async function geocodeCitySearch(){
     document.getElementById('runSearchBtn').disabled=false;
   } else {
     toast(t('toastCityNotFound'),'error');
-  }
-}
-
-async function runParse(){
-  if(!parseLat||!parseLng)return;
-  const btn=document.getElementById('runParseBtn');
-  btn.disabled=true;btn.innerHTML=`<span data-i18n="loading">${t('loading')}</span>`;
-  const r=await api('parse',{
-    city:document.getElementById('parseCity').value.trim(),
-    lat:parseLat,lng:parseLng,
-    radius:parseInt(document.getElementById('parseRadius').value)
-  });
-  btn.disabled=false;btn.innerHTML=`<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> <span data-i18n="parseRun">${t('parseRun')}</span>`;
-  if(r.success){
-    parseData=r.places||[];
-    showParseResults();
-  } else {
-    toast(t('toastParseError'),'error');
   }
 }
 
@@ -1529,13 +1455,11 @@ function updateParseSelCount(){
 }
 
 async function saveParseSelected(){
-  const folderId=document.getElementById('parseFolderSelect').value||null;
-  const activeTab='search';
   const userCity=searchCityName || document.getElementById('searchCity').value.trim();
   const selected=[...document.querySelectorAll('#parseList input[type=checkbox]:checked')]
     .map(c=>parseData[parseInt(c.dataset.idx)]).filter(Boolean)
     .map(p=>{
-      const folder=folderId?null:folders.find(f=>f.slug===p.type);
+      const folder=folders.find(f=>f.slug===p.type);
       return{
         name:p.name,type:p.type||'sport_club',
         city:userCity,
@@ -1546,7 +1470,7 @@ async function saveParseSelected(){
         google_place_id:p.google_place_id||null,
         google_rating:p.google_rating||null,
         google_reviews:p.google_reviews||null,
-        folder_id:folderId||(folder?folder.id:null)
+        folder_id:folder?folder.id:null
       };
     });
   if(!selected.length)return;
