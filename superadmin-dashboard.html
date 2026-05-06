@@ -222,10 +222,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5v13M1.5 8h13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M5 4.5c0 0 1 1.5 3 1.5s3-1.5 3-1.5M5 11.5c0 0 1-1.5 3-1.5s3 1.5 3 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span id="t-s-providers">Платіжні системи</span>
     </button>
-    <div class="sidebar-section">CRM</div>
+    <div class="sidebar-section" data-i18n="sCrmLabel">CRM</div>
     <a href="/superadmin-crm.html" class="sitem" style="text-decoration:none">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 13c0-2.76 1.79-5 4-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="11" cy="9" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M11 7.5v3M9.5 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      <span>Ліди</span>
+      <span data-i18n="sCrm">Ліди</span>
     </a>
     <div class="sidebar-section" id="t-s-comm-label">Комунікація</div>
     <button class="sitem" id="sitem-messages" onclick="show('messages',this)">
@@ -357,10 +357,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M1.5 2h13v9H9l-2.5 3L4 11H1.5V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
       <span id="t-mob-messages">Повідом.</span>
     </button>
-    <a href="/superadmin-crm.html" class="mob-nav-btn" style="text-decoration:none">
-      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><circle cx="5" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 13c0-2.76 1.79-5 4-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="11" cy="9" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M11 7.5v3M9.5 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-      <span id="t-mob-crm">Ліди</span>
-    </a>
   </div>
 </nav>
 
@@ -738,7 +734,7 @@ function applyLang(){
     't-msg-label':'msgLabel','t-msg-cancel':'msgCancel','t-msg-send':'msgSend',
     't-info-close':'infoClose','t-info-edit':'infoEdit',
     't-mob-directors':'mobDirectors','t-mob-requests':'mobRequests','t-mob-plans':'mobPlans',
-    't-mob-providers':'mobProviders','t-mob-messages':'mobMessages','t-mob-crm':'mobCrm',
+    't-mob-providers':'mobProviders','t-mob-messages':'mobMessages',
     't-lead-sec-info':'leadSecInfo','t-lead-city':'leadCity','t-lead-folder':'leadFolder',
     't-lead-priority-lbl':'leadPriorityLbl','t-lead-next-lbl':'leadNextLbl','t-lead-desc-lbl':'leadDescLbl',
     't-lead-sec-contacts':'leadSecContacts','t-lead-enrich':'leadEnrich','t-lead-enrich-deep':'leadEnrichDeep','t-lead-sec-status':'leadSecStatus','t-lead-sec-touches':'leadSecTouches',
