@@ -367,7 +367,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
         </label>
       </div>
       <div class="parse-result-list" id="parseList"></div>
-      <div class="parse-save-bar">
+      <div class="parse-save-bar" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <select class="form-input" id="parseFolderSelect" style="width:auto;min-width:160px"></select>
         <button class="btn-primary" onclick="saveParseSelected()">
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span data-i18n="parseAddSelected">Додати вибрані</span>
@@ -989,6 +990,8 @@ function setCityFilter(city){
 }
 
 function renderFolderSelect(){
+  const pf=document.getElementById('parseFolderSelect');
+  if(pf)pf.innerHTML=`<option value="">${t('parseAutoFolder')}</option>`+folders.map(f=>`<option value="${f.id}">${folderDisplayName(f)}</option>`).join('');
   const lf=document.getElementById('lf-folder');
   if(lf)lf.innerHTML=`<option value="">${t('noFolder')}</option>`+folders.map(f=>`<option value="${f.id}">${folderDisplayName(f)}</option>`).join('');
 }
@@ -1456,12 +1459,14 @@ function updateParseSelCount(){
 
 async function saveParseSelected(){
   const userCity=searchCityName || document.getElementById('searchCity').value.trim();
+  const pf=document.getElementById('parseFolderSelect');
+  const forceFolderId=pf?pf.value||null:null;
   const selected=[...document.querySelectorAll('#parseList input[type=checkbox]:checked')]
     .map(c=>parseData[parseInt(c.dataset.idx)]).filter(Boolean)
     .map(p=>{
-      const folder=folders.find(f=>f.slug===p.type);
+      const autoFolder=folders.find(f=>f.slug===p.type);
       return{
-        name:p.name,type:p.type||'sport_club',
+        name:p.name,type:p.type||'custom',
         city:userCity,
         lat:p.lat||null,lng:p.lng||null,
         phone:p.phone||null,website:p.website||null,
@@ -1470,7 +1475,7 @@ async function saveParseSelected(){
         google_place_id:p.google_place_id||null,
         google_rating:p.google_rating||null,
         google_reviews:p.google_reviews||null,
-        folder_id:folder?folder.id:null
+        folder_id:forceFolderId||(autoFolder?autoFolder.id:null)
       };
     });
   if(!selected.length)return;
