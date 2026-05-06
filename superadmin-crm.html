@@ -347,7 +347,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
         </div>
         <div>
           <div class="form-label"><span data-i18n="parseRadius">Радіус</span>: <span id="searchRadiusVal">5</span> <span data-i18n="km">км</span></div>
-          <input type="range" class="radius-slider" id="searchRadius" min="500" max="15000" step="500" value="5000" oninput="document.getElementById('searchRadiusVal').textContent=Math.round(this.value/1000)" style="width:100%;margin-top:4px;accent-color:var(--black);cursor:pointer">
+          <input type="range" class="radius-slider" id="searchRadius" min="500" max="15000" step="500" value="5000" oninput="onSearchRadiusChange()" style="width:100%;margin-top:4px;accent-color:var(--black);cursor:pointer">
         </div>
         <div style="align-self:flex-end">
           <button class="btn-primary" onclick="runSearch()" id="runSearchBtn" disabled>
@@ -956,14 +956,14 @@ function isRealCity(str){
 }
 
 function renderCitiesSidebar(){
-  const allCities=[...new Set(leads.map(l=>l.city).filter(Boolean))].sort();
+  const allCities=[...new Set(allLeads.map(l=>l.city).filter(Boolean))].sort();
   const cities=allCities.filter(isRealCity);
-  document.getElementById('sc-all-count').textContent=leads.length;
+  document.getElementById('sc-all-count').textContent=allLeads.length;
   const html=cities.map(c=>`
     <button class="sitem${activeCityFilter===c?' active':''}" onclick="setCityFilter('${c.replace(/'/g,"\\'")}')">
       <span class="sitem-dot" style="background:var(--muted2)"></span>
       <span style="flex:1;text-align:left">${c}</span>
-      <span class="sitem-count">${leads.filter(l=>l.city===c).length}</span>
+      <span class="sitem-count">${allLeads.filter(l=>l.city===c).length}</span>
     </button>`).join('');
   document.getElementById('cities-list').innerHTML=html;
 }
@@ -1447,6 +1447,15 @@ function initSearchMap(){
     document.getElementById('searchMapCoords').textContent=`${searchLat.toFixed(5)}, ${searchLng.toFixed(5)}`;
     document.getElementById('runSearchBtn').disabled=false;
   });
+}
+
+function onSearchRadiusChange(){
+  const r=parseInt(document.getElementById('searchRadius').value);
+  document.getElementById('searchRadiusVal').textContent=Math.round(r/1000);
+  if(searchMapCircle&&searchLat){
+    searchMap.removeLayer(searchMapCircle);
+    searchMapCircle=L.circle([searchLat,searchLng],{radius:r,color:'#E53935',fillColor:'#E53935',fillOpacity:.06,weight:1.5}).addTo(searchMap);
+  }
 }
 
 // Store last geocoded city names
