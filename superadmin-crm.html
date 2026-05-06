@@ -136,7 +136,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 /* PARSE PANEL */
 .parse-panel{background:var(--tbl-bg);border-bottom:1px solid var(--border);padding:16px 20px;display:none;flex-shrink:0}
-.parse-panel.open{display:block;overflow-y:auto;max-height:65vh}
+.parse-panel.open{display:block}
+.main.parse-open{overflow-y:auto}
 .parse-tabs{display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:2px;margin-bottom:14px;width:fit-content}
 .parse-tab{padding:5px 14px;border:none;background:transparent;border-radius:5px;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s}
 .parse-tab.active{background:var(--bg);color:var(--black)}
@@ -1399,7 +1400,9 @@ async function deleteFolder(id){
 // PARSE PANEL
 function toggleParsePanel(){
   const p=document.getElementById('parsePanel');
+  const main=document.querySelector('.main');
   const isOpen=p.classList.toggle('open');
+  main.classList.toggle('parse-open', isOpen);
   if(isOpen&&!parseMap)initParseMap();
 }
 
