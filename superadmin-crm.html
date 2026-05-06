@@ -124,8 +124,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .kan-col{min-width:220px;max-width:220px;display:flex;flex-direction:column;gap:6px}
 .kan-col-header{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:4px 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .kan-count{background:var(--bg3);border-radius:10px;padding:1px 6px;font-size:10px}
-.kan-card{background:var(--tbl-bg);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;transition:box-shadow .12s}
+.kan-card{background:var(--tbl-bg);border:1px solid var(--border);border-radius:8px;padding:10px;cursor:grab;transition:box-shadow .12s,opacity .12s}
 .kan-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.kan-card.dragging{opacity:.4;cursor:grabbing}
+.kan-col-body{display:flex;flex-direction:column;gap:6px;min-height:40px;border-radius:8px;transition:background .15s}
+.kan-col-body.drag-over{background:var(--bg3);outline:2px dashed var(--border2)}
 .kan-card-name{font-size:12px;font-weight:500;color:var(--black);margin-bottom:4px}
 .kan-card-city{font-size:11px;color:var(--muted)}
 .kan-card-footer{display:flex;align-items:center;gap:6px;margin-top:7px}
@@ -1083,27 +1086,80 @@ const STATUSES=['new','contacted','interested','proposal','won','lost'];
 function getStatusLabels(){return{new:t('sNew'),contacted:t('sContacted'),interested:t('sInterested'),proposal:t('sProposal'),won:t('sWon'),lost:t('sLost')};}
 const STATUS_COLORS={new:'var(--muted2)',contacted:'#1d4ed8',interested:'#c2410c',proposal:'#7c3aed',won:'#16a34a',lost:'var(--accent)'};
 
+let dragLeadId=null;
+
 function renderKanban(){
   const fl=filtered();
   const wrap=document.getElementById('kanbanWrap');
   const STATUS_LABELS=getStatusLabels();
   wrap.innerHTML=STATUSES.map(st=>{
     const items=fl.filter(l=>l.status===st);
-    return`<div class="kan-col">
-      <div class="kan-col-header" style="color:${STATUS_COLORS[st]}">
-        ${STATUS_LABELS[st]}
-        <span class="kan-count">${items.length}</span>
-      </div>
-      ${items.map(l=>`<div class="kan-card" onclick="openLeadModal(${l.id})">
+    const cards=items.map(l=>`
+      <div class="kan-card" draggable="true"
+        data-id="${l.id}"
+        onclick="handleKanbanClick(event,${l.id})"
+        ondragstart="onDragStart(event,${l.id})"
+        ondragend="onDragEnd(event)">
         <div class="kan-card-name">${l.name||'—'}</div>
         <div class="kan-card-city">${l.city||''}</div>
         <div class="kan-card-footer">
           <span class="kan-card-type">${l.type||''}</span>
           <span class="pri-dot ${l.priority==='high'?'pri-high':l.priority==='low'?'pri-low':'pri-med'}" style="margin-left:auto;margin-right:0"></span>
         </div>
-      </div>`).join('')}
+      </div>`).join('');
+    return`<div class="kan-col">
+      <div class="kan-col-header" style="color:${STATUS_COLORS[st]}">
+        ${STATUS_LABELS[st]}
+        <span class="kan-count">${items.length}</span>
+      </div>
+      <div class="kan-col-body"
+        data-status="${st}"
+        ondragover="onDragOver(event)"
+        ondragleave="onDragLeave(event)"
+        ondrop="onDrop(event,'${st}')">
+        ${cards}
+      </div>
     </div>`;
   }).join('');
+}
+
+let dragMoved=false;
+function onDragStart(e,id){
+  dragLeadId=id;
+  dragMoved=false;
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+}
+function onDragEnd(e){
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.kan-col-body').forEach(c=>c.classList.remove('drag-over'));
+}
+function onDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  e.currentTarget.classList.add('drag-over');
+  dragMoved=true;
+}
+function onDragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+}
+async function onDrop(e,status){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if(!dragLeadId)return;
+  const lead=leads.find(l=>l.id===dragLeadId);
+  if(!lead||lead.status===status)return;
+  // Optimistic update
+  lead.status=status;
+  renderKanban();
+  await api('leads.update',{id:dragLeadId,status});
+  await loadStats();
+  dragLeadId=null;
+}
+function handleKanbanClick(e,id){
+  // Only open modal if not dragging
+  if(dragMoved)return;
+  openLeadModal(id);
 }
 
 function setView(v){
