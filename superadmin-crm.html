@@ -135,8 +135,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .pagination{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);background:var(--tbl-bg);flex-shrink:0}
 
 /* PARSE PANEL */
-.parse-panel{background:var(--tbl-bg);border-bottom:1px solid var(--border);padding:16px 20px;display:none}
-.parse-panel.open{display:block}
+.parse-panel{background:var(--tbl-bg);border-bottom:1px solid var(--border);padding:16px 20px;display:none;flex-shrink:0}
+.parse-panel.open{display:block;overflow-y:auto;max-height:65vh}
 .parse-tabs{display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:2px;margin-bottom:14px;width:fit-content}
 .parse-tab{padding:5px 14px;border:none;background:transparent;border-radius:5px;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s}
 .parse-tab.active{background:var(--bg);color:var(--black)}
