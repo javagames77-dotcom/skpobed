@@ -256,7 +256,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <aside class="sidebar">
   <a href="/superadmin-dashboard.html" class="sidebar-back">
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span data-i18n="back">Назад у дашборд</span>
+    <span data-i18n="back">← Назад у дашборд</span>
   </a>
 
   <!-- Folder mode toggle: by type / by city -->
@@ -271,14 +271,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div id="sidebar-type">
     <button class="sitem active" id="sf-all" onclick="setFolder(null,'all')">
       <span class="sitem-dot" style="background:var(--muted2)"></span>
-      Всі ліди
+      <span data-i18n="allLeads">Всі ліди</span>
       <span class="sitem-count" id="sf-all-count">0</span>
     </button>
     <div id="folders-list"></div>
     <div class="sidebar-sep"></div>
     <button class="sidebar-add" onclick="openFolderModal(null)">
       <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-      Нова папка
+      <span data-i18n="addFolder">Нова папка</span>
     </button>
   </div>
 
@@ -286,7 +286,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   <div id="sidebar-city" style="display:none">
     <button class="sitem active" id="sc-all" onclick="setCityFilter(null)">
       <span class="sitem-dot" style="background:var(--muted2)"></span>
-      Всі міста
+      <span data-i18n="allCities">Всі міста</span>
       <span class="sitem-count" id="sc-all-count">0</span>
     </button>
     <div id="cities-list"></div>
@@ -348,13 +348,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
           </select>
         </div>
         <div>
-          <div class="form-label" data-i18n-prefix="parseRadius">Радіус: <span id="radiusVal">3</span> км</div>
+          <div class="form-label"><span data-i18n="parseRadius">Радіус</span>: <span id="radiusVal">3</span> <span data-i18n="km">км</span></div>
           <input type="range" class="radius-slider" id="parseRadius" min="500" max="15000" step="500" value="3000" oninput="onRadiusChange()" style="width:100%;margin-top:4px;accent-color:var(--black);cursor:pointer">
         </div>
         <div style="align-self:flex-end">
           <button class="btn-primary" onclick="runParse()" id="runParseBtn" disabled>
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            Запустити
+            <span data-i18n="parseRun">Запустити</span>
           </button>
         </div>
       </div>
@@ -377,13 +377,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
           </div>
         </div>
         <div>
-          <div class="form-label">Радіус: <span id="searchRadiusVal">5</span> км</div>
+          <div class="form-label" id="searchRadiusLabel"><span data-i18n="parseRadius">Радіус</span>: <span id="searchRadiusVal">5</span> <span data-i18n="km">км</span></div>
           <input type="range" class="radius-slider" id="searchRadius" min="500" max="15000" step="500" value="5000" oninput="document.getElementById('searchRadiusVal').textContent=Math.round(this.value/1000)" style="width:100%;margin-top:4px;accent-color:var(--black);cursor:pointer">
         </div>
         <div style="align-self:flex-end">
           <button class="btn-primary" onclick="runSearch()" id="runSearchBtn" disabled>
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            Знайти
+            <span data-i18n="parseFind">Знайти</span>
           </button>
         </div>
       </div>
@@ -397,14 +397,14 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
         <div style="font-size:12px;font-weight:500;color:var(--black)" id="parseResultTitle"></div>
         <label style="font-size:12px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:5px">
           <input type="checkbox" id="selectAllParse" onchange="selectAllParseItems(this.checked)" style="width:13px;height:13px;accent-color:var(--black)">
-          Вибрати всі
+          <span data-i18n="parseSelectAll">Вибрати всі</span>
         </label>
       </div>
       <div class="parse-result-list" id="parseList"></div>
       <div class="parse-save-bar">
         <button class="btn-primary" onclick="saveParseSelected()">
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Додати вибрані
+          <span data-i18n="parseAddSelected">Додати вибрані</span>
         </button>
         <span style="font-size:12px;color:var(--muted)" id="parseSelCount"></span>
       </div>
@@ -432,21 +432,21 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <div class="view-toggle">
       <button class="vtog-btn active" id="vtog-list" onclick="setView('list')">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="2" rx="1" fill="currentColor" opacity=".6"/><rect x="1" y="5" width="10" height="2" rx="1" fill="currentColor" opacity=".6"/><rect x="1" y="9" width="10" height="2" rx="1" fill="currentColor" opacity=".6"/></svg>
-        Список
+        <span data-i18n="viewList">Список</span>
       </button>
       <button class="vtog-btn" id="vtog-kanban" onclick="setView('kanban')">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="3" height="10" rx="1" fill="currentColor" opacity=".6"/><rect x="5" y="1" width="3" height="7" rx="1" fill="currentColor" opacity=".6"/><rect x="9" y="1" width="2" height="5" rx="1" fill="currentColor" opacity=".6"/></svg>
-        Kanban
+        <span data-i18n="viewKanban">Kanban</span>
       </button>
     </div>
     <div style="margin-left:auto;display:flex;gap:6px">
       <button class="btn-ghost" onclick="toggleParsePanel()">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-        Парсинг
+        <span data-i18n="btnParse">Парсинг</span>
       </button>
       <button class="btn-primary" onclick="openLeadModal(null)">
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        Додати
+        <span data-i18n="btnAdd">Додати</span>
       </button>
     </div>
   </div>
@@ -466,12 +466,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
           <thead><tr>
             <th style="width:32px"><input type="checkbox" id="checkAll" onchange="toggleAllChecks(this.checked)" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer"></th>
             <th data-i18n="thName">Назва</th>
-            <th data-i18n="thFolder" data-i18n="thFolder">Папка</th>
-            <th data-i18n="thCity" data-i18n="thCity">Місто</th>
-            <th data-i18n="thStatus" data-i18n="thStatus">Статус</th>
-            <th data-i18n="thPriority" data-i18n="thPriority">Пріоритет</th>
-            <th data-i18n="thNext" data-i18n="thNext">Наст. контакт</th>
-            <th data-i18n="thTouches" data-i18n="thTouches">Касань</th>
+            <th data-i18n="thFolder">Папка</th>
+            <th data-i18n="thCity">Місто</th>
+            <th data-i18n="thStatus">Статус</th>
+            <th data-i18n="thPriority">Пріоритет</th>
+            <th data-i18n="thNext">Наст. контакт</th>
+            <th data-i18n="thTouches">Касань</th>
             <th data-i18n="thEnrich">Обогащ.</th>
             <th></th>
           </tr></thead>
@@ -533,11 +533,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
       <div id="ltab-info">
         <div class="form-row">
           <div class="form-group">
-            <div class="form-label">Назва</div>
+            <div class="form-label" data-i18n="lblName">Назва</div>
             <input class="form-input" id="lf-name" data-i18n-ph="lblName" placeholder="Назва клубу">
           </div>
           <div class="form-group">
-            <div class="form-label">Місто</div>
+            <div class="form-label" data-i18n="lblCity">Місто</div>
             <input class="form-input" id="lf-city" data-i18n-ph="lblCity" placeholder="Місто">
           </div>
         </div>
@@ -554,28 +554,28 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
             </select>
           </div>
           <div class="form-group">
-            <div class="form-label">Папка</div>
+            <div class="form-label" data-i18n="lblFolder">Папка</div>
             <select class="form-input" id="lf-folder"></select>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <div class="form-label">Статус</div>
+            <div class="form-label" data-i18n="lblStatus">Статус</div>
             <select class="form-input" id="lf-status">
-              <option value="new">New</option>
-              <option value="contacted">Contacted</option>
-              <option value="interested">Зацікавлений</option>
-              <option value="proposal">Пропозиція</option>
-              <option value="won">Won</option>
-              <option value="lost">Lost</option>
+              <option value="new" data-i18n="sNew">New</option>
+              <option value="contacted" data-i18n="sContacted">Contacted</option>
+              <option value="interested" data-i18n="sInterested">Зацікавлений</option>
+              <option value="proposal" data-i18n="sProposal">Пропозиція</option>
+              <option value="won" data-i18n="sWon">Won</option>
+              <option value="lost" data-i18n="sLost">Lost</option>
             </select>
           </div>
           <div class="form-group">
-            <div class="form-label">Пріоритет</div>
+            <div class="form-label" data-i18n="lblPriority">Пріоритет</div>
             <select class="form-input" id="lf-priority">
-              <option value="medium" data-i18n="filterMed">Середній</option>
-              <option value="high" data-i18n="filterHigh">Високий</option>
-              <option value="low" data-i18n="filterLow">Низький</option>
+              <option value="medium" data-i18n="priMed">Середній</option>
+              <option value="high" data-i18n="priHigh">Високий</option>
+              <option value="low" data-i18n="priLow">Низький</option>
             </select>
           </div>
         </div>
@@ -628,7 +628,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
           </button>
           <button class="btn-ghost" onclick="enrichDeepLead()" id="enrichDeepBtn" style="font-size:11px;padding:5px 12px">
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M6 2v6M4 4h4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
-            GPT Сайт
+            <span data-i18n="btnGpt">GPT Сайт</span>
           </button>
         </div>
       </div>
@@ -662,7 +662,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
               <option value="won" data-i18n="touchStatusWon">→ Won</option>
               <option value="lost" data-i18n="touchStatusLost">→ Lost</option>
             </select>
-            <button class="btn-primary" onclick="addTouch()">Зберегти</button>
+            <button class="btn-primary" onclick="addTouch()" data-i18n="touchSave">Зберегти</button>
           </div>
         </div>
       </div>
@@ -678,12 +678,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="modal" id="folderModal">
   <div class="modal-content" style="max-width:380px">
     <div class="modal-header">
-      <div class="modal-title" id="folderModalTitle">Нова папка</div>
+      <div class="modal-title" id="folderModalTitle" data-i18n="folderTitle">Нова папка</div>
       <button class="modal-close" onclick="closeFolderModal()">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-group">
-        <div class="form-label">Назва</div>
+        <div class="form-label" data-i18n="folderName">Назва</div>
         <input class="form-input" id="folder-name" data-i18n-ph="folderName" placeholder="Назва папки">
       </div>
       <div class="form-group">
@@ -754,6 +754,8 @@ const i18n = {
     cityPlh:'Полтава, Харків...',mapClick:'Клікніть на карту щоб вибрати точку',
     touchStatusContacted:'→ Contacted',touchStatusInterested:'→ Зацікавлений',touchStatusProposal:'→ Пропозиція',touchStatusWon:'→ Won',touchStatusLost:'→ Lost',
     enriching:'...',saved:'Збережено: ',
+    loading:'Завантаження...',noFolder:'— Без папки —',km:'км',lblFolder:'Папка',lblPriority:'Пріоритет',
+    btnGoogle:'Google',btnGpt:'GPT Сайт',
   },
   ru:{
     back:'← Назад в дашборд',crmTitle:'CRM — Лиды',
@@ -796,6 +798,8 @@ const i18n = {
     cityPlh:'Полтава, Харьков...',mapClick:'Кликните на карту чтобы выбрать точку',
     touchStatusContacted:'→ Contacted',touchStatusInterested:'→ Заинтересован',touchStatusProposal:'→ Предложение',touchStatusWon:'→ Won',touchStatusLost:'→ Lost',
     enriching:'...',saved:'Сохранено: ',
+    loading:'Загрузка...',noFolder:'— Без папки —',km:'км',lblFolder:'Папка',lblPriority:'Приоритет',
+    btnGoogle:'Google',btnGpt:'GPT Сайт',
   },
   en:{
     back:'← Back to dashboard',crmTitle:'CRM — Leads',
@@ -838,6 +842,8 @@ const i18n = {
     cityPlh:'Poltava, Kharkiv...',mapClick:'Click on map to select point',
     touchStatusContacted:'→ Contacted',touchStatusInterested:'→ Interested',touchStatusProposal:'→ Proposal',touchStatusWon:'→ Won',touchStatusLost:'→ Lost',
     enriching:'...',saved:'Saved: ',
+    loading:'Loading...',noFolder:'— No folder —',km:'km',lblFolder:'Folder',lblPriority:'Priority',
+    btnGoogle:'Google',btnGpt:'GPT Site',
   }
 };
 let currentLang = localStorage.getItem('lang') || 'uk';
@@ -856,27 +862,14 @@ function applyLang(){
     const map={'UA':'uk','RU':'ru','EN':'en'};
     b.classList.toggle('active', map[b.textContent]===currentLang);
   });
-  // Static elements
-  document.querySelector('.sidebar-back').childNodes[1] && (document.querySelector('.sidebar-back').lastChild.textContent = ' '+t('back'));
+  // Static sidebar elements (handled by data-i18n now, but keep for safety)
   document.getElementById('ftog-type').textContent = t('folderModeType');
   document.getElementById('ftog-city').textContent = t('folderModeCity');
-  document.getElementById('sf-all').querySelector('span:nth-child(2)').textContent = t('allLeads');
-  document.getElementById('sc-all').querySelector('span:nth-child(2)').textContent = t('allCities');
-  document.querySelector('.sidebar-add span') && (document.querySelector('.sidebar-add').lastChild.textContent = ' '+t('addFolder'));
-  document.getElementById('kpi-total').nextElementSibling.textContent = t('kpiTotal');
-  document.getElementById('kpi-new').nextElementSibling.textContent = t('kpiNew');
-  document.getElementById('kpi-today').nextElementSibling.textContent = t('kpiToday');
-  document.getElementById('kpi-won').nextElementSibling.textContent = t('kpiWon');
-  document.getElementById('kpi-cities').nextElementSibling.textContent = t('kpiCities');
-  document.getElementById('searchInput').placeholder = t('searchPlh');
-  document.getElementById('parseCity').placeholder = t('cityPlh');
-  document.getElementById('searchCity') && (document.getElementById('searchCity').placeholder = t('cityPlh'));
-  document.getElementById('searchQuery') && (document.getElementById('searchQuery').placeholder = t('parseQueryPlh'));
-  document.getElementById('mapCoords').textContent = t('mapClick');
-  // Re-render dynamic content
+  // Re-render all dynamic content with new language
   renderTable();
   renderKanban();
   renderFoldersSidebar();
+  renderFolderSelect();
 }
 
 const API = 'https://primary-production-4b93e.up.railway.app/webhook/crm';
@@ -1000,10 +993,10 @@ function setCityFilter(city){
 }
 
 function renderFolderSelect(){
-  const opts=`<option value="">— Автоматично —</option>`+folders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
+  const opts=`<option value="">${t('parseAutoFolder')}</option>`+folders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
   document.getElementById('parseFolderSelect').innerHTML=opts;
   const lf=document.getElementById('lf-folder');
-  if(lf)lf.innerHTML=`<option value="">— Без папки —</option>`+folders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
+  if(lf)lf.innerHTML=`<option value="">${t('noFolder')}</option>`+folders.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
 }
 
 // STATUS HELPERS
@@ -1090,12 +1083,13 @@ function changePage(dir){page=Math.max(0,page+dir);renderTable();}
 
 // KANBAN
 const STATUSES=['new','contacted','interested','proposal','won','lost'];
-const STATUS_LABELS={new:'New',contacted:'Contacted',interested:'Зацікавлений',proposal:'Пропозиція',won:'Won',lost:'Lost'};
+function getStatusLabels(){return{new:t('sNew'),contacted:t('sContacted'),interested:t('sInterested'),proposal:t('sProposal'),won:t('sWon'),lost:t('sLost')};}
 const STATUS_COLORS={new:'var(--muted2)',contacted:'#1d4ed8',interested:'#c2410c',proposal:'#7c3aed',won:'#16a34a',lost:'var(--accent)'};
 
 function renderKanban(){
   const fl=filtered();
   const wrap=document.getElementById('kanbanWrap');
+  const STATUS_LABELS=getStatusLabels();
   wrap.innerHTML=STATUSES.map(st=>{
     const items=fl.filter(l=>l.status===st);
     return`<div class="kan-col">
@@ -1154,7 +1148,7 @@ async function setLeadStatus(s){
   document.getElementById('statusMenu').classList.remove('open');
   if(!statusMenuLeadId)return;
   await api('leads.update',{id:statusMenuLeadId,status:s});
-  toast('Статус оновлено','success');
+  toast(t('toastSaved'),'success');
   await loadLeads();
   await loadStats();
 }
@@ -1164,7 +1158,7 @@ document.addEventListener('click',()=>document.getElementById('statusMenu').clas
 async function openLeadModal(id){
   editLeadId=id;
   const lead=id?leads.find(l=>l.id===id):null;
-  document.getElementById('leadModalTitle').textContent=lead?lead.name:'Новий лід';
+  document.getElementById('leadModalTitle').textContent=lead?lead.name:t('newLead');
   setLeadTab('info',document.querySelector('.modal-tab'));
 
   document.getElementById('lf-name').value=lead?.name||'';
@@ -1186,7 +1180,7 @@ async function openLeadModal(id){
   document.getElementById('enrichBtn').disabled=!id;
   document.getElementById('enrichDeepBtn').disabled=!lead?.website;
 
-  document.getElementById('touchesList').innerHTML='<div style="color:var(--muted);font-size:12px">Завантаження...</div>';
+  document.getElementById('touchesList').innerHTML=`<div style="color:var(--muted);font-size:12px">${t('loading')}</div>`;
   document.getElementById('leadModal').classList.add('active');
   document.body.style.overflow='hidden';
 
@@ -1320,7 +1314,7 @@ async function enrichDeepLead(){
   document.getElementById('enrichDeepBtn').textContent='...';
   const r=await api('leads.enrich.deep',{id:editLeadId});
   document.getElementById('enrichDeepBtn').disabled=false;
-  document.getElementById('enrichDeepBtn').innerHTML='<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M6 2v6M4 4h4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg> GPT Сайт';
+  document.getElementById('enrichDeepBtn').innerHTML=`<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M6 2v6M4 4h4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg> ${t('btnGpt')}`;
   if(r.success&&r.lead){
     if(r.lead.description)document.getElementById('lf-description').value=r.lead.description;
     if(r.lead.instagram)document.getElementById('lf-instagram').value=r.lead.instagram;
@@ -1335,7 +1329,7 @@ async function enrichDeepLead(){
 function openFolderModal(id){
   editFolderId=id;
   const f=id?folders.find(x=>x.id===id):null;
-  document.getElementById('folderModalTitle').textContent=f?'Редагувати папку':'Нова папка';
+  document.getElementById('folderModalTitle').textContent=f?t('folderEdit'):t('folderTitle');
   document.getElementById('folder-name').value=f?.name||'';
   document.getElementById('folder-color').value=f?.color||'#5b8dee';
   document.getElementById('folderModal').classList.add('active');
@@ -1345,7 +1339,7 @@ function openFolderModal(id){
 async function saveFolder(){
   const name=document.getElementById('folder-name').value.trim();
   const color=document.getElementById('folder-color').value;
-  if(!name){toast('Введіть назву','error');return;}
+  if(!name){toast(t('enterName'),'error');return;}
   let r;
   if(editFolderId){
     r=await api('folders.update',{id:editFolderId,name,color});
@@ -1470,13 +1464,13 @@ async function geocodeCitySearch(){
 async function runParse(){
   if(!parseLat||!parseLng)return;
   const btn=document.getElementById('runParseBtn');
-  btn.disabled=true;btn.textContent='Завантаження...';
+  btn.disabled=true;btn.innerHTML=`<span data-i18n="loading">${t('loading')}</span>`;
   const r=await api('parse',{
     city:document.getElementById('parseCity').value.trim(),
     lat:parseLat,lng:parseLng,
     radius:parseInt(document.getElementById('parseRadius').value)
   });
-  btn.disabled=false;btn.innerHTML='<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> Запустити';
+  btn.disabled=false;btn.innerHTML=`<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> <span data-i18n="parseRun">${t('parseRun')}</span>`;
   if(r.success){
     parseData=r.places||[];
     showParseResults();
@@ -1490,14 +1484,14 @@ async function runSearch(){
   const query=document.getElementById('searchQuery').value.trim();
   if(!query){toast(t('enterQuery'),'error');return;}
   const btn=document.getElementById('runSearchBtn');
-  btn.disabled=true;btn.textContent='Пошук...';
+  btn.disabled=true;btn.innerHTML=`<span>${t('loading')}</span>`;
   const r=await api('parse.search',{
     city:document.getElementById('searchCity').value.trim(),
     lat:searchLat,lng:searchLng,
     radius:parseInt(document.getElementById('searchRadius').value),
     query
   });
-  btn.disabled=false;btn.innerHTML='<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> Знайти';
+  btn.disabled=false;btn.innerHTML=`<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 8l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> ${t('parseFind')}`;
   if(r.success){
     parseData=r.places||[];
     showParseResults();
