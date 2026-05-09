@@ -1054,7 +1054,9 @@ const API2='https://primary-production-4b93e.up.railway.app/webhook/athlete-api'
 
 
 
-let token=localStorage.getItem('token');
+let token=localStorage.getItem('token')
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+;
 let children=[],groups=[],filtered=[],user=null;
 if(!token)window.location.href='/';
 
@@ -1070,7 +1072,6 @@ function loadUserInfo(){
   document.getElementById('sideInitials').textContent=ini||'ТР';
   document.getElementById('statsBtn').href='/trainer-statistics.html?id='+(user.id||'');
   document.getElementById('statsLink').href='/trainer-statistics.html?id='+(user.id||'');
-  console.log('User loaded:', user);
 }
 
 /* ═══════════════════════════════════════════════
@@ -1100,18 +1101,15 @@ async function loadChildren(){
     document.getElementById('emptyChildren').style.display='none';
     document.getElementById('childrenTable').style.display='none';
 
-    const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:user.id}})});
-    let d2=await r2.json();
+    const [d2, d1] = await Promise.all([
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:user.id}})}).then(r=>r.json()),
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})}).then(r=>r.json())
+    ]);
     const trainerGroups=d2.merged||d2||[];
     groups=trainerGroups;
     const groupIds=trainerGroups.map(g=>g.group_id);
-    console.log('Trainer groups:',groupIds,trainerGroups);
     updateGroupFilter();
-
-    const r1=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children',action:'list'})});
-    let d1=await r1.json();
     let allChildren=d1.merged||d1||[];
-    console.log('All children loaded:',allChildren.length);
 
     children=allChildren.filter(c=>{
       if(!c.group_names||c.group_names==='Без группы'||c.group_names==='Без групи')return false;
@@ -1120,7 +1118,6 @@ async function loadChildren(){
         return group&&c.group_names.includes(group.group_name);
       });
     });
-    console.log('Filtered children for trainer:',children.length);
 
     updateClubFilter();
     filtered=children;
@@ -1174,8 +1171,8 @@ function renderChildrenTable(){
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td><img src="${c.photo_url||'https://via.placeholder.com/32'}" class="child-photo" onerror="this.src='https://via.placeholder.com/32'"></td>
-      <td><a href="/athlete-profile.html?id=${c.id}" style="color:var(--p);text-decoration:none;font-weight:500">${c.first_name} ${c.last_name}</a></td>
-      <td><span class="tag tag-blue">${c.group_names||'—'}</span></td>
+      <td><a href="/athlete-profile.html?id=${c.id}" style="color:var(--p);text-decoration:none;font-weight:500">${esc(c.first_name)} ${esc(c.last_name)}</a></td>
+      <td><span class="tag tag-blue">${esc(c.group_names||'—')}</span></td>
       <td>${_medCertCell(c)}</td>
       <td>${_beltCountdown(c)}</td>
       <td>
@@ -1634,7 +1631,7 @@ async function openAttendanceForGroup(groupId,trainingDate){
       const confidence=marked&&marked.confidence?marked.confidence:null;
       return `<div class="child-checkbox-item">
         <input type="checkbox" value="${child.id}" ${isPresent?'checked':''} onchange="updatePresentCount()">
-        <span class="child-name-att">${child.first_name} ${child.last_name}</span>
+        <span class="child-name-att">${esc(child.first_name)} ${esc(child.last_name)}</span>
         ${confidence?`<span class="confidence-badge">${parseFloat(confidence).toFixed(0)}%</span>`:''}
       </div>`;
     }).join('');
@@ -2161,9 +2158,9 @@ async function loadChatMessages(childId,scrollDown){
       if(m.file_url){
         const isImg=/\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(m.file_url);
         bubble=isImg
-          ?`${m.text?'<div>'+m.text+'</div>':''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy" style="max-width:200px;border-radius:8px;display:block">`
-          :`${m.text?'<div style="margin-bottom:.3rem">'+m.text+'</div>':''}<a href="${m.file_url}" target="_blank" class="msg-file-link">📎 ${m.file_url.split('/').pop().split('?')[0]}</a>`;
-      }else{bubble=m.text||'';}
+          ?`${m.text?'<div>'+esc(m.text)+'</div>':''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy" style="max-width:200px;border-radius:8px;display:block">`
+          :`${m.text?'<div style="margin-bottom:.3rem">'+esc(m.text)+'</div>':''}<a href="${m.file_url}" target="_blank" class="msg-file-link">📎 ${m.file_url.split('/').pop().split('?')[0]}</a>`;
+      }else{bubble=esc(m.text||'');}
       const sender=!isMine?`<div class="msg-sender">${document.getElementById('trainerChatMainHdr').textContent||''}</div>`:'';
       const rm=isMine?`<span class="msg-read">${m.is_read?'✓✓':'✓'}</span>`:'';
       const delBtn=`<button class="msg-del" onclick="trainerDeleteChatMsg(${m.id})" title="Видалити">
