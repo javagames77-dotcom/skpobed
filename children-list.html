@@ -1451,7 +1451,7 @@ function closeChildModal(){
 }
 
 // Wire up the hidden form submit to saveChild
-document.getElementById('childFormHidden').addEventListener('submit',saveChild);
+// submit handled by onsubmit attribute
 document.getElementById('childModal').addEventListener('click',e=>{if(e.target===document.getElementById('childModal'))closeChildModal();});
 
 /* ═══════════════════════════════════════════════
