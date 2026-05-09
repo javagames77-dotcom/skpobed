@@ -661,7 +661,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <!-- CHAT TAB -->
 <div class="view" id="tab-chat">
 <div class="page-header">
-  <h1 class="page-title">💬 Чат</h1>
+  <h1 class="page-title">Чат</h1>
   <button class="btn-add" onclick="openBroadcast()"><span>📢</span><span data-i18n="btnBroadcast">Написать всем</span></button>
 </div>
 <div style="background:var(--card-bg);border-radius:12px;border:1px solid var(--border);overflow:hidden">
@@ -691,7 +691,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
         <span id="t-chat-back">Назад</span>
       </button>
       <div id="chatEmpty" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;color:#aaa">
-        <div style="font-size:2.5rem">💬</div>
+        
         <div style="font-size:.9rem" data-i18n="chatSelectContact">Выберите контакт</div>
       </div>
       <div id="chatActiveArea" style="display:none;flex:1;flex-direction:column;overflow:hidden">
@@ -764,11 +764,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
 <div style="font-size:11px;color:var(--muted2);font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em" data-i18n="lblSubUsage">Использование за месяц</div>
 <div style="margin-bottom:1.5rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubDocs">📄 Документы</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubDocs">Документы</div>
 <div id="subDocsUsed" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 <div style="margin-bottom:1.5rem">
-<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubChanges">🔄 Смены групп</div>
+<div style="font-size:11px;color:var(--muted2);margin-bottom:3px" data-i18n="lblSubChanges">Смены групп</div>
 <div id="subChangesUsed" style="font-size:14px;font-weight:600;color:var(--black)"></div>
 </div>
 <div style="margin-bottom:1rem">
@@ -1105,7 +1105,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <label class="form-label" data-i18n="lblLogin">Логин</label>
 <div style="display:flex;gap:.5rem">
 <input type="text" class="form-input" id="childLogin" placeholder="ivan.donetsky" data-i18n-ph="phLogin" style="flex:1">
-<button type="button" onclick="generateCredentials()" style="padding:.5rem .75rem;background:#6c63ff;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;white-space:nowrap" data-i18n="btnGenerate">🔄 Генерировать</button>
+<button type="button" onclick="generateCredentials()" style="padding:.5rem .75rem;background:#6c63ff;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;white-space:nowrap" data-i18n="btnGenerate">Генерировать</button>
 </div>
 </div>
 <div class="form-group" style="margin-bottom:0">
@@ -1143,7 +1143,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="modal" id="messageModal">
 <div class="modal-content" style="max-width:500px">
 <div class="modal-header">
-<h2 class="modal-title" id="messageModalTitle" data-i18n="msgToAdminTitle">✉️ Написать администратору</h2>
+<h2 class="modal-title" id="messageModalTitle" data-i18n="msgToAdminTitle">Написать администратору</h2>
 <button class="modal-close" onclick="closeMessageModal()"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
 </div>
 <div class="modal-body">
@@ -1164,7 +1164,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="modal" id="renewalModal">
 <div class="modal-content" style="max-width:500px">
 <div class="modal-header">
-<h2 class="modal-title" data-i18n="renewalTitle">🔄 Запрос на продление подписки</h2>
+<h2 class="modal-title" data-i18n="renewalTitle">Запрос на продление подписки</h2>
 <button class="modal-close" onclick="closeRenewalModal()"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
 </div>
 <div class="modal-body">
@@ -1225,11 +1225,11 @@ const i18n={
     addTrainer:'Додати співробітника',editTrainer:'Редагувати співробітника',
     lblEmail:'Email *',lblPassword:'Пароль *',lblFirstName:"Ім'я *",lblLastName:'Прізвище *',
     lblBirthDate:'Дата народження',lblPhone:'Телефон',lblQualification:'Кваліфікація',
-    lblRole:'Роль *',lblTrainerGroups:'🥋 Групи тренера',lblAccountingGroups:'💰 Групи для бухгалтерії',
+    lblRole:'Роль *',lblTrainerGroups:'🥋 Групи тренера',lblAccountingGroups:'Групи для бухгалтерії',
     roleTrainer:'Тренер',roleAccountant:'Бухгалтер',
     thPhoto:'Фото',thGroup:'Група',thBelt:'Пояс / Екзамен',
     lblGroups:'Групи *',lblPhoto:'Фото',lblAthleteAccess:'🔐 Доступ спортсмена',
-    lblLogin:'Логін',lblNewPassword:'Новий пароль',btnGenerate:'🔄 Генерувати',
+    lblLogin:'Логін',lblNewPassword:'Новий пароль',btnGenerate:'Генерувати',
     lblChildPhotoHint:'Виберіть нове фото тільки якщо хочете замінити',
     beltCanExam:'Можна здавати!',beltUntilExam:'До екзамену:',
     beltMonths:'міс',beltDays:'дн',
@@ -1262,7 +1262,7 @@ const i18n={
     lblPassword:'Пароль *',lblFirstName:"Ім'я *",lblLastName:'Прізвище *',
     lblClub:'Клуб *',lblBirthDate:'Дата народження',lblPhone:'Телефон',
     lblQualification:'Кваліфікація',lblTrainerGroups:'🥋 Групи тренера',
-    lblAccountingGroups:'💰 Групи для бухгалтерії',lblBeltColor:'Колір поясу',
+    lblAccountingGroups:'Групи для бухгалтерії',lblBeltColor:'Колір поясу',
     lblOrder:'Порядковий номер *',lblMinTerm:'⏱ Мінімальний строк до наступного екзамену',
     lblSourceUrl:'URL джерела *',lblSourceType:'Тип джерела',lblSourcePrompt:'Промпт для AI *',
     lblFrequency:'Частота парсингу',lblStatus:'Статус',lblActive:'Активний',
@@ -1271,18 +1271,18 @@ const i18n={
     lblAthleteAccess:'🔐 Доступ спортсмена',
     // Кнопки модалок
     btnCancel:'Скасувати',btnSave:'Зберегти',btnClose:'Закрити',btnWrite:'Написати',
-    btnSend:'Надіслати',btnRenewalSend:'Надіслати запит',btnGenerate:'🔄 Генерувати',
+    btnSend:'Надіслати',btnRenewalSend:'Надіслати запит',btnGenerate:'Генерувати',
     // Подписка
     addSource:'+ Додати',
     lblSubStatus:'Статус',lblSubPlan:'Тарифний план',lblSubUntil:'Активний до',
     lblSubLeft:'Залишилось днів',lblSubGroupsLimit:'Ліміт груп',
     lblSubGroupsActive:'Активних груп',lblSubUsage:'Використання за місяць',
-    lblSubDocs:'📄 Документи',lblSubChanges:'🔄 Зміни груп',lblSubOverage:'💰 Сума перевищень',
+    lblSubDocs:'Документи',lblSubChanges:'Зміни груп',lblSubOverage:'Сума перевищень',
     lblSubNotFound:'Підписку не знайдено. Зверніться до адміністратора.',
     // Инбокс
-    inboxTitle:'📬 Повідомлення від адміністратора',
-    msgToAdminTitle:'✉️ Написати адміністратору',
-    renewalTitle:'🔄 Запит на продовження підписки',
+    inboxTitle:'Повідомлення від адміністратора',
+    msgToAdminTitle:'Написати адміністратору',
+    renewalTitle:'Запит на продовження підписки',
     // Хинты
     hintMinPassword:'Мінімум 6 символів',hintPhotoChange:'Виберіть нове фото тільки якщо хочете його замінити',
     hintSourceUrl:'Сайт, RSS-стрічка або Telegram-канал',hintPrompt:'Чим точніший промпт — тим кращий результат AI',
@@ -1297,8 +1297,8 @@ const i18n={
     subExpiredShort:'Вичерпано',subPerMonth:'на місяць',
     subGroups:'груп'
   ,
-    msgTypeRenewal:'🔄 Запит продовження',msgTypeReply:'↩️ Відповідь',msgTypeMessage:'💬 Повідомлення',
-    msgReply:'↩️ Відповісти',
+    msgTypeRenewal:'Запит продовження',msgTypeReply:'Відповідь',msgTypeMessage:'Повідомлення',
+    msgReply:'Відповісти',
     renewalMsgPrefix:'Запит на продовження підписки.',
     renewalCommentPrefix:' Коментар: ',
     msgReplyAdmin:'Відповісти адміністратору',
@@ -1357,7 +1357,7 @@ const i18n={
     msgRequestSent:'Запит надіслано адміністратору!',msgSentTo:'Надіслано спортсменам',
     msgErrDelete:'Помилка видалення',msgErrLoad:'Помилка завантаження файлу',
     msgErrEmpty:'Порожня відповідь',msgErrGeneral:'Помилка',
-    confirmDelClub:'Видалити клуб?',confirmDelGroup:'Видалити групу?',
+    confirmDelClub:'Видалити клуб?',msgGroupHasChildren:'Неможливо видалити — є діти в групі',confirmDelGroup:'Видалити групу?',
     confirmDelTrainer:'Видалити тренера?',confirmDelAthlete:'Видалити спортсмена?',
     confirmDelBelt:'Видалити ступінь?',confirmDelEvent:'Видалити захід?',confirmDelMsg:'Видалити повідомлення?'},
   ru:{
@@ -1387,11 +1387,11 @@ const i18n={
     addTrainer:'Добавить сотрудника',editTrainer:'Редактировать сотрудника',
     lblEmail:'Email *',lblPassword:'Пароль *',lblFirstName:'Имя *',lblLastName:'Фамилия *',
     lblBirthDate:'Дата рождения',lblPhone:'Телефон',lblQualification:'Квалификация',
-    lblRole:'Роль *',lblTrainerGroups:'🥋 Группы тренера',lblAccountingGroups:'💰 Группы для бухгалтерии',
+    lblRole:'Роль *',lblTrainerGroups:'🥋 Группы тренера',lblAccountingGroups:'Группы для бухгалтерии',
     roleTrainer:'Тренер',roleAccountant:'Бухгалтер',
     thPhoto:'Фото',thGroup:'Группа',thBelt:'Пояс / Экзамен',
     lblGroups:'Группы *',lblPhoto:'Фото',lblAthleteAccess:'🔐 Доступ спортсмена',
-    lblLogin:'Логин',lblNewPassword:'Новый пароль',btnGenerate:'🔄 Генерировать',
+    lblLogin:'Логин',lblNewPassword:'Новый пароль',btnGenerate:'Генерировать',
     lblChildPhotoHint:'Выберите новое фото только если хотите заменить',
     beltCanExam:'Можно сдавать!',beltUntilExam:'До экзамена:',
     beltMonths:'мес',beltDays:'дн',
@@ -1410,8 +1410,8 @@ const i18n={
     lblExamHint:'Спортсмен увидит обратный отсчёт до экзамена',
     lblSubStatus:'Статус',lblSubPlan:'Тарифный план',lblSubUntil:'Активен до',
     lblSubLeft:'Осталось дней',lblSubGroupsLimit:'Лимит групп',
-    lblSubGroupsActive:'Активных групп',lblSubDocs:'📄 Документы',
-    lblSubChanges:'🔄 Смены групп',lblSubOverage:'💰 Сумма превышений',
+    lblSubGroupsActive:'Активных групп',lblSubDocs:'Документы',
+    lblSubChanges:'Смены групп',lblSubOverage:'Сумма превышений',
     subTrial:'Пробный период',subActive:'Активна',subGrace:'Льготный период',
     subExpiredShort:'Истёк',subPerMonth:'в месяц',
     subGroups:'групп'
@@ -1438,7 +1438,7 @@ const i18n={
     lblPassword:'Пароль *',lblFirstName:'Имя *',lblLastName:'Фамилия *',
     lblClub:'Клуб *',lblBirthDate:'Дата рождения',lblPhone:'Телефон',
     lblQualification:'Квалификация',lblTrainerGroups:'🥋 Группы тренера',
-    lblAccountingGroups:'💰 Группы для бухгалтерии',lblBeltColor:'Цвет пояса',
+    lblAccountingGroups:'Группы для бухгалтерии',lblBeltColor:'Цвет пояса',
     lblOrder:'Порядковый номер *',lblMinTerm:'⏱ Минимальный срок до следующего экзамена',
     lblSourceUrl:'URL источника *',lblSourceType:'Тип источника',lblSourcePrompt:'Промпт для AI *',
     lblFrequency:'Частота парсинга',lblStatus:'Статус',lblActive:'Активен',
@@ -1447,18 +1447,18 @@ const i18n={
     lblAthleteAccess:'🔐 Доступ спортсмена',
     // Кнопки модалок
     btnCancel:'Отмена',btnSave:'Сохранить',btnClose:'Закрыть',btnWrite:'Написать',
-    btnSend:'Отправить',btnRenewalSend:'Отправить запрос',btnGenerate:'🔄 Генерировать',
+    btnSend:'Отправить',btnRenewalSend:'Отправить запрос',btnGenerate:'Генерировать',
     // Подписка
     addSource:'+ Добавить',
     lblSubStatus:'Статус',lblSubPlan:'Тарифный план',lblSubUntil:'Активен до',
     lblSubLeft:'Осталось дней',lblSubGroupsLimit:'Лимит групп',
     lblSubGroupsActive:'Активных групп',lblSubUsage:'Использование за месяц',
-    lblSubDocs:'📄 Документы',lblSubChanges:'🔄 Смены групп',lblSubOverage:'💰 Сумма превышений',
+    lblSubDocs:'Документы',lblSubChanges:'Смены групп',lblSubOverage:'Сумма превышений',
     lblSubNotFound:'Подписка не найдена. Обратитесь к администратору.',
     // Инбокс
-    inboxTitle:'📬 Сообщения от администратора',
-    msgToAdminTitle:'✉️ Написать администратору',
-    renewalTitle:'🔄 Запрос на продление подписки',
+    inboxTitle:'Сообщения от администратора',
+    msgToAdminTitle:'Написать администратору',
+    renewalTitle:'Запрос на продление подписки',
     // Хинты
     hintMinPassword:'Минимум 6 символов',hintPhotoChange:'Выберите новое фото только если хотите его заменить',
     hintSourceUrl:'Сайт, RSS-лента или Telegram-канал',hintPrompt:'Чем точнее промпт — тем лучше результат AI',
@@ -1467,7 +1467,7 @@ const i18n={
     phUrl:'https://...',phLocation:'Адрес или название места...',
     phLogin:'ivan.donetsky',phPasswordEmpty:'Оставьте пустым чтобы не менять',
     phMessage:'Введите сообщение...',phRenewal:'Например: хочу продлить на 3 месяца...',
-    msgReplyAdmin:'Ответить администратору',msgTypeRenewal:'🔄 Запрос продления',msgTypeReply:'↩️ Ответ',msgTypeMessage:'💬 Сообщение',msgReply:'↩️ Ответить',renewalMsgPrefix:'Запрос на продление подписки.',renewalCommentPrefix:' Комментарий: ',
+    msgReplyAdmin:'Ответить администратору',msgTypeRenewal:'Запрос продления',msgTypeReply:'Ответ',msgTypeMessage:'Сообщение',msgReply:'Ответить',renewalMsgPrefix:'Запрос на продление подписки.',renewalCommentPrefix:' Комментарий: ',
     allClubs:'Все клубы',
     lblEventName:'Название *',
     lblEventDate:'Дата мероприятия *',lblEventDeadline:'Крайний срок регистрации',
@@ -1522,7 +1522,7 @@ const i18n={
     msgRequestSent:'Запрос отправлен администратору!',msgSentTo:'Отправлено спортсменам',
     msgErrDelete:'Ошибка удаления',msgErrLoad:'Ошибка загрузки файла',
     msgErrEmpty:'Пустой ответ',msgErrGeneral:'Ошибка',
-    confirmDelClub:'Удалить клуб?',confirmDelGroup:'Удалить группу?',
+    confirmDelClub:'Удалить клуб?',msgGroupHasChildren:'Невозможно удалить — в группе есть дети',confirmDelGroup:'Удалить группу?',
     confirmDelTrainer:'Удалить тренера?',confirmDelAthlete:'Удалить спортсмена?',
     confirmDelBelt:'Удалить степень?',confirmDelEvent:'Удалить мероприятие?',confirmDelMsg:'Удалить сообщение?'},
   en:{
@@ -1556,7 +1556,7 @@ const i18n={
     lblPassword:'Password *',lblFirstName:'First name *',lblLastName:'Last name *',
     lblClub:'Club *',lblBirthDate:'Date of birth',lblPhone:'Phone',
     lblQualification:'Qualification',lblTrainerGroups:'🥋 Trainer groups',
-    lblAccountingGroups:'💰 Accounting groups',lblBeltColor:'Belt color',
+    lblAccountingGroups:'Accounting groups',lblBeltColor:'Belt color',
     lblOrder:'Order number *',lblMinTerm:'⏱ Min. term until next exam',
     lblSourceUrl:'Source URL *',lblSourceType:'Source type',lblSourcePrompt:'AI prompt *',
     lblFrequency:'Parsing frequency',lblStatus:'Status',lblActive:'Active',
@@ -1565,18 +1565,18 @@ const i18n={
     lblAthleteAccess:'🔐 Athlete access',
     // Modal buttons
     btnCancel:'Cancel',btnSave:'Save',btnClose:'Close',btnWrite:'Write',
-    btnSend:'Send',btnRenewalSend:'Send request',btnGenerate:'🔄 Generate',
+    btnSend:'Send',btnRenewalSend:'Send request',btnGenerate:'Generate',
     // Subscription
     addSource:'+ Add',
     lblSubStatus:'Status',lblSubPlan:'Billing plan',lblSubUntil:'Active until',
     lblSubLeft:'Days left',lblSubGroupsLimit:'Groups limit',
     lblSubGroupsActive:'Active groups',lblSubUsage:'Usage this month',
-    lblSubDocs:'📄 Documents',lblSubChanges:'🔄 Group changes',lblSubOverage:'💰 Overage amount',
+    lblSubDocs:'Documents',lblSubChanges:'Group changes',lblSubOverage:'Overage amount',
     lblSubNotFound:'Subscription not found. Contact administrator.',
     // Inbox
-    inboxTitle:'📬 Messages from administrator',
-    msgToAdminTitle:'✉️ Write to administrator',
-    renewalTitle:'🔄 Subscription renewal request',
+    inboxTitle:'Messages from administrator',
+    msgToAdminTitle:'Write to administrator',
+    renewalTitle:'Subscription renewal request',
     // Hints
     hintMinPassword:'Minimum 6 characters',hintPhotoChange:'Select new photo only if you want to replace it',
     hintSourceUrl:'Website, RSS feed or Telegram channel',hintPrompt:'More precise prompt = better AI result',
@@ -1607,7 +1607,7 @@ const i18n={
     subExpiredShort:'Expired',subPerMonth:'per month',
     subGroups:'groups'
   ,
-    msgReplyAdmin:'Reply to administrator',msgTypeRenewal:'🔄 Renewal request',msgTypeReply:'↩️ Reply',msgTypeMessage:'💬 Message',msgReply:'↩️ Reply',renewalMsgPrefix:'Subscription renewal request.',renewalCommentPrefix:' Comment: ',
+    msgReplyAdmin:'Reply to administrator',msgTypeRenewal:'Renewal request',msgTypeReply:'Reply',msgTypeMessage:'Message',msgReply:'Reply',renewalMsgPrefix:'Subscription renewal request.',renewalCommentPrefix:' Comment: ',
     allClubs:'All clubs',
     lblEventName:'Name *',
     lblEventDate:'Event date *',lblEventDeadline:'Registration deadline',
@@ -1662,7 +1662,7 @@ const i18n={
     msgRequestSent:'Request sent to admin!',msgSentTo:'Sent to athletes',
     msgErrDelete:'Delete error',msgErrLoad:'File load error',
     msgErrEmpty:'Empty response',msgErrGeneral:'Error',
-    confirmDelClub:'Delete club?',confirmDelGroup:'Delete group?',
+    confirmDelClub:'Delete club?',msgGroupHasChildren:'Cannot delete — group has children',confirmDelGroup:'Delete group?',
     confirmDelTrainer:'Delete trainer?',confirmDelAthlete:'Delete athlete?',
     confirmDelBelt:'Delete belt?',confirmDelEvent:'Delete event?',confirmDelMsg:'Delete message?'}
 };
@@ -1808,7 +1808,7 @@ function renderGroupsTable(){const tb=document.getElementById('groupsTableBody')
 function addGroup(){document.getElementById('groupModalTitle').textContent=t('addGroup');document.getElementById('groupId').value='';document.getElementById('groupName').value='';document.getElementById('groupClubId').value='';openGroupModal()}
 function editGroup(id){const g=groups.find(x=>x.id===id);if(!g)return;document.getElementById('groupModalTitle').textContent=t('editGroup');document.getElementById('groupId').value=g.id;document.getElementById('groupName').value=g.name;document.getElementById('groupClubId').value=g.club_id;openGroupModal()}
 async function saveGroup(e){e.preventDefault();const id=document.getElementById('groupId').value;const name=document.getElementById('groupName').value.trim();const club_id=document.getElementById('groupClubId').value;if(!name||!club_id){toast(t('msgFillAll'),'warning');return}const data={name,club_id:parseInt(club_id),schedule:'[]'};try{const a=id?'update':'create';if(id)data.id=parseInt(id);const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'groups',action:a,data})});let res=await r.json();const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);if(result&&result.id){closeGroupModal();toast(t('msgGroupSaved'),'success');await loadGroups()}else{toast(t('msgErrGeneral')+': '+(result?.error||''),'error')}}catch(err){console.error(err);toast(t('msgErrGeneral')+': '+err.message,'error')}}
-async function deleteGroup(id){const group=groups.find(g=>g.id===id);if(!group)return;if(group.real_children_count>0){alert(`Невозможно удалить группу "${group.name}".\nВ группе ${group.real_children_count} детей.\n\nСначала удалите всех детей из группы.`);return}if(!await showConfirm(t('confirmDelGroup')+' "'+esc(group.name)+'"?',t('confirmTitle'),t('confirmYes'),t('confirmNo')))return;try{const r=await fetch('https://primary-production-4b93e.up.railway.app/webhook/delete-group',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,group_id:id})});const res=await r.json();if(res.success){toast(t('msgGroupDeleted'),'success');await loadGroups();await loadTrainers()}else{toast(t('msgErrDelete'),'error')}}catch(e){console.error(e);toast(t('msgErrGeneral')+': '+e.message,'error')}}
+async function deleteGroup(id){const group=groups.find(g=>g.id===id);if(!group)return;if(group.real_children_count>0){toast(t('msgGroupHasChildren')||'Невозможно удалить — в группе '+group.real_children_count+' детей','warning');return}if(!await showConfirm(t('confirmDelGroup')+' "'+esc(group.name)+'"?',t('confirmTitle'),t('confirmYes'),t('confirmNo')))return;try{const r=await fetch('https://primary-production-4b93e.up.railway.app/webhook/delete-group',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,group_id:id})});const res=await r.json();if(res.success){toast(t('msgGroupDeleted'),'success');await loadGroups();await loadTrainers()}else{toast(t('msgErrDelete'),'error')}}catch(e){console.error(e);toast(t('msgErrGeneral')+': '+e.message,'error')}}
 async function loadTrainers(){try{document.getElementById('loadingTrainers').style.display='block';document.getElementById('trainersTable').style.display='none';const [r1,r2]=await Promise.all([fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'trainer'}})}),fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'users',action:'list',data:{role:'accountant'}})})]);const d1=await r1.json();const d2=await r2.json();const t1=Array.isArray(d1)?d1:(d1.merged||[]);const t2=Array.isArray(d2)?d2:(d2.merged||[]);trainers=[...t1,...t2].sort((a,b)=>(a.last_name||'').localeCompare(b.last_name||''));renderTrainersTable()}catch(e){console.error('Load staff error:',e);document.getElementById('loadingTrainers').textContent='Ошибка загрузки: '+e.message;trainers=[]}finally{document.getElementById('loadingTrainers').style.display='none';document.getElementById('trainersTable').style.display='table';}}
 function renderTrainersTable(){const tb=document.getElementById('trainersTableBody');tb.innerHTML='';trainers.forEach(tr=>{const clubName=clubs.find(c=>c.id===tr.club_id)?.name||'—';const roleText=tr.role==='accountant'?t('roleAccountant'):t('roleTrainer');const roleColor=tr.role==='accountant'?'var(--p)':'var(--tag-green)';const roleBg=tr.role==='accountant'?'var(--tag-blue-bg)':'var(--tag-green-bg)';const gc=tr.groups_count||0;const r=document.createElement('tr');r.innerHTML=`<td style="font-weight:500;color:var(--black)">${esc(tr.first_name)} ${esc(tr.last_name)}</td><td style="color:var(--muted);font-size:11px">${esc(tr.email)}</td><td><span class="tag" style="background:${roleBg};color:${roleColor}">${roleText}</span></td><td style="color:var(--muted)">${clubName}</td><td>${gc}${tr.acc_groups_count?"/"+tr.acc_groups_count:""}</td><td><div class="row-actions"><button class="act-btn" onclick="editTrainer(${tr.id})" title="${t('editTrainer')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button><button class="act-btn del" onclick="deleteTrainer(${tr.id})" title="${t('deleteTrainer')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></td>`;tb.appendChild(r)});}
 
@@ -3403,7 +3403,7 @@ function applyLang(){
   const roleOpts=document.getElementById('trainerRole');
   if(roleOpts&&roleOpts.options.length>=2){
     roleOpts.options[0].text='🥋 '+t('roleTrainer');
-    roleOpts.options[1].text='💰 '+t('roleAccountant');
+    roleOpts.options[1].text=''+t('roleAccountant');
   }
   // Фильтры спортсменов — club и group selects
   const acf=document.getElementById('athleteClubFilter');
