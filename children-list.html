@@ -1621,7 +1621,7 @@ async function openAttendanceForGroup(groupId,trainingDate){
     const allChildren=childrenData.merged||childrenData||[];
     currentGroupChildren=allChildren.filter(c=>c.group_names&&c.group_names.split(', ').includes(groupName));
 
-    const allAtt=attData.merged||attData||[];
+    const allAtt=Array.isArray(attData.merged)?attData.merged:(Array.isArray(attData)?attData:[]);
     const attendance=allAtt.filter(a=>a.group_id==groupId&&a.training_date&&a.training_date.startsWith(currentTrainingDate));
 
     document.getElementById('totalCount').textContent=currentGroupChildren.length;
