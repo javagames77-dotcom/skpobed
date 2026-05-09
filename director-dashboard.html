@@ -2480,7 +2480,15 @@ function saveSearchParams(){
 }
 
 // ── Run parsing ───────────────────────────────────────────────────────────────
+let _lastParseTime=0;
 async function runParsing(){
+  const now=Date.now();
+  const COOLDOWN=5*60*1000;
+  if(now-_lastParseTime<COOLDOWN){
+    const left=Math.ceil((COOLDOWN-(now-_lastParseTime))/60000);
+    alert(t('logStarting')+' — подождите '+left+' мин.');
+    return;
+  }
   const btn=document.getElementById('runParseBtn');
   const txt=document.getElementById('runBtnText');
   const log=document.getElementById('parseLog');
@@ -2500,7 +2508,7 @@ async function runParsing(){
       body:JSON.stringify({token,resource:'news_parse',action:'run',
         data:{director_id:user.id,sources:active,...params}})});
     const d=await r.json();
-    if(d.success||d.found_count!==undefined){
+    if(d.success||d.found_count!==undefined){_lastParseTime=Date.now();
       addLog(t('logFound')+(d.found_count||0)+t('logNewEvents'),'#00e676');
       addLog(t('logSrcProcessed')+(d.sources_processed||0),'#aaa');
       if(d.errors&&d.errors.length) d.errors.forEach(e=>addLog(e,'#ffb300'));
