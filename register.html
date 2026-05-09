@@ -270,8 +270,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 <script>
 const REGISTER_URL    = 'https://primary-production-4b93e.up.railway.app/webhook/inskill-register';
-const CLOUDINARY_URL  = 'https://api.cloudinary.com/v1_1/dzxvshxvk/image/upload';
-const CLOUDINARY_PRESET = 'ml_default';
 let uploadedPhotoUrl = null;
 
 const i18n = {
@@ -371,15 +369,21 @@ async function handlePhotoChange(event){
   area.classList.remove('has-photo');uploadedPhotoUrl=null;
   try{
     const compressed=await compressImage(file);
-    const formData=new FormData();
-    formData.append('file',compressed);
-    formData.append('upload_preset',CLOUDINARY_PRESET);
-    formData.append('folder','inskill/registrations');
-    const r=await fetch(CLOUDINARY_URL,{method:'POST',body:formData});
+    // Convert to base64 and upload via Railway (not directly to Cloudinary)
+    const b64=await new Promise(res=>{
+      const reader=new FileReader();
+      reader.onload=e=>res(e.target.result);
+      reader.readAsDataURL(compressed);
+    });
+    const r=await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-registration-photo',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({file_base64:b64,file_mime:compressed.type||'image/jpeg'})
+    });
     const data=await r.json();
-    if(data.secure_url){
-      uploadedPhotoUrl=data.secure_url;
-      preview.src=data.secure_url;preview.style.display='block';
+    if(data.url||data.secure_url){
+      uploadedPhotoUrl=data.url||data.secure_url;
+      preview.src=uploadedPhotoUrl;preview.style.display='block';
       uploading.style.display='none';area.classList.add('has-photo');hideAlerts();
     }else{throw new Error('Upload failed');}
   }catch(e){
