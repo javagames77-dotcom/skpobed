@@ -346,6 +346,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <div class="toast" id="toast"></div>
 
 <script>
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
 /* ── i18n ── */
 const i18n={
   uk:{
@@ -507,10 +509,14 @@ async function loadGroup(){
     if(!group||!group.id){showError();return;}
     currentGroup=group;
 
-    // Load children
-    const r2=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,resource:'children',action:'list'})});
-    const d2=await r2.json();
+    // Load children + club in parallel
+    const [d2raw, d3raw] = await Promise.all([
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,resource:'children',action:'list'})}).then(r=>r.json()),
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,resource:'clubs',action:'get',data:{id:group.club_id}})}).then(r=>r.json())
+    ]);
+    const d2=d2raw; const d3=d3raw;
     const allChildren=(d2.merged&&Array.isArray(d2.merged)?d2.merged:(Array.isArray(d2)?d2:[])).filter(c=>c&&c.id);
 
     // Filter to this group — support both name formats
@@ -655,7 +661,7 @@ async function openEditModal(){
 
   document.getElementById('groupNameInput').value=currentGroup.name||'';
   const clubSelect=document.getElementById('groupClubInput');
-  clubSelect.innerHTML=clubs.map(c=>`<option value="${c.id}" ${c.id==currentGroup.club_id?'selected':''}>${c.name}</option>`).join('');
+  clubSelect.innerHTML=clubs.map(c=>`<option value="${c.id}" ${c.id==currentGroup.club_id?'selected':''}>${esc(c.name)}</option>`).join('');
 
   renderScheduleItems();
   document.getElementById('editModal').classList.add('active');
