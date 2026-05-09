@@ -1064,6 +1064,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
 // ── THEME ──
 function toggleTheme(){const h=document.documentElement,n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('theme',n);document.getElementById('icon-sun').style.display=n==='dark'?'none':'block';document.getElementById('icon-moon').style.display=n==='dark'?'block':'none';}
 (function(){const s=localStorage.getItem('theme');if(s==='dark'){document.documentElement.setAttribute('data-theme','dark');document.getElementById('icon-sun').style.display='none';document.getElementById('icon-moon').style.display='block';}})();
@@ -1408,7 +1410,7 @@ async function loadAthlete() {
   if (typeof athlete.groups === 'string') { try { athlete.groups = JSON.parse(athlete.groups); } catch(e) { athlete.groups = []; } }
   athleteGroupIds = (athlete.groups || []).map(g => g.id).filter(Boolean);
 
-  const fullName = `${athlete.first_name} ${athlete.last_name}`;
+  const fullName = `${esc(athlete.first_name)} ${esc(athlete.last_name)}`;
 
   // Hero
   document.getElementById('athleteName').textContent = fullName;
@@ -1453,7 +1455,7 @@ async function loadAthlete() {
   document.getElementById('heroHeight').textContent = athlete.height_cm ? `${athlete.height_cm} ${t('unit_cm')}` : '—';
 
   // Info tab
-  document.getElementById('infoName').textContent = `${athlete.first_name} ${athlete.last_name}`;
+  document.getElementById('infoName').textContent = `${esc(athlete.first_name)} ${esc(athlete.last_name)}`;
   document.getElementById('infoBirth').textContent = birthDate ? `${birthDate.toLocaleDateString('uk-UA')} — ${age} ${t('age_years')}` : '—';
   document.getElementById('infoContact').textContent = athlete.contact_name || '—';
   document.getElementById('infoContactPhone').textContent = athlete.contact_phone || '—';
@@ -1501,14 +1503,12 @@ async function loadGroups() {
   // athlete.groups comes from children_profile as array [{id, name, schedule, club_id}]
   let athleteGroups = [];
   let rawGroups = athlete.groups;
-  console.log('[loadGroups] athlete.groups raw:', rawGroups, typeof rawGroups);
   if (typeof rawGroups === 'string') {
     try { rawGroups = JSON.parse(rawGroups); } catch(e) { rawGroups = []; }
   }
   if (Array.isArray(rawGroups)) {
     athleteGroups = rawGroups.filter(g => g && g.id && g.name);
   }
-  console.log('[loadGroups] athleteGroups after filter:', athleteGroups);
   athleteGroupIds = athleteGroups.map(g => g.id);
 
   // Render group chips
@@ -1897,13 +1897,7 @@ async function loadAttendance() {
     const allRecords = (Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []));
     // Filter by this athlete's child_id (API returns all group members)
     calAttendanceRecords = allRecords.filter(r => r.child_id == athleteId);
-    console.log('[ATT] total:', allRecords.length, '→ filtered for child', athleteId, ':', calAttendanceRecords.length);
-    console.log('[ATT] raw[0]:', JSON.stringify(allRecords[0]));
-    console.log('[ATT] athleteId typeof:', typeof athleteId, athleteId);
     const uniqIds = [...new Set(allRecords.map(r=>r.child_id))];
-    console.log('[ATT] unique child_ids in response:', JSON.stringify(uniqIds.slice(0,15)));
-    console.log('[ATT] present sample:', JSON.stringify(calAttendanceRecords.filter(r=>r.was_present).slice(0,2)));
-    console.log('[ATT] absent sample:', JSON.stringify(calAttendanceRecords.filter(r=>!r.was_present).slice(0,2)));
 
     // Load absence notifications
     try {
@@ -2207,7 +2201,7 @@ async function submitAbsenceNotif() {
     calAbsenceNotifs = d2.merged || d2 || [];
     renderCalendar();
     checkUnexplainedAbsences();
-  } catch(e) { alert('Ошибка: ' + e.message); }
+  } catch(e) { console.error(e); }
 }
 
 // ============================
@@ -2333,11 +2327,11 @@ function renderComps(tab) {
     if (!events.length) { list.innerHTML = `<p style="color:var(--muted);text-align:center;padding:2rem;font-size:12px">${t('ev_no_events')}</p>`; pagination.innerHTML=''; return; }
     list.innerHTML = events.map(e => `
       <div class="upcoming-card">
-        <div class="upcoming-title">${e.title}</div>
-        <div class="upcoming-meta">${new Date(e.event_date).toLocaleDateString('uk-UA')} ${e.location ? '· ' + e.location : ''} ${e.entry_fee ? '· ' + e.entry_fee + ' ' + t('ev_entry') : ''}</div>
+        <div class="upcoming-title">${esc(e.title)}</div>
+        <div class="upcoming-meta">${new Date(e.event_date).toLocaleDateString('uk-UA')} ${esc(e.location ? '· ' + e.location : '')} ${e.entry_fee ? '· ' + e.entry_fee + ' ' + t('ev_entry') : ''}</div>
         <div class="upcoming-actions">
           <button class="btn-add btn-sm" onclick="registerForEvent(${e.id})">${t('ev_attend')}</button>
-          ${e.description ? `<button class="btn-ghost btn-sm" onclick="alert('${(e.description||'').replace(/'/g,"\\'")}')">...</button>` : ''}
+          ${e.description ? `<span class="btn-ghost btn-sm" title="${esc(e.description||'')}">...</span>` : ''}
         </div>
       </div>`).join('');
     pagination.innerHTML = '';
@@ -2556,7 +2550,6 @@ async function loadPhysHistory() {
       if (arr) hist = arr;
     }
     window._physHistory = hist.filter(h => h.weight_kg || h.height_cm);
-    console.log('_physHistory loaded:', window._physHistory.length, 'records');
     return window._physHistory;
   } catch(e) {
     console.error('loadPhysHistory error:', e);
@@ -2907,8 +2900,6 @@ async function uploadDocument(input) {
   // base64 — часть после запятой
   const file_base64 = dataUrl.split(',')[1];
 
-  console.log('uploadDocument:', {file_mime, b64len: file_base64?.length, title, doc_type});
-
   try {
     const r = await fetch('https://primary-production-4b93e.up.railway.app/webhook/upload-athlete-doc', {
       method: 'POST',
@@ -3217,9 +3208,9 @@ async function loadRating() {
       document.getElementById('statRating').textContent = '#' + rating.position;
       document.getElementById('ratingBlock').innerHTML = `
         <div style="display:flex;align-items:center;gap:1rem;margin-bottom:.75rem">
-          <div style="font-size:2rem;font-weight:700;color:var(--p)">#${rating.position}</div>
+          <div style="font-size:2rem;font-weight:700;color:var(--p)">#${esc(rating.position)}</div>
           <div>
-            <div style="font-size:.9rem;font-weight:600">из ${rating.total || '?'} спортсменов клуба</div>
+            <div style="font-size:.9rem;font-weight:600">из ${esc(rating.total || '?')} спортсменов клуба</div>
             <div style="font-size:.8rem;color:var(--muted)">Рейтинг рассчитан: посещаемость + результаты + пояс</div>
           </div>
         </div>
@@ -3265,7 +3256,7 @@ function renderAddress() {
   el.innerHTML = `
     <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:10px">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;margin-top:1px"><path d="M7 1a4 4 0 00-4 4c0 3.5 4 8 4 8s4-4.5 4-8a4 4 0 00-4-4z" stroke="var(--accent)" stroke-width="1.2"/><circle cx="7" cy="5" r="1.3" fill="var(--accent)"/></svg>
-      <span style="font-size:12px;font-weight:500">${athlete.home_address}</span>
+      <span style="font-size:12px;font-weight:500">${esc(athlete.home_address)}</span>
     </div>
     <div id="travelInfo" style="display:flex;flex-direction:column;gap:6px">
       <div style="color:var(--muted);font-size:11px">${t('travel_calculating')}</div>
@@ -3307,7 +3298,7 @@ async function calculateRoutes() {
       // Create placeholder for this club
       const clubEl = document.createElement('div');
       clubEl.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.65rem .9rem';
-      clubEl.innerHTML = `<div style="font-weight:600;font-size:12px;margin-bottom:3px">${club.name}</div><div style="color:var(--muted);font-size:11px">${t('travel_calculating')}</div>`;
+      clubEl.innerHTML = `<div style="font-weight:600;font-size:12px;margin-bottom:3px">${esc(club.name)}</div><div style="color:var(--muted);font-size:11px">${t('travel_calculating')}</div>`;
       travelEl.appendChild(clubEl);
 
       // Geocode club address then calculate route
@@ -3330,7 +3321,7 @@ async function calculateRoutes() {
             const mapUrl = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${athlete.home_lat},${athlete.home_lng};${coords.lat},${coords.lng}`;
             clubEl.innerHTML = `
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-                <div style="font-weight:600;font-size:12px">${club.name}</div>
+                <div style="font-weight:600;font-size:12px">${esc(club.name)}</div>
                 <a href="${mapUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:3px;font-size:11px;color:var(--p);text-decoration:none">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1a3 3 0 00-3 3c0 2.5 3 7 3 7s3-4.5 3-7a3 3 0 00-3-3z" stroke="currentColor" stroke-width="1.1"/><circle cx="6" cy="4.2" r="1" fill="currentColor"/></svg>
                   ${t('travel_map')}
@@ -3561,7 +3552,7 @@ function renderFreezeStatus() {
   const el = document.getElementById('freezeStatus');
   if (athlete.is_frozen) {
     el.innerHTML = `
-      <div class="frozen-notice">${t('freeze_status_on')}${athlete.frozen_reason ? ': ' + athlete.frozen_reason : ''}</div>
+      <div class="frozen-notice">${t('freeze_status_on')}${esc(athlete.frozen_reason ? ': ' + athlete.frozen_reason : '')}</div>
       <button class="btn-success btn-sm" onclick="setFreeze(false)">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 6l2.5 2.5L9 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         ${t('btn_unfreeze')}
@@ -3639,7 +3630,6 @@ async function loadEvents() {
       body: JSON.stringify({token, resource:'events', action:'list', data:{child_id:athleteId}})});
     const d = await r.json();
     allEvents = Array.isArray(d.merged) ? d.merged : (Array.isArray(d) ? d : []);
-    console.log('[EVENTS] first event:', JSON.stringify(allEvents[0]));
     renderEvents();
   } catch(e) { console.error('loadEvents:', e); }
 }
@@ -3695,7 +3685,7 @@ function renderEvents() {
       + '<div style="flex:1">'
       + '<div style="font-weight:700;font-size:1rem;margin-bottom:.4rem">' + e.title + '</div>'
       + `<div style="color:var(--muted);font-size:12px;margin-bottom:3px">${dateFmt}${isPast?` <span style="color:var(--muted2)">(${t('ev_past_lbl')})</span>`:''}</div>`
-      + (e.location ? `<div style="color:var(--muted);font-size:12px;margin-bottom:3px">${e.location}</div>` : '')
+      + (e.location ? `<div style="color:var(--muted);font-size:12px;margin-bottom:3px">${esc(e.location)}</div>` : '')
       + (e.entry_fee ? `<div style="color:var(--muted);font-size:12px;margin-bottom:3px">${t('ev_fee')} ${e.entry_fee} ${t('ev_entry')}</div>` : '')
       + (e.budget ? `<div style="color:var(--muted);font-size:12px;margin-bottom:3px">${t('ev_budget')} ${e.budget} ${t('ev_entry')}</div>` : '')
       + (function() {
@@ -3739,7 +3729,7 @@ async function evDecline(eventId, regId) {
       await apiFetch('event_registrations', 'create', {event_id: eventId, child_id: athleteId, status: 'declined', reason: reason || null});
     }
     await loadEvents();
-  } catch(e) { alert('Ошибка: ' + e.message); }
+  } catch(e) { console.error(e); }
 }
 
 init();
