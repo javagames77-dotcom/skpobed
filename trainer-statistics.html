@@ -542,7 +542,7 @@ function renderStats(){
       const pct=stat.total>0?(stat.present/stat.total*100):0;
       const pctStr=pct.toFixed(1);
       return`<tr>
-        <td style="font-weight:500;color:var(--black)">${esc(stat.group_name}</td>
+        <td style="font-weight:500;color:var(--black)">${esc(stat.group_name)}</td>
         <td>${stat.children.size}</td>
         <td>${stat.trainings.size}</td>
         <td>
@@ -578,8 +578,8 @@ function renderStats(){
         `<div class="dot ${p?'dot-present':'dot-absent'}" title="${p?'+':'-'}"></div>`
       ).join('');
       return`<tr>
-        <td style="font-weight:500;color:var(--black)">${esc(stat.name}</td>
-        <td style="color:var(--muted)">${esc(stat.group_name}</td>
+        <td style="font-weight:500;color:var(--black)">${esc(stat.name)}</td>
+        <td style="color:var(--muted)">${esc(stat.group_name)}</td>
         <td><div class="history-dots">${last10}</div></td>
         <td>
           <div style="display:flex;align-items:center;gap:8px">
