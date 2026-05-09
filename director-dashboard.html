@@ -6,38 +6,7 @@
 <title>InSkill.online — Директор</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-// ── Toast system ──
-function toast(msg, type='info', duration=3000){
-  const c=document.getElementById('toast-container');
-  if(!c)return;
-  const el=document.createElement('div');
-  el.className='toast toast-'+type;
-  el.textContent=msg;
-  c.appendChild(el);
-  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
-  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),250)},duration);
-}
-
-// ── Confirm modal ──
-let _confirmResolve=null;
-function showConfirm(msg, title, confirmText, cancelText, danger=true){
-  return new Promise(resolve=>{
-    _confirmResolve=resolve;
-    document.getElementById('cm-title').textContent=title||t('confirmTitle')||'Подтверждение';
-    document.getElementById('cm-msg').textContent=msg;
-    const cb=document.getElementById('cm-confirm-btn');
-    const cc=document.getElementById('cm-cancel-btn');
-    cb.textContent=confirmText||t('confirmYes')||'Да';
-    cc.textContent=cancelText||t('btnCancel')||'Отмена';
-    cb.className='cm-btn cm-confirm'+(danger?'':' safe');
-    cb.onclick=()=>{document.getElementById('confirm-modal').classList.remove('active');resolve(true)};
-    cc.onclick=()=>{document.getElementById('confirm-modal').classList.remove('active');resolve(false)};
-    document.getElementById('confirm-modal').classList.add('active');
-  });
-}
-
-</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 [data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--sidebar-bg:#ffffff;--input-bg:#fafafa;--theme-btn-bg:#f0f0f0;--theme-btn-color:#6b6b6b;--card-bg:#ffffff;--card-shadow:0 1px 3px rgba(0,0,0,.06);--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green:#16a34a;--tag-red-bg:#fff0f0;--tag-red:#c0392b;--tag-gray-bg:#f5f5f5;--tag-gray:#6b6b6b;--tag-blue-bg:#eff6ff;--tag-blue:#1d4ed8;--p:#0066CC;--s:#FF9933;--d:#1a1a1a;--l:#f8f9fa;--b:#e0e0e0}
 [data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--sidebar-bg:#0a0a0a;--input-bg:#181818;--theme-btn-bg:#222222;--theme-btn-color:#bbbbbb;--card-bg:#181818;--card-shadow:0 1px 3px rgba(0,0,0,.3);--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green:#4ade80;--tag-red-bg:#2a1010;--tag-red:#ff7070;--tag-gray-bg:#222222;--tag-gray:#999999;--tag-blue-bg:#0c1a3a;--tag-blue:#93c5fd;--p:#4d9de0;--s:#FF9933;--d:#ffffff;--l:#181818;--b:#3d3d3d}
@@ -1711,6 +1680,37 @@ const FACEPP_SECRET='sh6HWQ_gYuvkAJwsu1STZWbyx40';
 
 const _dTimers={};
 function debounce(key,fn,ms){return function(){clearTimeout(_dTimers[key]);_dTimers[key]=setTimeout(fn,ms||200);};}
+
+// ── Toast system ──
+function toast(msg, type='info', duration=3000){
+  const c=document.getElementById('toast-container');
+  if(!c)return;
+  const el=document.createElement('div');
+  el.className='toast toast-'+type;
+  el.textContent=msg;
+  c.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),250)},duration);
+}
+
+// ── Confirm modal ──
+let _confirmResolve=null;
+function showConfirm(msg, title, confirmText, cancelText, danger=true){
+  return new Promise(resolve=>{
+    _confirmResolve=resolve;
+    document.getElementById('cm-title').textContent=title||t('confirmTitle')||'Подтверждение';
+    document.getElementById('cm-msg').textContent=msg;
+    const cb=document.getElementById('cm-confirm-btn');
+    const cc=document.getElementById('cm-cancel-btn');
+    cb.textContent=confirmText||t('confirmYes')||'Да';
+    cc.textContent=cancelText||t('btnCancel')||'Отмена';
+    cb.className='cm-btn cm-confirm'+(danger?'':' safe');
+    cb.onclick=()=>{document.getElementById('confirm-modal').classList.remove('active');resolve(true)};
+    cc.onclick=()=>{document.getElementById('confirm-modal').classList.remove('active');resolve(false)};
+    document.getElementById('confirm-modal').classList.add('active');
+  });
+}
+
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 let token=localStorage.getItem('token');
 let user,clubs=[],trainers=[],allAthletes=[],groups=[];
