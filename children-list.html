@@ -1666,7 +1666,6 @@ function closeRecognizingModal(){
 function cancelRecognizing(){
   if(_recognizingAbort)_recognizingAbort.abort();
   closeRecognizingModal();
-  setTimeout(()=>location.reload(),300);
   const btn=document.getElementById('photoUploadBtn');
   const inp=document.getElementById('groupPhoto');
   if(btn)btn.disabled=false;
