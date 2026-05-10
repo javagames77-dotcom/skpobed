@@ -1673,10 +1673,6 @@ function fmtDate(d){return d?new Date(d).toLocaleDateString('ru-RU',{day:'2-digi
 
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const AUTH_API='https://primary-production-4b93e.up.railway.app/webhook/auth/register';
-const CLOUDINARY_CLOUD='dzxvshxvk';
-const CLOUDINARY_UPLOAD_PRESET='ml_default';
-const FACEPP_KEY='ZdR2xNAbSgwc93z8TZ2h31CVq5Pr4UES';
-const FACEPP_SECRET='sh6HWQ_gYuvkAJwsu1STZWbyx40';
 
 const _dTimers={};
 function debounce(key,fn,ms){return function(){clearTimeout(_dTimers[key]);_dTimers[key]=setTimeout(fn,ms||200);};}
