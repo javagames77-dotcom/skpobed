@@ -1771,12 +1771,10 @@ async function openCalendarModal(){
   calendarYear=now.getFullYear();
   calendarMonth=now.getMonth();
   try{
-    const[attRes,grpRes]=await Promise.all([
-      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'list'})}),
-      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:user.id}})})
+    const[attData,grpData]=await Promise.all([
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'list'})}).then(r=>r.text()).then(t=>{try{return t?JSON.parse(t):{}}catch(e){return {}}}).catch(()=>({})),
+      fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'trainer_groups',action:'list',data:{trainer_id:user.id}})}).then(r=>r.json()).catch(()=>({}))
     ]);
-    const attData=await attRes.json();
-    const grpData=await grpRes.json();
     calendarAllAtt=attData.merged||attData||[];
     calendarAttendanceDates=new Set(calendarAllAtt.map(a=>a.training_date?a.training_date.split('T')[0]:'').filter(Boolean));
     calendarTrainerGroups=grpData.merged||grpData||[];
