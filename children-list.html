@@ -1666,6 +1666,7 @@ function closeRecognizingModal(){
 function cancelRecognizing(){
   if(_recognizingAbort)_recognizingAbort.abort();
   closeRecognizingModal();
+  setTimeout(()=>location.reload(),300);
   const btn=document.getElementById('photoUploadBtn');
   const inp=document.getElementById('groupPhoto');
   if(btn)btn.disabled=false;
@@ -1749,7 +1750,7 @@ async function saveAttendance(){
     });
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'attendance',action:'upsert_bulk',data:{group_id:currentGroupId,training_date:currentTrainingDate,marked_by:user.id,children:childrenArr}})});
     const result=await r.json();
-    if(result.success||result.merged){showToast(t('alertAttSaved'));closeMarkAttendanceModal();}
+    if(result.success||result.merged){showToast(t('alertAttSaved'));closeMarkAttendanceModal();setTimeout(()=>location.reload(),500);}
     else throw new Error(result.error||'Unknown error');
   }catch(err){console.error('Save error:',err);showToast(t('alertSaveError')+err.message,'error');}
 }
