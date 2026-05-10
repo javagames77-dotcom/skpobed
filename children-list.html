@@ -1397,6 +1397,7 @@ async function saveChild(e){
             for(let gid of removedGroups){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'remove',data:{child_id:parseInt(id),group_id:gid}})});}
             for(let gid of addedGroups){await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource:'children_groups',action:'assign',data:{child_id:parseInt(id),group_id:gid}})});}
             await loadChildren();
+            setTimeout(()=>location.reload(),300);
           }catch(err){console.error('Background update error:',err);}
         })();
       }else{showToast(t('alertError')+(result?.error||JSON.stringify(res)),'error');}
