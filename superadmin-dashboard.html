@@ -163,9 +163,70 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 /* MAP */
 .leaflet-container{font-family:var(--sans)!important}
 [data-theme="dark"] .leaflet-tile{filter:brightness(.7) saturate(.6) hue-rotate(200deg)}
+
+/* TOAST */
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:10px;font-size:12px;font-weight:500;min-width:240px;max-width:360px;box-shadow:0 4px 20px rgba(0,0,0,.15);pointer-events:all;animation:toastIn .2s ease;background:var(--bg);border:1px solid var(--border);color:var(--text)}
+.toast.success{border-left:3px solid #16a34a}
+.toast.error{border-left:3px solid #dc2626}
+.toast.info{border-left:3px solid #2563eb}
+.toast.warning{border-left:3px solid #d97706}
+.toast-icon{font-size:14px;flex-shrink:0}
+.toast-msg{flex:1;line-height:1.4}
+.toast-close{background:none;border:none;cursor:pointer;color:var(--muted2);font-size:16px;padding:0;line-height:1;flex-shrink:0}
+.toast-close:hover{color:var(--text)}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(8px)}}
+
+/* CONFIRM MODAL */
+#confirmModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:2000;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+#confirmModal.active{display:flex}
+#confirmModal .cbox{background:var(--bg);border:1px solid var(--border);border-radius:14px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}
+#confirmModal .chdr{padding:16px 20px;border-bottom:1px solid var(--border);font-size:14px;font-weight:600;color:var(--black)}
+#confirmModal .cbdy{padding:16px 20px;font-size:13px;color:var(--muted);line-height:1.6}
+#confirmModal .cftr{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* PROMPT MODAL */
+#promptModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:2000;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+#promptModal.active{display:flex}
+#promptModal .cbox{background:var(--bg);border:1px solid var(--border);border-radius:14px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}
+#promptModal .chdr{padding:16px 20px;border-bottom:1px solid var(--border);font-size:14px;font-weight:600;color:var(--black)}
+#promptModal .cbdy{padding:16px 20px}
+#promptModal .cftr{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
 </style>
 </head>
 <body>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- CONFIRM MODAL -->
+<div id="confirmModal">
+  <div class="cbox">
+    <div class="chdr" id="confirmTitle">Підтвердження</div>
+    <div class="cbdy" id="confirmMsg"></div>
+    <div class="cftr">
+      <button class="btn-ghost" id="confirmCancelBtn" onclick="_confirmResolve(false)">Скасувати</button>
+      <button class="btn-danger" id="confirmOkBtn" onclick="_confirmResolve(true)">Підтвердити</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROMPT MODAL -->
+<div id="promptModal">
+  <div class="cbox">
+    <div class="chdr" id="promptTitle">Введіть значення</div>
+    <div class="cbdy">
+      <div class="form-group" style="margin:0">
+        <input class="form-input" id="promptInput" type="text" placeholder="">
+      </div>
+    </div>
+    <div class="cftr">
+      <button class="btn-ghost" onclick="_promptResolve(null)">Скасувати</button>
+      <button class="btn-primary" onclick="_promptResolve(document.getElementById('promptInput').value)">OK</button>
+    </div>
+  </div>
+</div>
 
 <!-- NAV -->
 <nav class="nav">
@@ -799,7 +860,7 @@ function show(name,clickedEl){
 /* ── USER ── */
 function loadUserInfo(){
   const u=JSON.parse(localStorage.getItem('user')||'{}');
-  if(u.role!=='superadmin'){alert('Доступ заборонено');window.location.href='/';return;}
+  if(u.role!=='superadmin'){window.location.href='/';return;}
   const name=u.first_name?(u.first_name+' '+(u.last_name||'')).trim():u.email||'';
   document.getElementById('userName').textContent=name;
   const initials=((u.first_name||'')[0]||'S')+((u.last_name||'')[0]||'A');
@@ -839,15 +900,15 @@ function renderTable(){
     const ds=dl!==null?(dl>0?dl+' дн.':'<span class="tag tag-red">'+t('statusBlocked')+'</span>'):'—';
     const row=document.createElement('tr');
     row.innerHTML=
-      '<td><button style="background:none;border:none;cursor:pointer;color:var(--black);font-weight:500;font-size:13px;padding:0;text-align:left" onclick="showDirectorInfo('+dir.id+')">'+dir.first_name+' '+dir.last_name+'</button></td>'+
-      '<td style="color:var(--muted)">'+dir.email+'</td>'+
+      '<td><button style="background:none;border:none;cursor:pointer;color:var(--black);font-weight:500;font-size:13px;padding:0;text-align:left" onclick="showDirectorInfo('+dir.id+')">'+esc(dir.first_name)+' '+esc(dir.last_name)+'</button></td>'+
+      '<td style="color:var(--muted)">'+esc(dir.email)+'</td>'+
       '<td>'+gc+'</td>'+
       '<td><span class="tag '+tagClass+'">'+tagText+'</span></td>'+
       '<td style="color:var(--muted)">'+aus+'</td>'+
       '<td>'+ds+'</td>'+
       '<td><div class="row-actions">'+
         '<button class="act-btn" onclick="editDirector('+dir.id+')" title="'+t('btnEdit')+'"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5L10.5 3.5l-7 7H1.5v-2l7-7z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>'+
-        '<button class="act-btn msg" onclick="openSendMessage('+dir.id+',\''+dir.first_name+' '+dir.last_name+'\')" title="'+t('msgSend')+'"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 2h9v7H7l-1.5 2L4 9H1.5V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>'+
+        '<button class="act-btn msg" onclick="openSendMessage('+dir.id+',\''+esc(dir.first_name)+' '+esc(dir.last_name)+'\')" title="'+t('msgSend')+'"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1.5 2h9v7H7l-1.5 2L4 9H1.5V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>'+
         '<button class="act-btn del" onclick="deactivateDirector('+dir.id+')" title="'+t('alertDeactivate')+'"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'+
       '</div></td>';
     tb.appendChild(row);
@@ -918,14 +979,14 @@ async function saveDirector(e){
     try{
       const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,resource:'users',action:'update_director',data:data})});
       const text=await r.text();
-      if(!text||!text.trim()){alert(t('errEmpty'));return;}
+      if(!text||!text.trim()){toast(t('errEmpty'),'error');return;}
       const res=JSON.parse(text);
       const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-      if(result&&result.id){closeModal();alert('Директора оновлено!');await loadDirectors();}
-      else{alert('Помилка: '+JSON.stringify(res));}
-    }catch(err){alert('Помилка: '+err.message);}
+      if(result&&result.id){closeModal();toast('Директора оновлено!','success');await loadDirectors();}
+      else{toast('Помилка: '+JSON.stringify(res),'error');}
+    }catch(err){toast('Помилка: '+err.message,'error');}
   }else{
-    if(!password||password.length<6){alert(t('errPassword'));return;}
+    if(!password||password.length<6){toast(t('errPassword'),'error');return;}
     const u=JSON.parse(localStorage.getItem('user')||'{}');
     if(window._approveReqId){
       try{
@@ -935,16 +996,16 @@ async function saveDirector(e){
               trial_ends_at:trialEndsAt,temp_password:password,reviewed_by:u.id,
               phone:document.getElementById('directorPhone').value.trim()||null}})});
         const text=await r.text();
-        if(!text||!text.trim()){alert(t('errEmpty'));return;}
+        if(!text||!text.trim()){toast(t('errEmpty'),'error');return;}
         const res=JSON.parse(text);
         const result=res.merged&&res.merged[0];
         if(result&&result.user_id){
           window._approveReqId=null;window._approveEmail=null;
           closeModal();
-          alert(t('alertApproved')+email+t('alertPassword')+password);
+          toast(t('alertApproved')+email+t('alertPassword')+password,'success',8000);
           await loadRequests();await loadRequestsBadge();await loadDirectors();
-        }else{alert('Помилка: '+JSON.stringify(res));}
-      }catch(err){alert('Помилка: '+err.message);}
+        }else{toast('Помилка: '+JSON.stringify(res),'error');}
+      }catch(err){toast('Помилка: '+err.message,'error');}
     }else{
       try{
         const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -953,27 +1014,27 @@ async function saveDirector(e){
               phone:document.getElementById('directorPhone').value.trim()||null,
               plan_id:planId,groups_limit:groupsLimit,trial_ends_at:trialEndsAt,reviewed_by:u.id}})});
         const text=await r.text();
-        if(!text||!text.trim()){alert(t('errEmpty'));return;}
+        if(!text||!text.trim()){toast(t('errEmpty'),'error');return;}
         const res=JSON.parse(text);
         const result=(res.merged&&res.merged[0])||(Array.isArray(res)?res[0]:res);
-        if(result&&result.id){closeModal();alert('Директора створено!');await loadDirectors();}
-        else{alert('Помилка: '+JSON.stringify(res));}
-      }catch(err){alert('Помилка: '+err.message);}
+        if(result&&result.id){closeModal();toast('Директора створено!','success');await loadDirectors();}
+        else{toast('Помилка: '+JSON.stringify(res),'error');}
+      }catch(err){toast('Помилка: '+err.message,'error');}
     }
   }
 }
 
 async function deactivateDirector(id){
-  if(!confirm(t('alertDeactivate')))return;
+  if(!await confirmDialog(t('alertDeactivate')))return;
   try{
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,resource:'users',action:'delete',data:{id:id}})});
     const text=await r.text();
-    if(!text||!text.trim()){alert(t('errEmpty'));return;}
+    if(!text||!text.trim()){toast(t('errEmpty'),'error');return;}
     const d=JSON.parse(text);
     const result=(d.merged&&d.merged[0])||(Array.isArray(d)?d[0]:d);
-    if(result&&(result.success||result.id)){alert(t('alertDeactivated'));await loadDirectors();}
-    else{alert('Помилка: '+JSON.stringify(d));}
-  }catch(e){alert('Помилка: '+e.message);}
+    if(result&&(result.success||result.id)){toast(t('alertDeactivated'),'success');await loadDirectors();}
+    else{toast('Помилка: '+JSON.stringify(d),'error');}
+  }catch(e){toast('Помилка: '+e.message,'error');}
 }
 
 function openModal(){document.getElementById('directorModal').classList.add('active');document.body.style.overflow='hidden';}
@@ -1017,14 +1078,14 @@ async function loadRequests(){
       var created=new Date(req.created_at).toLocaleDateString('ru-RU');
       return '<div class="req-card">'+
         '<div class="req-card-body">'+
-        '<div class="req-card-name">'+req.first_name+' '+req.last_name+'</div>'+
-        (req.email?'<div class="req-card-row">Email: '+req.email+'</div>':'')+
-        (req.club_name?'<div class="req-card-row">'+t('infoGroups')+': '+req.club_name+'</div>':'')+
-        (req.phone?'<div class="req-card-row">'+t('infoPhone')+': '+req.phone+'</div>':'')+
+        '<div class="req-card-name">'+esc(req.first_name)+' '+esc(req.last_name)+'</div>'+
+        (req.email?'<div class="req-card-row">Email: '+esc(req.email)+'</div>':'')+
+        (req.club_name?'<div class="req-card-row">'+t('infoGroups')+': '+esc(req.club_name)+'</div>':'')+
+        (req.phone?'<div class="req-card-row">'+t('infoPhone')+': '+esc(req.phone)+'</div>':'')+
         '<div class="req-card-row" style="margin-top:6px;font-size:11px;color:var(--muted2)">'+created+'</div>'+
         '</div>'+
         '<div class="req-card-footer">'+
-        '<button class="btn-success approve-btn" data-id="'+req.id+'" data-email="'+(req.email||'')+'" data-firstname="'+(req.first_name||'')+'" data-lastname="'+(req.last_name||'')+'" data-phone="'+(req.phone||'')+'">'+t('approve')+'</button>'+
+        '<button class="btn-success approve-btn" data-id="'+req.id+'" data-email="'+esc(req.email||'')+'" data-firstname="'+esc(req.first_name||'')+'" data-lastname="'+esc(req.last_name||'')+'" data-phone="'+esc(req.phone||'')+'">'+t('approve')+'</button>'+
         '<button class="btn-danger reject-btn" data-id="'+req.id+'">'+t('reject')+'</button>'+
         '</div></div>';
     }).join('');
@@ -1058,7 +1119,7 @@ function approveDirectorRequest(requestId,email,firstName,lastName,phone){
 }
 
 async function rejectDirectorRequest(requestId){
-  const reason=prompt(t('promptReject'));
+  const reason=await promptDialog(t('promptReject'));
   if(reason===null)return;
   const u=JSON.parse(localStorage.getItem('user')||'{}');
   try{
@@ -1066,12 +1127,12 @@ async function rejectDirectorRequest(requestId){
       body:JSON.stringify({token:token,resource:'registration_requests',action:'reject',
         data:{id:requestId,reviewed_by:u.id,reason:reason||null}})});
     const text=await r.text();
-    if(!text||!text.trim()){alert(t('errEmpty'));return;}
+    if(!text||!text.trim()){toast(t('errEmpty'),'error');return;}
     const res=JSON.parse(text);
     const result=res.merged&&res.merged[0];
     if(result&&result.status==='rejected'){await loadRequests();await loadRequestsBadge();}
-    else{alert('Помилка: '+JSON.stringify(res));}
-  }catch(e){alert('Помилка: '+e.message);}
+    else{toast('Помилка: '+JSON.stringify(res),'error');}
+  }catch(e){toast('Помилка: '+e.message,'error');}
 }
 
 /* ── PLANS ── */
@@ -1086,7 +1147,7 @@ async function loadPlans(){
     plans.forEach(function(p){
       const tagClass=p.is_active?'tag-green':'tag-red';
       const tagText=p.is_active?t('tagActive'):t('tagInactive');
-      html+='<tr><td style="font-weight:500">'+p.name+'</td><td style="color:var(--muted)">'+(p.country||'—')+'</td><td style="color:var(--muted)">'+p.currency+'</td>'+
+      html+='<tr><td style="font-weight:500">'+esc(p.name)+'</td><td style="color:var(--muted)">'+(p.country?esc(p.country):'—')+'</td><td style="color:var(--muted)">'+esc(p.currency)+'</td>'+
         '<td>$'+p.price_per_group+'</td>'+
         '<td>'+(p.free_photo_uploads_per_day_per_group||2)+'</td>'+
         '<td>'+(p.free_group_changes_per_month_per_athlete||4)+'</td>'+
@@ -1097,7 +1158,7 @@ async function loadPlans(){
     });
     document.getElementById('plansTbody').innerHTML=html;
     const sel=document.getElementById('directorPlanId');
-    if(sel)sel.innerHTML=plans.filter(function(p){return p.is_active;}).map(function(p){return '<option value="'+p.id+'">'+p.name+' ($'+p.price_per_group+'/'+t('sPlans').toLowerCase()+')</option>';}).join('');
+    if(sel)sel.innerHTML=plans.filter(function(p){return p.is_active;}).map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+' ($'+p.price_per_group+'/'+t('sPlans').toLowerCase()+')</option>';}).join('');
   }catch(e){console.error('loadPlans:',e);}
 }
 
@@ -1168,12 +1229,12 @@ async function savePlan(e){
   try{
     const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'billing_plans',action:id?'update':'create',data:data})});
-    const text=await r.text();if(!text||!text.trim()){alert(t('errEmpty'));return;}
+    const text=await r.text();if(!text||!text.trim()){toast(t('errEmpty'),'error');return;}
     const res=JSON.parse(text);
     const result=res.merged&&res.merged[0];
-    if(result&&result.id){closePlanModal();await loadPlans();alert(t('alertSaved'));}
-    else{alert('Помилка: '+JSON.stringify(res));}
-  }catch(err){alert('Помилка: '+err.message);}
+    if(result&&result.id){closePlanModal();await loadPlans();toast(t('alertSaved'),'success');}
+    else{toast('Помилка: '+JSON.stringify(res),'error');}
+  }catch(err){toast('Помилка: '+err.message,'error');}
 }
 
 /* ── PROVIDERS ── */
@@ -1189,7 +1250,7 @@ async function loadProviders(){
       const tagClass=p.is_active?'tag-green':'tag-red';
       const tagText=p.is_active?t('tagActive'):t('tagInactive');
       html+='<tr>'+
-        '<td><div style="font-weight:500;color:var(--black)">'+p.display_name+'</div><div style="font-size:11px;color:var(--muted2)">'+p.name+'</div></td>'+
+        '<td><div style="font-weight:500;color:var(--black)">'+esc(p.display_name)+'</div><div style="font-size:11px;color:var(--muted2)">'+esc(p.name)+'</div></td>'+
         '<td>'+p.fee_percent+'%</td><td>'+p.priority+'</td>'+
         '<td><span class="tag '+tagClass+'">'+tagText+'</span></td>'+
         '<td><div class="row-actions"><button class="act-btn '+(p.is_active?'del':'')+'" onclick="toggleProvider('+p.id+','+(p.is_active?'false':'true')+')">'+(p.is_active?'<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2v8M8 2v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>':'<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 2l7 4-7 4V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>')+'</button></div></td></tr>';
@@ -1200,12 +1261,12 @@ async function loadProviders(){
 
 async function toggleProvider(id,newState){
   const p=providers.find(function(x){return x.id===id;});
-  if(p&&p.is_active&&providers.filter(function(x){return x.is_active;}).length<=1){alert(t('alertProviderLast'));return;}
+  if(p&&p.is_active&&providers.filter(function(x){return x.is_active;}).length<=1){toast(t('alertProviderLast'),'warning');return;}
   try{
     await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'billing_providers',action:'update',data:{id:id,is_active:newState}})});
     await loadProviders();
-  }catch(e){alert('Помилка: '+e.message);}
+  }catch(e){toast('Помилка: '+e.message,'error');}
 }
 
 /* ── DIRECTOR INFO ── */
@@ -1217,13 +1278,13 @@ function showDirectorInfo(id){
   var dl=dir.active_until?Math.ceil((new Date(dir.active_until)-new Date())/864e5):null;
   var dls=dl!==null?(dl>0?dl+' дн.':(dl===0?'Сьогодні':'Прострочено')):'—';
   var statusMap={'trial':t('statusTrial'),'active':t('statusActive'),'grace':t('statusGrace'),'blocked':t('statusBlocked')};
-  document.getElementById('directorInfoTitle').textContent=dir.first_name+' '+dir.last_name;
+  document.getElementById('directorInfoTitle').textContent=esc(dir.first_name)+' '+esc(dir.last_name);
   document.getElementById('directorInfoBody').innerHTML=
     '<div class="info-grid">'+
-    '<div class="info-row"><label>'+t('infoEmail')+'</label><div class="info-val">'+dir.email+'</div></div>'+
-    '<div class="info-row"><label>'+t('infoPhone')+'</label><div class="info-val">'+(dir.phone||'—')+'</div></div>'+
+    '<div class="info-row"><label>'+t('infoEmail')+'</label><div class="info-val">'+esc(dir.email)+'</div></div>'+
+    '<div class="info-row"><label>'+t('infoPhone')+'</label><div class="info-val">'+(dir.phone?esc(dir.phone):'—')+'</div></div>'+
     '<div class="info-row"><label>'+t('infoGroups')+'</label><div class="info-val">'+(dir.groups_count||0)+'</div></div>'+
-    '<div class="info-row"><label>'+t('infoSubStatus')+'</label><div class="info-val">'+(statusMap[dir.subscription_status]||dir.subscription_status||'—')+'</div></div>'+
+    '<div class="info-row"><label>'+t('infoSubStatus')+'</label><div class="info-val">'+(statusMap[dir.subscription_status]||esc(dir.subscription_status||'—'))+'</div></div>'+
     '<div class="info-row"><label>'+t('infoUntil')+'</label><div class="info-val">'+au+'</div></div>'+
     '<div class="info-row"><label>'+t('infoLeft')+'</label><div class="info-val">'+dls+'</div></div>'+
     '<div class="info-row"><label>'+t('infoLimit')+'</label><div class="info-val">'+(dir.groups_limit||'—')+'</div></div>'+
@@ -1245,18 +1306,18 @@ function closeSendMessage(){document.getElementById('sendMsgModal').classList.re
 async function sendMsgToDirector(){
   var text=document.getElementById('sendMsgText').value.trim();
   var toId=parseInt(document.getElementById('sendMsgToId').value);
-  if(!text){alert(t('errMsg'));return;}
+  if(!text){toast(t('errMsg'),'error');return;}
   try{
     var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'admin_messages',action:'send',
         data:{to_user_id:toId,message:text,type:'message'}})});
     var txt=await r.text();
-    if(!txt||!txt.trim()){alert(t('errEmpty'));return;}
+    if(!txt||!txt.trim()){toast(t('errEmpty'),'error');return;}
     var res=JSON.parse(txt);
     var result=res.merged&&res.merged[0];
-    if(result&&result.id){closeSendMessage();alert(t('alertMsgSent'));}
-    else{alert('Помилка: '+JSON.stringify(res));}
-  }catch(e){alert('Помилка: '+e.message);}
+    if(result&&result.id){closeSendMessage();toast(t('alertMsgSent'),'success');}
+    else{toast('Помилка: '+JSON.stringify(res),'error');}
+  }catch(e){toast('Помилка: '+e.message,'error');}
 }
 
 async function loadSAUnreadCount(){
@@ -1315,14 +1376,68 @@ async function loadSAMessages(){
   }catch(e){console.error(e);loading.style.display='none';}
 }
 
+/* ── TOAST / CONFIRM / PROMPT ── */
+function toast(msg,type,duration){
+  type=type||'info';duration=duration||4000;
+  const icons={success:'✓',error:'✕',warning:'⚠',info:'ℹ'};
+  const el=document.createElement('div');
+  el.className='toast '+type;
+  el.innerHTML='<span class="toast-icon">'+icons[type]+'</span><span class="toast-msg">'+String(msg).replace(/</g,'&lt;')+'</span><button class="toast-close" onclick="this.parentNode.remove()">×</button>';
+  const container=document.getElementById('toast-container');
+  container.appendChild(el);
+  setTimeout(function(){
+    el.style.animation='toastOut .2s ease forwards';
+    setTimeout(function(){el.remove();},200);
+  },duration);
+}
+
+let _confirmResolve=null;
+function confirmDialog(msg,title){
+  return new Promise(function(resolve){
+    document.getElementById('confirmTitle').textContent=title||'Підтвердження';
+    document.getElementById('confirmMsg').textContent=msg;
+    document.getElementById('confirmModal').classList.add('active');
+    document.body.style.overflow='hidden';
+    _confirmResolve=function(val){
+      document.getElementById('confirmModal').classList.remove('active');
+      document.body.style.overflow='';
+      _confirmResolve=null;
+      resolve(val);
+    };
+  });
+}
+window._confirmResolve=function(val){if(_confirmResolve)_confirmResolve(val);};
+
+let _promptResolve=null;
+function promptDialog(msg,title){
+  return new Promise(function(resolve){
+    document.getElementById('promptTitle').textContent=title||msg||'Введіть значення';
+    document.getElementById('promptInput').value='';
+    document.getElementById('promptModal').classList.add('active');
+    document.body.style.overflow='hidden';
+    _promptResolve=function(val){
+      document.getElementById('promptModal').classList.remove('active');
+      document.body.style.overflow='';
+      _promptResolve=null;
+      resolve(val);
+    };
+  });
+}
+window._promptResolve=function(val){if(_promptResolve)_promptResolve(val===null?null:val);};
+// Enter key in prompt input
+document.addEventListener('DOMContentLoaded',function(){
+  var pi=document.getElementById('promptInput');
+  if(pi)pi.addEventListener('keydown',function(e){if(e.key==='Enter')window._promptResolve(pi.value);});
+});
+
 /* ── INIT ── */
+applyLang();
 loadUserInfo();
 loadDirectors();
 loadRequestsBadge();
 loadPlans();
 loadSAUnreadCount();
 setInterval(loadSAUnreadCount,30000);
-applyLang();
 
 (function(){
   const s=localStorage.getItem('theme');
