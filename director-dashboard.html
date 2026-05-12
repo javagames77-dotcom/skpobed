@@ -2990,9 +2990,9 @@ async function sendMessage(){
   try{
     var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'admin_messages',action:'send',data:data})});
-    var t=await r.text();
-    if(!t||!t.trim()){toast(t('msgErrEmpty'),'error');return;}
-    var res=JSON.parse(t);
+    var raw=await r.text();
+    if(!raw||!raw.trim()){toast(t('msgErrEmpty'),'error');return;}
+    var res=JSON.parse(raw);
     var result=res.merged&&res.merged[0];
     if(result&&result.id){closeMessageModal();toast(t('msgMsgSent'),'success');}
     else{toast(t('msgErrGeneral'),'error');}
@@ -3014,9 +3014,9 @@ async function sendRenewalRequest(){
     var r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token:token,resource:'admin_messages',action:'send',
         data:{to_user_id:SUPERADMIN_ID,message:msg,type:'renewal_request'}})});
-    var t=await r.text();
-    if(!t||!t.trim()){toast(t('msgErrEmpty'),'error');return;}
-    var res=JSON.parse(t);
+    var raw=await r.text();
+    if(!raw||!raw.trim()){toast(t('msgErrEmpty'),'error');return;}
+    var res=JSON.parse(raw);
     var result=res.merged&&res.merged[0];
     if(result&&result.id){closeRenewalModal();toast(t('msgRequestSent'),'success');}
     else{toast(t('msgErrGeneral'),'error');}
