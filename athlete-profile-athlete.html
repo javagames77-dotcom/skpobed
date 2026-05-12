@@ -1065,6 +1065,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function safeUrl(u){if(!u)return'#';var s=String(u).trim();return/^https?:///i.test(s)?s:'#';}
 
 // ── THEME ──
 function toggleTheme(){const h=document.documentElement,n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('theme',n);document.getElementById('icon-sun').style.display=n==='dark'?'none':'block';document.getElementById('icon-moon').style.display=n==='dark'?'block':'none';}
@@ -2761,7 +2762,7 @@ async function loadMessages() {
       if (m.file_url) {
         const isImg = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(m.file_url);
         bubble = isImg
-          ? `${m.text?'<div>'+esc(m.text)+'</div>':''}<img src="${esc(m.file_url)}" class="chat-photo" onclick="window.open('${esc(m.file_url)}','_blank')" loading="lazy">`
+          ? `${m.text?'<div>'+esc(m.text)+'</div>':''}<img src="${esc(m.file_url)}" class="chat-photo" onclick="window.open(safeUrl('${m.file_url}'),'_blank')" loading="lazy">`
           : `${m.text?'<div style="margin-bottom:.3rem">'+esc(m.text)+'</div>':''}<a href="${esc(m.file_url)}" target="_blank" style="font-size:11px">&#128206; ${esc(m.file_url.split('/').pop().split('?')[0])}</a>`;
       } else { bubble = esc(m.text || ''); }
       const sender = !isMine && m.sender_name ? `<div class="msg-sender">${esc(m.sender_name)}</div>` : '';
@@ -2844,7 +2845,7 @@ async function loadDocuments() {
     window._athleteDocs = docs;
     const icons = {birth_cert:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="1" width="11" height="18" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 6h5M6 9h5M6 12h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>`, medical:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M10 6v8M6 10h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`, attestation:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`, other:`<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 2h7l4 4v12a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2"/><path d="M12 2v4h4" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>`};
     document.getElementById('docGrid').innerHTML = docs.map(doc => `
-      <div class="doc-card filled" onclick="window.open('${doc.file_url}','_blank')" style="cursor:pointer">
+      <div class="doc-card filled" onclick="window.open(safeUrl('${doc.file_url}'),'_blank')" style="cursor:pointer">
         <button class="doc-delete" onclick="event.stopPropagation();deleteDocument(${doc.id},${doc.child_id})" title="${t('confirm_del_doc')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 3v6.5h3V3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         <div class="doc-icon">${icons[doc.doc_type]||'📎'}</div>
         <div class="doc-name" title="${doc.title || ''}">${doc.title || t('doc_default_name')}</div>
@@ -2983,7 +2984,7 @@ async function loadMedical() {
       return `<div style="border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.75rem">
         <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:${details.length ? '.75rem' : '0'}">
           ${statusHtml}
-          ${cert.file_url ? `<a href="${cert.file_url}" target="_blank" class="btn-ghost btn-sm"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><ellipse cx="6" cy="6" rx="5" ry="3.5" stroke="currentColor" stroke-width="1.1"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/></svg> ${t('med_view')}</a>` : ''}
+          ${cert.file_url ? `<a href="${safeUrl(cert.file_url)}" target="_blank" class="btn-ghost btn-sm"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><ellipse cx="6" cy="6" rx="5" ry="3.5" stroke="currentColor" stroke-width="1.1"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/></svg> ${t('med_view')}</a>` : ''}
           <button class="act-btn del" onclick="deleteMedicalCert(${cert.id},${cert.child_id})" title="${t('med_del')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 3v6.5h3V3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <span style="color:var(--muted);font-size:11px;margin-left:auto">${cert.created_at ? new Date(cert.created_at).toLocaleDateString('uk-UA') : ''}</span>
         </div>
