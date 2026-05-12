@@ -701,6 +701,7 @@ const i18n={
 };
 let currentLang=localStorage.getItem('lang')||'uk';
 function t(k){return (i18n[currentLang]||i18n.uk)[k]||k;}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 function applyLang(){
   document.documentElement.lang=currentLang==='uk'?'uk':currentLang==='ru'?'ru':'en';
@@ -1296,16 +1297,16 @@ async function loadSAMessages(){
       var typeLabel=m.type==='renewal_request'?t('msgTypeRenewal'):m.type==='reply'?t('msgTypeReply'):t('msgTypeMsg');
       var fromName=((m.from_first_name||'')+' '+(m.from_last_name||'')).trim();
       var toName=((m.to_first_name||'')+' '+(m.to_last_name||'')).trim();
-      var replyBtn=isFromDir?'<button class="btn-ghost" style="font-size:11px;padding:5px 10px" data-dirid="'+m.from_user_id+'" data-dirname="'+fromName+'" onclick="openSendMessageFromBtn(this)"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1 4l4-3v2c4 0 6.5 2 6.5 6.5-1.5-2.5-3.5-3.5-6.5-3.5v2L1 4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg> '+t('msgReply')+'</button>':'';
+      var replyBtn=isFromDir?'<button class="btn-ghost" style="font-size:11px;padding:5px 10px" data-dirid="'+m.from_user_id+'" data-dirname="'+esc(fromName)+'" onclick="openSendMessageFromBtn(this)"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M1 4l4-3v2c4 0 6.5 2 6.5 6.5-1.5-2.5-3.5-3.5-6.5-3.5v2L1 4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg> '+t('msgReply')+'</button>':'';
       return '<div class="msg-card'+(isFromDir&&!m.is_read?' unread':'')+'">'+
         '<div class="msg-card-header">'+
-        '<div><span class="msg-card-from">'+fromName+'</span><span style="color:var(--muted2);font-size:11px"> → '+toName+'</span></div>'+
+        '<div><span class="msg-card-from">'+esc(fromName)+'</span><span style="color:var(--muted2);font-size:11px"> → '+esc(toName)+'</span></div>'+
         '<div style="display:flex;align-items:center;gap:6px">'+
         '<span class="tag tag-gray" style="font-size:10px">'+typeLabel+'</span>'+
         (isFromDir&&!m.is_read?'<span class="tag tag-blue" style="font-size:10px">'+t('msgNew')+'</span>':'')+
         '<span class="msg-card-meta">'+date+'</span>'+
         '</div></div>'+
-        '<div class="msg-card-text">'+m.message+'</div>'+
+        '<div class="msg-card-text">'+esc(m.message)+'</div>'+
         replyBtn+'</div>';
     }).join('');
     await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},

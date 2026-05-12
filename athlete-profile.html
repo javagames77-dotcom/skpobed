@@ -2747,10 +2747,10 @@ async function loadMessages() {
       if (m.file_url) {
         const isImg = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(m.file_url);
         bubble = isImg
-          ? `${m.text?'<div>'+m.text+'</div>':''}<img src="${m.file_url}" class="chat-photo" onclick="window.open('${m.file_url}','_blank')" loading="lazy">`
-          : `${m.text?'<div style="margin-bottom:.3rem">'+m.text+'</div>':''}<a href="${m.file_url}" target="_blank" style="font-size:11px">&#128206; ${m.file_url.split('/').pop().split('?')[0]}</a>`;
-      } else { bubble = m.text || ''; }
-      const sender = !isMine && m.sender_name ? `<div class="msg-sender">${m.sender_name}</div>` : '';
+          ? `${m.text?'<div>'+esc(m.text)+'</div>':''}<img src="${esc(m.file_url)}" class="chat-photo" onclick="window.open('${esc(m.file_url)}','_blank')" loading="lazy">`
+          : `${m.text?'<div style="margin-bottom:.3rem">'+esc(m.text)+'</div>':''}<a href="${esc(m.file_url)}" target="_blank" style="font-size:11px">&#128206; ${esc(m.file_url.split('/').pop().split('?')[0])}</a>`;
+      } else { bubble = esc(m.text || ''); }
+      const sender = !isMine && m.sender_name ? `<div class="msg-sender">${esc(m.sender_name)}</div>` : '';
       const delBtn = `<button class="msg-del" onclick="deleteMessage(${m.id})" title="${t('chat_del')}"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M5 3V2h2v1M4.5 3v6.5h3V3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
       return `${sep}<div class="msg ${isMine?'mine':'theirs'}" data-id="${m.id}">${sender}<div class="msg-wrap"><div class="msg-bubble">${bubble}</div>${delBtn}</div><div class="msg-meta"><span class="msg-time">${time}</span></div></div>`;
     }).join('');

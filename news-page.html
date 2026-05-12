@@ -379,6 +379,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 
 <script>
 const API = 'https://primary-production-4b93e.up.railway.app/webhook/api';
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 let token = localStorage.getItem('token');
 let user  = JSON.parse(localStorage.getItem('user') || '{}');
 if (!token) { window.location.href = '/'; throw 0; }
@@ -481,17 +482,17 @@ function renderNews(list) {
     const link = n.original_url || n.source_url || '';
     return `<div class="nc s-${st}">
       <div class="nc-top">
-        <div class="nc-title">${n.title||'Без названия'}</div>
+        <div class="nc-title">${esc(n.title||'Без названия')}</div>
         <span class="tg-st ${st}">${stL[st]||st}</span>
       </div>
       <div class="nc-tags">
         ${ds ? `<span class="tg tg-date">📅 ${ds}</span>` : ''}
-        ${n.location ? `<span class="tg tg-loc">📍 ${n.location}</span>` : ''}
+        ${n.location ? `<span class="tg tg-loc">📍 ${esc(n.location)}</span>` : ''}
         ${dom ? `<span class="tg tg-src">${ico} ${dom}</span>` : ''}
-        ${n.entry_fee ? `<span class="tg tg-fee">💰 ${n.entry_fee} грн</span>` : ''}
-        ${n.event_type ? `<span class="tg tg-type">${n.event_type}</span>` : ''}
+        ${n.entry_fee ? `<span class="tg tg-fee">💰 ${esc(n.entry_fee)} грн</span>` : ''}
+        ${n.event_type ? `<span class="tg tg-type">${esc(n.event_type)}</span>` : ''}
       </div>
-      ${n.description ? `<div class="nc-desc">${n.description.slice(0,270)}${n.description.length>270?'…':''}</div>` : ''}
+      ${n.description ? `<div class="nc-desc">${esc(n.description.slice(0,270))}${n.description.length>270?'…':''}</div>` : ''}
       <div class="nc-actions">
         ${st !== 'added'
           ? `<button class="btn-mkevent" onclick="openEM(${n.id})">📅 Создать мероприятие</button>`
@@ -725,7 +726,7 @@ async function runParsing() {
   txt.textContent = 'Парсинг...';
   log.style.display = 'block'; log.innerHTML = '';
   const addLog = (msg, c = '#4ade80') =>
-    log.innerHTML += `<div style="color:${c}">[${new Date().toLocaleTimeString()}] ${msg}</div>`,
+    log.innerHTML += `<div style="color:${c}">[${new Date().toLocaleTimeString()}] ${esc(msg)}</div>`,
     log.scrollTop = log.scrollHeight;
   addLog('🚀 Запуск парсинга...');
   const active = sources.filter(s => s.is_active);

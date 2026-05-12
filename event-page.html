@@ -400,6 +400,7 @@ const i18n={
 };
 let currentLang=localStorage.getItem('lang')||'uk';
 function t(k){return(i18n[currentLang]||i18n.ru)[k]||k;}
+function esc(s){return String(s==null?''  :s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 function applyLang(){
   document.documentElement.lang=currentLang;
@@ -532,11 +533,11 @@ function renderEvent(){
   if(ev.event_date) chips.innerHTML+=`<span class="chip chip-date">📅 ${fmtDateLong(ev.event_date)}</span>`;
   if(ev.location){
     const chip=document.createElement('span');
-    chip.className='chip chip-loc';chip.innerHTML=`📍 ${ev.location}`;
+    chip.className='chip chip-loc';chip.innerHTML=`📍 ${esc(ev.location)}`;
     chip.onclick=()=>window.open(`https://www.google.com/maps/search/${encodeURIComponent(ev.location)}`,'_blank');
     chips.appendChild(chip);
   }
-  if(ev.group_names) chips.innerHTML+=`<span class="chip chip-groups">👥 ${ev.group_names}</span>`;
+  if(ev.group_names) chips.innerHTML+=`<span class="chip chip-groups">👥 ${esc(ev.group_names)}</span>`;
 
   if(ev.description){const desc=document.getElementById('heroDesc');desc.textContent=ev.description;desc.style.display='block';}
 
@@ -629,7 +630,7 @@ function renderRegistrations(){
       <td><div class="athlete-row">
         ${photo?`<img src="${photo}" class="athlete-photo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:``}
         <div class="athlete-avatar" style="display:${photo?'none':'flex'}">${(reg.first_name||'?')[0]}${(reg.last_name||'')[0]||''}</div>
-        <div><div class="athlete-name">${reg.first_name||''} ${reg.last_name||''}</div><div class="athlete-group">${reg.group_name||''}</div></div>
+        <div><div class="athlete-name">${esc(reg.first_name||'')} ${esc(reg.last_name||'')}</div><div class="athlete-group">${esc(reg.group_name||'')}</div></div>
       </div></td>
       <td><div style="display:flex;align-items:center;gap:4px">
         <input type="number" class="fee-input" id="fee_${reg.id}" value="${fee}" min="0" onchange="onFeeChange(${reg.id},this)" oninput="onFeeChange(${reg.id},this)">

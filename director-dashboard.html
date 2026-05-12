@@ -2798,9 +2798,9 @@ async function loadChatMessages(childId, scrollDown) {
       if (m.file_url) {
         const isImg = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(m.file_url);
         bubble = isImg
-          ? `${m.text?'<div>'+m.text+'</div>':''}<img src="${m.file_url}" onclick="window.open('${m.file_url}','_blank')" loading="lazy">`
-          : `${m.text?'<div style="margin-bottom:.3rem">'+m.text+'</div>':''}<a href="${m.file_url}" target="_blank" class="msg-file-link">📎 ${m.file_url.split('/').pop().split('?')[0]}</a>`;
-      } else { bubble = m.text || ''; }
+          ? `${m.text?'<div>'+esc(m.text)+'</div>':''}<img src="${esc(m.file_url)}" onclick="window.open('${esc(m.file_url)}','_blank')" loading="lazy">`
+          : `${m.text?'<div style="margin-bottom:.3rem">'+esc(m.text)+'</div>':''}<a href="${esc(m.file_url)}" target="_blank" class="msg-file-link">📎 ${esc(m.file_url.split('/').pop().split('?')[0])}</a>`;
+      } else { bubble = esc(m.text || ''); }
       const sender = !isMine ? `<div class="msg-sender">${document.getElementById('chatMainHdr').textContent||'Спортсмен'}</div>` : '';
       const rm = isMine ? `<span class="msg-read">${m.is_read?'✓✓':'✓'}</span>` : '';
       const delBtn = `<button class="msg-del" onclick="deleteChatMsg(${m.id})" title="${t('confirmDelMsg')}"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3h8M4 3V2h4v1M5 5.5v3M7 5.5v3M3 3l.5 7h5l.5-7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;

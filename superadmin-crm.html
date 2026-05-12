@@ -909,6 +909,7 @@ const i18n = {
 };
 let currentLang = localStorage.getItem('lang') || 'uk';
 function t(k){ return (i18n[currentLang]||i18n.uk)[k] || k; }
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function setLang(lang){ currentLang=lang; localStorage.setItem('lang',lang); applyLang(); }
 function applyLang(){
   // Apply all data-i18n elements
@@ -1171,9 +1172,9 @@ function renderTable(){
   body.innerHTML=slice.map(l=>`
     <tr>
       <td><input type="checkbox" data-id="${l.id}" class="lead-cb" onchange="updateBulkBar()" style="width:13px;height:13px;accent-color:var(--black);cursor:pointer"></td>
-      <td><button class="lead-name-btn" onclick="openLeadModal(${l.id})">${l.name||'—'}</button></td>
+      <td><button class="lead-name-btn" onclick="openLeadModal(${l.id})">${esc(l.name)||'—'}</button></td>
       <td>${l.folder_id?(()=>{const f=folders.find(x=>x.id===l.folder_id);return f?`<span style="display:inline-flex;align-items:center;gap:4px"><span class="sitem-dot" style="background:${f.color||'#ccc'}"></span>${folderDisplayName(f)}</span>`:'—';})():'—'}</td>
-      <td style="color:var(--muted)">${l.city||'—'}</td>
+      <td style="color:var(--muted)">${esc(l.city)||'—'}</td>
       <td>${statusPill(l.status,l.id)}</td>
       <td>${priorityHtml(l.priority)}</td>
       <td>${fmtDate(l.next_contact_at)}</td>
@@ -1215,12 +1216,12 @@ function renderKanban(){
     const cards=items.map(l=>`
       <div class="kan-card" data-id="${l.id}">
         <div class="kan-card-top">
-          <div class="kan-card-name">${l.name||'—'}</div>
+          <div class="kan-card-name">${esc(l.name)||'—'}</div>
           <div class="kan-drag-handle" title="Drag">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="5" cy="3.5" r="1" fill="currentColor"/><circle cx="9" cy="3.5" r="1" fill="currentColor"/><circle cx="5" cy="7" r="1" fill="currentColor"/><circle cx="9" cy="7" r="1" fill="currentColor"/><circle cx="5" cy="10.5" r="1" fill="currentColor"/><circle cx="9" cy="10.5" r="1" fill="currentColor"/></svg>
           </div>
         </div>
-        <div class="kan-card-city">${l.city||''}</div>
+        <div class="kan-card-city">${esc(l.city)||''}</div>
         <div class="kan-card-footer">
           <span class="kan-card-type">${l.type||''}</span>
           <span class="pri-dot ${l.priority==='high'?'pri-high':l.priority==='low'?'pri-low':'pri-med'}" style="margin-left:auto;margin-right:0"></span>
@@ -1377,9 +1378,9 @@ function renderTouches(touches){
       <div class="touch-meta">
         <span class="touch-type">${(typeLabel[t2.type]||typeLabel.note)()}</span>
         <span>${new Date(t2.created_at).toLocaleString('uk')}</span>
-        ${t2.result?`<span style="color:var(--tag-green)">→ ${t2.result}</span>`:''}
+        ${t2.result?`<span style="color:var(--tag-green)">→ ${esc(t2.result)}</span>`:''}
       </div>
-      <div class="touch-content">${t2.content||''}</div>
+      <div class="touch-content">${esc(t2.content||'')}</div>
     </div>`).join('');
 }
 

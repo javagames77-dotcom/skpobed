@@ -603,6 +603,7 @@ const i18n={
 };
 let currentLang=localStorage.getItem('lang')||'uk';
 function t(k){return(i18n[currentLang]||i18n.ru)[k]||k;}
+function esc(s){return String(s==null?''  :s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 
 function applyLang(){
   document.documentElement.lang=currentLang;
@@ -1015,7 +1016,7 @@ function renderTable(){
 
     return `<tr id="row_${athlete.id}">
       <td><button class="act-btn" onclick="toggleHistory(${athlete.id})" style="width:24px;height:24px"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></td>
-      <td><div class="athlete-info">${photo}<div><div class="athlete-name">${athlete.last_name} ${athlete.first_name}</div></div></div></td>
+      <td><div class="athlete-info">${photo}<div><div class="athlete-name">${esc(athlete.last_name)} ${esc(athlete.first_name)}</div></div></div></td>
       <td>${statusHtml}</td>
       <td>${periodHtml}</td>
       <td>${rowTariffSel}</td>
