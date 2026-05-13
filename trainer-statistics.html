@@ -335,6 +335,7 @@ const i18n={
     thGroup:'Група',thChildren:'Спортсменів',thTrainings:'Тренувань',thAttendance:'Відвідуваність',
     thAthlete:'Спортсмен',thGroupCol:'Група',thLast10:'Останні тренування',thAttPct:'Відвід. / тренд',thStreak:'Streak',
     streakLabel:'поспіль',missLabel:'пропуски поспіль',trendUp:'',trendDn:'',
+    thStreak:'Серія',
     loading:'Завантаження...',noData:'Немає даних за вибраний період',
     errorLoad:'Помилка завантаження статистики',
     mobBack:'Назад',mobStats:'Статистика',mobExport:'CSV',
@@ -353,6 +354,7 @@ const i18n={
     thGroup:'Группа',thChildren:'Спортсменов',thTrainings:'Тренировок',thAttendance:'Посещаемость',
     thAthlete:'Спортсмен',thGroupCol:'Группа',thLast10:'Последние тренировки',thAttPct:'Посещ. / тренд',thStreak:'Streak',
     streakLabel:'подряд',missLabel:'пропуска подряд',trendUp:'',trendDn:'',
+    thStreak:'Серия',
     loading:'Загрузка...',noData:'Нет данных за выбранный период',
     errorLoad:'Ошибка загрузки статистики',
     mobBack:'Назад',mobStats:'Статистика',mobExport:'CSV',
@@ -371,6 +373,7 @@ const i18n={
     thGroup:'Group',thChildren:'Athletes',thTrainings:'Trainings',thAttendance:'Attendance',
     thAthlete:'Athlete',thGroupCol:'Group',thLast10:'Recent trainings',thAttPct:'Att. / trend',thStreak:'Streak',
     streakLabel:'in a row',missLabel:'missed in a row',trendUp:'',trendDn:'',
+    thStreak:'Streak',
     loading:'Loading...',noData:'No data for selected period',
     errorLoad:'Failed to load statistics',
     mobBack:'Back',mobStats:'Statistics',mobExport:'CSV',
@@ -575,7 +578,7 @@ function renderStats(){
   filtered.forEach(s=>{
     const key=`${s.child_id}_${s.group_id}`;
     if(!childStats[key]){
-      childStats[key]={name:s.child_name||t('unknownChild'),group_name:s.group_name||t('unknownGroup'),history:[],present:0,total:0};
+      childStats[key]={name:s.child_name||t('unknownChild'),group_name:s.group_name||t('unknownGroup'),child_id:s.child_id,history:[],present:0,total:0};
     }
     childStats[key].history.push({date:s.training_date,present:s.was_present});
     childStats[key].total++;
@@ -608,7 +611,7 @@ function renderStats(){
       if(recentPct!==null&&prevPct!==null)trendVal=Math.round(recentPct-prevPct);
 
       // Date strips (variant V)
-      const labelsHtml=last8.map(h=>{const d=h.date?h.date.split('-').slice(1).join('.'):' ';return`<div class="d-lbl">${d}</div>`;}).join('');
+      const labelsHtml=last8.map(h=>{const d=h.date?h.date.slice(8)+'.'+h.date.slice(5,7):' ';return`<div class="d-lbl">${d}</div>`;}).join('');
       const segsHtml=last8.map(h=>`<div class="d-seg ${h.present?'p':'a'}"></div>`).join('');
 
       // Pct
@@ -629,9 +632,10 @@ function renderStats(){
       // Miss flag
       const missHtml=missStreak>=3?`<div class="miss-flag">${missStreak} ${t('missLabel')}</div>`:'';
 
+      const profileUrl='/athlete-profile.html?id='+stat.child_id;
       return`<tr>
         <td>
-          <div style="font-weight:500;color:var(--black)">${esc(stat.name)}</div>
+          <a href="${profileUrl}" style="font-weight:500;color:var(--black);text-decoration:none;border-bottom:1px dashed var(--border2);cursor:pointer" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--black)'">${esc(stat.name)}</a>
           <div style="font-size:11px;color:var(--muted)">${esc(stat.group_name)}</div>
           ${missHtml}
         </td>
