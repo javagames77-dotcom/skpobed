@@ -77,19 +77,27 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .stats-table tbody tr:hover td{background:var(--tbl-hover)}
 
 /* ── ATTENDANCE BAR ── */
-.att-bar{height:16px;background:var(--bg3);border-radius:8px;overflow:hidden;position:relative;min-width:80px}
-.att-fill{height:100%;background:linear-gradient(90deg,var(--tag-green),#34d399);border-radius:8px;transition:width .3s}
-.att-fill.low{background:linear-gradient(90deg,var(--tag-red),#f87171)}
-.att-fill.mid{background:linear-gradient(90deg,var(--s),#fbbf24)}
-.att-pct{font-size:11px;font-weight:600;color:var(--muted);margin-left:8px;white-space:nowrap}
-
-/* ── HISTORY DOTS ── */
-.history-dots{display:flex;gap:3px;flex-wrap:wrap}
-.dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;position:relative;cursor:default}
-.dot-present{background:var(--tag-green)}
-.dot-absent{background:var(--tag-red-bg);border:1px solid var(--tag-red)}
-.dot-date{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:9px;white-space:nowrap;background:var(--bg);border:1px solid var(--border);color:var(--muted);border-radius:4px;padding:2px 4px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10}
-.dot:hover .dot-date{opacity:1}
+.att-bar{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;min-width:50px}
+.att-fill{height:100%;border-radius:2px;background:#16a34a}
+.att-fill.low{background:#dc2626}
+.att-fill.mid{background:#f59e0b}
+.att-pct{font-size:13px;font-weight:500;white-space:nowrap}
+.att-pct.hi{color:#16a34a}
+.att-pct.md{color:#f59e0b}
+.att-pct.lo{color:#dc2626}
+.att-trend{font-size:11px;font-weight:500;white-space:nowrap}
+.att-trend.up{color:#16a34a}
+.att-trend.dn{color:#dc2626}
+.att-trend.fl{color:var(--muted2)}
+.streak-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:500;color:#1d4ed8;background:#eff6ff;border:1px solid #bfdbfe;border-radius:5px;padding:1px 6px;white-space:nowrap}
+.miss-flag{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:500;color:#991b1b;background:#fef2f2;border:1px solid #fca5a5;border-radius:5px;padding:2px 5px;margin-top:3px}
+.d-row{display:flex;flex-direction:column;gap:2px}
+.d-labels{display:flex;gap:3px}
+.d-segs{display:flex;gap:3px}
+.d-lbl{font-size:9px;color:var(--muted2);width:26px;text-align:center;line-height:1.2;flex-shrink:0}
+.d-seg{width:26px;height:7px;border-radius:2px;flex-shrink:0}
+.d-seg.p{background:var(--tag-green)}
+.d-seg.a{background:var(--tag-red-bg);border:1px solid var(--tag-red)}
 
 /* ── BUTTONS ── */
 .btn{padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
@@ -266,19 +274,21 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
     <div class="card-header">
       <span class="card-title" id="lbl-children-stats-title">Відвідуваність по спортсменах</span>
     </div>
-    <table class="stats-table">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+    <table class="stats-table" style="min-width:500px">
       <thead>
         <tr>
           <th id="th-athlete">Спортсмен</th>
-          <th id="th-group-col">Група</th>
-          <th id="th-last10">Останні 10</th>
-          <th id="th-att-pct">Відвідуваність</th>
+          <th id="th-last10">Останні тренування</th>
+          <th id="th-streak">Streak</th>
+          <th id="th-att-pct" style="text-align:right">Відвід. / тренд</th>
         </tr>
       </thead>
       <tbody id="childrenStatsBody">
         <tr><td colspan="4" class="loading-state">...</td></tr>
       </tbody>
     </table>
+    </div>
   </div>
 
 </main>
@@ -323,7 +333,8 @@ const i18n={
     groupStatsTitle:'Відвідуваність по групах',
     childrenStatsTitle:'Відвідуваність по спортсменах',
     thGroup:'Група',thChildren:'Спортсменів',thTrainings:'Тренувань',thAttendance:'Відвідуваність',
-    thAthlete:'Спортсмен',thGroupCol:'Група',thLast10:'Останні 10',thAttPct:'Відвідуваність',
+    thAthlete:'Спортсмен',thGroupCol:'Група',thLast10:'Останні тренування',thAttPct:'Відвід. / тренд',thStreak:'Streak',
+    streakLabel:'поспіль',missLabel:'пропуски поспіль',trendUp:'',trendDn:'',
     loading:'Завантаження...',noData:'Немає даних за вибраний період',
     errorLoad:'Помилка завантаження статистики',
     mobBack:'Назад',mobStats:'Статистика',mobExport:'CSV',
@@ -340,7 +351,8 @@ const i18n={
     groupStatsTitle:'Посещаемость по группам',
     childrenStatsTitle:'Посещаемость по спортсменам',
     thGroup:'Группа',thChildren:'Спортсменов',thTrainings:'Тренировок',thAttendance:'Посещаемость',
-    thAthlete:'Спортсмен',thGroupCol:'Группа',thLast10:'Последние 10',thAttPct:'Посещаемость',
+    thAthlete:'Спортсмен',thGroupCol:'Группа',thLast10:'Последние тренировки',thAttPct:'Посещ. / тренд',thStreak:'Streak',
+    streakLabel:'подряд',missLabel:'пропуска подряд',trendUp:'',trendDn:'',
     loading:'Загрузка...',noData:'Нет данных за выбранный период',
     errorLoad:'Ошибка загрузки статистики',
     mobBack:'Назад',mobStats:'Статистика',mobExport:'CSV',
@@ -357,7 +369,8 @@ const i18n={
     groupStatsTitle:'Attendance by group',
     childrenStatsTitle:'Attendance by athlete',
     thGroup:'Group',thChildren:'Athletes',thTrainings:'Trainings',thAttendance:'Attendance',
-    thAthlete:'Athlete',thGroupCol:'Group',thLast10:'Last 10',thAttPct:'Attendance',
+    thAthlete:'Athlete',thGroupCol:'Group',thLast10:'Recent trainings',thAttPct:'Att. / trend',thStreak:'Streak',
+    streakLabel:'in a row',missLabel:'missed in a row',trendUp:'',trendDn:'',
     loading:'Loading...',noData:'No data for selected period',
     errorLoad:'Failed to load statistics',
     mobBack:'Back',mobStats:'Statistics',mobExport:'CSV',
@@ -390,7 +403,7 @@ function applyLang(){
   s('th-group','thGroup');s('th-children','thChildren');
   s('th-trainings','thTrainings');s('th-attendance','thAttendance');
   s('th-athlete','thAthlete');s('th-group-col','thGroupCol');
-  s('th-last10','thLast10');s('th-att-pct','thAttPct');
+  s('th-last10','thLast10');s('th-att-pct','thAttPct');s('th-streak','thStreak');
   s('mob-lbl-back','mobBack');s('mob-lbl-stats','mobStats');s('mob-lbl-export','mobExport');
   if(allStats.length||loadDone)renderStats();
 }
@@ -575,21 +588,64 @@ function renderStats(){
   }else{
     childBody.innerHTML=Object.values(childStats).map(stat=>{
       const pct=stat.total>0?(stat.present/stat.total*100):0;
-      const pctStr=pct.toFixed(1);
       const sorted=stat.history.slice().sort((a,b)=>a.date>b.date?1:a.date<b.date?-1:0);
-      const last10=sorted.slice(-10).map(h=>{
-        const d=h.date?h.date.split('-').slice(1).join('.'):'';
-        const lbl=(h.present?'+':'-')+(d?' '+d:'');
-        return`<div class="dot ${h.present?'dot-present':'dot-absent'}" title="${lbl}"><span class="dot-date">${d}</span></div>`;
-      }).join('');
+      const last8=sorted.slice(-8);
+
+      // Streak — consecutive present from end
+      let streak=0;
+      for(let i=sorted.length-1;i>=0;i--){if(sorted[i].present)streak++;else break;}
+
+      // Miss streak — consecutive absent from end
+      let missStreak=0;
+      for(let i=sorted.length-1;i>=0;i--){if(!sorted[i].present)missStreak++;else break;}
+
+      // Trend: last 4 vs previous 4
+      const recent=sorted.slice(-4);
+      const prev=sorted.slice(-8,-4);
+      const recentPct=recent.length?recent.filter(h=>h.present).length/recent.length*100:null;
+      const prevPct=prev.length?prev.filter(h=>h.present).length/prev.length*100:null;
+      let trendVal=null;
+      if(recentPct!==null&&prevPct!==null)trendVal=Math.round(recentPct-prevPct);
+
+      // Date strips (variant V)
+      const labelsHtml=last8.map(h=>{const d=h.date?h.date.split('-').slice(1).join('.'):' ';return`<div class="d-lbl">${d}</div>`;}).join('');
+      const segsHtml=last8.map(h=>`<div class="d-seg ${h.present?'p':'a'}"></div>`).join('');
+
+      // Pct
+      const pctCls=pct>=70?'hi':pct>=40?'md':'lo';
+      const pctStr=Math.round(pct)+'%';
+
+      // Trend html
+      let trendHtml='';
+      if(trendVal!==null){
+        const cls=trendVal>0?'up':trendVal<0?'dn':'fl';
+        const sign=trendVal>0?'+':'';
+        trendHtml=`<span class="att-trend ${cls}">${sign}${trendVal}%</span>`;
+      }
+
+      // Streak badge
+      const streakHtml=streak>=2?`<span class="streak-badge">${streak} ${t('streakLabel')}</span>`:'—';
+
+      // Miss flag
+      const missHtml=missStreak>=3?`<div class="miss-flag">${missStreak} ${t('missLabel')}</div>`:'';
+
       return`<tr>
-        <td style="font-weight:500;color:var(--black)">${esc(stat.name)}</td>
-        <td style="color:var(--muted)">${esc(stat.group_name)}</td>
-        <td><div class="history-dots">${last10}</div></td>
         <td>
-          <div style="display:flex;align-items:center;gap:8px">
-            <div class="att-bar" style="flex:1"><div class="${attFillClass(pct)}" style="width:${pctStr}%"></div></div>
-            <span class="att-pct">${pctStr}%</span>
+          <div style="font-weight:500;color:var(--black)">${esc(stat.name)}</div>
+          <div style="font-size:11px;color:var(--muted)">${esc(stat.group_name)}</div>
+          ${missHtml}
+        </td>
+        <td>
+          <div class="d-row">
+            <div class="d-labels">${labelsHtml}</div>
+            <div class="d-segs">${segsHtml}</div>
+          </div>
+        </td>
+        <td>${streakHtml}</td>
+        <td style="text-align:right">
+          <div style="display:flex;align-items:baseline;gap:5px;justify-content:flex-end">
+            <span class="att-pct ${pctCls}">${pctStr}</span>
+            ${trendHtml}
           </div>
         </td>
       </tr>`;
