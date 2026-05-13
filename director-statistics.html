@@ -67,7 +67,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .kpi-trend.neutral{color:var(--muted2)}
 
 /* ── CARD ── */
-.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);margin-bottom:16px}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);margin-bottom:16px;overflow:hidden}
 .card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .card-title{font-size:13px;font-weight:600;color:var(--black)}
 .card-body{padding:16px}
@@ -777,18 +777,20 @@ async function loadAll(){
     const u=JSON.parse(localStorage.getItem('user')||'{}');
     const dirId=u.id;
     // Параллельная загрузка всех данных
-    const [athletes,groups,payments,attendance]=await Promise.all([
-      apiFetch('children','list',{}).catch(()=>[]),
-      apiFetch('groups','list',{}).catch(()=>[]),
-      apiFetch('payments','list',{}).catch(()=>[]),
-      apiFetch('attendance','list',{}).catch(()=>[])
+    const [athletes,groups,payments,attendance,belts,childGroups]=await Promise.all([
+      apiFetch('children','list',{}),
+      apiFetch('groups','list',{}),
+      apiFetch('payments','list',{}),
+      apiFetch('attendance','list',{}),
+      apiFetch('athlete_belts','list',{}),
+      apiFetch('children_groups','list',{})
     ]);
     allAthletes=athletes||[];
     allGroups=groups||[];
     allPayments=payments||[];
     allAttendance=(attendance||[]).map(a=>({...a,training_date:a.training_date?a.training_date.split('T')[0]:null}));
-    allBelts=[];
-    allChildGroups=[];
+    allBelts=belts||[];
+    allChildGroups=childGroups||[];
 
     // Заполнить фильтр групп
     const sel=document.getElementById('attGroupFilter');
@@ -1104,7 +1106,7 @@ function renderRiskZone(){
   const attMap={};
   allAttendance.forEach(a=>{
     if(!a.training_date||new Date(a.training_date)<from30)return;
-    if(!attMap[a.child_id])attMap[a.child_id]={total:0,present:0,group:a.group_name||'—'};
+    if(!attMap[a.child_id])attMap[a.child_id]={total:0,present:0};
     attMap[a.child_id].total++;
     if(a.is_present||a.was_present)attMap[a.child_id].present++;
   });
@@ -1128,12 +1130,13 @@ function renderRiskZone(){
     const s=attMap[a.id];
     const pct=s?Math.round(s.present/s.total*100):0;
     const ini=((a.first_name||'')[0]||'')+((a.last_name||'')[0]||'');
-    const grpName=s?s.group:'—';
+    const grpId=allChildGroups.find(cg=>cg.child_id===a.id);
+    const grp=grpId?allGroups.find(g=>g.id===grpId.group_id):null;
     return`<div class="risk-row">
       <div class="risk-avatar">${esc(ini.toUpperCase())}</div>
       <div>
         <div class="risk-name">${esc(a.first_name||'')} ${esc(a.last_name||'')}</div>
-        <div class="risk-group">${esc(grpName)}</div>
+        <div class="risk-group">${grp?esc(grp.name):'—'}</div>
       </div>
       <div style="text-align:right">
         <div style="font-size:12px;font-weight:600;color:var(--tag-red)">${pct}%</div>
@@ -1251,13 +1254,16 @@ function renderAttendance(){
   // Таблица по спортсменам
   const childStats={};
   att.forEach(a=>{
-    if(!childStats[a.child_id])childStats[a.child_id]={total:0,present:0,name:a.child_name||('ID '+a.child_id),group:a.group_name||'—'};
+    if(!childStats[a.child_id])childStats[a.child_id]={total:0,present:0,group_id:a.group_id};
     childStats[a.child_id].total++;
-    if(a.was_present||a.is_present)childStats[a.child_id].present++;
+    if(a.is_present||a.was_present)childStats[a.child_id].present++;
   });
-  const rows=Object.values(childStats).map(s=>{
+  const rows=Object.entries(childStats).map(([cid,s])=>{
+    const ath=allAthletes.find(a=>a.id==cid);
+    const grpId=allChildGroups.find(cg=>cg.child_id==cid);
+    const grp=grpId?allGroups.find(g=>g.id===grpId.group_id):null;
     const pct=Math.round(s.present/s.total*100);
-    return{name:s.name,group:s.group,total:s.total,present:s.present,pct};
+    return{name:ath?(ath.first_name+' '+ath.last_name).trim():'ID '+cid,group:grp?grp.name:'—',total:s.total,present:s.present,pct};
   }).sort((a,b)=>a.pct-b.pct);
 
   const tbody=document.getElementById('att-athletes-body');
