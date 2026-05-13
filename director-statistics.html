@@ -777,19 +777,18 @@ async function loadAll(){
     const u=JSON.parse(localStorage.getItem('user')||'{}');
     const dirId=u.id;
     // Параллельная загрузка всех данных
-    const [athletes,groups,payments,attendance,childGroups]=await Promise.all([
+    const [athletes,groups,payments,attendance]=await Promise.all([
       apiFetch('children','list',{}).catch(()=>[]),
       apiFetch('groups','list',{}).catch(()=>[]),
       apiFetch('payments','list',{}).catch(()=>[]),
-      apiFetch('attendance','list',{}).catch(()=>[]),
-      apiFetch('children_groups','list',{}).catch(()=>[])
+      apiFetch('attendance','list',{}).catch(()=>[])
     ]);
     allAthletes=athletes||[];
     allGroups=groups||[];
     allPayments=payments||[];
     allAttendance=(attendance||[]).map(a=>({...a,training_date:a.training_date?a.training_date.split('T')[0]:null}));
     allBelts=[];
-    allChildGroups=childGroups||[];
+    allChildGroups=[];
 
     // Заполнить фильтр групп
     const sel=document.getElementById('attGroupFilter');
@@ -1105,7 +1104,7 @@ function renderRiskZone(){
   const attMap={};
   allAttendance.forEach(a=>{
     if(!a.training_date||new Date(a.training_date)<from30)return;
-    if(!attMap[a.child_id])attMap[a.child_id]={total:0,present:0};
+    if(!attMap[a.child_id])attMap[a.child_id]={total:0,present:0,group:a.group_name||'—'};
     attMap[a.child_id].total++;
     if(a.is_present||a.was_present)attMap[a.child_id].present++;
   });
@@ -1129,13 +1128,12 @@ function renderRiskZone(){
     const s=attMap[a.id];
     const pct=s?Math.round(s.present/s.total*100):0;
     const ini=((a.first_name||'')[0]||'')+((a.last_name||'')[0]||'');
-    const grpId=allChildGroups.find(cg=>cg.child_id===a.id);
-    const grp=grpId?allGroups.find(g=>g.id===grpId.group_id):null;
+    const grpName=s?s.group:'—';
     return`<div class="risk-row">
       <div class="risk-avatar">${esc(ini.toUpperCase())}</div>
       <div>
         <div class="risk-name">${esc(a.first_name||'')} ${esc(a.last_name||'')}</div>
-        <div class="risk-group">${grp?esc(grp.name):'—'}</div>
+        <div class="risk-group">${esc(grpName)}</div>
       </div>
       <div style="text-align:right">
         <div style="font-size:12px;font-weight:600;color:var(--tag-red)">${pct}%</div>
@@ -1253,16 +1251,13 @@ function renderAttendance(){
   // Таблица по спортсменам
   const childStats={};
   att.forEach(a=>{
-    if(!childStats[a.child_id])childStats[a.child_id]={total:0,present:0,group_id:a.group_id};
+    if(!childStats[a.child_id])childStats[a.child_id]={total:0,present:0,name:a.child_name||('ID '+a.child_id),group:a.group_name||'—'};
     childStats[a.child_id].total++;
-    if(a.is_present||a.was_present)childStats[a.child_id].present++;
+    if(a.was_present||a.is_present)childStats[a.child_id].present++;
   });
-  const rows=Object.entries(childStats).map(([cid,s])=>{
-    const ath=allAthletes.find(a=>a.id==cid);
-    const grpId=allChildGroups.find(cg=>cg.child_id==cid);
-    const grp=grpId?allGroups.find(g=>g.id===grpId.group_id):null;
+  const rows=Object.values(childStats).map(s=>{
     const pct=Math.round(s.present/s.total*100);
-    return{name:ath?(ath.first_name+' '+ath.last_name).trim():'ID '+cid,group:grp?grp.name:'—',total:s.total,present:s.present,pct};
+    return{name:s.name,group:s.group,total:s.total,present:s.present,pct};
   }).sort((a,b)=>a.pct-b.pct);
 
   const tbody=document.getElementById('att-athletes-body');
