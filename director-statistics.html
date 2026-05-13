@@ -6,15 +6,12 @@
 <title>Статистика — InSkill.online</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-[data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--sidebar-bg:#ffffff;--input-bg:#fafafa;--card-bg:#ffffff;--card-shadow:0 1px 3px rgba(0,0,0,.06);--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green:#16a34a;--tag-red-bg:#fff0f0;--tag-red:#c0392b;--tag-gray-bg:#f5f5f5;--tag-gray:#6b6b6b;--tag-blue-bg:#eff6ff;--tag-blue:#1d4ed8;--tag-yellow-bg:#fffbeb;--tag-yellow:#b45309;--p:#0066CC;--s:#FF9933;--chart-line:#0066CC;--chart-bar:#E53935;--chart-bar2:#16a34a;--chart-grid:rgba(0,0,0,.06)}
-[data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--sidebar-bg:#0a0a0a;--input-bg:#181818;--card-bg:#181818;--card-shadow:0 1px 3px rgba(0,0,0,.3);--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green:#4ade80;--tag-red-bg:#2a1010;--tag-red:#ff7070;--tag-gray-bg:#222222;--tag-gray:#999999;--tag-blue-bg:#0c1a3a;--tag-blue:#93c5fd;--tag-yellow-bg:#1a1400;--tag-yellow:#fbbf24;--p:#4d9de0;--s:#FF9933;--chart-line:#4d9de0;--chart-bar:#E53935;--chart-bar2:#4ade80;--chart-grid:rgba(255,255,255,.07)}
-
+[data-theme="light"]{--bg:#ffffff;--bg2:#fafafa;--bg3:#f5f5f5;--border:#e8e8e8;--border2:#d0d0d0;--text:#1a1a1a;--muted:#6b6b6b;--muted2:#b0b0b0;--black:#0a0a0a;--nav-bg:rgba(255,255,255,.96);--sidebar-bg:#ffffff;--input-bg:#fafafa;--card-bg:#ffffff;--card-shadow:0 1px 3px rgba(0,0,0,.06);--tbl-hover:#fafafa;--accent:#E53935;--tag-green-bg:#f0fdf4;--tag-green:#16a34a;--tag-red-bg:#fff0f0;--tag-red:#c0392b;--tag-blue-bg:#eff6ff;--tag-blue:#1d4ed8;--p:#0066CC;--s:#FF9933;--chart-line:#0066CC;--chart-bar:#E53935;--chart-bar2:#16a34a;--chart-grid:rgba(0,0,0,.06)}
+[data-theme="dark"]{--bg:#0a0a0a;--bg2:#181818;--bg3:#222222;--border:#3d3d3d;--border2:#505050;--text:#ffffff;--muted:#bbbbbb;--muted2:#999999;--black:#ffffff;--nav-bg:rgba(10,10,10,.97);--sidebar-bg:#0a0a0a;--input-bg:#181818;--card-bg:#181818;--card-shadow:0 1px 3px rgba(0,0,0,.3);--tbl-hover:#222222;--accent:#E53935;--tag-green-bg:#0a2010;--tag-green:#4ade80;--tag-red-bg:#2a1010;--tag-red:#ff7070;--tag-blue-bg:#0c1a3a;--tag-blue:#93c5fd;--p:#4d9de0;--s:#FF9933;--chart-line:#4d9de0;--chart-bar:#E53935;--chart-bar2:#4ade80;--chart-grid:rgba(255,255,255,.07)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:var(--text);font-size:13px;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
-
-/* ── NAV ── */
-.nav{height:48px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.nav{height:48px;background:var(--nav-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:200;backdrop-filter:blur(10px)}
 .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0}
 .logo-text{font-size:15px;font-weight:600;color:var(--black);letter-spacing:-.03em}
 .logo-text span{font-weight:300;color:var(--accent)}
@@ -26,11 +23,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .lang-switcher{display:flex;align-items:center;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:3px}
 .lang-btn{padding:3px 8px;border:none;border-radius:5px;background:transparent;color:var(--muted);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;letter-spacing:.02em}
 .lang-btn.active{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.1)}
-
-/* ── LAYOUT ── */
 .layout{display:flex;height:calc(100vh - 48px)}
-
-/* ── SIDEBAR ── */
 .sidebar{width:220px;flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
 .sidebar-user{padding:14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
 .sidebar-avatar{width:32px;height:32px;border-radius:50%;background:var(--black);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
@@ -41,143 +34,73 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .sitem:hover{background:var(--bg3);color:var(--text)}
 .sitem.active{background:var(--bg3);color:var(--black)}
 .sitem svg{flex-shrink:0}
-
-/* ── MAIN ── */
 .main{flex:1;overflow-y:auto;padding:20px}
-
-/* ── PAGE HEADER ── */
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
 .page-title{font-size:16px;font-weight:600;color:var(--black);letter-spacing:-.02em}
-
-/* ── TABS ── */
 .tabs{display:flex;gap:2px;background:var(--bg3);border-radius:9px;padding:3px;margin-bottom:20px;width:fit-content}
 .tab-btn{padding:6px 16px;border:none;border-radius:7px;background:transparent;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap}
 .tab-btn.active{background:var(--bg);color:var(--black);box-shadow:0 1px 3px rgba(0,0,0,.1)}
 .tab-section{display:none}
 .tab-section.active{display:block}
-
-/* ── KPI STRIP ── */
 .kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
 .kpi-box{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:var(--card-shadow)}
 .kpi-val{font-size:20px;font-weight:700;color:var(--black);line-height:1;letter-spacing:-.02em}
 .kpi-lbl{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.05em;margin-top:5px;font-weight:500}
-.kpi-trend{font-size:10px;margin-top:4px;font-weight:500}
-.kpi-trend.up{color:var(--tag-green)}
-.kpi-trend.down{color:var(--tag-red)}
-.kpi-trend.neutral{color:var(--muted2)}
-
-/* ── CARD ── */
 .card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);margin-bottom:16px;overflow:hidden}
 .card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .card-title{font-size:13px;font-weight:600;color:var(--black)}
 .card-body{padding:16px}
 .card-subtitle{font-size:11px;color:var(--muted2);margin-top:2px}
-
-/* ── GRID ── */
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-
-/* ── CHART ── */
-.chart-wrap{position:relative;width:100%}
 canvas{width:100%!important;display:block}
-.chart-empty{padding:40px;text-align:center;color:var(--muted2);font-size:12px}
-
-/* ── TABLE ── */
+.chart-empty{padding:32px;text-align:center;color:var(--muted2);font-size:12px}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .stats-table{width:100%;border-collapse:collapse}
 .stats-table thead tr{border-bottom:1px solid var(--border)}
 .stats-table th{padding:8px 12px;text-align:left;font-size:10px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-.stats-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}
+.stats-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle;white-space:nowrap}
 .stats-table tbody tr:last-child td{border-bottom:none}
 .stats-table tbody tr:hover td{background:var(--tbl-hover)}
-
-/* ── TAGS ── */
 .tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:500;white-space:nowrap}
 .tag-green{background:var(--tag-green-bg);color:var(--tag-green)}
 .tag-red{background:var(--tag-red-bg);color:var(--tag-red)}
 .tag-blue{background:var(--tag-blue-bg);color:var(--tag-blue)}
-.tag-yellow{background:var(--tag-yellow-bg);color:var(--tag-yellow)}
-.tag-gray{background:var(--tag-gray-bg);color:var(--tag-gray)}
-
-/* ── ATT BAR ── */
 .att-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;min-width:60px}
-.att-fill{height:100%;border-radius:3px;transition:width .4s}
+.att-fill{height:100%;border-radius:3px}
 .att-fill.high{background:var(--tag-green)}
 .att-fill.mid{background:var(--s)}
 .att-fill.low{background:var(--tag-red)}
-
-/* ── RISK ROW ── */
 .risk-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
 .risk-row:last-child{border-bottom:none}
 .risk-avatar{width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--muted);flex-shrink:0}
-.risk-name{flex:1;font-size:12px;font-weight:500;color:var(--black)}
-.risk-group{font-size:10px;color:var(--muted2)}
-
-/* ── BIRTHDAY ROW ── */
 .bd-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
 .bd-row:last-child{border-bottom:none}
 .bd-days{min-width:32px;text-align:center;font-size:11px;font-weight:700;color:var(--p)}
-.bd-info{flex:1}
-.bd-name{font-size:12px;font-weight:500;color:var(--black)}
-.bd-date{font-size:10px;color:var(--muted2)}
-.bd-age{font-size:10px;font-weight:600;color:var(--muted)}
-
-/* ── FILTER ROW ── */
-.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
 .filter-select{padding:6px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:inherit;background:var(--input-bg);color:var(--text);outline:none;cursor:pointer}
-.filter-select:focus{border-color:var(--border2)}
-
-/* ── STAT MINI ── */
 .stat-mini{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
 .stat-mini:last-child{border-bottom:none}
 .stat-mini-lbl{font-size:12px;color:var(--muted)}
 .stat-mini-val{font-size:13px;font-weight:600;color:var(--black)}
-
-/* ── EMPTY / LOADING ── */
 .empty-state{padding:32px;text-align:center;color:var(--muted2);font-size:12px}
 .loading-state{padding:24px;text-align:center;color:var(--muted2);font-size:12px}
-.skeleton{background:var(--bg3);border-radius:6px;animation:skpulse 1.2s ease-in-out infinite}
-@keyframes skpulse{0%,100%{opacity:1}50%{opacity:.4}}
-
-/* ── TOAST ── */
-#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:9px;font-size:12px;font-weight:500;min-width:220px;box-shadow:0 4px 16px rgba(0,0,0,.12);pointer-events:all;animation:toastIn .2s ease;background:var(--bg);border:1px solid var(--border);color:var(--text)}
-.toast.success{border-left:3px solid var(--tag-green)}
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:10px 14px;border-radius:9px;font-size:12px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.12);background:var(--bg);border:1px solid var(--border);color:var(--text)}
 .toast.error{border-left:3px solid var(--tag-red)}
-.toast.info{border-left:3px solid var(--p)}
-@keyframes toastIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-/* ── MOBILE NAV ── */
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--nav-bg);border-top:1px solid var(--border);z-index:200;backdrop-filter:blur(10px)}
 .mob-nav-items{display:flex;height:100%}
 .mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);font-size:9px;font-weight:500;font-family:inherit;cursor:pointer;text-decoration:none}
 .mob-nav-btn.active{color:var(--black)}
-
-/* ── RESPONSIVE ── */
 @media(max-width:1200px){.kpi-strip{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:900px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}}
-@media(max-width:768px){
-  .sidebar{display:none}
-  .mob-nav{display:block}
-  .main{padding:12px 12px 72px}
-  .kpi-strip{grid-template-columns:1fr 1fr}
-  .tabs{width:100%;overflow-x:auto}
-  .nav-badge,.nav-divider{display:none}
-}
-@media(max-width:480px){.kpi-strip{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.sidebar{display:none}.mob-nav{display:block}.main{padding:12px 12px 72px}.kpi-strip{grid-template-columns:1fr 1fr}.tabs{width:100%;overflow-x:auto}.nav-badge,.nav-divider{display:none}}
 </style>
 </head>
 <body>
-
 <div id="toast-container"></div>
-
-<!-- NAV -->
 <nav class="nav">
   <a href="/director-dashboard.html" class="nav-logo">
-    <svg width="23" height="23" viewBox="0 0 20 20" fill="none">
-      <rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/>
-      <path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/>
-      <path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+    <svg width="23" height="23" viewBox="0 0 20 20" fill="none"><rect x="1" y="1" width="18" height="18" rx="4.5" stroke="var(--black)" stroke-width="1.3"/><path d="M5 15L13 7" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round"/><path d="M8 7h5v5" stroke="var(--black)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span class="logo-text">InSkill<span>.online</span></span>
   </a>
   <div class="nav-right">
@@ -194,10 +117,7 @@ canvas{width:100%!important;display:block}
     </button>
   </div>
 </nav>
-
 <div class="layout">
-
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-user">
     <div class="sidebar-avatar" id="sideInitials">ДР</div>
@@ -217,33 +137,24 @@ canvas{width:100%!important;display:block}
     <span id="lbl-back">← Панель директора</span>
   </a>
 </aside>
-
-<!-- MAIN -->
 <main class="main">
-
   <div class="page-header">
     <h1 class="page-title" id="lbl-page-title">Статистика клубу</h1>
-    <div style="display:flex;gap:8px;align-items:center">
-      <select class="filter-select" id="periodFilter" onchange="onPeriodChange()">
-        <option value="30" id="opt-30">30 днів</option>
-        <option value="90" id="opt-90">3 місяці</option>
-        <option value="180" id="opt-180">6 місяців</option>
-        <option value="365" id="opt-365" selected>Рік</option>
-      </select>
-    </div>
+    <select class="filter-select" id="periodFilter" onchange="onPeriodChange()">
+      <option value="30" id="opt-30">30 днів</option>
+      <option value="90" id="opt-90">3 місяці</option>
+      <option value="180" id="opt-180">6 місяців</option>
+      <option value="365" id="opt-365" selected>Рік</option>
+    </select>
   </div>
-
-  <!-- KPI STRIP -->
-  <div class="kpi-strip" id="kpi-strip">
-    <div class="kpi-box"><div class="kpi-val" id="kpi-athletes">—</div><div class="kpi-lbl" id="lbl-kpi-athletes">Спортсменів</div><div class="kpi-trend neutral" id="kpi-athletes-trend"></div></div>
-    <div class="kpi-box"><div class="kpi-val" id="kpi-groups">—</div><div class="kpi-lbl" id="lbl-kpi-groups">Груп</div><div class="kpi-trend neutral" id="kpi-groups-trend"></div></div>
-    <div class="kpi-box"><div class="kpi-val" id="kpi-att">—</div><div class="kpi-lbl" id="lbl-kpi-att">Відвідуваність</div><div class="kpi-trend neutral" id="kpi-att-trend"></div></div>
-    <div class="kpi-box"><div class="kpi-val" id="kpi-revenue">—</div><div class="kpi-lbl" id="lbl-kpi-revenue">Виручка</div><div class="kpi-trend neutral" id="kpi-revenue-trend"></div></div>
-    <div class="kpi-box"><div class="kpi-val" id="kpi-debtors">—</div><div class="kpi-lbl" id="lbl-kpi-debtors">Боржників</div><div class="kpi-trend neutral" id="kpi-debtors-trend"></div></div>
-    <div class="kpi-box"><div class="kpi-val" id="kpi-new">—</div><div class="kpi-lbl" id="lbl-kpi-new">Нових за місяць</div><div class="kpi-trend neutral" id="kpi-new-trend"></div></div>
+  <div class="kpi-strip">
+    <div class="kpi-box"><div class="kpi-val" id="kpi-athletes">—</div><div class="kpi-lbl" id="lbl-kpi-athletes">Спортсменів</div></div>
+    <div class="kpi-box"><div class="kpi-val" id="kpi-groups">—</div><div class="kpi-lbl" id="lbl-kpi-groups">Груп</div></div>
+    <div class="kpi-box"><div class="kpi-val" id="kpi-att">—</div><div class="kpi-lbl" id="lbl-kpi-att">Відвідуваність</div></div>
+    <div class="kpi-box"><div class="kpi-val" id="kpi-revenue">—</div><div class="kpi-lbl" id="lbl-kpi-revenue">Виручка</div></div>
+    <div class="kpi-box"><div class="kpi-val" id="kpi-debtors">—</div><div class="kpi-lbl" id="lbl-kpi-debtors">Боржників</div></div>
+    <div class="kpi-box"><div class="kpi-val" id="kpi-new">—</div><div class="kpi-lbl" id="lbl-kpi-new">Нових за місяць</div></div>
   </div>
-
-  <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn active" onclick="showTab('overview',this)" id="tab-overview">Огляд</button>
     <button class="tab-btn" onclick="showTab('attendance',this)" id="tab-attendance">Відвідуваність</button>
@@ -251,275 +162,106 @@ canvas{width:100%!important;display:block}
     <button class="tab-btn" onclick="showTab('athletes',this)" id="tab-athletes">Спортсмени</button>
   </div>
 
-  <!-- ═══ TAB: OVERVIEW ═══ -->
+  <!-- ОГЛЯД -->
   <div id="section-overview" class="tab-section active">
     <div class="grid-2">
-
-      <!-- Посещаемость по неделям -->
       <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title" id="lbl-att-trend">Динаміка відвідуваності</div>
-            <div class="card-subtitle" id="lbl-att-trend-sub">% присутності по тижнях</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="chart-wrap" style="height:160px">
-            <canvas id="chart-att-trend" height="160"></canvas>
-          </div>
-          <div class="chart-empty" id="chart-att-empty" style="display:none"></div>
-        </div>
+        <div class="card-header"><div><div class="card-title" id="lbl-att-trend">Динаміка відвідуваності</div><div class="card-subtitle" id="lbl-att-trend-sub">% присутності по тижнях</div></div></div>
+        <div class="card-body"><div style="height:160px"><canvas id="chart-att-trend" height="160"></canvas></div><div class="chart-empty" id="chart-att-trend-empty" style="display:none"></div></div>
       </div>
-
-      <!-- Выручка по месяцам -->
       <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title" id="lbl-revenue-chart">Виручка по місяцях</div>
-            <div class="card-subtitle" id="lbl-revenue-chart-sub">Сума оплат за місяць</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="chart-wrap" style="height:160px">
-            <canvas id="chart-revenue" height="160"></canvas>
-          </div>
-          <div class="chart-empty" id="chart-revenue-empty" style="display:none"></div>
-        </div>
+        <div class="card-header"><div><div class="card-title" id="lbl-revenue-chart">Виручка по місяцях</div><div class="card-subtitle" id="lbl-revenue-chart-sub">Сума оплат за місяць</div></div></div>
+        <div class="card-body"><div style="height:160px"><canvas id="chart-revenue" height="160"></canvas></div><div class="chart-empty" id="chart-revenue-empty" style="display:none"></div></div>
       </div>
-
     </div>
-
     <div class="grid-2">
-
-      <!-- Зона риска -->
       <div class="card">
-        <div class="card-header">
-          <div class="card-title" id="lbl-risk-zone">Зона ризику</div>
-          <span class="tag tag-red" id="risk-count">0</span>
-        </div>
-        <div class="card-body" id="risk-list">
-          <div class="empty-state" id="lbl-risk-empty">Всі спортсмени активні</div>
-        </div>
+        <div class="card-header"><div class="card-title" id="lbl-risk-zone">Зона ризику</div><span class="tag tag-red" id="risk-count">0</span></div>
+        <div class="card-body" id="risk-list"><div class="empty-state" id="lbl-risk-empty">Всі спортсмени активні</div></div>
       </div>
-
-      <!-- Ближайшие ДР -->
       <div class="card">
-        <div class="card-header">
-          <div class="card-title" id="lbl-birthdays">Дні народження</div>
-          <span class="tag tag-blue" id="bd-count">0</span>
-        </div>
-        <div class="card-body" id="bd-list">
-          <div class="empty-state" id="lbl-bd-empty">Немає найближчих ДН</div>
-        </div>
+        <div class="card-header"><div class="card-title" id="lbl-birthdays">Дні народження</div><span class="tag tag-blue" id="bd-count">0</span></div>
+        <div class="card-body" id="bd-list"><div class="empty-state" id="lbl-bd-empty">Немає найближчих ДН</div></div>
       </div>
-
     </div>
-
-    <!-- Сравнение групп -->
     <div class="card">
-      <div class="card-header">
-        <div class="card-title" id="lbl-groups-compare">Порівняння груп</div>
-      </div>
-      <div class="card-body">
-        <div class="chart-wrap" style="height:180px">
-          <canvas id="chart-groups" height="180"></canvas>
-        </div>
-        <div class="chart-empty" id="chart-groups-empty" style="display:none"></div>
-      </div>
+      <div class="card-header"><div class="card-title" id="lbl-groups-compare">Порівняння груп</div></div>
+      <div class="card-body"><div style="height:180px"><canvas id="chart-groups" height="180"></canvas></div><div class="chart-empty" id="chart-groups-empty" style="display:none"></div></div>
     </div>
-
   </div>
 
-  <!-- ═══ TAB: ATTENDANCE ═══ -->
+  <!-- ВІДВІДУВАНІСТЬ -->
   <div id="section-attendance" class="tab-section">
-
-    <div class="filter-row">
-      <select class="filter-select" id="attGroupFilter" onchange="renderAttendance()">
-        <option value="" id="att-all-groups">Всі групи</option>
-      </select>
-    </div>
-
+    <div style="margin-bottom:16px"><select class="filter-select" id="attGroupFilter" onchange="renderAttendance()"><option value="" id="att-all-groups">Всі групи</option></select></div>
     <div class="grid-2">
       <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title" id="lbl-att-weekly">Відвідуваність по тижнях</div>
-            <div class="card-subtitle" id="lbl-att-weekly-sub">% присутності</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="chart-wrap" style="height:200px"><canvas id="chart-att-weekly" height="200"></canvas></div>
-          <div class="chart-empty" id="chart-att-weekly-empty" style="display:none"></div>
-        </div>
+        <div class="card-header"><div><div class="card-title" id="lbl-att-weekly">Відвідуваність по тижнях</div><div class="card-subtitle" id="lbl-att-weekly-sub">% присутності</div></div></div>
+        <div class="card-body"><div style="height:200px"><canvas id="chart-att-weekly" height="200"></canvas></div><div class="chart-empty" id="chart-att-weekly-empty" style="display:none"></div></div>
       </div>
-
       <div class="card">
-        <div class="card-header">
-          <div class="card-title" id="lbl-att-dow">По днях тижня</div>
-        </div>
-        <div class="card-body">
-          <div class="chart-wrap" style="height:200px"><canvas id="chart-att-dow" height="200"></canvas></div>
-          <div class="chart-empty" id="chart-att-dow-empty" style="display:none"></div>
-        </div>
+        <div class="card-header"><div class="card-title" id="lbl-att-dow">По днях тижня</div></div>
+        <div class="card-body"><div style="height:200px"><canvas id="chart-att-dow" height="200"></canvas></div><div class="chart-empty" id="chart-att-dow-empty" style="display:none"></div></div>
       </div>
     </div>
-
-    <!-- Таблица по спортсменам -->
     <div class="card">
-      <div class="card-header">
-        <div class="card-title" id="lbl-att-athletes-title">Відвідуваність спортсменів</div>
-      </div>
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-        <table class="stats-table" style="min-width:480px">
-          <thead>
-            <tr>
-              <th id="th-att-name">Спортсмен</th>
-              <th id="th-att-group">Група</th>
-              <th id="th-att-total">Тренувань</th>
-              <th id="th-att-present">Присутній</th>
-              <th id="th-att-pct">Відвідуваність</th>
-            </tr>
-          </thead>
-          <tbody id="att-athletes-body">
-            <tr><td colspan="5" class="loading-state" id="lbl-loading">Завантаження...</td></tr>
-          </tbody>
+      <div class="card-header"><div class="card-title" id="lbl-att-athletes-title">Відвідуваність спортсменів</div></div>
+      <div class="tbl-scroll">
+        <table class="stats-table" style="min-width:500px">
+          <thead><tr>
+            <th id="th-att-name">Спортсмен</th>
+            <th id="th-att-group">Група</th>
+            <th id="th-att-total">Тренувань</th>
+            <th id="th-att-present">Присутній</th>
+            <th id="th-att-pct">Відвідуваність</th>
+          </tr></thead>
+          <tbody id="att-athletes-body"><tr><td colspan="5" class="loading-state">Завантаження...</td></tr></tbody>
         </table>
       </div>
     </div>
-
   </div>
 
-  <!-- ═══ TAB: FINANCE ═══ -->
+  <!-- ФІНАНСИ -->
   <div id="section-finance" class="tab-section">
-
     <div class="grid-3" style="margin-bottom:16px">
-      <div class="kpi-box">
-        <div class="kpi-val" id="fin-total-rev">—</div>
-        <div class="kpi-lbl" id="lbl-fin-total-rev">Загальна виручка</div>
-      </div>
-      <div class="kpi-box">
-        <div class="kpi-val" id="fin-avg-month">—</div>
-        <div class="kpi-lbl" id="lbl-fin-avg-month">Середньо на місяць</div>
-      </div>
-      <div class="kpi-box">
-        <div class="kpi-val" id="fin-payments-count">—</div>
-        <div class="kpi-lbl" id="lbl-fin-payments-count">Платежів</div>
-      </div>
+      <div class="kpi-box"><div class="kpi-val" id="fin-total-rev">—</div><div class="kpi-lbl" id="lbl-fin-total-rev">Загальна виручка</div></div>
+      <div class="kpi-box"><div class="kpi-val" id="fin-avg-month">—</div><div class="kpi-lbl" id="lbl-fin-avg-month">Середньо на місяць</div></div>
+      <div class="kpi-box"><div class="kpi-val" id="fin-payments-count">—</div><div class="kpi-lbl" id="lbl-fin-payments-count">Платежів</div></div>
     </div>
-
     <div class="card">
-      <div class="card-header">
-        <div class="card-title" id="lbl-fin-monthly">Виручка по місяцях</div>
-      </div>
-      <div class="card-body">
-        <div class="chart-wrap" style="height:220px"><canvas id="chart-fin-monthly" height="220"></canvas></div>
-        <div class="chart-empty" id="chart-fin-empty" style="display:none"></div>
+      <div class="card-header"><div class="card-title" id="lbl-fin-monthly">Виручка по місяцях</div></div>
+      <div class="card-body"><div style="height:220px"><canvas id="chart-fin-monthly" height="220"></canvas></div><div class="chart-empty" id="chart-fin-monthly-empty" style="display:none"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title" id="lbl-debtors-title">Прострочені оплати</div><span class="tag tag-red" id="debtors-count">0</span></div>
+      <div class="tbl-scroll">
+        <table class="stats-table" style="min-width:400px">
+          <thead><tr><th id="th-debt-name">Спортсмен</th><th id="th-debt-until">Оплачено до</th><th id="th-debt-days">Прострочення</th></tr></thead>
+          <tbody id="debtors-body"><tr><td colspan="3" class="empty-state" id="lbl-no-debtors">Заборгованостей немає</td></tr></tbody>
+        </table>
       </div>
     </div>
-
-    <div class="grid-2">
-
-      <!-- По группам -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title" id="lbl-fin-by-group">Виручка по групах</div>
-        </div>
-        <div class="card-body">
-          <div class="chart-wrap" style="height:180px"><canvas id="chart-fin-groups" height="180"></canvas></div>
-          <div class="chart-empty" id="chart-fin-groups-empty" style="display:none"></div>
-        </div>
-      </div>
-
-      <!-- Топ должников -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title" id="lbl-debtors-title">Прострочені оплати</div>
-          <span class="tag tag-red" id="debtors-count">0</span>
-        </div>
-        <div class="card-body" style="padding:0">
-          <table class="stats-table">
-            <thead>
-              <tr>
-                <th id="th-debt-name">Спортсмен</th>
-                <th id="th-debt-group">Група</th>
-                <th id="th-debt-until">Оплачено до</th>
-                <th id="th-debt-days">Прострочення</th>
-              </tr>
-            </thead>
-            <tbody id="debtors-body">
-              <tr><td colspan="4" class="empty-state" id="lbl-no-debtors">Заборгованостей немає</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </div>
-
   </div>
 
-  <!-- ═══ TAB: ATHLETES ═══ -->
+  <!-- СПОРТСМЕНИ -->
   <div id="section-athletes" class="tab-section">
-
     <div class="grid-2">
-
-      <!-- Retention -->
       <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title" id="lbl-retention">Динаміка спортсменів</div>
-            <div class="card-subtitle" id="lbl-retention-sub">Нових за місяць</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="chart-wrap" style="height:200px"><canvas id="chart-retention" height="200"></canvas></div>
-          <div class="chart-empty" id="chart-retention-empty" style="display:none"></div>
-        </div>
+        <div class="card-header"><div><div class="card-title" id="lbl-retention">Динаміка спортсменів</div><div class="card-subtitle" id="lbl-retention-sub">Нових за місяць</div></div></div>
+        <div class="card-body"><div style="height:200px"><canvas id="chart-retention" height="200"></canvas></div><div class="chart-empty" id="chart-retention-empty" style="display:none"></div></div>
       </div>
-
-      <!-- Прогресс поясов -->
       <div class="card">
-        <div class="card-header">
-          <div class="card-title" id="lbl-belt-progress">Прогрес поясів</div>
-        </div>
-        <div class="card-body">
-          <div class="chart-wrap" style="height:200px"><canvas id="chart-belts" height="200"></canvas></div>
-          <div class="chart-empty" id="chart-belts-empty" style="display:none"></div>
-        </div>
+        <div class="card-header"><div class="card-title" id="lbl-active-status">Статус спортсменів</div></div>
+        <div class="card-body" id="status-body"></div>
       </div>
-
     </div>
-
-    <div class="grid-2">
-
-      <!-- Возрастная структура -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title" id="lbl-age-structure">Вікова структура</div>
-        </div>
-        <div class="card-body">
-          <div id="age-structure-body"></div>
-          <div class="empty-state" id="lbl-age-empty" style="display:none"></div>
-        </div>
-      </div>
-
-      <!-- Активность -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title" id="lbl-active-status">Статус спортсменів</div>
-        </div>
-        <div class="card-body">
-          <div id="status-body"></div>
-        </div>
-      </div>
-
+    <div class="card">
+      <div class="card-header"><div class="card-title" id="lbl-age-structure">Вікова структура</div></div>
+      <div class="card-body" id="age-structure-body"></div>
     </div>
-
   </div>
-
 </main>
 </div>
 
-<!-- MOBILE NAV -->
 <nav class="mob-nav">
   <div class="mob-nav-items">
     <button class="mob-nav-btn active" onclick="showTab('overview',this)">
@@ -535,7 +277,7 @@ canvas{width:100%!important;display:block}
       <span id="mob-finance">Фінанси</span>
     </button>
     <button class="mob-nav-btn" onclick="showTab('athletes',this)">
-      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><circle cx="6" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 13c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M12 6l1.5 1.5L16 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none"><circle cx="6" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 13c0-2.8 2.2-4.5 5-4.5s5 1.7 5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
       <span id="mob-athletes">Спортсм.</span>
     </button>
     <a href="/director-dashboard.html" class="mob-nav-btn">
@@ -546,971 +288,248 @@ canvas{width:100%!important;display:block}
 </nav>
 
 <script>
-/* ═══════════════════════════
-   i18n
-═══════════════════════════ */
 const i18n={
-uk:{
-  pageTitle:'Статистика — InSkill',
-  navBadge:'ДИРЕКТОР',
-  sSection:'Статистика',sStat:'Статистика',sNav:'Навігація',sBack:'← Панель директора',
-  opt30:'30 днів',opt90:'3 місяці',opt180:'6 місяців',opt365:'Рік',
-  kpiAthletes:'Спортсменів',kpiGroups:'Груп',kpiAtt:'Відвідуваність',
-  kpiRevenue:'Виручка',kpiDebtors:'Боржників',kpiNew:'Нових за місяць',
-  tabOverview:'Огляд',tabAttendance:'Відвідуваність',tabFinance:'Фінанси',tabAthletes:'Спортсмени',
-  attTrend:'Динаміка відвідуваності',attTrendSub:'% присутності по тижнях',
-  revenueChart:'Виручка по місяцях',revenueChartSub:'Сума оплат за місяць',
-  riskZone:'Зона ризику',riskEmpty:'Всі спортсмени активні',
-  birthdays:'Дні народження',bdEmpty:'Немає найближчих ДН',
-  groupsCompare:'Порівняння груп по відвідуваності',
-  attAllGroups:'Всі групи',
-  attWeekly:'Відвідуваність по тижнях',attWeeklySub:'% присутності',
-  attDow:'По днях тижня',
-  attAthletesTitle:'Відвідуваність спортсменів',
-  thAttName:'Спортсмен',thAttGroup:'Група',thAttTotal:'Тренувань',thAttPresent:'Присутній',thAttPct:'Відвідуваність',
-  finTotalRev:'Загальна виручка',finAvgMonth:'Середньо на місяць',finPaymentsCount:'Платежів',
-  finMonthly:'Виручка по місяцях',
-  finByGroup:'Виручка по групах',
-  debtorsTitle:'Прострочені оплати',noDebtors:'Заборгованостей немає',
-  thDebtName:'Спортсмен',thDebtGroup:'Група',thDebtUntil:'Оплачено до',thDebtDays:'Прострочення',
-  retention:'Динаміка спортсменів',retentionSub:'Нових за місяць',
-  beltProgress:'Прогрес поясів',
-  ageStructure:'Вікова структура',
-  activeStatus:'Статус спортсменів',
-  loading:'Завантаження...',noData:'Немає даних',errLoad:'Помилка завантаження',
-  trendUp:'▲',trendDown:'▼',
-  active:'Активних',inactive:'Неактивних',
-  daysOld:'дн. тому',today:'Сьогодні',tomorrow:'Завтра',
-  years:'р.',age:'Вік',
-  attLow:'Низька відвідуваність',attPct:'відвідуваність',
-  riskHint:'< 50% за 30 днів',
-  bdIn:'через',bdDays:'дн.',
-  grn:'грн',
-  overdue:'прострочено',days:'дн.',
-  mobOverview:'Огляд',mobAttendance:'Відвід.',mobFinance:'Фінанси',mobAthletes:'Спортсм.',mobBack:'Назад',
-  months:['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'],
-  dowLabels:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],
-  ageGroups:['до 8 р.','8–10 р.','11–13 р.','14–17 р.','18+ р.'],
-},
-ru:{
-  pageTitle:'Статистика — InSkill',
-  navBadge:'ДИРЕКТОР',
-  sSection:'Статистика',sStat:'Статистика',sNav:'Навигация',sBack:'← Панель директора',
-  opt30:'30 дней',opt90:'3 месяца',opt180:'6 месяцев',opt365:'Год',
-  kpiAthletes:'Спортсменов',kpiGroups:'Групп',kpiAtt:'Посещаемость',
-  kpiRevenue:'Выручка',kpiDebtors:'Должников',kpiNew:'Новых за месяц',
-  tabOverview:'Обзор',tabAttendance:'Посещаемость',tabFinance:'Финансы',tabAthletes:'Спортсмены',
-  attTrend:'Динамика посещаемости',attTrendSub:'% присутствия по неделям',
-  revenueChart:'Выручка по месяцам',revenueChartSub:'Сумма оплат за месяц',
-  riskZone:'Зона риска',riskEmpty:'Все спортсмены активны',
-  birthdays:'Дни рождения',bdEmpty:'Нет ближайших ДР',
-  groupsCompare:'Сравнение групп по посещаемости',
-  attAllGroups:'Все группы',
-  attWeekly:'Посещаемость по неделям',attWeeklySub:'% присутствия',
-  attDow:'По дням недели',
-  attAthletesTitle:'Посещаемость спортсменов',
-  thAttName:'Спортсмен',thAttGroup:'Группа',thAttTotal:'Тренировок',thAttPresent:'Присутствовал',thAttPct:'Посещаемость',
-  finTotalRev:'Общая выручка',finAvgMonth:'Среднее в месяц',finPaymentsCount:'Платежей',
-  finMonthly:'Выручка по месяцам',
-  finByGroup:'Выручка по группам',
-  debtorsTitle:'Просроченные оплаты',noDebtors:'Задолженностей нет',
-  thDebtName:'Спортсмен',thDebtGroup:'Группа',thDebtUntil:'Оплачено до',thDebtDays:'Просрочка',
-  retention:'Динамика спортсменов',retentionSub:'Новых за месяц',
-  beltProgress:'Прогресс поясов',
-  ageStructure:'Возрастная структура',
-  activeStatus:'Статус спортсменов',
-  loading:'Загрузка...',noData:'Нет данных',errLoad:'Ошибка загрузки',
-  trendUp:'▲',trendDown:'▼',
-  active:'Активных',inactive:'Неактивных',
-  daysOld:'дн. назад',today:'Сегодня',tomorrow:'Завтра',
-  years:'л.',age:'Возраст',
-  attLow:'Низкая посещаемость',attPct:'посещаемость',
-  riskHint:'< 50% за 30 дней',
-  bdIn:'через',bdDays:'дн.',
-  grn:'грн',
-  overdue:'просрочено',days:'дн.',
-  mobOverview:'Обзор',mobAttendance:'Посещ.',mobFinance:'Финансы',mobAthletes:'Спортсм.',mobBack:'Назад',
-  months:['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'],
-  dowLabels:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
-  ageGroups:['до 8 л.','8–10 л.','11–13 л.','14–17 л.','18+ л.'],
-},
-en:{
-  pageTitle:'Statistics — InSkill',
-  navBadge:'DIRECTOR',
-  sSection:'Statistics',sStat:'Statistics',sNav:'Navigation',sBack:'← Director panel',
-  opt30:'30 days',opt90:'3 months',opt180:'6 months',opt365:'Year',
-  kpiAthletes:'Athletes',kpiGroups:'Groups',kpiAtt:'Attendance',
-  kpiRevenue:'Revenue',kpiDebtors:'Debtors',kpiNew:'New this month',
-  tabOverview:'Overview',tabAttendance:'Attendance',tabFinance:'Finance',tabAthletes:'Athletes',
-  attTrend:'Attendance trend',attTrendSub:'Presence % by week',
-  revenueChart:'Monthly revenue',revenueChartSub:'Total payments per month',
-  riskZone:'Risk zone',riskEmpty:'All athletes are active',
-  birthdays:'Birthdays',bdEmpty:'No upcoming birthdays',
-  groupsCompare:'Group attendance comparison',
-  attAllGroups:'All groups',
-  attWeekly:'Weekly attendance',attWeeklySub:'% present',
-  attDow:'By day of week',
-  attAthletesTitle:'Athlete attendance',
-  thAttName:'Athlete',thAttGroup:'Group',thAttTotal:'Trainings',thAttPresent:'Present',thAttPct:'Attendance',
-  finTotalRev:'Total revenue',finAvgMonth:'Monthly average',finPaymentsCount:'Payments',
-  finMonthly:'Monthly revenue',
-  finByGroup:'Revenue by group',
-  debtorsTitle:'Overdue payments',noDebtors:'No overdue payments',
-  thDebtName:'Athlete',thDebtGroup:'Group',thDebtUntil:'Paid until',thDebtDays:'Overdue',
-  retention:'Athlete dynamics',retentionSub:'New per month',
-  beltProgress:'Belt progress',
-  ageStructure:'Age structure',
-  activeStatus:'Athlete status',
-  loading:'Loading...',noData:'No data',errLoad:'Load error',
-  trendUp:'▲',trendDown:'▼',
-  active:'Active',inactive:'Inactive',
-  daysOld:'days ago',today:'Today',tomorrow:'Tomorrow',
-  years:'y.',age:'Age',
-  attLow:'Low attendance',attPct:'attendance',
-  riskHint:'< 50% in 30 days',
-  bdIn:'in',bdDays:'d.',
-  grn:'UAH',
-  overdue:'overdue',days:'d.',
-  mobOverview:'Overview',mobAttendance:'Att.',mobFinance:'Finance',mobAthletes:'Athletes',mobBack:'Back',
-  months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-  dowLabels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-  ageGroups:['< 8 y.','8–10 y.','11–13 y.','14–17 y.','18+ y.'],
-}
+uk:{pageTitle:'Статистика — InSkill',navBadge:'ДИРЕКТОР',sSection:'Статистика',sStat:'Статистика',sNav:'Навігація',sBack:'← Панель директора',opt30:'30 днів',opt90:'3 місяці',opt180:'6 місяців',opt365:'Рік',kpiAthletes:'Спортсменів',kpiGroups:'Груп',kpiAtt:'Відвідуваність',kpiRevenue:'Виручка',kpiDebtors:'Боржників',kpiNew:'Нових за місяць',tabOverview:'Огляд',tabAttendance:'Відвідуваність',tabFinance:'Фінанси',tabAthletes:'Спортсмени',attTrend:'Динаміка відвідуваності',attTrendSub:'% присутності по тижнях',revenueChart:'Виручка по місяцях',revenueChartSub:'Сума оплат за місяць',riskZone:'Зона ризику',riskEmpty:'Всі спортсмени активні',birthdays:'Дні народження',bdEmpty:'Немає найближчих ДН',groupsCompare:'Порівняння груп',attAllGroups:'Всі групи',attWeekly:'Відвідуваність по тижнях',attWeeklySub:'% присутності',attDow:'По днях тижня',attAthletesTitle:'Відвідуваність спортсменів',thAttName:'Спортсмен',thAttGroup:'Група',thAttTotal:'Тренувань',thAttPresent:'Присутній',thAttPct:'Відвідуваність',finTotalRev:'Загальна виручка',finAvgMonth:'Середньо на місяць',finPaymentsCount:'Платежів',finMonthly:'Виручка по місяцях',debtorsTitle:'Прострочені оплати',noDebtors:'Заборгованостей немає',thDebtName:'Спортсмен',thDebtUntil:'Оплачено до',thDebtDays:'Прострочення',retention:'Динаміка спортсменів',retentionSub:'Нових за місяць',ageStructure:'Вікова структура',activeStatus:'Статус спортсменів',loading:'Завантаження...',noData:'Немає даних',errLoad:'Помилка завантаження',active:'Активних',inactive:'Неактивних',today:'Сьогодні',tomorrow:'Завтра',years:'р.',bdIn:'через',bdDays:'дн.',attPct:'відвідуваність',grn:'грн',days:'дн.',mobOverview:'Огляд',mobAttendance:'Відвід.',mobFinance:'Фінанси',mobAthletes:'Спортсм.',mobBack:'Назад',months:['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'],dowLabels:['Пн','Вт','Ср','Чт','Пт','Сб','Нд'],ageGroups:['до 8 р.','8–10 р.','11–13 р.','14–17 р.','18+ р.']},
+ru:{pageTitle:'Статистика — InSkill',navBadge:'ДИРЕКТОР',sSection:'Статистика',sStat:'Статистика',sNav:'Навигация',sBack:'← Панель директора',opt30:'30 дней',opt90:'3 месяца',opt180:'6 месяцев',opt365:'Год',kpiAthletes:'Спортсменов',kpiGroups:'Групп',kpiAtt:'Посещаемость',kpiRevenue:'Выручка',kpiDebtors:'Должников',kpiNew:'Новых за месяц',tabOverview:'Обзор',tabAttendance:'Посещаемость',tabFinance:'Финансы',tabAthletes:'Спортсмены',attTrend:'Динамика посещаемости',attTrendSub:'% присутствия по неделям',revenueChart:'Выручка по месяцам',revenueChartSub:'Сумма оплат за месяц',riskZone:'Зона риска',riskEmpty:'Все спортсмены активны',birthdays:'Дни рождения',bdEmpty:'Нет ближайших ДР',groupsCompare:'Сравнение групп',attAllGroups:'Все группы',attWeekly:'Посещаемость по неделям',attWeeklySub:'% присутствия',attDow:'По дням недели',attAthletesTitle:'Посещаемость спортсменов',thAttName:'Спортсмен',thAttGroup:'Группа',thAttTotal:'Тренировок',thAttPresent:'Присутствовал',thAttPct:'Посещаемость',finTotalRev:'Общая выручка',finAvgMonth:'Среднее в месяц',finPaymentsCount:'Платежей',finMonthly:'Выручка по месяцам',debtorsTitle:'Просроченные оплаты',noDebtors:'Задолженностей нет',thDebtName:'Спортсмен',thDebtUntil:'Оплачено до',thDebtDays:'Просрочка',retention:'Динамика спортсменов',retentionSub:'Новых за месяц',ageStructure:'Возрастная структура',activeStatus:'Статус спортсменов',loading:'Загрузка...',noData:'Нет данных',errLoad:'Ошибка загрузки',active:'Активных',inactive:'Неактивных',today:'Сегодня',tomorrow:'Завтра',years:'л.',bdIn:'через',bdDays:'дн.',attPct:'посещаемость',grn:'грн',days:'дн.',mobOverview:'Обзор',mobAttendance:'Посещ.',mobFinance:'Финансы',mobAthletes:'Спортсм.',mobBack:'Назад',months:['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'],dowLabels:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],ageGroups:['до 8 л.','8–10 л.','11–13 л.','14–17 л.','18+ л.']},
+en:{pageTitle:'Statistics — InSkill',navBadge:'DIRECTOR',sSection:'Statistics',sStat:'Statistics',sNav:'Navigation',sBack:'← Director panel',opt30:'30 days',opt90:'3 months',opt180:'6 months',opt365:'Year',kpiAthletes:'Athletes',kpiGroups:'Groups',kpiAtt:'Attendance',kpiRevenue:'Revenue',kpiDebtors:'Debtors',kpiNew:'New this month',tabOverview:'Overview',tabAttendance:'Attendance',tabFinance:'Finance',tabAthletes:'Athletes',attTrend:'Attendance trend',attTrendSub:'Presence % by week',revenueChart:'Monthly revenue',revenueChartSub:'Total payments per month',riskZone:'Risk zone',riskEmpty:'All athletes are active',birthdays:'Birthdays',bdEmpty:'No upcoming birthdays',groupsCompare:'Group comparison',attAllGroups:'All groups',attWeekly:'Weekly attendance',attWeeklySub:'% present',attDow:'By day of week',attAthletesTitle:'Athlete attendance',thAttName:'Athlete',thAttGroup:'Group',thAttTotal:'Trainings',thAttPresent:'Present',thAttPct:'Attendance',finTotalRev:'Total revenue',finAvgMonth:'Monthly average',finPaymentsCount:'Payments',finMonthly:'Monthly revenue',debtorsTitle:'Overdue payments',noDebtors:'No overdue payments',thDebtName:'Athlete',thDebtUntil:'Paid until',thDebtDays:'Overdue',retention:'Athlete dynamics',retentionSub:'New per month',ageStructure:'Age structure',activeStatus:'Athlete status',loading:'Loading...',noData:'No data',errLoad:'Load error',active:'Active',inactive:'Inactive',today:'Today',tomorrow:'Tomorrow',years:'y.',bdIn:'in',bdDays:'d.',attPct:'attendance',grn:'UAH',days:'d.',mobOverview:'Overview',mobAttendance:'Att.',mobFinance:'Finance',mobAthletes:'Athletes',mobBack:'Back',months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],dowLabels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],ageGroups:['< 8 y.','8–10 y.','11–13 y.','14–17 y.','18+ y.']}
 };
 let currentLang=localStorage.getItem('lang')||'uk';
 function t(k){return(i18n[currentLang]||i18n.uk)[k]||k;}
 function setLang(l){currentLang=l;localStorage.setItem('lang',l);applyLang();renderAll();}
 function applyLang(){
-  document.documentElement.lang=currentLang;
-  document.title=t('pageTitle');
+  document.documentElement.lang=currentLang;document.title=t('pageTitle');
   const s=(id,key)=>{const e=document.getElementById(id);if(e)e.textContent=t(key);};
-  s('nav-badge','navBadge');
-  s('lbl-side-section','sSection');s('lbl-side-stats','sStat');
-  s('lbl-side-nav','sNav');s('lbl-back','sBack');
-  s('lbl-page-title','pageTitle');
+  s('nav-badge','navBadge');s('lbl-side-section','sSection');s('lbl-side-stats','sStat');s('lbl-side-nav','sNav');s('lbl-back','sBack');s('lbl-page-title','pageTitle');
   s('opt-30','opt30');s('opt-90','opt90');s('opt-180','opt180');s('opt-365','opt365');
-  s('lbl-kpi-athletes','kpiAthletes');s('lbl-kpi-groups','kpiGroups');s('lbl-kpi-att','kpiAtt');
-  s('lbl-kpi-revenue','kpiRevenue');s('lbl-kpi-debtors','kpiDebtors');s('lbl-kpi-new','kpiNew');
-  s('tab-overview','tabOverview');s('tab-attendance','tabAttendance');
-  s('tab-finance','tabFinance');s('tab-athletes','tabAthletes');
-  s('lbl-att-trend','attTrend');s('lbl-att-trend-sub','attTrendSub');
-  s('lbl-revenue-chart','revenueChart');s('lbl-revenue-chart-sub','revenueChartSub');
-  s('lbl-risk-zone','riskZone');s('lbl-birthdays','birthdays');
-  s('lbl-groups-compare','groupsCompare');
-  s('lbl-att-weekly','attWeekly');s('lbl-att-weekly-sub','attWeeklySub');
-  s('lbl-att-dow','attDow');s('lbl-att-athletes-title','attAthletesTitle');
-  s('th-att-name','thAttName');s('th-att-group','thAttGroup');
-  s('th-att-total','thAttTotal');s('th-att-present','thAttPresent');s('th-att-pct','thAttPct');
-  s('lbl-fin-total-rev','finTotalRev');s('lbl-fin-avg-month','finAvgMonth');
-  s('lbl-fin-payments-count','finPaymentsCount');s('lbl-fin-monthly','finMonthly');
-  s('lbl-fin-by-group','finByGroup');s('lbl-debtors-title','debtorsTitle');
-  s('th-debt-name','thDebtName');s('th-debt-group','thDebtGroup');
-  s('th-debt-until','thDebtUntil');s('th-debt-days','thDebtDays');
-  s('lbl-retention','retention');s('lbl-retention-sub','retentionSub');
-  s('lbl-belt-progress','beltProgress');s('lbl-age-structure','ageStructure');
-  s('lbl-active-status','activeStatus');
-  s('att-all-groups','attAllGroups');
-  s('mob-overview','mobOverview');s('mob-attendance','mobAttendance');
-  s('mob-finance','mobFinance');s('mob-athletes','mobAthletes');s('mob-back','mobBack');
-  document.querySelectorAll('.lang-btn').forEach(b=>{
-    const map={UA:'uk',RU:'ru',EN:'en'};
-    b.classList.toggle('active',map[b.textContent]===currentLang);
-  });
+  s('lbl-kpi-athletes','kpiAthletes');s('lbl-kpi-groups','kpiGroups');s('lbl-kpi-att','kpiAtt');s('lbl-kpi-revenue','kpiRevenue');s('lbl-kpi-debtors','kpiDebtors');s('lbl-kpi-new','kpiNew');
+  s('tab-overview','tabOverview');s('tab-attendance','tabAttendance');s('tab-finance','tabFinance');s('tab-athletes','tabAthletes');
+  s('lbl-att-trend','attTrend');s('lbl-att-trend-sub','attTrendSub');s('lbl-revenue-chart','revenueChart');s('lbl-revenue-chart-sub','revenueChartSub');
+  s('lbl-risk-zone','riskZone');s('lbl-birthdays','birthdays');s('lbl-groups-compare','groupsCompare');
+  s('att-all-groups','attAllGroups');s('lbl-att-weekly','attWeekly');s('lbl-att-weekly-sub','attWeeklySub');s('lbl-att-dow','attDow');s('lbl-att-athletes-title','attAthletesTitle');
+  s('th-att-name','thAttName');s('th-att-group','thAttGroup');s('th-att-total','thAttTotal');s('th-att-present','thAttPresent');s('th-att-pct','thAttPct');
+  s('lbl-fin-total-rev','finTotalRev');s('lbl-fin-avg-month','finAvgMonth');s('lbl-fin-payments-count','finPaymentsCount');s('lbl-fin-monthly','finMonthly');
+  s('lbl-debtors-title','debtorsTitle');s('th-debt-name','thDebtName');s('th-debt-until','thDebtUntil');s('th-debt-days','thDebtDays');
+  s('lbl-retention','retention');s('lbl-retention-sub','retentionSub');s('lbl-age-structure','ageStructure');s('lbl-active-status','activeStatus');
+  s('mob-overview','mobOverview');s('mob-attendance','mobAttendance');s('mob-finance','mobFinance');s('mob-athletes','mobAthletes');s('mob-back','mobBack');
+  document.querySelectorAll('.lang-btn').forEach(b=>{const map={UA:'uk',RU:'ru',EN:'en'};b.classList.toggle('active',map[b.textContent]===currentLang);});
 }
-
-/* ═══════════════════════════
-   THEME
-═══════════════════════════ */
 function toggleTheme(){
-  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
-  document.documentElement.setAttribute('data-theme',isDark?'light':'dark');
-  localStorage.setItem('theme',isDark?'light':'dark');
-  document.getElementById('icon-sun').style.display=isDark?'block':'none';
-  document.getElementById('icon-moon').style.display=isDark?'none':'block';
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  localStorage.setItem('theme',dark?'light':'dark');
+  document.getElementById('icon-sun').style.display=dark?'block':'none';
+  document.getElementById('icon-moon').style.display=dark?'none':'block';
   renderAll();
 }
-
-/* ═══════════════════════════
-   UTILS
-═══════════════════════════ */
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-function safeUrl(u){if(!u)return'#';var s=String(u).trim();return s.startsWith('https://')||s.startsWith('http://')?s:'#';}
 function fmtMoney(n){return Number(n||0).toLocaleString('uk-UA',{maximumFractionDigits:0})+' '+t('grn');}
-function fmtDate(d){if(!d)return'—';const dt=new Date(d);return dt.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});}
-function toastMsg(msg,type){
-  const c=document.getElementById('toast-container');
-  const el=document.createElement('div');
-  el.className='toast '+(type||'info');
-  el.textContent=msg;
-  c.appendChild(el);
-  setTimeout(()=>el.remove(),3500);
-}
-function getCSSVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function toastErr(msg){const c=document.getElementById('toast-container');const el=document.createElement('div');el.className='toast error';el.textContent=msg;c.appendChild(el);setTimeout(()=>el.remove(),4000);}
+function cv(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
 
-/* ═══════════════════════════
-   API
-═══════════════════════════ */
 const API='https://primary-production-4b93e.up.railway.app/webhook/api';
 const token=localStorage.getItem('token');
 if(!token){window.location.href='/';throw new Error('No auth');}
 
 async function apiFetch(resource,action,data){
-  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({token,resource,action,data:data||{}})});
-  const text=await r.text();
-  if(!text||!text.trim())return[];
-  const j=JSON.parse(text);
-  return Array.isArray(j)?j:(j.merged||j.data||[]);
+  try{
+    const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,resource,action,data:data||{}})});
+    const text=await r.text();
+    if(!text||!text.trim())return[];
+    const j=JSON.parse(text);
+    return Array.isArray(j)?j:(j.merged||j.data||[]);
+  }catch(e){return[];}
 }
 
-/* ═══════════════════════════
-   STATE
-═══════════════════════════ */
-let allAthletes=[], allGroups=[], allPayments=[], allAttendance=[], allBelts=[], allChildGroups=[];
+let allAthletes=[],allGroups=[],allPayments=[],allAttendance=[];
 let periodDays=365;
 
-/* ═══════════════════════════
-   LOAD
-═══════════════════════════ */
 async function loadAll(){
-  try{
-    const u=JSON.parse(localStorage.getItem('user')||'{}');
-    const dirId=u.id;
-    // Параллельная загрузка всех данных
-    const [athletes,groups,payments,attendance,belts,childGroups]=await Promise.all([
-      apiFetch('children','list',{}),
-      apiFetch('groups','list',{}),
-      apiFetch('payments','list',{}),
-      apiFetch('attendance','list',{}),
-      apiFetch('athlete_belts','list',{}),
-      apiFetch('children_groups','list',{})
-    ]);
-    allAthletes=athletes||[];
-    allGroups=groups||[];
-    allPayments=payments||[];
-    allAttendance=(attendance||[]).map(a=>({...a,training_date:a.training_date?a.training_date.split('T')[0]:null}));
-    allBelts=belts||[];
-    allChildGroups=childGroups||[];
-
-    // Заполнить фильтр групп
-    const sel=document.getElementById('attGroupFilter');
-    allGroups.forEach(g=>{
-      const o=document.createElement('option');
-      o.value=g.id;
-      o.textContent=esc(g.name);
-      sel.appendChild(o);
-    });
-
-    renderAll();
-  }catch(e){
-    console.error(e);
-    toastMsg(t('errLoad'),'error');
-  }
-}
-
-/* ═══════════════════════════
-   PERIOD FILTER
-═══════════════════════════ */
-function onPeriodChange(){
-  periodDays=parseInt(document.getElementById('periodFilter').value)||365;
+  const [athletes,groups,payments,attendance]=await Promise.all([
+    apiFetch('children','list',{}),
+    apiFetch('groups','list',{}),
+    apiFetch('payments','list',{}),
+    apiFetch('attendance','list',{})
+  ]);
+  allAthletes=athletes;allGroups=groups;allPayments=payments;
+  allAttendance=attendance.map(a=>({...a,training_date:a.training_date?a.training_date.split('T')[0]:null}));
+  const sel=document.getElementById('attGroupFilter');
+  allGroups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.name;sel.appendChild(o);});
   renderAll();
 }
-function getDateFrom(){
-  const d=new Date();d.setDate(d.getDate()-periodDays);return d;
-}
-function filterByPeriod(arr,dateField){
-  const from=getDateFrom();
-  return arr.filter(x=>x[dateField]&&new Date(x[dateField])>=from);
-}
 
-/* ═══════════════════════════
-   TABS
-═══════════════════════════ */
+function onPeriodChange(){periodDays=parseInt(document.getElementById('periodFilter').value)||365;renderAll();}
+function getFrom(){const d=new Date();d.setDate(d.getDate()-periodDays);return d;}
+function byPeriod(arr,f){const from=getFrom();return arr.filter(x=>x[f]&&new Date(x[f])>=from);}
+
 function showTab(name,btn){
   document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active'));
-  const sec=document.getElementById('section-'+name);
-  if(sec)sec.classList.add('active');
+  document.querySelectorAll('.tab-btn,.mob-nav-btn').forEach(b=>b.classList.remove('active'));
+  const sec=document.getElementById('section-'+name);if(sec)sec.classList.add('active');
   if(btn)btn.classList.add('active');
 }
 
-/* ═══════════════════════════
-   CHART ENGINE (native canvas)
-═══════════════════════════ */
-function getColors(){
-  return{
-    line:getCSSVar('--chart-line')||'#0066CC',
-    bar:getCSSVar('--chart-bar')||'#E53935',
-    bar2:getCSSVar('--chart-bar2')||'#16a34a',
-    grid:getCSSVar('--chart-grid')||'rgba(0,0,0,.06)',
-    text:getCSSVar('--muted')||'#6b6b6b',
-    bg:getCSSVar('--bg')||'#fff',
-  };
-}
+function getC(){return{line:cv('--chart-line')||'#0066CC',bar:cv('--chart-bar')||'#E53935',bar2:cv('--chart-bar2')||'#16a34a',grid:cv('--chart-grid')||'rgba(0,0,0,.06)',text:cv('--muted')||'#6b6b6b'};}
 
-function drawLineChart(canvasId,labels,values,color){
-  const canvas=document.getElementById(canvasId);
-  if(!canvas)return;
-  const W=canvas.offsetWidth||canvas.parentElement.offsetWidth||400;
-  const H=canvas.height||160;
-  canvas.width=W;
-  const ctx=canvas.getContext('2d');
-  const C=getColors();
-  ctx.clearRect(0,0,W,H);
-  if(!values||values.length<2){showChartEmpty(canvasId);return;}
-  const PAD={t:16,r:12,b:28,l:36};
-  const cW=W-PAD.l-PAD.r, cH=H-PAD.t-PAD.b;
-  const max=Math.max(...values,1);
-  const min=0;
-  // Grid lines
+function drawLine(id,labels,values,color){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const W=canvas.parentElement.offsetWidth||400,H=parseInt(canvas.getAttribute('height'))||160;
+  canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');const C=getC();ctx.clearRect(0,0,W,H);
+  const emptyEl=document.getElementById(id+'-empty');
+  if(!values||values.length<2){canvas.style.display='none';if(emptyEl){emptyEl.style.display='block';emptyEl.textContent=t('noData');}return;}
+  canvas.style.display='block';if(emptyEl)emptyEl.style.display='none';
+  const P={t:16,r:12,b:28,l:36},cW=W-P.l-P.r,cH=H-P.t-P.b,max=Math.max(...values,1);
   ctx.strokeStyle=C.grid;ctx.lineWidth=1;
-  for(let i=0;i<=4;i++){
-    const y=PAD.t+cH*(1-i/4);
-    ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cW,y);ctx.stroke();
-    ctx.fillStyle=C.text;ctx.font='10px Inter,sans-serif';ctx.textAlign='right';
-    ctx.fillText(Math.round(min+(max-min)*i/4),PAD.l-4,y+3);
-  }
-  // Area fill
-  const pts=values.map((v,i)=>({x:PAD.l+cW*i/(values.length-1),y:PAD.t+cH*(1-(v-min)/(max-min||1))}));
-  ctx.beginPath();
-  ctx.moveTo(pts[0].x,PAD.t+cH);
-  pts.forEach(p=>ctx.lineTo(p.x,p.y));
-  ctx.lineTo(pts[pts.length-1].x,PAD.t+cH);
-  ctx.closePath();
-  ctx.fillStyle=(color||C.line)+'18';
-  ctx.fill();
-  // Line
-  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
-  pts.forEach(p=>ctx.lineTo(p.x,p.y));
-  ctx.strokeStyle=color||C.line;ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();
-  // Dots
+  for(let i=0;i<=4;i++){const y=P.t+cH*(1-i/4);ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(P.l+cW,y);ctx.stroke();ctx.fillStyle=C.text;ctx.font='10px Inter,sans-serif';ctx.textAlign='right';ctx.fillText(Math.round(max*i/4),P.l-4,y+3);}
+  const pts=values.map((v,i)=>({x:P.l+cW*i/(values.length-1),y:P.t+cH*(1-v/max)}));
+  ctx.beginPath();ctx.moveTo(pts[0].x,P.t+cH);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,P.t+cH);ctx.closePath();ctx.fillStyle=(color||C.line)+'18';ctx.fill();
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.strokeStyle=color||C.line;ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();
   pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fillStyle=color||C.line;ctx.fill();});
-  // X labels
   ctx.fillStyle=C.text;ctx.font='10px Inter,sans-serif';ctx.textAlign='center';
   const step=Math.max(1,Math.floor(labels.length/8));
   labels.forEach((l,i)=>{if(i%step===0)ctx.fillText(l,pts[i].x,H-6);});
 }
 
-function drawBarChart(canvasId,labels,values,color,values2,color2){
-  const canvas=document.getElementById(canvasId);
-  if(!canvas)return;
-  const W=canvas.offsetWidth||canvas.parentElement.offsetWidth||400;
-  const H=canvas.height||180;
-  canvas.width=W;
-  const ctx=canvas.getContext('2d');
-  const C=getColors();
-  ctx.clearRect(0,0,W,H);
-  if(!values||values.length===0){showChartEmpty(canvasId);return;}
-  const PAD={t:16,r:12,b:32,l:40};
-  const cW=W-PAD.l-PAD.r, cH=H-PAD.t-PAD.b;
-  const max=Math.max(...values,...(values2||[]),1);
-  const barGroups=labels.length;
-  const hasDual=values2&&values2.length>0;
-  const groupW=cW/barGroups;
-  const barW=hasDual?groupW*0.38:groupW*0.65;
-  const gap=groupW*(hasDual?0.06:0.175);
-  // Grid
+function drawBar(id,labels,values,color){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const W=canvas.parentElement.offsetWidth||400,H=parseInt(canvas.getAttribute('height'))||180;
+  canvas.width=W;canvas.height=H;const ctx=canvas.getContext('2d');const C=getC();ctx.clearRect(0,0,W,H);
+  const emptyEl=document.getElementById(id+'-empty');
+  if(!values||!values.some(v=>v>0)){canvas.style.display='none';if(emptyEl){emptyEl.style.display='block';emptyEl.textContent=t('noData');}return;}
+  canvas.style.display='block';if(emptyEl)emptyEl.style.display='none';
+  const P={t:16,r:12,b:32,l:40},cW=W-P.l-P.r,cH=H-P.t-P.b,max=Math.max(...values,1);
   ctx.strokeStyle=C.grid;ctx.lineWidth=1;
-  for(let i=0;i<=4;i++){
-    const y=PAD.t+cH*(1-i/4);
-    ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cW,y);ctx.stroke();
-    ctx.fillStyle=C.text;ctx.font='10px Inter,sans-serif';ctx.textAlign='right';
-    ctx.fillText(Math.round(max*i/4),PAD.l-4,y+3);
-  }
-  // Bars
+  for(let i=0;i<=4;i++){const y=P.t+cH*(1-i/4);ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(P.l+cW,y);ctx.stroke();ctx.fillStyle=C.text;ctx.font='10px Inter,sans-serif';ctx.textAlign='right';ctx.fillText(Math.round(max*i/4),P.l-4,y+3);}
+  const bW=Math.max(4,(cW/labels.length)*0.65),gap=(cW/labels.length)*0.175;
   labels.forEach((lbl,i)=>{
-    const gx=PAD.l+groupW*i+gap;
-    const v1=values[i]||0;
-    const bh1=cH*(v1/max);
-    ctx.fillStyle=color||C.bar;
-    ctx.beginPath();
-    const x1=gx,y1=PAD.t+cH-bh1;
-    ctx.roundRect?ctx.roundRect(x1,y1,barW,bh1,2):ctx.rect(x1,y1,barW,bh1);
-    ctx.fill();
-    if(hasDual){
-      const v2=values2[i]||0;
-      const bh2=cH*(v2/max);
-      ctx.fillStyle=color2||C.bar2;
-      ctx.beginPath();
-      const x2=gx+barW+2,y2=PAD.t+cH-bh2;
-      ctx.roundRect?ctx.roundRect(x2,y2,barW,bh2,2):ctx.rect(x2,y2,barW,bh2);
-      ctx.fill();
-    }
-    // Label
+    const x=P.l+(cW/labels.length)*i+gap,bh=cH*(values[i]/max),y=P.t+cH-bh;
+    ctx.fillStyle=color||C.bar;ctx.beginPath();
+    if(ctx.roundRect)ctx.roundRect(x,y,bW,bh,2);else ctx.rect(x,y,bW,bh);ctx.fill();
     ctx.fillStyle=C.text;ctx.font='10px Inter,sans-serif';ctx.textAlign='center';
-    const lx=hasDual?gx+barW+1:gx+barW/2;
-    ctx.fillText(String(lbl).length>5?String(lbl).slice(0,5):lbl,lx,H-8);
+    ctx.fillText(String(lbl).slice(0,5),x+bW/2,H-8);
   });
 }
 
-function drawHBarChart(canvasId,labels,values,color){
-  const canvas=document.getElementById(canvasId);
-  if(!canvas)return;
-  const W=canvas.offsetWidth||canvas.parentElement.offsetWidth||400;
-  const rowH=32;
-  const H=Math.max(labels.length*rowH+24,60);
-  canvas.height=H;canvas.width=W;
-  const ctx=canvas.getContext('2d');
-  const C=getColors();
-  ctx.clearRect(0,0,W,H);
-  if(!values||values.length===0){showChartEmpty(canvasId);return;}
-  const max=Math.max(...values,1);
-  const PAD={t:8,r:50,b:8,l:80};
-  const cW=W-PAD.l-PAD.r;
-  labels.forEach((lbl,i)=>{
-    const y=PAD.t+rowH*i;
-    const bh=rowH*0.45;
-    const bw=cW*(values[i]/max);
-    ctx.fillStyle=C.text;ctx.font='11px Inter,sans-serif';ctx.textAlign='right';
-    const shortLbl=String(lbl).length>10?String(lbl).slice(0,10)+'…':String(lbl);
-    ctx.fillText(shortLbl,PAD.l-6,y+rowH/2+4);
-    ctx.fillStyle=(color||C.bar)+'cc';
-    ctx.beginPath();
-    ctx.roundRect?ctx.roundRect(PAD.l,y+(rowH-bh)/2,bw,bh,3):ctx.rect(PAD.l,y+(rowH-bh)/2,bw,bh);
-    ctx.fill();
-    ctx.fillStyle=C.text;ctx.font='10px Inter,sans-serif';ctx.textAlign='left';
-    ctx.fillText(values[i],PAD.l+bw+4,y+rowH/2+4);
-  });
-}
-
-function showChartEmpty(canvasId){
-  const canvas=document.getElementById(canvasId);
-  if(canvas)canvas.style.display='none';
-  const empty=document.getElementById(canvasId.replace('chart-','chart-').replace(canvasId,canvasId+'-empty')||canvasId+'_empty');
-}
-
-/* ═══════════════════════════
-   RENDER ALL
-═══════════════════════════ */
-function renderAll(){
-  renderKPI();
-  renderOverview();
-  renderAttendance();
-  renderFinance();
-  renderAthletes();
-}
-
-/* ── KPI ── */
-function renderKPI(){
-  const active=allAthletes.filter(a=>a.is_active!==false);
-  document.getElementById('kpi-athletes').textContent=active.length;
-  document.getElementById('kpi-groups').textContent=allGroups.length;
-
-  // Посещаемость за период
-  const attFiltered=filterByPeriod(allAttendance,'training_date');
-  const attPct=attFiltered.length>0
-    ?(attFiltered.filter(a=>a.is_present||a.was_present).length/attFiltered.length*100).toFixed(1)+'%'
-    :'—';
-  document.getElementById('kpi-att').textContent=attPct;
-
-  // Выручка за период
-  const paysFiltered=filterByPeriod(allPayments,'paid_at');
-  const revenue=paysFiltered.reduce((s,p)=>s+parseFloat(p.amount||0),0);
-  document.getElementById('kpi-revenue').textContent=revenue>0?Math.round(revenue).toLocaleString('uk-UA'):'0';
-
-  // Должники — оплата просрочена (paid_until < сегодня)
-  const today=new Date();today.setHours(0,0,0,0);
-  // Берём последний платёж по каждому спортсмену
-  const lastPay={};
-  allPayments.forEach(p=>{
-    if(!lastPay[p.child_id]||new Date(p.paid_at)>new Date(lastPay[p.child_id].paid_at))
-      lastPay[p.child_id]=p;
-  });
-  const debtors=Object.values(lastPay).filter(p=>p.paid_until&&new Date(p.paid_until)<today);
-  document.getElementById('kpi-debtors').textContent=debtors.length;
-  const dc=document.getElementById('kpi-debtors-trend');
-  dc.textContent=debtors.length>0?t('trendDown')+' '+debtors.length:'';
-  dc.className='kpi-trend '+(debtors.length>0?'down':'neutral');
-
-  // Новых за последние 30 дней
-  const month30=new Date();month30.setDate(month30.getDate()-30);
-  const newCount=allAthletes.filter(a=>a.created_at&&new Date(a.created_at)>=month30).length;
-  document.getElementById('kpi-new').textContent=newCount;
-}
-
-/* ── OVERVIEW ── */
-function renderOverview(){
-  // Тренд посещаемости по неделям
-  const weeks=buildWeeklyAtt(allAttendance,Math.min(periodDays,90));
-  if(weeks.labels.length>1){
-    document.getElementById('chart-att-trend').style.display='block';
-    drawLineChart('chart-att-trend',weeks.labels,weeks.values,getCSSVar('--chart-line'));
-  } else {
-    document.getElementById('chart-att-trend').style.display='none';
-    const e=document.getElementById('chart-att-empty');
-    if(e){e.style.display='block';e.textContent=t('noData');}
+function weeklyAtt(att,days){
+  const today=new Date();today.setHours(0,0,0,0);const nw=Math.min(Math.ceil(days/7),16);const weeks=[];
+  for(let w=nw-1;w>=0;w--){
+    const wEnd=new Date(today);wEnd.setDate(today.getDate()-w*7);const wStart=new Date(wEnd);wStart.setDate(wEnd.getDate()-6);
+    const sl=att.filter(a=>{if(!a.training_date)return false;const d=new Date(a.training_date);return d>=wStart&&d<=wEnd;});
+    if(!sl.length)continue;
+    weeks.push({lbl:String(wStart.getDate()).padStart(2,'0')+'.'+String(wStart.getMonth()+1).padStart(2,'0'),pct:Math.round(sl.filter(a=>a.was_present||a.is_present).length/sl.length*100)});
   }
-
-  // Выручка по месяцам
-  const revMonths=buildMonthlyRevenue(allPayments,Math.min(periodDays,365));
-  if(revMonths.values.some(v=>v>0)){
-    document.getElementById('chart-revenue').style.display='block';
-    drawBarChart('chart-revenue',revMonths.labels,revMonths.values,getCSSVar('--chart-bar'));
-  } else {
-    document.getElementById('chart-revenue').style.display='none';
-    const e=document.getElementById('chart-revenue-empty');
-    if(e){e.style.display='block';e.textContent=t('noData');}
-  }
-
-  // Зона риска
-  renderRiskZone();
-
-  // Дни рождения
-  renderBirthdays();
-
-  // Сравнение групп
-  renderGroupsCompare();
+  return{labels:weeks.map(w=>w.lbl),values:weeks.map(w=>w.pct)};
 }
 
-function buildWeeklyAtt(att,days){
-  const weeks=[];
-  const today=new Date();today.setHours(0,0,0,0);
-  const numWeeks=Math.min(Math.ceil(days/7),16);
-  for(let w=numWeeks-1;w>=0;w--){
-    const wEnd=new Date(today);wEnd.setDate(today.getDate()-w*7);
-    const wStart=new Date(wEnd);wStart.setDate(wEnd.getDate()-6);
-    const slice=att.filter(a=>{
-      if(!a.training_date)return false;
-      const d=new Date(a.training_date);return d>=wStart&&d<=wEnd;
-    });
-    const pct=slice.length>0?Math.round(slice.filter(a=>a.is_present||a.was_present).length/slice.length*100):null;
-    const lbl=String(wStart.getDate()).padStart(2,'0')+'.'+String(wStart.getMonth()+1).padStart(2,'0');
-    weeks.push({lbl,pct});
-  }
-  const filled=weeks.filter(w=>w.pct!==null);
-  return{labels:filled.map(w=>w.lbl),values:filled.map(w=>w.pct)};
-}
-
-function buildMonthlyRevenue(pays,days){
-  const today=new Date();
-  const numMonths=Math.ceil(days/30);
-  const months=[];
-  for(let m=numMonths-1;m>=0;m--){
-    const d=new Date(today.getFullYear(),today.getMonth()-m,1);
-    months.push({year:d.getFullYear(),month:d.getMonth(),lbl:t('months')[d.getMonth()],total:0});
-  }
-  pays.forEach(p=>{
-    if(!p.paid_at)return;
-    const d=new Date(p.paid_at);
-    const entry=months.find(m=>m.year===d.getFullYear()&&m.month===d.getMonth());
-    if(entry)entry.total+=parseFloat(p.amount||0);
-  });
+function monthlyRev(pays,days){
+  const today=new Date();const nm=Math.ceil(days/30);const months=[];
+  for(let m=nm-1;m>=0;m--){const d=new Date(today.getFullYear(),today.getMonth()-m,1);months.push({y:d.getFullYear(),m:d.getMonth(),lbl:t('months')[d.getMonth()],total:0});}
+  pays.forEach(p=>{if(!p.paid_at)return;const d=new Date(p.paid_at);const e=months.find(m=>m.y===d.getFullYear()&&m.m===d.getMonth());if(e)e.total+=parseFloat(p.amount||0);});
   return{labels:months.map(m=>m.lbl),values:months.map(m=>Math.round(m.total))};
 }
 
-function renderRiskZone(){
-  const today=new Date();today.setHours(0,0,0,0);
-  const from30=new Date(today);from30.setDate(today.getDate()-30);
-  // Подсчёт посещаемости за 30 дней по спортсменам
-  const attMap={};
-  allAttendance.forEach(a=>{
-    if(!a.training_date||new Date(a.training_date)<from30)return;
-    if(!attMap[a.child_id])attMap[a.child_id]={total:0,present:0};
-    attMap[a.child_id].total++;
-    if(a.is_present||a.was_present)attMap[a.child_id].present++;
-  });
-  const risk=allAthletes.filter(a=>{
-    if(a.is_active===false)return false;
-    const s=attMap[a.id];
-    if(!s||s.total<3)return false; // не учитываем если мало тренировок
-    return s.present/s.total<0.5;
-  }).slice(0,8);
+function renderAll(){renderKPI();renderOverview();renderAttendance();renderFinance();renderAthletes();}
 
+function renderKPI(){
+  document.getElementById('kpi-athletes').textContent=allAthletes.filter(a=>a.is_active!==false).length;
+  document.getElementById('kpi-groups').textContent=allGroups.length;
+  const attF=byPeriod(allAttendance,'training_date');
+  document.getElementById('kpi-att').textContent=attF.length?(attF.filter(a=>a.was_present||a.is_present).length/attF.length*100).toFixed(1)+'%':'—';
+  const pF=byPeriod(allPayments,'paid_at');
+  document.getElementById('kpi-revenue').textContent=Math.round(pF.reduce((s,p)=>s+parseFloat(p.amount||0),0)).toLocaleString('uk-UA');
+  const today=new Date();today.setHours(0,0,0,0);
+  const lp={};allPayments.forEach(p=>{if(!lp[p.child_id]||new Date(p.paid_at)>new Date(lp[p.child_id].paid_at))lp[p.child_id]=p;});
+  document.getElementById('kpi-debtors').textContent=Object.values(lp).filter(p=>p.paid_until&&new Date(p.paid_until)<today).length;
+  const m30=new Date();m30.setDate(m30.getDate()-30);
+  document.getElementById('kpi-new').textContent=allAthletes.filter(a=>a.created_at&&new Date(a.created_at)>=m30).length;
+}
+
+function renderOverview(){
+  const w=weeklyAtt(allAttendance,Math.min(periodDays,90));drawLine('chart-att-trend',w.labels,w.values,cv('--chart-line'));
+  const r=monthlyRev(byPeriod(allPayments,'paid_at'),periodDays);drawBar('chart-revenue',r.labels,r.values,cv('--chart-bar'));
+  // Risk zone
+  const today=new Date();today.setHours(0,0,0,0);const from30=new Date(today);from30.setDate(today.getDate()-30);
+  const am={};
+  allAttendance.forEach(a=>{if(!a.training_date||new Date(a.training_date)<from30)return;if(!am[a.child_id])am[a.child_id]={total:0,present:0,name:a.child_name||'',group:a.group_name||'—'};am[a.child_id].total++;if(a.was_present||a.is_present)am[a.child_id].present++;});
+  const risk=Object.values(am).filter(s=>s.total>=3&&s.present/s.total<0.5).slice(0,8);
   document.getElementById('risk-count').textContent=risk.length;
-  const list=document.getElementById('risk-list');
-  const empty=document.getElementById('lbl-risk-empty');
-  if(risk.length===0){
-    list.innerHTML='';
-    if(empty){empty.style.display='block';empty.textContent=t('riskEmpty');}
-    return;
-  }
-  if(empty)empty.style.display='none';
-  list.innerHTML=risk.map(a=>{
-    const s=attMap[a.id];
-    const pct=s?Math.round(s.present/s.total*100):0;
-    const ini=((a.first_name||'')[0]||'')+((a.last_name||'')[0]||'');
-    const grpId=allChildGroups.find(cg=>cg.child_id===a.id);
-    const grp=grpId?allGroups.find(g=>g.id===grpId.group_id):null;
-    return`<div class="risk-row">
-      <div class="risk-avatar">${esc(ini.toUpperCase())}</div>
-      <div>
-        <div class="risk-name">${esc(a.first_name||'')} ${esc(a.last_name||'')}</div>
-        <div class="risk-group">${grp?esc(grp.name):'—'}</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:12px;font-weight:600;color:var(--tag-red)">${pct}%</div>
-        <div style="font-size:10px;color:var(--muted2)">${t('attPct')}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function renderBirthdays(){
-  const today=new Date();today.setHours(0,0,0,0);
-  const bds=allAthletes.filter(a=>a.birth_date&&a.is_active!==false).map(a=>{
-    const bd=new Date(a.birth_date);
-    let next=new Date(today.getFullYear(),bd.getMonth(),bd.getDate());
-    if(next<today)next.setFullYear(today.getFullYear()+1);
-    const days=Math.round((next-today)/(1000*60*60*24));
-    const age=next.getFullYear()-bd.getFullYear();
-    return{...a,days,age};
-  }).filter(a=>a.days<=30).sort((a,b)=>a.days-b.days).slice(0,8);
-
+  const rl=document.getElementById('risk-list');const re=document.getElementById('lbl-risk-empty');
+  if(!risk.length){rl.innerHTML='';if(re){re.style.display='block';re.textContent=t('riskEmpty');}return;}
+  if(re)re.style.display='none';
+  rl.innerHTML=risk.map(s=>{const pct=Math.round(s.present/s.total*100);const ini=(s.name.split(' ').map(w=>w[0]||'').join('').slice(0,2)).toUpperCase();return`<div class="risk-row"><div class="risk-avatar">${esc(ini)}</div><div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--black)">${esc(s.name)}</div><div style="font-size:10px;color:var(--muted2)">${esc(s.group)}</div></div><div style="text-align:right"><div style="font-size:12px;font-weight:600;color:var(--tag-red)">${pct}%</div></div></div>`;}).join('');
+  // Birthdays
+  const today2=new Date();today2.setHours(0,0,0,0);
+  const bds=allAthletes.filter(a=>a.birth_date&&a.is_active!==false).map(a=>{const bd=new Date(a.birth_date);let nx=new Date(today2.getFullYear(),bd.getMonth(),bd.getDate());if(nx<today2)nx.setFullYear(today2.getFullYear()+1);return{...a,days:Math.round((nx-today2)/(864e5)),age:nx.getFullYear()-bd.getFullYear()};}).filter(a=>a.days<=30).sort((a,b)=>a.days-b.days).slice(0,8);
   document.getElementById('bd-count').textContent=bds.length;
-  const list=document.getElementById('bd-list');
-  const empty=document.getElementById('lbl-bd-empty');
-  if(bds.length===0){
-    list.innerHTML='';
-    if(empty){empty.style.display='block';empty.textContent=t('bdEmpty');}
-    return;
-  }
-  if(empty)empty.style.display='none';
-  list.innerHTML=bds.map(a=>{
-    const dayLbl=a.days===0?t('today'):a.days===1?t('tomorrow'):(t('bdIn')+' '+a.days+' '+t('bdDays'));
-    const bd=new Date(a.birth_date);
-    const bdStr=String(bd.getDate()).padStart(2,'0')+'.'+String(bd.getMonth()+1).padStart(2,'0');
-    return`<div class="bd-row">
-      <div class="bd-days">${a.days===0?'0':a.days}</div>
-      <div class="bd-info">
-        <div class="bd-name">${esc(a.first_name||'')} ${esc(a.last_name||'')}</div>
-        <div class="bd-date">${bdStr} · ${dayLbl}</div>
-      </div>
-      <div class="bd-age">${a.age} ${t('years')}</div>
-    </div>`;
-  }).join('');
+  const bl=document.getElementById('bd-list');const be=document.getElementById('lbl-bd-empty');
+  if(!bds.length){bl.innerHTML='';if(be){be.style.display='block';be.textContent=t('bdEmpty');}return;}
+  if(be)be.style.display='none';
+  bl.innerHTML=bds.map(a=>{const dl=a.days===0?t('today'):a.days===1?t('tomorrow'):(t('bdIn')+' '+a.days+' '+t('bdDays'));const bd=new Date(a.birth_date);return`<div class="bd-row"><div class="bd-days">${a.days}</div><div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--black)">${esc(a.first_name||'')} ${esc(a.last_name||'')}</div><div style="font-size:10px;color:var(--muted2)">${String(bd.getDate()).padStart(2,'0')}.${String(bd.getMonth()+1).padStart(2,'0')} · ${dl}</div></div><div style="font-size:10px;font-weight:600;color:var(--muted)">${a.age} ${t('years')}</div></div>`;}).join('');
+  // Groups compare
+  const from=getFrom();const gs={};
+  allAttendance.filter(a=>a.training_date&&new Date(a.training_date)>=from).forEach(a=>{if(!gs[a.group_id])gs[a.group_id]={name:a.group_name||'—',total:0,present:0};gs[a.group_id].total++;if(a.was_present||a.is_present)gs[a.group_id].present++;});
+  const ge=Object.values(gs).filter(g=>g.total>0).map(g=>({name:g.name,pct:Math.round(g.present/g.total*100)}));
+  drawBar('chart-groups',ge.map(g=>g.name),ge.map(g=>g.pct),cv('--chart-line'));
 }
 
-function renderGroupsCompare(){
-  if(allAttendance.length===0||allGroups.length===0){
-    document.getElementById('chart-groups').style.display='none';
-    const e=document.getElementById('chart-groups-empty');
-    if(e){e.style.display='block';e.textContent=t('noData');}
-    return;
-  }
-  const from=getDateFrom();
-  const attF=allAttendance.filter(a=>a.training_date&&new Date(a.training_date)>=from);
-  const gStats={};
-  attF.forEach(a=>{
-    if(!gStats[a.group_id])gStats[a.group_id]={total:0,present:0};
-    gStats[a.group_id].total++;
-    if(a.is_present||a.was_present)gStats[a.group_id].present++;
-  });
-  const entries=allGroups.map(g=>({
-    name:g.name,
-    pct:gStats[g.id]&&gStats[g.id].total>0?Math.round(gStats[g.id].present/gStats[g.id].total*100):0
-  })).filter(g=>g.pct>0);
-  if(entries.length===0){
-    document.getElementById('chart-groups').style.display='none';
-    const e=document.getElementById('chart-groups-empty');
-    if(e){e.style.display='block';e.textContent=t('noData');}
-    return;
-  }
-  document.getElementById('chart-groups').style.display='block';
-  document.getElementById('chart-groups-empty').style.display='none';
-  drawBarChart('chart-groups',entries.map(g=>g.name),entries.map(g=>g.pct),getCSSVar('--chart-line'));
-}
-
-/* ── ATTENDANCE TAB ── */
 function renderAttendance(){
-  const groupId=document.getElementById('attGroupFilter').value;
-  let att=allAttendance;
-  if(groupId)att=att.filter(a=>String(a.group_id)===String(groupId));
-  const from=getDateFrom();
-  att=att.filter(a=>a.training_date&&new Date(a.training_date)>=from);
-
-  // Weekly
-  const weeks=buildWeeklyAtt(att,periodDays);
-  if(weeks.labels.length>1){
-    document.getElementById('chart-att-weekly').style.display='block';
-    document.getElementById('chart-att-weekly-empty').style.display='none';
-    drawLineChart('chart-att-weekly',weeks.labels,weeks.values,getCSSVar('--chart-line'));
-  } else {
-    document.getElementById('chart-att-weekly').style.display='none';
-    document.getElementById('chart-att-weekly-empty').style.display='block';
-    document.getElementById('chart-att-weekly-empty').textContent=t('noData');
-  }
-
-  // По дням недели
-  const dowStats=[0,0,0,0,0,0,0].map(()=>({total:0,present:0}));
-  att.forEach(a=>{
-    if(!a.training_date)return;
-    let dow=(new Date(a.training_date).getDay()+6)%7; // 0=Пн
-    dowStats[dow].total++;
-    if(a.is_present||a.was_present)dowStats[dow].present++;
-  });
-  const dowPct=dowStats.map(d=>d.total>0?Math.round(d.present/d.total*100):0);
-  const hasDow=dowPct.some(v=>v>0);
-  if(hasDow){
-    document.getElementById('chart-att-dow').style.display='block';
-    document.getElementById('chart-att-dow-empty').style.display='none';
-    drawBarChart('chart-att-dow',t('dowLabels'),dowPct,getCSSVar('--chart-bar'));
-  } else {
-    document.getElementById('chart-att-dow').style.display='none';
-    document.getElementById('chart-att-dow-empty').style.display='block';
-    document.getElementById('chart-att-dow-empty').textContent=t('noData');
-  }
-
-  // Таблица по спортсменам
-  const childStats={};
-  att.forEach(a=>{
-    if(!childStats[a.child_id])childStats[a.child_id]={total:0,present:0,group_id:a.group_id};
-    childStats[a.child_id].total++;
-    if(a.is_present||a.was_present)childStats[a.child_id].present++;
-  });
-  const rows=Object.entries(childStats).map(([cid,s])=>{
-    const ath=allAthletes.find(a=>a.id==cid);
-    const grpId=allChildGroups.find(cg=>cg.child_id==cid);
-    const grp=grpId?allGroups.find(g=>g.id===grpId.group_id):null;
-    const pct=Math.round(s.present/s.total*100);
-    return{name:ath?(ath.first_name+' '+ath.last_name).trim():'ID '+cid,group:grp?grp.name:'—',total:s.total,present:s.present,pct};
-  }).sort((a,b)=>a.pct-b.pct);
-
-  const tbody=document.getElementById('att-athletes-body');
-  if(rows.length===0){
-    tbody.innerHTML=`<tr><td colspan="5" class="empty-state">${t('noData')}</td></tr>`;
-    return;
-  }
-  tbody.innerHTML=rows.map(r=>{
-    const cls=r.pct>=70?'high':r.pct>=40?'mid':'low';
-    return`<tr>
-      <td style="font-weight:500;color:var(--black)">${esc(r.name)}</td>
-      <td style="color:var(--muted)">${esc(r.group)}</td>
-      <td>${r.total}</td>
-      <td>${r.present}</td>
-      <td>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="att-bar" style="flex:1"><div class="att-fill ${cls}" style="width:${r.pct}%"></div></div>
-          <span style="font-size:11px;font-weight:600;color:var(--muted);min-width:30px">${r.pct}%</span>
-        </div>
-      </td>
-    </tr>`;
-  }).join('');
+  const gid=document.getElementById('attGroupFilter').value;const from=getFrom();
+  let att=allAttendance.filter(a=>a.training_date&&new Date(a.training_date)>=from);
+  if(gid)att=att.filter(a=>String(a.group_id)===String(gid));
+  const w=weeklyAtt(att,periodDays);drawLine('chart-att-weekly',w.labels,w.values,cv('--chart-line'));
+  const dow=[0,0,0,0,0,0,0].map(()=>({t:0,p:0}));
+  att.forEach(a=>{if(!a.training_date)return;const d=(new Date(a.training_date).getDay()+6)%7;dow[d].t++;if(a.was_present||a.is_present)dow[d].p++;});
+  drawBar('chart-att-dow',t('dowLabels'),dow.map(d=>d.t?Math.round(d.p/d.t*100):0),cv('--chart-bar'));
+  const cs={};
+  att.forEach(a=>{if(!cs[a.child_id])cs[a.child_id]={name:a.child_name||('ID '+a.child_id),group:a.group_name||'—',total:0,present:0};cs[a.child_id].total++;if(a.was_present||a.is_present)cs[a.child_id].present++;});
+  const rows=Object.values(cs).map(s=>({...s,pct:Math.round(s.present/s.total*100)})).sort((a,b)=>a.pct-b.pct);
+  const tb=document.getElementById('att-athletes-body');
+  if(!rows.length){tb.innerHTML=`<tr><td colspan="5" class="empty-state">${t('noData')}</td></tr>`;return;}
+  tb.innerHTML=rows.map(r=>{const cls=r.pct>=70?'high':r.pct>=40?'mid':'low';return`<tr><td style="font-weight:500;color:var(--black)">${esc(r.name)}</td><td style="color:var(--muted)">${esc(r.group)}</td><td>${r.total}</td><td>${r.present}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="att-bar" style="width:80px"><div class="att-fill ${cls}" style="width:${r.pct}%"></div></div><span style="font-size:11px;font-weight:600;color:var(--muted)">${r.pct}%</span></div></td></tr>`;}).join('');
 }
 
-/* ── FINANCE TAB ── */
 function renderFinance(){
-  const from=getDateFrom();
-  const pays=allPayments.filter(p=>p.paid_at&&new Date(p.paid_at)>=from);
-
-  const totalRev=pays.reduce((s,p)=>s+parseFloat(p.amount||0),0);
-  document.getElementById('fin-total-rev').textContent=fmtMoney(totalRev);
-  const numMonths=Math.ceil(periodDays/30)||1;
-  document.getElementById('fin-avg-month').textContent=fmtMoney(totalRev/numMonths);
+  const from=getFrom();const pays=allPayments.filter(p=>p.paid_at&&new Date(p.paid_at)>=from);
+  const total=pays.reduce((s,p)=>s+parseFloat(p.amount||0),0);
+  document.getElementById('fin-total-rev').textContent=fmtMoney(total);
+  document.getElementById('fin-avg-month').textContent=fmtMoney(total/Math.ceil(periodDays/30));
   document.getElementById('fin-payments-count').textContent=pays.length;
-
-  // График выручки по месяцам
-  const rev=buildMonthlyRevenue(pays,periodDays);
-  if(rev.values.some(v=>v>0)){
-    document.getElementById('chart-fin-monthly').style.display='block';
-    document.getElementById('chart-fin-empty').style.display='none';
-    drawBarChart('chart-fin-monthly',rev.labels,rev.values,getCSSVar('--chart-bar'));
-  } else {
-    document.getElementById('chart-fin-monthly').style.display='none';
-    document.getElementById('chart-fin-empty').style.display='block';
-    document.getElementById('chart-fin-empty').textContent=t('noData');
-  }
-
-  // Выручка по группам
-  const revByGroup={};
-  pays.forEach(p=>{
-    const cg=allChildGroups.find(c=>c.child_id===p.child_id);
-    const gid=cg?cg.group_id:0;
-    if(!revByGroup[gid])revByGroup[gid]=0;
-    revByGroup[gid]+=parseFloat(p.amount||0);
-  });
-  const grpEntries=Object.entries(revByGroup).map(([gid,v])=>{
-    const g=allGroups.find(x=>x.id==gid);
-    return{name:g?g.name:t('noData'),val:Math.round(v)};
-  }).filter(e=>e.val>0).sort((a,b)=>b.val-a.val).slice(0,8);
-  if(grpEntries.length>0){
-    document.getElementById('chart-fin-groups').style.display='block';
-    document.getElementById('chart-fin-groups-empty').style.display='none';
-    drawHBarChart('chart-fin-groups',grpEntries.map(e=>e.name),grpEntries.map(e=>e.val),getCSSVar('--chart-bar'));
-  } else {
-    document.getElementById('chart-fin-groups').style.display='none';
-    document.getElementById('chart-fin-groups-empty').style.display='block';
-    document.getElementById('chart-fin-groups-empty').textContent=t('noData');
-  }
-
-  // Должники
+  const r=monthlyRev(pays,periodDays);drawBar('chart-fin-monthly',r.labels,r.values,cv('--chart-bar'));
   const today=new Date();today.setHours(0,0,0,0);
-  const lastPay={};
-  allPayments.forEach(p=>{
-    if(!lastPay[p.child_id]||new Date(p.paid_at)>new Date(lastPay[p.child_id].paid_at))
-      lastPay[p.child_id]=p;
-  });
-  const debtors=Object.values(lastPay).filter(p=>{
-    if(!p.paid_until)return false;
-    const ath=allAthletes.find(a=>a.id===p.child_id);
-    if(ath&&ath.is_active===false)return false;
-    return new Date(p.paid_until)<today;
-  }).map(p=>{
-    const ath=allAthletes.find(a=>a.id===p.child_id);
-    const cg=allChildGroups.find(c=>c.child_id===p.child_id);
-    const grp=cg?allGroups.find(g=>g.id===cg.group_id):null;
-    const daysOver=Math.floor((today-new Date(p.paid_until))/(1000*60*60*24));
-    return{name:ath?(ath.first_name+' '+ath.last_name).trim():'ID '+p.child_id,group:grp?grp.name:'—',paidUntil:p.paid_until,daysOver};
-  }).sort((a,b)=>b.daysOver-a.daysOver);
-
+  const lp={};allPayments.forEach(p=>{if(!lp[p.child_id]||new Date(p.paid_at)>new Date(lp[p.child_id].paid_at))lp[p.child_id]=p;});
+  const debtors=Object.values(lp).filter(p=>{if(!p.paid_until)return false;const a=allAthletes.find(x=>x.id===p.child_id);if(a&&a.is_active===false)return false;return new Date(p.paid_until)<today;}).map(p=>{const a=allAthletes.find(x=>x.id===p.child_id);return{name:a?(a.first_name+' '+a.last_name).trim():'ID '+p.child_id,paidUntil:p.paid_until,daysOver:Math.floor((today-new Date(p.paid_until))/864e5)};}).sort((a,b)=>b.daysOver-a.daysOver);
   document.getElementById('debtors-count').textContent=debtors.length;
-  const tbody=document.getElementById('debtors-body');
-  if(debtors.length===0){
-    tbody.innerHTML=`<tr><td colspan="4" class="empty-state">${t('noDebtors')}</td></tr>`;
-    return;
-  }
-  tbody.innerHTML=debtors.map(d=>`<tr>
-    <td style="font-weight:500;color:var(--black)">${esc(d.name)}</td>
-    <td style="color:var(--muted)">${esc(d.group)}</td>
-    <td style="color:var(--muted)">${fmtDate(d.paidUntil)}</td>
-    <td><span class="tag tag-red">${d.daysOver} ${t('days')}</span></td>
-  </tr>`).join('');
+  const tb=document.getElementById('debtors-body');
+  if(!debtors.length){tb.innerHTML=`<tr><td colspan="3" class="empty-state">${t('noDebtors')}</td></tr>`;return;}
+  tb.innerHTML=debtors.map(d=>`<tr><td style="font-weight:500;color:var(--black)">${esc(d.name)}</td><td style="color:var(--muted)">${fmtDate(d.paidUntil)}</td><td><span class="tag tag-red">${d.daysOver} ${t('days')}</span></td></tr>`).join('');
 }
 
-/* ── ATHLETES TAB ── */
 function renderAthletes(){
-  // Retention — новые по месяцам
-  const numMonths=Math.min(Math.ceil(periodDays/30),12);
-  const today=new Date();
-  const retMonths=[];
-  for(let m=numMonths-1;m>=0;m--){
-    const d=new Date(today.getFullYear(),today.getMonth()-m,1);
-    const dEnd=new Date(today.getFullYear(),today.getMonth()-m+1,0);
-    const count=allAthletes.filter(a=>{
-      if(!a.created_at)return false;
-      const c=new Date(a.created_at);
-      return c>=d&&c<=dEnd;
-    }).length;
-    retMonths.push({lbl:t('months')[d.getMonth()],count});
-  }
-  const hasRet=retMonths.some(m=>m.count>0);
-  if(hasRet){
-    document.getElementById('chart-retention').style.display='block';
-    document.getElementById('chart-retention-empty').style.display='none';
-    drawBarChart('chart-retention',retMonths.map(m=>m.lbl),retMonths.map(m=>m.count),getCSSVar('--chart-bar2'));
-  } else {
-    document.getElementById('chart-retention').style.display='none';
-    document.getElementById('chart-retention-empty').style.display='block';
-    document.getElementById('chart-retention-empty').textContent=t('noData');
-  }
-
-  // Прогресс поясов — по месяцам
-  const beltMonths=[];
-  for(let m=numMonths-1;m>=0;m--){
-    const d=new Date(today.getFullYear(),today.getMonth()-m,1);
-    const dEnd=new Date(today.getFullYear(),today.getMonth()-m+1,0);
-    const count=allBelts.filter(b=>{
-      if(!b.awarded_at)return false;
-      const c=new Date(b.awarded_at);return c>=d&&c<=dEnd;
-    }).length;
-    beltMonths.push({lbl:t('months')[d.getMonth()],count});
-  }
-  const hasBelts=beltMonths.some(m=>m.count>0);
-  if(hasBelts){
-    document.getElementById('chart-belts').style.display='block';
-    document.getElementById('chart-belts-empty').style.display='none';
-    drawBarChart('chart-belts',beltMonths.map(m=>m.lbl),beltMonths.map(m=>m.count),getCSSVar('--s'));
-  } else {
-    document.getElementById('chart-belts').style.display='none';
-    document.getElementById('chart-belts-empty').style.display='block';
-    document.getElementById('chart-belts-empty').textContent=t('noData');
-  }
-
-  // Возрастная структура
-  const today2=new Date();
-  const ageBuckets=[0,0,0,0,0]; // <8, 8-10, 11-13, 14-17, 18+
-  allAthletes.filter(a=>a.birth_date&&a.is_active!==false).forEach(a=>{
-    const age=Math.floor((today2-new Date(a.birth_date))/(1000*60*60*24*365.25));
-    if(age<8)ageBuckets[0]++;
-    else if(age<=10)ageBuckets[1]++;
-    else if(age<=13)ageBuckets[2]++;
-    else if(age<=17)ageBuckets[3]++;
-    else ageBuckets[4]++;
-  });
-  const ageLabels=t('ageGroups');
-  const ageTotal=ageBuckets.reduce((s,v)=>s+v,0);
-  const ageBody=document.getElementById('age-structure-body');
-  if(ageTotal===0){
-    ageBody.innerHTML='';
-    const e=document.getElementById('lbl-age-empty');
-    if(e){e.style.display='block';e.textContent=t('noData');}
-  } else {
-    const e=document.getElementById('lbl-age-empty');
-    if(e)e.style.display='none';
-    const colors=['#60a5fa','#34d399','#fbbf24','#f87171','#c084fc'];
-    ageBody.innerHTML=ageBuckets.map((v,i)=>{
-      if(v===0)return'';
-      const pct=Math.round(v/ageTotal*100);
-      return`<div style="margin-bottom:10px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-          <span style="font-size:11px;color:var(--muted)">${esc(ageLabels[i])}</span>
-          <span style="font-size:11px;font-weight:600;color:var(--black)">${v} (${pct}%)</span>
-        </div>
-        <div class="att-bar" style="height:8px">
-          <div class="att-fill" style="width:${pct}%;background:${colors[i]}"></div>
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  // Статус
-  const activeCount=allAthletes.filter(a=>a.is_active!==false).length;
-  const inactiveCount=allAthletes.filter(a=>a.is_active===false).length;
-  const total=allAthletes.length;
-  document.getElementById('status-body').innerHTML=`
-    <div class="stat-mini">
-      <span class="stat-mini-lbl">${t('active')}</span>
-      <span class="stat-mini-val" style="color:var(--tag-green)">${activeCount}</span>
-    </div>
-    <div class="stat-mini">
-      <span class="stat-mini-lbl">${t('inactive')}</span>
-      <span class="stat-mini-val" style="color:var(--tag-red)">${inactiveCount}</span>
-    </div>
-    <div class="stat-mini">
-      <span class="stat-mini-lbl">Total</span>
-      <span class="stat-mini-val">${total}</span>
-    </div>
-    <div style="margin-top:12px">
-      <div class="att-bar" style="height:10px">
-        <div class="att-fill high" style="width:${total>0?Math.round(activeCount/total*100):0}%"></div>
-      </div>
-      <div style="font-size:10px;color:var(--muted2);margin-top:4px">${total>0?Math.round(activeCount/total*100):0}% ${t('active').toLowerCase()}</div>
-    </div>`;
+  const today=new Date();const nm=Math.min(Math.ceil(periodDays/30),12);const rm=[];
+  for(let m=nm-1;m>=0;m--){const d=new Date(today.getFullYear(),today.getMonth()-m,1);const de=new Date(today.getFullYear(),today.getMonth()-m+1,0);rm.push({lbl:t('months')[d.getMonth()],count:allAthletes.filter(a=>{if(!a.created_at)return false;const c=new Date(a.created_at);return c>=d&&c<=de;}).length});}
+  drawBar('chart-retention',rm.map(m=>m.lbl),rm.map(m=>m.count),cv('--chart-bar2'));
+  const active=allAthletes.filter(a=>a.is_active!==false).length,inactive=allAthletes.filter(a=>a.is_active===false).length,total=allAthletes.length;
+  document.getElementById('status-body').innerHTML=`<div class="stat-mini"><span class="stat-mini-lbl">${t('active')}</span><span class="stat-mini-val" style="color:var(--tag-green)">${active}</span></div><div class="stat-mini"><span class="stat-mini-lbl">${t('inactive')}</span><span class="stat-mini-val" style="color:var(--tag-red)">${inactive}</span></div><div class="stat-mini"><span class="stat-mini-lbl">Total</span><span class="stat-mini-val">${total}</span></div><div style="margin-top:12px"><div class="att-bar" style="height:10px"><div class="att-fill high" style="width:${total?Math.round(active/total*100):0}%"></div></div><div style="font-size:10px;color:var(--muted2);margin-top:4px">${total?Math.round(active/total*100):0}% ${t('active').toLowerCase()}</div></div>`;
+  const ab=[0,0,0,0,0];
+  allAthletes.filter(a=>a.birth_date&&a.is_active!==false).forEach(a=>{const age=Math.floor((today-new Date(a.birth_date))/31557600000);if(age<8)ab[0]++;else if(age<=10)ab[1]++;else if(age<=13)ab[2]++;else if(age<=17)ab[3]++;else ab[4]++;});
+  const at=ab.reduce((s,v)=>s+v,0);const al=t('ageGroups');const colors=['#60a5fa','#34d399','#fbbf24','#f87171','#c084fc'];
+  document.getElementById('age-structure-body').innerHTML=at?ab.map((v,i)=>{if(!v)return'';const p=Math.round(v/at*100);return`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;color:var(--muted)">${esc(al[i])}</span><span style="font-size:11px;font-weight:600;color:var(--black)">${v} (${p}%)</span></div><div class="att-bar" style="height:8px"><div class="att-fill" style="width:${p}%;background:${colors[i]}"></div></div></div>`;}).join(''):`<div class="empty-state">${t('noData')}</div>`;
 }
 
-/* ═══════════════════════════
-   INIT
-═══════════════════════════ */
 function init(){
-  // Тема
   const theme=localStorage.getItem('theme');
-  if(theme==='dark'){
-    document.documentElement.setAttribute('data-theme','dark');
-    document.getElementById('icon-sun').style.display='none';
-    document.getElementById('icon-moon').style.display='block';
-  }
-  // Пользователь
+  if(theme==='dark'){document.documentElement.setAttribute('data-theme','dark');document.getElementById('icon-sun').style.display='none';document.getElementById('icon-moon').style.display='block';}
   try{
     const u=JSON.parse(localStorage.getItem('user')||'{}');
-    const fn=u.first_name||'',ln=u.last_name||'';
-    const ini=(fn[0]||'')+(ln[0]||'')||'ДР';
-    document.getElementById('sideInitials').textContent=ini.toUpperCase();
-    document.getElementById('sideUserName').textContent=(fn+' '+ln).trim()||'—';
+    document.getElementById('sideInitials').textContent=((u.first_name||'')[0]+(u.last_name||'')[0]).toUpperCase()||'ДР';
+    document.getElementById('sideUserName').textContent=((u.first_name||'')+' '+(u.last_name||'')).trim()||'—';
     document.getElementById('sideUserId').textContent=u.id?'ID '+u.id:'';
-    // Проверка роли
     if(u.role&&u.role!=='director'){window.location.href='/';return;}
   }catch(e){}
   applyLang();
   loadAll();
 }
-
-// Перерисовка при изменении размера окна
-let resizeTimer;
-window.addEventListener('resize',()=>{
-  clearTimeout(resizeTimer);
-  resizeTimer=setTimeout(()=>renderAll(),200);
-});
-
+let _rt;window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(renderAll,200);});
 document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
