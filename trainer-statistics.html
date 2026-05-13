@@ -85,9 +85,11 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 
 /* ── HISTORY DOTS ── */
 .history-dots{display:flex;gap:3px;flex-wrap:wrap}
-.dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;position:relative;cursor:default}
 .dot-present{background:var(--tag-green)}
 .dot-absent{background:var(--tag-red-bg);border:1px solid var(--tag-red)}
+.dot-date{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:9px;white-space:nowrap;background:var(--bg);border:1px solid var(--border);color:var(--muted);border-radius:4px;padding:2px 4px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:10}
+.dot:hover .dot-date{opacity:1}
 
 /* ── BUTTONS ── */
 .btn{padding:6px 14px;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
@@ -562,7 +564,7 @@ function renderStats(){
     if(!childStats[key]){
       childStats[key]={name:s.child_name||t('unknownChild'),group_name:s.group_name||t('unknownGroup'),history:[],present:0,total:0};
     }
-    childStats[key].history.push(s.was_present);
+    childStats[key].history.push({date:s.training_date,present:s.was_present});
     childStats[key].total++;
     if(s.was_present)childStats[key].present++;
   });
@@ -574,9 +576,12 @@ function renderStats(){
     childBody.innerHTML=Object.values(childStats).map(stat=>{
       const pct=stat.total>0?(stat.present/stat.total*100):0;
       const pctStr=pct.toFixed(1);
-      const last10=stat.history.slice(-10).map(p=>
-        `<div class="dot ${p?'dot-present':'dot-absent'}" title="${p?'+':'-'}"></div>`
-      ).join('');
+      const sorted=stat.history.slice().sort((a,b)=>a.date>b.date?1:a.date<b.date?-1:0);
+      const last10=sorted.slice(-10).map(h=>{
+        const d=h.date?h.date.split('-').slice(1).join('.'):'';
+        const lbl=(h.present?'+':'-')+(d?' '+d:'');
+        return`<div class="dot ${h.present?'dot-present':'dot-absent'}" title="${lbl}"><span class="dot-date">${d}</span></div>`;
+      }).join('');
       return`<tr>
         <td style="font-weight:500;color:var(--black)">${esc(stat.name)}</td>
         <td style="color:var(--muted)">${esc(stat.group_name)}</td>
