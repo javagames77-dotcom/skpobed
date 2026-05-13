@@ -120,6 +120,9 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .cal-legend i{width:10px;height:10px;border-radius:3px}
 .cal-icon-btn{background:none;border:none;cursor:pointer;padding:2px 4px;border-radius:5px;color:var(--muted);display:inline-flex;align-items:center;vertical-align:middle;margin-left:6px;transition:color .12s,background .12s}
 .cal-icon-btn:hover{color:var(--p);background:var(--tag-blue-bg)}
+.cal-tab{padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .12s}
+.cal-tab:hover{border-color:var(--border2);color:var(--text)}
+.cal-tab.active{background:var(--black);color:var(--bg);border-color:var(--black)}
 .d-row{display:flex;flex-direction:column;gap:2px}
 .d-labels{display:flex;gap:3px}
 .d-segs{display:flex;gap:3px}
@@ -615,13 +618,18 @@ function renderStats(){
   // ── По спортсменам ──
   const childStats={};
   filtered.forEach(s=>{
-    const key=`${s.child_id}_${s.group_id}`;
+    const key=String(s.child_id);
     if(!childStats[key]){
-      childStats[key]={name:s.child_name||t('unknownChild'),group_name:s.group_name||t('unknownGroup'),child_id:s.child_id,history:[],present:0,total:0};
+      childStats[key]={name:s.child_name||t('unknownChild'),child_id:s.child_id,groups:{},history:[],present:0,total:0};
     }
-    childStats[key].history.push({date:s.training_date,present:s.was_present});
+    // merge history (all groups together for streak/trend/strip)
+    childStats[key].history.push({date:s.training_date,present:s.was_present,group_id:s.group_id,group_name:s.group_name||''});
     childStats[key].total++;
     if(s.was_present)childStats[key].present++;
+    // per-group history for calendar switcher
+    const gid=s.group_id;
+    if(!childStats[key].groups[gid])childStats[key].groups[gid]={name:s.group_name||'',history:[]};
+    childStats[key].groups[gid].history.push({date:s.training_date,present:s.was_present});
   });
 
   const childBody=document.getElementById('childrenStatsBody');
@@ -672,16 +680,20 @@ function renderStats(){
       const missHtml=missStreak>=3?`<div class="miss-flag">${missStreak} ${t('missLabel')}</div>`:'';
 
       const profileUrl='/athlete-profile.html?id='+stat.child_id;
-      const histJson=JSON.stringify(sorted.map(h=>({d:h.date,p:h.present?1:0}))).replace(/"/g,'&quot;');
+      // Per-group data for calendar
+      const groupsData=Object.entries(stat.groups).map(([gid,g])=>({gid,name:g.name,hist:g.history.map(h=>({d:h.date,p:h.present?1:0}))}));
+      const groupsJson=JSON.stringify(groupsData).replace(/"/g,'&quot;');
+      // Group names to show under athlete name
+      const groupNames=Object.values(stat.groups).map(g=>esc(g.name)).join(', ');
       return`<tr>
         <td>
           <div style="display:flex;align-items:center;gap:0">
             <a href="${profileUrl}" style="font-weight:500;color:var(--black);text-decoration:none;border-bottom:1px dashed var(--border2);cursor:pointer" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--black)'">${esc(stat.name)}</a>
-            <button class="cal-icon-btn" onclick="openCalModal('${esc(stat.name)}','${histJson}')" title="Календар відвідуваності" aria-label="Відкрити календар">
+            <button class="cal-icon-btn" onclick="openCalModal('${esc(stat.name)}','${groupsJson}')" title="Календар відвідуваності" aria-label="Відкрити календар">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h14" stroke="currentColor" stroke-width="1.2"/><path d="M5 1v2M11 1v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5" cy="10" r="1" fill="currentColor"/><circle cx="8" cy="10" r="1" fill="currentColor"/><circle cx="11" cy="10" r="1" fill="currentColor"/></svg>
             </button>
           </div>
-          <div style="font-size:11px;color:var(--muted)">${esc(stat.group_name)}</div>
+          <div style="font-size:11px;color:var(--muted)">${groupNames}</div>
           ${missHtml}
         </td>
         <td>
@@ -738,22 +750,65 @@ loadStatistics();
 /* ═══════════════════════════════
    CALENDAR MODAL
 ═══════════════════════════════ */
-let _calHistory=[];
+let _calGroups=[];
+let _calActiveGid=null;
 let _calYear=0;
 let _calMonth=0;
 
-function openCalModal(name,histJson){
-  try{_calHistory=JSON.parse(histJson.replace(/&quot;/g,'"'));}catch(e){_calHistory=[];}
+function openCalModal(name,groupsJson){
+  try{_calGroups=JSON.parse(groupsJson.replace(/&quot;/g,'"'));}catch(e){_calGroups=[];}
   document.getElementById('calAthlName').textContent=name;
-  // Default to month of last training or current month
-  if(_calHistory.length){
-    const last=_calHistory[_calHistory.length-1].d;
+
+  // Build group tabs
+  const tabsEl=document.getElementById('calGroupTabs');
+  if(_calGroups.length>1){
+    tabsEl.style.display='flex';
+    tabsEl.innerHTML=_calGroups.map(g=>`<button class="cal-tab" onclick="switchCalGroup('${g.gid}')">${esc(g.name)}</button>`).join('');
+  }else{
+    tabsEl.style.display='none';
+    tabsEl.innerHTML='';
+  }
+
+  // Default to first group
+  _calActiveGid=_calGroups.length?_calGroups[0].gid:null;
+  updateCalTabActive();
+
+  // Default to month of last training
+  const hist=getActiveHist();
+  if(hist.length){
+    const last=hist[hist.length-1].d;
     if(last){_calYear=parseInt(last.slice(0,4));_calMonth=parseInt(last.slice(5,7))-1;}
     else{const n=new Date();_calYear=n.getFullYear();_calMonth=n.getMonth();}
   }else{const n=new Date();_calYear=n.getFullYear();_calMonth=n.getMonth();}
+
   renderCalendar();
   document.getElementById('calModal').classList.add('open');
   document.body.style.overflow='hidden';
+}
+
+function switchCalGroup(gid){
+  _calActiveGid=gid;
+  updateCalTabActive();
+  // Go to last training of this group
+  const hist=getActiveHist();
+  if(hist.length){
+    const sorted=hist.slice().sort((a,b)=>a.d>b.d?1:-1);
+    const last=sorted[sorted.length-1].d;
+    if(last){_calYear=parseInt(last.slice(0,4));_calMonth=parseInt(last.slice(5,7))-1;}
+  }
+  renderCalendar();
+}
+
+function updateCalTabActive(){
+  document.querySelectorAll('.cal-tab').forEach(btn=>{
+    const gid=btn.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+    btn.classList.toggle('active',gid==_calActiveGid);
+  });
+}
+
+function getActiveHist(){
+  const g=_calGroups.find(g=>g.gid==_calActiveGid);
+  return g?g.hist:(_calGroups[0]?_calGroups[0].hist:[]);
 }
 
 function closeCalModal(){
@@ -772,25 +827,20 @@ function renderCalendar(){
   const months=t('calMonths');
   const dow=t('calDow');
   document.getElementById('calMonthLbl').textContent=months[_calMonth]+' '+_calYear;
-
-  // DOW header
   document.getElementById('calDow').innerHTML=dow.map(d=>`<span>${d}</span>`).join('');
 
-  // Build presence map: 'YYYY-MM-DD' -> 1/0
+  const hist=getActiveHist();
   const presMap={};
-  _calHistory.forEach(h=>{if(h.d)presMap[h.d]=h.p;});
+  hist.forEach(h=>{if(h.d)presMap[h.d]=h.p;});
 
-  // First day of month (Mon=0)
   const firstDay=new Date(_calYear,_calMonth,1);
   const lastDay=new Date(_calYear,_calMonth+1,0);
-  const startDow=(firstDay.getDay()+6)%7; // Mon=0
+  const startDow=(firstDay.getDay()+6)%7;
   const today=new Date();
   const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
 
   let html='';
-  // Leading empty cells
   for(let i=0;i<startDow;i++)html+=`<div class="cal-day other"></div>`;
-
   for(let d=1;d<=lastDay.getDate();d++){
     const dateStr=_calYear+'-'+String(_calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     let cls='cal-day';
@@ -802,7 +852,6 @@ function renderCalendar(){
   document.getElementById('calDays').innerHTML=html;
 }
 
-// Close on Escape
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCalModal();});
 </script>
 <!-- CALENDAR MODAL -->
@@ -812,6 +861,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCalModa
       <span class="cal-name" id="calAthlName">—</span>
       <button class="cal-close" onclick="closeCalModal()" aria-label="Закрити">✕</button>
     </div>
+    <div id="calGroupTabs" style="display:none;padding:8px 12px 0;display:flex;gap:4px;flex-wrap:wrap"></div>
     <div class="cal-nav">
       <button class="cal-nav-btn" onclick="calShift(-1)">&#8592;</button>
       <span class="cal-month-lbl" id="calMonthLbl"></span>
