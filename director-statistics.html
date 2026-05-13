@@ -67,7 +67,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .kpi-trend.neutral{color:var(--muted2)}
 
 /* ── CARD ── */
-.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);margin-bottom:16px;overflow:hidden}
+.card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);margin-bottom:16px}
 .card-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .card-title{font-size:13px;font-weight:600;color:var(--black)}
 .card-body{padding:16px}
@@ -777,19 +777,18 @@ async function loadAll(){
     const u=JSON.parse(localStorage.getItem('user')||'{}');
     const dirId=u.id;
     // Параллельная загрузка всех данных
-    const [athletes,groups,payments,attendance,belts,childGroups]=await Promise.all([
-      apiFetch('children','list',{}),
-      apiFetch('groups','list',{}),
-      apiFetch('payments','list',{}),
-      apiFetch('attendance','list',{}),
-      apiFetch('athlete_belts','list',{}),
-      apiFetch('children_groups','list',{})
+    const [athletes,groups,payments,attendance,childGroups]=await Promise.all([
+      apiFetch('children','list',{}).catch(()=>[]),
+      apiFetch('groups','list',{}).catch(()=>[]),
+      apiFetch('payments','list',{}).catch(()=>[]),
+      apiFetch('attendance','list',{}).catch(()=>[]),
+      apiFetch('children_groups','list',{}).catch(()=>[])
     ]);
     allAthletes=athletes||[];
     allGroups=groups||[];
     allPayments=payments||[];
     allAttendance=(attendance||[]).map(a=>({...a,training_date:a.training_date?a.training_date.split('T')[0]:null}));
-    allBelts=belts||[];
+    allBelts=[];
     allChildGroups=childGroups||[];
 
     // Заполнить фильтр групп
