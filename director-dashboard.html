@@ -9,7 +9,7 @@
 <title>Selfcore</title>
 <script>
 (function(){
-  var V='20260519_17';
+  var V='20260519_20';
   if(location.search.indexOf('v='+V)===-1){
     location.replace(location.pathname+'?v='+V);
   }
@@ -73,7 +73,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
 .card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;box-shadow:var(--card-shadow);transition:all .2s}
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
+@media(min-width:769px){.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 /* METRIC CARD */
 .metric-card{padding:14px 16px;cursor:default}
@@ -190,12 +191,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
   .main{padding:16px;padding-bottom:72px}
   .grid4{grid-template-columns:repeat(2,1fr)}
   .grid3{grid-template-columns:repeat(2,1fr)}
-  .grid2{grid-template-columns:1fr}
   .nav-badge,.nav-divider{display:none}
 }
 @media(max-width:480px){
   .grid4{grid-template-columns:repeat(2,1fr)}
-  .grid2{grid-template-columns:1fr}
   .main{padding:12px;padding-bottom:72px}
   .quick-btn{min-width:100px}
 }
@@ -540,7 +539,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
               <div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="t-f-dish-label"></div>
               <input type="text" id="food-name" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font-family:inherit">
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:11px">
+            <div style="display:grid;grid-template-columns:1fr;gap:7px;margin-bottom:11px">
               <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="t-f-inp-kcal"></div><input type="number" id="food-inp-kcal" placeholder="450" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font-family:inherit"></div>
               <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="t-f-inp-prot"></div><input type="number" id="food-inp-prot" placeholder="32" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font-family:inherit"></div>
               <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="t-f-inp-fat"></div><input type="number" id="food-inp-fat" placeholder="12" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font-family:inherit"></div>
@@ -562,7 +561,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
               <div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="t-f-dish-label2"></div>
               <input type="text" id="food-ai-dish-name" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:1.5px solid var(--accent);background:var(--input-bg);color:var(--text);font-family:inherit">
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px">
+            <div style="display:grid;grid-template-columns:1fr;gap:7px;margin-bottom:8px">
               <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="t-f-ai-kcal-lbl"></div><input type="number" id="food-ai-kcal" style="width:100%;font-size:13px;font-weight:500;color:#D85A30;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);font-family:inherit"></div>
               <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="t-f-prot-short"></div><input type="number" id="food-ai-prot" style="width:100%;font-size:13px;font-weight:500;color:#1D9E75;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);font-family:inherit"></div>
               <div><div style="font-size:11px;color:var(--muted);margin-bottom:4px" id="t-f-fat-short"></div><input type="number" id="food-ai-fat" style="width:100%;font-size:13px;font-weight:500;color:#BA7517;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--input-bg);font-family:inherit"></div>
@@ -580,9 +579,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg2);color:va
           </div>
         </div>
 
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div class="card" style="padding:14px;overflow:hidden">
-            </div>
+        <div style="display:flex;flex-direction:column;gap:10px;overflow-x:auto">
+          <div class="card" style="padding:14px">
             <div id="food-meals-list" style="max-height:300px;overflow-y:scroll;scrollbar-width:thin;-webkit-overflow-scrolling:touch"></div>
             <div style="height:7px;background:#d0d0cc;border-radius:4px;overflow:hidden;margin-top:12px">
               <div id="food-kcal-bar" style="height:100%;border-radius:4px;background:var(--accent);width:0%;transition:none"></div>
